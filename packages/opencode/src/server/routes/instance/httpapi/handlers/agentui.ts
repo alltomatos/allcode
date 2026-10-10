@@ -54,6 +54,10 @@ export const agentuiHandlers = HttpApiBuilder.group(InstanceHttpApi, "agentui", 
       return yield* agentui.listAudit(ctx.params.id)
     })
 
+    const diagnose = Effect.fn("AgentUIHttpApi.diagnose")(function* (ctx: { params: { id: string } }) {
+      return yield* agentui.diagnose(ctx.params.id)
+    })
+
     return handlers
       .handle("list", list)
       .handle("projectDirectory", projectDirectory)
@@ -64,5 +68,6 @@ export const agentuiHandlers = HttpApiBuilder.group(InstanceHttpApi, "agentui", 
       .handle("resetSandbox", resetSandbox)
       .handle("generate", generate)
       .handle("audit", audit)
+      .handle("diagnose", diagnose)
   }),
 )

@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.21.81",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AgentUI: Ferramenta de Diagnóstico & Teste de Canais e Conexões",
+              "description": "Adicionado endpoint de diagnóstico ('GET /agentui/:id/diagnose') e modal interativo no AgentUI para testar a saúde de ponta a ponta dos canais (WhatsApp via waconector, Telegram via getMe), disponibilidade do modelo/provedor LLM configurado e acessibilidade do diretório de sessões, permitindo identificar e testar imediatamente por que um agente não está respondendo após reinicializações do OpenCode."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.80",
       "highlights": [
         {

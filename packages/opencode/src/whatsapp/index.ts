@@ -67,7 +67,7 @@ export type IzapiaGroup = Schema.Schema.Type<typeof IzapiaGroup>
 // baseUrl).
 const IZAPIA_BASE_URL = "https://api.izapia.com"
 
-function buildAdapter(channel: ConfigAgentUIV1.WhatsAppChannelBinding, sidOverride?: string): WaAdapter {
+export function buildAdapter(channel: ConfigAgentUIV1.WhatsAppChannelBinding, sidOverride?: string): WaAdapter {
   const cfg = channel.config
   switch (channel.provider) {
     case "waha":

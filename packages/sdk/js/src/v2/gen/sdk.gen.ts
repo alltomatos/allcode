@@ -9,6 +9,8 @@ import type {
   AgentUiAgent,
   AgentuiAuditErrors,
   AgentuiAuditResponses,
+  AgentuiDiagnoseErrors,
+  AgentuiDiagnoseResponses,
   AgentuiGenerateErrors,
   AgentuiGenerateResponses,
   AgentuiGetErrors,
@@ -2518,6 +2520,36 @@ export class Agentui extends HeyApiClient {
     )
     return (options?.client ?? this.client).get<AgentuiAuditResponses, AgentuiAuditErrors, ThrowOnError>({
       url: "/agentui/{id}/audit",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Diagnose AgentUI agent
+   */
+  public diagnose<ThrowOnError extends boolean = false>(
+    parameters: {
+      id: string
+      directory?: string
+      workspace?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "id" },
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<AgentuiDiagnoseResponses, AgentuiDiagnoseErrors, ThrowOnError>({
+      url: "/agentui/{id}/diagnose",
       ...options,
       ...params,
     })

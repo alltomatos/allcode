@@ -10,6 +10,7 @@ import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { showToast } from "@/utils/toast"
 import { DialogAgentUISandbox } from "./dialog-agentui-sandbox"
+import { DialogAgentUIDiagnose } from "./dialog-agentui-diagnose"
 import { SettingsListV2 } from "./parts/list"
 import "./settings-v2.css"
 
@@ -52,6 +53,17 @@ export const SettingsAgentUIV2: Component<{ directory?: string }> = (props) => {
     dialog.push(() => <DialogAgentUISandbox agentID={agent.id} agentName={agent.name} directory={props.directory} />)
   }
 
+  const openDiagnose = (agent: NonNullable<ReturnType<typeof agents>>[number]) => {
+    dialog.push(() => (
+      <DialogAgentUIDiagnose
+        agentID={agent.id}
+        agentName={agent.name}
+        directory={props.directory}
+        onOpenSandbox={() => openSandbox(agent)}
+      />
+    ))
+  }
+
   return (
     <>
       <div class="settings-v2-tab-header">
@@ -89,6 +101,14 @@ export const SettingsAgentUIV2: Component<{ directory?: string }> = (props) => {
                     <ButtonV2 variant="neutral" size="normal" onClick={() => openSandbox(agent)}>
                       {language.t("settings.agentui.sandbox.open")}
                     </ButtonV2>
+                    <IconButtonV2
+                      type="button"
+                      variant="ghost-muted"
+                      size="small"
+                      icon={<IconV2 name="status-active" />}
+                      aria-label={language.t("settings.agentui.diagnose.action")}
+                      onClick={() => openDiagnose(agent)}
+                    />
                     <IconButtonV2
                       type="button"
                       variant="ghost-muted"

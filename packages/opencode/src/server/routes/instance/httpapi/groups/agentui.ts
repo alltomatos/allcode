@@ -12,6 +12,22 @@ const root = "/agentui"
 export const ListResponse = Schema.Array(ConfigAgentUIV1.Agent)
 export const ProjectDirectoryResponse = Schema.Struct({ directory: Schema.String })
 export const RemoveResponse = Schema.Struct({ success: Schema.Literal(true) })
+
+export const DiagnoseItem = Schema.Struct({
+  name: Schema.String,
+  status: Schema.Literals(["ok", "warning", "error"]),
+  message: Schema.String,
+  details: Schema.optional(Schema.String),
+})
+export type DiagnoseItem = Schema.Schema.Type<typeof DiagnoseItem>
+
+export const DiagnoseResponse = Schema.Struct({
+  agentId: Schema.String,
+  agentName: Schema.String,
+  enabled: Schema.Boolean,
+  items: Schema.Array(DiagnoseItem),
+})
+export type DiagnoseResponse = Schema.Schema.Type<typeof DiagnoseResponse>
 // `projectDirectory`, not `directory` — WorkspaceRoutingQuery already has its
 // own `directory` query param (which instance handles the request); this one
 // picks which connected project's models/skills the sandbox session runs
@@ -122,6 +138,19 @@ export const AgentUIApi = HttpApi.make("agentui")
             summary: "Get an AgentUI agent's audit log",
             description:
               "Lists recent turns (incoming message + the agent's reply) across every channel this agent is reachable on, newest first.",
+          }),
+        ),
+        HttpApiEndpoint.get("diagnose", `${root}/:id/diagnose`, {
+          params: { id: Schema.String },
+          query: WorkspaceRoutingQuery,
+          success: described(DiagnoseResponse, "Agent diagnosis results across channels and models"),
+          error: AgentUINotFoundError,
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "agentui.diagnose",
+            summary: "Diagnose an AgentUI agent and its channels",
+            description:
+              "Tests end-to-end channels (WhatsApp, Telegram), models, and directory health for the given agent.",
           }),
         ),
         HttpApiEndpoint.delete("remove", `${root}/:id`, {

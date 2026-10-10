@@ -21,6 +21,8 @@ import { jsonSchema, streamText, tool } from "ai"
 import { type LanguageModelV3 } from "@ai-sdk/provider"
 import { McpCatalog } from "@/mcp/catalog"
 import { Global } from "@opencode-ai/core/global"
+import { createConnector } from "waconector"
+import { WhatsApp } from "@/whatsapp"
 import path from "node:path"
 import fs from "node:fs/promises"
 
@@ -86,6 +88,20 @@ const DRAFT_MODEL_CANDIDATES = [
 ]
 
 export const getAgentUiProjectDirectory = () => path.join(Global.Path.data, "projects", "agentui")
+
+export interface AgentUIDiagnoseItem {
+  readonly name: string
+  readonly status: "ok" | "warning" | "error"
+  readonly message: string
+  readonly details?: string
+}
+
+export interface AgentUIDiagnoseResult {
+  readonly agentId: string
+  readonly agentName: string
+  readonly enabled: boolean
+  readonly items: AgentUIDiagnoseItem[]
+}
 
 export interface Interface {
   readonly getProjectDirectory: () => Effect.Effect<string>
@@ -183,6 +199,7 @@ export interface Interface {
   readonly generateDraft: (input: {
     description: string
   }) => Effect.Effect<GeneratedDraft, AgentUIGenerateFailedError>
+  readonly diagnose: (id: string) => Effect.Effect<AgentUIDiagnoseResult, AgentUINotFoundError>
 }
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/AgentUI") {}
@@ -674,6 +691,164 @@ const layer = Layer.effect(
       } satisfies GeneratedDraft
     })
 
+    const diagnose = Effect.fn("AgentUI.diagnose")(function* (id: string) {
+      const agent = yield* get(id)
+      const items: AgentUIDiagnoseItem[] = []
+
+      // 1. Status Geral do Agente
+      if (agent.enabled === false) {
+        items.push({
+          name: "Status do Agente",
+          status: "warning",
+          message: "O agente está desativado no painel de configurações.",
+          details: "Ative o agente para que ele possa responder nos canais ou no sandbox.",
+        })
+      } else {
+        items.push({
+          name: "Status do Agente",
+          status: "ok",
+          message: "Agente ativo e pronto para receber mensagens.",
+        })
+      }
+
+      // 2. Modelo / LLM
+      const resolved = yield* resolveModel(agent.model)
+      if (!resolved) {
+        items.push({
+          name: "Modelo LLM",
+          status: "error",
+          message: `Não foi possível resolver o modelo configurado: "${agent.model}".`,
+          details: "Verifique se o provider/modelo existe ou se o combo selecionado ainda é válido.",
+        })
+      } else {
+        const prov = yield* provider.getProvider(resolved.providerID as any).pipe(Effect.orElseSucceed(() => undefined))
+        if (!prov) {
+          items.push({
+            name: "Modelo LLM",
+            status: "error",
+            message: `Provedor "${resolved.providerID}" não está conectado ou configurado.`,
+            details: "Adicione as chaves de API do provedor em Configurações -> Providers.",
+          })
+        } else {
+          items.push({
+            name: "Modelo LLM",
+            status: "ok",
+            message: `Modelo pronto: ${resolved.providerID}/${resolved.modelID}`,
+          })
+        }
+      }
+
+      // 3. Diretório / Workspace de Sessões
+      const targetDir = agent.channels.find((c) => c.directory)?.directory || (yield* getProjectDirectory())
+      const dirOk = yield* Effect.tryPromise(async () => {
+        try {
+          await fs.access(targetDir)
+          return true
+        } catch {
+          await fs.mkdir(targetDir, { recursive: true })
+          return true
+        }
+      }).pipe(Effect.orElseSucceed(() => false))
+
+      if (dirOk) {
+        items.push({
+          name: "Workspace de Sessões",
+          status: "ok",
+          message: `Diretório centralizado acessível: ${targetDir}`,
+        })
+      } else {
+        items.push({
+          name: "Workspace de Sessões",
+          status: "error",
+          message: `Falha ao acessar o diretório de sessões: ${targetDir}`,
+        })
+      }
+
+      // 4. Canal WhatsApp
+      const waChannel = agent.channels.find((c) => c.type === "whatsapp")
+      if (waChannel) {
+        const waCheck = yield* Effect.promise(async () => {
+          try {
+            const adapter = WhatsApp.buildAdapter(waChannel)
+            const connector = createConnector(adapter)
+            let statusText = "desconhecido"
+            let isOk = false
+            if (connector.capabilities.includes("instance.status")) {
+              const st = await connector.instance.status().catch((err: any) => ({ state: "error", raw: err.message }))
+              statusText = st.state
+              isOk = st.state === "connected" || st.state === "connecting" || st.state === "qr"
+            } else {
+              statusText = "provedor configurado (sem suporte a status direto)"
+              isOk = true
+            }
+            return {
+              name: `WhatsApp (${waChannel.provider})`,
+              status: isOk ? (statusText === "connected" ? ("ok" as const) : ("warning" as const)) : ("error" as const),
+              message: `Status da instância: ${statusText}`,
+              details: waChannel.publicUrl
+                ? `Webhook host: ${waChannel.publicUrl}`
+                : "Webhook host: padrão local",
+            }
+          } catch (cause) {
+            return {
+              name: `WhatsApp (${waChannel.provider})`,
+              status: "error" as const,
+              message: "Falha na conexão com o gateway do WhatsApp.",
+              details: cause instanceof Error ? cause.message : String(cause),
+            }
+          }
+        })
+        items.push(waCheck)
+      }
+
+      // 5. Canal Telegram
+      const tgChannel = agent.channels.find((c) => c.type === "telegram")
+      if (tgChannel) {
+        if (!tgChannel.token) {
+          items.push({
+            name: "Telegram",
+            status: "warning",
+            message: "Canal ativado sem token dedicado (utiliza bot global compartilhado se houver).",
+          })
+        } else {
+          const tgCheck = yield* Effect.promise(async () => {
+            try {
+              const res = await fetch(`https://api.telegram.org/bot${tgChannel.token}/getMe`, { signal: AbortSignal.timeout(5000) })
+              const body = (await res.json().catch(() => ({}))) as any
+              if (body?.ok && body?.result?.username) {
+                return {
+                  name: "Telegram",
+                  status: "ok" as const,
+                  message: `Bot conectado: @${body.result.username} (${body.result.first_name})`,
+                }
+              }
+              return {
+                name: "Telegram",
+                status: "error" as const,
+                message: "Token inválido ou rejeitado pela API do Telegram.",
+                details: body?.description || `HTTP ${res.status}`,
+              }
+            } catch (cause) {
+              return {
+                name: "Telegram",
+                status: "error" as const,
+                message: "Falha de rede ao conectar com a API do Telegram.",
+                details: cause instanceof Error ? cause.message : String(cause),
+              }
+            }
+          })
+          items.push(tgCheck)
+        }
+      }
+
+      return {
+        agentId: agent.id,
+        agentName: agent.name,
+        enabled: agent.enabled !== false,
+        items,
+      } satisfies AgentUIDiagnoseResult
+    })
+
     return Service.of({
       getProjectDirectory,
       list,
@@ -691,6 +866,7 @@ const layer = Layer.effect(
       logAudit,
       listAudit,
       generateDraft,
+      diagnose,
     })
   }),
 )

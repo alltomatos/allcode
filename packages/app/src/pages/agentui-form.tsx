@@ -23,6 +23,7 @@ import { formatServerError } from "@/utils/server-errors"
 import { GlobalLoading } from "@/components/global-loading"
 import { ModelPickerV2 } from "@/components/batuta/model-picker-v2"
 import { DialogAgentUISandbox } from "@/components/settings-v2/dialog-agentui-sandbox"
+import { DialogAgentUIDiagnose } from "@/components/settings-v2/dialog-agentui-diagnose"
 import {
   WHATSAPP_PROVIDER_FIELDS,
   WHATSAPP_PROVIDER_LABELS,
@@ -438,6 +439,18 @@ export function AgentUIFormPage() {
     dialog.push(() => <DialogAgentUISandbox agentID={form.id} agentName={form.name || "—"} directory={directory()} />)
   }
 
+  const openDiagnose = () => {
+    if (!everSaved()) return
+    dialog.push(() => (
+      <DialogAgentUIDiagnose
+        agentID={form.id}
+        agentName={form.name || "—"}
+        directory={directory()}
+        onOpenSandbox={openSandbox}
+      />
+    ))
+  }
+
   const title = createMemo(() =>
     isEdit ? language.t("settings.agentui.form.title.edit") : language.t("settings.agentui.form.title.create"),
   )
@@ -533,6 +546,19 @@ export function AgentUIFormPage() {
           onClick={() => navigate("/agentui")}
         />
         <span class="flex-1 text-13-medium text-v2-text-text-base">{title()}</span>
+        <TooltipV2
+          placement="bottom"
+          value={everSaved() ? language.t("settings.agentui.diagnose.action") : language.t("settings.agentui.form.testHint")}
+        >
+          <IconButtonV2
+            variant="ghost-muted"
+            size="small"
+            icon={<Icon name="status-active" />}
+            disabled={!everSaved()}
+            aria-label={language.t("settings.agentui.diagnose.action")}
+            onClick={openDiagnose}
+          />
+        </TooltipV2>
         <TooltipV2
           placement="bottom"
           value={everSaved() ? language.t("settings.agentui.sandbox.open") : language.t("settings.agentui.form.testHint")}

@@ -8782,6 +8782,50 @@ export type AgentuiAuditResponses = {
 
 export type AgentuiAuditResponse = AgentuiAuditResponses[keyof AgentuiAuditResponses]
 
+export type AgentuiDiagnoseData = {
+  body?: never
+  path: {
+    id: string
+  }
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/agentui/{id}/diagnose"
+}
+
+export type AgentuiDiagnoseErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * The requested agent was not found
+   */
+  404: AgentUiNotFoundError
+}
+
+export type AgentuiDiagnoseError = AgentuiDiagnoseErrors[keyof AgentuiDiagnoseErrors]
+
+export type AgentuiDiagnoseResponses = {
+  /**
+   * Agent diagnosis results across channels and models
+   */
+  200: {
+    agentId: string
+    agentName: string
+    enabled: boolean
+    items: Array<{
+      name: string
+      status: "ok" | "warning" | "error"
+      message: string
+      details?: string
+    }>
+  }
+}
+
+export type AgentuiDiagnoseResponse = AgentuiDiagnoseResponses[keyof AgentuiDiagnoseResponses]
+
 export type ConfigGetData = {
   body?: never
   path?: never
