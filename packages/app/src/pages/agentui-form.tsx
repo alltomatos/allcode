@@ -166,7 +166,7 @@ export function AgentUIFormPage() {
       personality: agent.personality,
       model: agent.model,
       commandTriggers: agent.commandTriggers.join(" "),
-      ragSources: agent.ragSources.map((s) => ({ id: s.id, kind: s.kind as "text" | "url", label: s.label, value: s.value })),
+      ragSources: (agent.ragSources ?? []).filter(Boolean).map((s) => ({ id: s.id, kind: (s.kind as "text" | "url") || "text", label: s.label || "", value: s.value || "" })),
       guardrailsEnabled: agent.guardrails.enabled,
       guardrailsLevel: agent.guardrails.level,
       telegram: agent.channels.some((c) => c.type === "telegram"),

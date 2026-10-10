@@ -102,7 +102,7 @@ export function SshServerSettings(props: {
       <For each={props.servers()}>
         {(item) => {
           const key = ServerConnection.Key.make(`ssh:${item.config.host}`)
-          const retryable = item.runtime.kind === "failed" || item.runtime.kind === "stopped"
+          const retryable = item?.runtime && (item.runtime.kind === "failed" || item.runtime.kind === "stopped")
           const name = () => server.getDisplayName(key) ?? item.config.label ?? item.config.host
           const health = () => props.controller.status()[key]
           return (
@@ -124,7 +124,7 @@ export function SshServerSettings(props: {
                     </Show>
                   </span>
                   <span class="settings-v2-servers-meta">
-                    <Show when={item.runtime.kind === "failed"}>
+                    <Show when={item?.runtime?.kind === "failed"}>
                       {(_) => item.runtime.kind === "failed" && item.runtime.message}
                     </Show>
                   </span>

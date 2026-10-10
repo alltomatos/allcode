@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.21.82",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Correção Crítica de Inicialização & Ciclo de Módulos (AgentUI/WhatsApp)",
+              "description": "Corrigida dependência circular entre os módulos AgentUI e WhatsApp que causava falha de desreferenciamento em 'node.kind' durante a inicialização do servidor local no Desktop Electron. Adicionada proteção contra propriedades indefinidas em conexões remotas SSH/WSL e validação de fontes RAG do AgentUI."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.81",
       "highlights": [
         {

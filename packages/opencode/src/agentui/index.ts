@@ -22,7 +22,7 @@ import { type LanguageModelV3 } from "@ai-sdk/provider"
 import { McpCatalog } from "@/mcp/catalog"
 import { Global } from "@opencode-ai/core/global"
 import { createConnector } from "waconector"
-import { WhatsApp } from "@/whatsapp"
+import { buildAdapter } from "@/whatsapp/adapter"
 import path from "node:path"
 import fs from "node:fs/promises"
 
@@ -293,8 +293,9 @@ const layer = Layer.effect(
     }
 
     const readSource = Effect.fn("AgentUI.readSource")(function* (source: ConfigAgentUIV1.RagSource) {
-      if (source.kind === "text") return source.value
-      if (source.kind === "url") {
+      if (!source || !source.kind) return ""
+      if (source.kind === "text") return source.value || ""
+      if (source.kind === "url" && source.value) {
         return yield* Effect.tryPromise(async () => {
           const response = await fetch(source.value, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
           if (!response.ok) throw new Error(`HTTP ${response.status}`)
@@ -769,7 +770,7 @@ const layer = Layer.effect(
       if (waChannel) {
         const waCheck = yield* Effect.promise(async () => {
           try {
-            const adapter = WhatsApp.buildAdapter(waChannel)
+            const adapter = buildAdapter(waChannel)
             const connector = createConnector(adapter)
             let statusText = "desconhecido"
             let isOk = false

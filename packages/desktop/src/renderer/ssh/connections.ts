@@ -2,7 +2,7 @@ import type { SshServersState } from "@opencode-ai/app/ssh-tunnel/types"
 
 export function readySshConnections(state?: SshServersState) {
   return (state?.servers ?? []).flatMap((item) => {
-    if (item.runtime.kind !== "ready") return []
+    if (!item?.runtime || item.runtime.kind !== "ready") return []
     return [
       {
         displayName: item.config.label ?? item.config.host,
