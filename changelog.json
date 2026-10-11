@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.21.83",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AgentUI: Recuperação e Visibilidade de Erros de LLM/Stream e Atualização Dinâmica de Permissões",
+              "description": "Corrigido o tratamento de resposta no AgentUI para capturar mensagens de erro do provedor/modelo (ex.: 'Verify your account to continue', erros de quota ou autenticação), evitando respostas em branco silenciosas ('(sem resposta)'); sincronização automática de permissões atualizadas (MCPs e ferramentas) para sessões de chat já existentes; e teste aprofundado com getModel e InstanceRef no diagnóstico do modelo."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.82",
       "highlights": [
         {

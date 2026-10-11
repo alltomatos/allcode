@@ -16,7 +16,7 @@ import { InstanceRef } from "@/effect/instance-ref"
 import { SessionID } from "@/session/schema"
 import { Provider } from "@/provider/provider"
 import { Storage } from "@/storage/storage"
-import { Context, Effect, Layer, Schema } from "effect"
+import { Context, Effect, Layer, Schema, Cause, Exit } from "effect"
 import { jsonSchema, streamText, tool } from "ai"
 import { type LanguageModelV3 } from "@ai-sdk/provider"
 import { McpCatalog } from "@/mcp/catalog"
@@ -456,11 +456,19 @@ const layer = Layer.effect(
     })
 
     function extractText(result: SessionV1.WithParts): string {
-      return result.parts
+      const texts = result.parts
         .filter((part): part is SessionV1.TextPart => part.type === "text")
         .map((part) => part.text)
         .join("\n")
         .trim()
+      if (texts) return texts
+
+      // Se não gerou texto normal, verifica se o assistente registrou um erro no modelo/stream
+      if ("error" in result.info && result.info.error && typeof result.info.error === "object") {
+        const err = result.info.error as { message?: string }
+        if (err.message) return `⚠️ Erro no modelo: ${err.message}`
+      }
+      return ""
     }
 
     // One session per (agent, chatKey) pair — the sandbox test chat uses a
@@ -520,21 +528,26 @@ const layer = Layer.effect(
       const targetDirectory = input.directory || (yield* getProjectDirectory())
       const ctx = yield* instanceStore.load({ directory: targetDirectory })
       const sessionKey = `${input.id}:${input.chatKey}`
+      const permissions = sessionPermission(
+        agent.mcpServers,
+        agent.routinesEnabled,
+        agent.agendaEnabled,
+        agent.memoryEnabled,
+        agent.filesystemEnabled,
+        agent.terminalEnabled,
+      )
       const sessionID = yield* Effect.gen(function* () {
         const existing = channelSessions.get(sessionKey)
-        if (existing) return existing
+        if (existing) {
+          // Garante que permissões atualizadas do agente (ex: novos MCPs adicionados) sejam refletidas na sessão existente
+          yield* sessions.setPermission({ sessionID: SessionID.make(existing), permission: permissions }).pipe(Effect.ignore)
+          return existing
+        }
         const session = yield* sessions
           .create({
             title: `${agent.name}: ${input.chatKey}`,
             directory: targetDirectory,
-            permission: sessionPermission(
-              agent.mcpServers,
-              agent.routinesEnabled,
-              agent.agendaEnabled,
-              agent.memoryEnabled,
-              agent.filesystemEnabled,
-              agent.terminalEnabled,
-            ),
+            permission: permissions,
           })
           .pipe(Effect.provideService(InstanceRef, ctx))
         channelSessions.set(sessionKey, session.id)
@@ -572,7 +585,7 @@ const layer = Layer.effect(
         })),
       ]
 
-      const reply = yield* promptSvc
+      const promptResult = yield* promptSvc
         .prompt({
           sessionID: SessionID.make(sessionID),
           model,
@@ -580,14 +593,32 @@ const layer = Layer.effect(
           parts: promptParts,
         })
         .pipe(
-          Effect.map((result) => extractText(result) || "(sem resposta)"),
           Effect.provideService(InstanceRef, ctx),
-          Effect.catch((cause) =>
-            Effect.logError("agentui channel prompt failed", { id: input.id, chatKey: input.chatKey, cause }).pipe(
-              Effect.as(`⚠️ ${cause instanceof Error ? cause.message : String(cause)}`),
-            ),
-          ),
+          Effect.catchCause((cause) => {
+            const err = Cause.squash(cause)
+            const message = err instanceof Error ? err.message : String(err)
+            return Effect.logError("agentui channel prompt failed", { id: input.id, chatKey: input.chatKey, cause: message }).pipe(
+              Effect.as(undefined),
+            )
+          }),
         )
+
+      let reply = promptResult ? extractText(promptResult) : ""
+      if (!reply) {
+        // Se a chamada direta não retornou texto (ou teve erro capturado), busca a última mensagem de assistente persistida na sessão
+        const history = yield* sessions.messages({ sessionID: SessionID.make(sessionID), limit: 5 }).pipe(
+          Effect.orElseSucceed(() => [] as SessionV1.WithParts[]),
+        )
+        const lastAsst = history.findLast((m) => m.info.role === "assistant")
+        if (lastAsst) {
+          reply = extractText(lastAsst)
+          if (!reply && "error" in lastAsst.info && lastAsst.info.error) {
+            const errObj = lastAsst.info.error as { message?: string }
+            if (errObj.message) reply = `⚠️ ${errObj.message}`
+          }
+        }
+      }
+      if (!reply) reply = "(sem resposta)"
       yield* logAudit(input.id, { channel, chatKey: input.chatKey, incoming: input.message, outgoing: reply, blocked: false })
       return { reply, blocked: false }
     })
@@ -722,19 +753,32 @@ const layer = Layer.effect(
           details: "Verifique se o provider/modelo existe ou se o combo selecionado ainda é válido.",
         })
       } else {
-        const prov = yield* provider.getProvider(resolved.providerID as any).pipe(Effect.orElseSucceed(() => undefined))
-        if (!prov) {
-          items.push({
-            name: "Modelo LLM",
-            status: "error",
-            message: `Provedor "${resolved.providerID}" não está conectado ou configurado.`,
-            details: "Adicione as chaves de API do provedor em Configurações -> Providers.",
-          })
-        } else {
+        const modelCheck = yield* Effect.gen(function* () {
+          const targetDir = agent.channels.find((c) => c.directory)?.directory || (yield* getProjectDirectory())
+          const ctx = yield* instanceStore.load({ directory: targetDir })
+          return yield* provider.getModel(
+            ProviderV2.ID.make(resolved.providerID),
+            ModelV2.ID.make(resolved.modelID),
+          ).pipe(
+            Effect.provideService(InstanceRef, ctx),
+            Effect.exit,
+          )
+        })
+
+        if (Exit.isSuccess(modelCheck)) {
           items.push({
             name: "Modelo LLM",
             status: "ok",
-            message: `Modelo pronto: ${resolved.providerID}/${resolved.modelID}`,
+            message: `Modelo pronto e conectado: ${resolved.providerID}/${resolved.modelID}`,
+          })
+        } else {
+          const err = Cause.squash(modelCheck.cause)
+          const message = err instanceof Error ? err.message : String(err)
+          items.push({
+            name: "Modelo LLM",
+            status: "error",
+            message: `Falha no modelo "${resolved.providerID}/${resolved.modelID}": ${message}`,
+            details: "Verifique se o provider está conectado, se a quota/chaves estão válidas ou se a conta do provedor exige verificação/re-autenticação.",
           })
         }
       }
