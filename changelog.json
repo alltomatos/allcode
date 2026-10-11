@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.21.85",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AgentUI Studio: Redesign Completo em Abas e Gestão Aprimorada de Canais (UI/UX Pro Max)",
+              "description": "Implementada a nova arquitetura do AgentUI Studio baseada no UI/UX Pro Max com layout responsivo de largura ampla (max 1240px) dividido em abas modulares (Geral, Personalidade & IA, Canais, Ferramentas, Conhecimento). Na aba de Canais, incorporados botões de atualização em tempo real para 'Buscar Sessões ⟳' e 'Buscar Grupos ⟳' com checkboxes intuitivos e contagem de participantes, além de cards modernos para Webhook, Telegram e Diagnóstico Rápido."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.84",
       "highlights": [
         {
