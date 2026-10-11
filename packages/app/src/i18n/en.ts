@@ -992,6 +992,7 @@ export const dict = {
   "settings.agentui.ai.generating": "Generating…",
   "settings.agentui.ai.toast.generated": "Draft generated — review before saving",
   "settings.agentui.tabs.general": "General",
+  "settings.agentui.tabs.personality": "Personality & AI",
   "settings.agentui.tabs.channels": "Channels",
   "settings.agentui.tabs.tools": "Tools",
   "settings.agentui.tabs.knowledge": "Knowledge",

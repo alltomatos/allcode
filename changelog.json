@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.21.84",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AgentUI: Redesign em Abas Horizontais (UI/UX Pro Max)",
+              "description": "Reformulado o formulário de criação e edição de agentes para uma experiência moderna e organizada em abas de largura completa (Geral, Personalidade & IA, Canais, Ferramentas, Conhecimento), substituindo a antiga coluna lateral estreita por seções bem espaçadas, cartões semânticos e formulários responsivos."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.83",
       "highlights": [
         {

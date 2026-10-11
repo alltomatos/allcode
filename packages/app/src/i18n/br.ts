@@ -965,6 +965,7 @@ export const dict = {
   "settings.agentui.field.telegramToken.hint": "Cole um token do @BotFather para dar a este agente seu próprio bot dedicado do Telegram. Deixe vazio para responder pelo bot compartilhado em Configurações → Integrações, usando o prefixo de comando.",
   "settings.agentui.field.whatsapp": "Responder no WhatsApp",
   "settings.agentui.tabs.general": "Geral",
+  "settings.agentui.tabs.personality": "Personalidade & IA",
   "settings.agentui.tabs.channels": "Canais",
   "settings.agentui.tabs.tools": "Ferramentas",
   "settings.agentui.tabs.knowledge": "Conhecimento",

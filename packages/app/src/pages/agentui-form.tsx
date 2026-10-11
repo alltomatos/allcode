@@ -580,89 +580,45 @@ export function AgentUIFormPage() {
       </div>
 
       <Show when={ready()} fallback={<GlobalLoading size="normal" class="flex-1" />}>
-        <div class="flex min-h-0 flex-1">
-          <ScrollView class="min-h-0 flex-1">
-            <div class="mx-auto flex w-full max-w-[640px] flex-col gap-6 px-3 py-8 lg:px-6">
-              <div class="flex w-full min-w-0 flex-col gap-2 rounded-[8px] border border-v2-border-border-base bg-v2-background-bg-raised p-3">
-                <button
-                  type="button"
-                  class="flex items-center gap-2 text-13-medium text-v2-text-text-base"
-                  onClick={() => setAiOpen((open) => !open)}
-                >
-                  <Icon name="brain" />
-                  {language.t("settings.agentui.ai.title")}
-                  <IconV2 name={aiOpen() ? "chevron-up" : "chevron-down"} class="ml-auto" />
-                </button>
-                <Show when={aiOpen()}>
-                  <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.ai.hint")}</p>
-                  <TextareaV2
-                    class="!w-full self-stretch"
-                    rows={3}
-                    value={aiDescription()}
-                    placeholder={language.t("settings.agentui.ai.placeholder")}
-                    onInput={(event) => setAiDescription(event.currentTarget.value)}
-                  />
-                  <Show when={aiError()}>
-                    <span class="settings-v2-server-dialog-error">{aiError()}</span>
-                  </Show>
-                  <ButtonV2
-                    variant="outline"
-                    disabled={aiGenerating() || !aiDescription().trim()}
-                    onClick={() => void generateWithAI()}
-                  >
-                    {aiGenerating() ? language.t("settings.agentui.ai.generating") : language.t("settings.agentui.ai.generate")}
-                  </ButtonV2>
-                </Show>
-              </div>
-
-              <div class="flex w-full min-w-0 flex-col gap-2">
-                <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.name")}</label>
-                <TextInputV2
-                  type="text"
-                  appearance="large"
-                  class="!w-full self-stretch"
-                  value={form.name}
-                  autofocus={!isEdit}
-                  onInput={(event) => setForm("name", event.currentTarget.value)}
-                />
-              </div>
-
-              <div class="flex w-full min-w-0 flex-col gap-2">
-                <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.personality")}</label>
-                <TextareaV2
-                  class="!w-full self-stretch"
-                  rows={16}
-                  value={form.personality}
-                  onInput={(event) => setForm("personality", event.currentTarget.value)}
-                />
-              </div>
-
-              <Show when={error()}>
-                <span class="settings-v2-server-dialog-error">{error()}</span>
-              </Show>
-            </div>
-          </ScrollView>
-
-          <div class="flex min-h-0 w-[420px] shrink-0 flex-col border-l border-v2-border-border-base">
-            <TabsV2 defaultValue="general" class="flex min-h-0 flex-1 flex-col">
+        <div class="flex min-h-0 flex-1 flex-col">
+          <TabsV2 defaultValue="general" class="flex min-h-0 flex-1 flex-col">
+            <div class="border-b border-v2-border-border-base bg-v2-background-bg-layer-01/40 px-3">
               <TabsV2.List>
                 <TabsV2.Trigger value="general">{language.t("settings.agentui.tabs.general")}</TabsV2.Trigger>
+                <TabsV2.Trigger value="personality">{language.t("settings.agentui.tabs.personality")}</TabsV2.Trigger>
                 <TabsV2.Trigger value="channels">{language.t("settings.agentui.tabs.channels")}</TabsV2.Trigger>
                 <TabsV2.Trigger value="tools">{language.t("settings.agentui.tabs.tools")}</TabsV2.Trigger>
                 <TabsV2.Trigger value="knowledge">{language.t("settings.agentui.tabs.knowledge")}</TabsV2.Trigger>
               </TabsV2.List>
+            </div>
 
-              <ScrollView class="min-h-0 flex-1">
+            <ScrollView class="min-h-0 flex-1">
+              <div class="mx-auto flex w-full max-w-[800px] flex-col gap-6 px-4 py-8 lg:px-8">
                 <TabsV2.Content value="general">
-                  <div class="flex w-full flex-col gap-5 px-4 py-6">
-                    <div class="flex items-center justify-between">
-                      <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.enabled")}</label>
+                  <div class="flex w-full flex-col gap-6">
+                    <div class="flex w-full min-w-0 flex-col gap-2">
+                      <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.name")}</label>
+                      <TextInputV2
+                        type="text"
+                        appearance="large"
+                        class="!w-full self-stretch"
+                        value={form.name}
+                        autofocus={!isEdit}
+                        onInput={(event) => setForm("name", event.currentTarget.value)}
+                      />
+                    </div>
+
+                    <div class="flex items-center justify-between rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
+                      <div>
+                        <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.enabled")}</label>
+                        <p class="text-11-regular text-v2-text-text-muted mt-0.5">Controla se o agente está ativo para receber interações.</p>
+                      </div>
                       <Switch checked={form.enabled} onChange={(checked) => setForm("enabled", checked)} />
                     </div>
 
-                    <div class="flex flex-col gap-1.5">
+                    <div class="flex flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
                       <div class="flex items-center justify-between">
-                        <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.model")}</label>
+                        <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.model")}</label>
                         <label class="flex items-center gap-1.5 text-11-regular text-v2-text-text-muted cursor-pointer hover:text-v2-text-text-base transition-colors">
                           <input
                             type="checkbox"
@@ -683,7 +639,7 @@ export function AgentUIFormPage() {
                     </div>
 
                     <div class="flex flex-col gap-1.5">
-                      <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.commandTriggers")}</label>
+                      <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.commandTriggers")}</label>
                       <TextInputV2
                         value={form.commandTriggers}
                         onInput={(event) => setForm("commandTriggers", event.currentTarget.value)}
@@ -691,391 +647,469 @@ export function AgentUIFormPage() {
                       />
                     </div>
 
-                    <div class="flex items-center justify-between">
-                      <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.guardrails")}</label>
-                      <Switch checked={form.guardrailsEnabled} onChange={(checked) => setForm("guardrailsEnabled", checked)} />
-                    </div>
-                    <Show when={form.guardrailsEnabled}>
-                      <div class="flex flex-col gap-1.5">
-                        <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.guardrailsLevel")}</label>
-                        <select
-                          class="h-8 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2 text-13-regular"
-                          value={form.guardrailsLevel}
-                          onChange={(event) => setForm("guardrailsLevel", event.currentTarget.value as "basic" | "strict")}
-                        >
-                          <option value="basic">{language.t("settings.agentui.guardrails.basic")}</option>
-                          <option value="strict">{language.t("settings.agentui.guardrails.strict")}</option>
-                        </select>
+                    <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
+                      <div class="flex items-center justify-between">
+                        <div>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.guardrails")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">Proteção automática contra tentativas de injeção de prompt.</p>
+                        </div>
+                        <Switch checked={form.guardrailsEnabled} onChange={(checked) => setForm("guardrailsEnabled", checked)} />
                       </div>
+                      <Show when={form.guardrailsEnabled}>
+                        <div class="flex flex-col gap-1.5 border-t border-v2-border-border-base pt-3">
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.guardrailsLevel")}</label>
+                          <select
+                            class="h-8 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2 text-13-regular text-v2-text-text-base"
+                            value={form.guardrailsLevel}
+                            onChange={(event) => setForm("guardrailsLevel", event.currentTarget.value as "basic" | "strict")}
+                          >
+                            <option value="basic">{language.t("settings.agentui.guardrails.basic")}</option>
+                            <option value="strict">{language.t("settings.agentui.guardrails.strict")}</option>
+                          </select>
+                        </div>
+                      </Show>
+                    </div>
+
+                    <Show when={error()}>
+                      <span class="settings-v2-server-dialog-error">{error()}</span>
                     </Show>
                   </div>
                 </TabsV2.Content>
 
-                <TabsV2.Content value="channels">
-                  <div class="flex w-full flex-col gap-5 px-4 py-6">
-                    <div class="flex flex-col gap-1.5">
-                      <div class="flex items-center justify-between">
-                        <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.telegram")}</label>
-                        <Switch checked={form.telegram} onChange={(checked) => setForm("telegram", checked)} />
-                      </div>
-                      <Show when={form.telegram}>
-                        <TextInputV2
-                          value={form.telegramToken}
-                          onInput={(event) => setForm("telegramToken", event.currentTarget.value)}
-                          placeholder={language.t("settings.agentui.field.telegramToken.placeholder")}
+                <TabsV2.Content value="personality">
+                  <div class="flex w-full flex-col gap-6">
+                    <div class="flex w-full min-w-0 flex-col gap-2 rounded-[8px] border border-v2-border-border-base bg-v2-background-bg-raised p-3.5">
+                      <button
+                        type="button"
+                        class="flex items-center gap-2 text-13-medium text-v2-text-text-base"
+                        onClick={() => setAiOpen((open) => !open)}
+                      >
+                        <Icon name="brain" />
+                        {language.t("settings.agentui.ai.title")}
+                        <IconV2 name={aiOpen() ? "chevron-up" : "chevron-down"} class="ml-auto" />
+                      </button>
+                      <Show when={aiOpen()}>
+                        <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.ai.hint")}</p>
+                        <TextareaV2
+                          class="!w-full self-stretch"
+                          rows={3}
+                          value={aiDescription()}
+                          placeholder={language.t("settings.agentui.ai.placeholder")}
+                          onInput={(event) => setAiDescription(event.currentTarget.value)}
                         />
-                        <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.field.telegramToken.hint")}</p>
+                        <Show when={aiError()}>
+                          <span class="settings-v2-server-dialog-error">{aiError()}</span>
+                        </Show>
+                        <ButtonV2
+                          variant="outline"
+                          disabled={aiGenerating() || !aiDescription().trim()}
+                          onClick={() => void generateWithAI()}
+                        >
+                          {aiGenerating() ? language.t("settings.agentui.ai.generating") : language.t("settings.agentui.ai.generate")}
+                        </ButtonV2>
                       </Show>
                     </div>
 
-                    <div class="flex flex-col gap-1.5">
+                    <div class="flex w-full min-w-0 flex-col gap-2">
+                      <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.personality")}</label>
+                      <p class="text-11-regular text-v2-text-text-muted">
+                        Defina o papel, comportamento, tom de voz e diretrizes de como o agente deve responder aos contatos.
+                      </p>
+                      <TextareaV2
+                        class="!w-full self-stretch"
+                        rows={16}
+                        value={form.personality}
+                        onInput={(event) => setForm("personality", event.currentTarget.value)}
+                      />
+                    </div>
+                  </div>
+                </TabsV2.Content>
+
+                <TabsV2.Content value="channels">
+                  <div class="flex w-full flex-col gap-6">
+                    <div class="flex flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
                       <div class="flex items-center justify-between">
-                        <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.whatsapp")}</label>
+                        <div>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.telegram")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">Conecte um bot do Telegram com token dedicado.</p>
+                        </div>
+                        <Switch checked={form.telegram} onChange={(checked) => setForm("telegram", checked)} />
+                      </div>
+                      <Show when={form.telegram}>
+                        <div class="flex flex-col gap-1.5 border-t border-v2-border-border-base pt-3">
+                          <TextInputV2
+                            value={form.telegramToken}
+                            onInput={(event) => setForm("telegramToken", event.currentTarget.value)}
+                            placeholder={language.t("settings.agentui.field.telegramToken.placeholder")}
+                          />
+                          <p class="text-11-regular text-v2-text-text-muted">{language.t("settings.agentui.field.telegramToken.hint")}</p>
+                        </div>
+                      </Show>
+                    </div>
+
+                    <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
+                      <div class="flex items-center justify-between">
+                        <div>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.whatsapp")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">Integração oficial ou gateways de WhatsApp (WAHA, Evolution, Z-API, Izapia).</p>
+                        </div>
                         <Switch checked={form.whatsapp} onChange={(checked) => setForm("whatsapp", checked)} />
                       </div>
                       <Show when={form.whatsapp}>
-                        <select
-                          class="h-8 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2 text-13-regular"
-                          value={form.whatsappProvider}
-                          onChange={(event) => {
-                            setForm({
-                              whatsappProvider: event.currentTarget.value as WhatsAppProvider,
-                              whatsappConfig: {},
-                              whatsappSessionIds: [],
-                              whatsappAllowedGroups: [],
-                            })
-                            setIzapiaSessions([])
-                            setIzapiaSessionsError(undefined)
-                            setIzapiaGroups([])
-                            setIzapiaGroupsError(undefined)
-                          }}
-                        >
-                          <For each={Object.entries(WHATSAPP_PROVIDER_LABELS)}>
-                            {([value, label]) => <option value={value}>{label}</option>}
-                          </For>
-                        </select>
-                        <Show when={WHATSAPP_PROVIDER_LINKS[form.whatsappProvider]}>
-                          {(url) => (
-                            <a
-                              href={url()}
-                              target="_blank"
-                              rel="noreferrer"
-                              class="text-11-regular text-v2-text-text-accent underline"
-                            >
-                              {language.t("settings.agentui.field.whatsapp.providerLink", {
-                                provider: WHATSAPP_PROVIDER_LABELS[form.whatsappProvider],
-                              })}
-                            </a>
-                          )}
-                        </Show>
-                        <For each={WHATSAPP_PROVIDER_FIELDS[form.whatsappProvider]}>
-                          {(field) => (
-                            <TextInputV2
-                              value={form.whatsappConfig[field.key] ?? ""}
-                              onInput={(event) =>
-                                setForm("whatsappConfig", (cfg) => ({ ...cfg, [field.key]: event.currentTarget.value }))
-                              }
-                              placeholder={field.label + (field.required ? "" : ` (${language.t("common.optional")})`)}
-                            />
-                          )}
-                        </For>
-                        <Show when={form.whatsappProvider === "izapia"}>
-                          <div class="flex flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3">
-                            <div class="flex items-center justify-between">
-                              <label class="settings-v2-server-dialog-label font-medium">
-                                {language.t("settings.agentui.field.whatsapp.izapiaSessions.label")}
-                              </label>
-                              <ButtonV2
-                                variant="outline"
-                                size="small"
-                                disabled={!form.whatsappConfig.apiKey?.trim() || izapiaSessionsLoading()}
-                                onClick={() => void fetchIzapiaSessions({ force: true })}
-                              >
-                                {izapiaSessionsLoading()
-                                  ? language.t("settings.agentui.field.whatsapp.izapiaSessions.loading")
-                                  : language.t("settings.agentui.field.whatsapp.izapiaSessions.fetch")}
-                              </ButtonV2>
-                            </div>
-                            <Show when={izapiaSessionsError()}>
-                              <span class="settings-v2-server-dialog-error">{izapiaSessionsError()}</span>
-                            </Show>
-                            <Show when={izapiaSessions().length > 0}>
-                              <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
-                                <For each={izapiaSessions()}>
-                                  {(session) => (
-                                    <label
-                                      class={`
-                                        flex cursor-pointer items-center justify-between gap-2 rounded-md border
-                                        px-3 py-2 text-13-regular transition-colors
-                                        ${
-                                          form.whatsappSessionIds.includes(session.id)
-                                            ? "border-v2-border-border-focus bg-v2-background-bg-layer-01 shadow-sm"
-                                            : "border-v2-border-border-base bg-v2-background-bg-base hover:bg-v2-background-bg-layer-01"
-                                        }
-                                      `}
-                                    >
-                                      <span class="flex min-w-0 items-center gap-2.5">
-                                        <input
-                                          type="checkbox"
-                                          class="rounded border-v2-border-border-base text-v2-primary-primary-base focus:ring-1 focus:ring-v2-border-border-focus"
-                                          checked={form.whatsappSessionIds.includes(session.id)}
-                                          onChange={(event) => toggleIzapiaSession(session.id, event.currentTarget.checked)}
-                                        />
-                                        <span class="truncate font-medium text-v2-text-text-base">
-                                          {session.name || session.jid || session.id}
-                                        </span>
-                                      </span>
-                                      <span class="shrink-0 rounded px-1.5 py-0.5 text-11-regular font-mono bg-v2-surface-surface-base text-v2-text-text-muted border border-v2-border-border-base">
-                                        {session.status}
-                                      </span>
-                                    </label>
-                                  )}
-                                </For>
-                              </div>
-                            </Show>
-                          </div>
-
-                          <div class="flex flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3">
-                            <div class="flex items-center justify-between">
-                              <div>
-                                <label class="settings-v2-server-dialog-label font-medium">
-                                  {language.t("settings.agentui.field.whatsapp.izapiaGroups.label")}
-                                </label>
-                                <p class="text-11-regular text-v2-text-text-muted mt-0.5">
-                                  {language.t("settings.agentui.field.whatsapp.izapiaGroups.hint")}
-                                </p>
-                              </div>
-                              <ButtonV2
-                                variant="outline"
-                                size="small"
-                                disabled={form.whatsappSessionIds.length === 0 || izapiaGroupsLoading()}
-                                onClick={() => void fetchIzapiaGroups({ force: true })}
-                              >
-                                {izapiaGroupsLoading()
-                                  ? language.t("settings.agentui.field.whatsapp.izapiaGroups.loading")
-                                  : language.t("settings.agentui.field.whatsapp.izapiaGroups.fetch")}
-                              </ButtonV2>
-                            </div>
-                            <Show when={izapiaGroupsError()}>
-                              <span class="settings-v2-server-dialog-error">{izapiaGroupsError()}</span>
-                            </Show>
-                            <Show when={izapiaGroups().length > 0}>
-                              <div class="flex flex-col gap-1.5 max-h-56 overflow-y-auto pr-1">
-                                <For each={izapiaGroups()}>
-                                  {(group) => (
-                                    <label
-                                      class={`
-                                        flex cursor-pointer items-center justify-between gap-2 rounded-md border
-                                        px-3 py-2 text-13-regular transition-colors
-                                        ${
-                                          form.whatsappAllowedGroups.includes(group.id)
-                                            ? "border-v2-border-border-focus bg-v2-background-bg-layer-01 shadow-sm"
-                                            : "border-v2-border-border-base bg-v2-background-bg-base hover:bg-v2-background-bg-layer-01"
-                                        }
-                                      `}
-                                    >
-                                      <span class="flex min-w-0 items-center gap-2.5">
-                                        <input
-                                          type="checkbox"
-                                          class="rounded border-v2-border-border-base text-v2-primary-primary-base focus:ring-1 focus:ring-v2-border-border-focus"
-                                          checked={form.whatsappAllowedGroups.includes(group.id)}
-                                          onChange={(event) => toggleIzapiaGroup(group.id, event.currentTarget.checked)}
-                                        />
-                                        <span class="truncate font-medium text-v2-text-text-base">{group.subject}</span>
-                                      </span>
-                                      <span class="shrink-0 rounded px-1.5 py-0.5 text-11-regular font-mono bg-v2-surface-surface-base text-v2-text-text-muted border border-v2-border-border-base">
-                                        {group.participantCount}
-                                      </span>
-                                    </label>
-                                  )}
-                                </For>
-                              </div>
-                            </Show>
-                          </div>
-                        </Show>
-
-                        <div class="flex flex-col gap-1.5">
-                          <label class="settings-v2-server-dialog-label font-medium">
-                            {language.t("settings.agentui.field.whatsapp.allowedSenders.label")}
-                          </label>
-                          <p class="text-11-regular text-v2-text-text-muted">
-                            {language.t("settings.agentui.field.whatsapp.allowedSenders.hint")}
-                          </p>
-                          <TextInputV2
-                            placeholder={language.t("settings.agentui.field.whatsapp.allowedSenders.placeholder")}
-                            value={form.whatsappAllowedSenders}
-                            onInput={(event) => setForm("whatsappAllowedSenders", event.currentTarget.value)}
-                          />
-                        </div>
-
-                        <div class="flex flex-col gap-1.5">
-                          <label class="settings-v2-server-dialog-label font-medium">
-                            {language.t("settings.agentui.field.whatsapp.directory.label")}
-                          </label>
-                          <p class="text-11-regular text-v2-text-text-muted">
-                            {language.t("settings.agentui.field.whatsapp.directory.hint")}
-                          </p>
-                          <select
-                            class="h-8 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2 text-13-regular text-v2-text-text-base"
-                            value={form.whatsappDirectory || ""}
-                            onChange={(event) => setForm("whatsappDirectory", event.currentTarget.value || undefined)}
-                          >
-                            <option value="">{language.t("settings.agentui.field.whatsapp.directory.default")}</option>
-                            <For each={home.project.list()}>
-                              {(proj) => (
-                                <option value={proj.worktree}>
-                                  {proj.name || proj.worktree}
-                                </option>
-                              )}
-                            </For>
-                          </select>
-                        </div>
-
-                        <p class="text-11-regular text-v2-text-text-muted leading-relaxed">{language.t("settings.agentui.field.whatsapp.hint")}</p>
-                        <Show when={isPrivateServerUrl() && !publicTunnelUrl()}>
-                          <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3">
-                            <div class="flex flex-col gap-2">
-                              <p class="text-11-regular text-v2-text-text-muted leading-relaxed">
-                                {language.t("settings.agentui.field.whatsapp.tunnel.tailscale.hint")}
-                              </p>
-                              <ButtonV2
-                                variant="outline"
-                                size="small"
-                                disabled={tailscaleDetecting()}
-                                onClick={() => void useTailscaleIp()}
-                              >
-                                {tailscaleDetecting()
-                                  ? language.t("settings.agentui.field.whatsapp.tunnel.tailscale.detecting")
-                                  : language.t("settings.agentui.field.whatsapp.tunnel.tailscale.use")}
-                              </ButtonV2>
-                              <Show when={tailscaleError()}>
-                                <span class="settings-v2-server-dialog-error">{tailscaleError()}</span>
-                              </Show>
-                            </div>
-
-                            <div class="flex flex-col gap-2 border-t border-v2-border-border-base pt-2.5">
-                              <p class="text-11-regular text-v2-text-text-muted leading-relaxed">
-                                {language.t("settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.hint")}
-                              </p>
-                              <ButtonV2
-                                variant="outline"
-                                size="small"
-                                disabled={funnelStarting()}
-                                onClick={() => void useTailscaleFunnel()}
-                              >
-                                {funnelStarting()
-                                  ? language.t("settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.starting")
-                                  : language.t("settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.use")}
-                              </ButtonV2>
-                              <Show when={funnelError()}>
-                                <span class="settings-v2-server-dialog-error">{funnelError()}</span>
-                              </Show>
-                            </div>
-                          </div>
-                        </Show>
-                        <Show when={publicTunnelUrl()}>
-                          <div class="flex items-center justify-between gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-2.5">
-                            <span class="text-11-regular text-v2-text-text-accent font-mono break-all select-all">
-                              {language.t("settings.agentui.field.whatsapp.tunnel.active", { url: publicTunnelUrl()! })}
-                            </span>
-                            <ButtonV2
-                              variant="ghost"
-                              size="small"
-                              class="shrink-0"
-                              onClick={() => {
-                                setPublicTunnelUrl(undefined)
-                                setForm("whatsappPublicUrl", undefined)
+                        <div class="flex flex-col gap-4 border-t border-v2-border-border-base pt-3">
+                          <div class="flex flex-col gap-1.5">
+                            <label class="settings-v2-server-dialog-label font-medium">Provedor de Conexão</label>
+                            <select
+                              class="h-8 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2 text-13-regular text-v2-text-text-base"
+                              value={form.whatsappProvider}
+                              onChange={(event) => {
+                                setForm({
+                                  whatsappProvider: event.currentTarget.value as WhatsAppProvider,
+                                  whatsappConfig: {},
+                                  whatsappSessionIds: [],
+                                  whatsappAllowedGroups: [],
+                                })
+                                setIzapiaSessions([])
+                                setIzapiaSessionsError(undefined)
+                                setIzapiaGroups([])
+                                setIzapiaGroupsError(undefined)
                               }}
                             >
-                              {language.t("settings.agentui.field.whatsapp.tunnel.clear")}
-                            </ButtonV2>
+                              <For each={Object.entries(WHATSAPP_PROVIDER_LABELS)}>
+                                {([value, label]) => <option value={value}>{label}</option>}
+                              </For>
+                            </select>
                           </div>
-                        </Show>
-                        <Show
-                          when={whatsappWebhookUrl()}
-                          fallback={
-                            <p class="text-11-regular text-v2-text-text-muted">
-                              {language.t("settings.agentui.field.whatsapp.webhookAfterSave")}
-                            </p>
-                          }
-                        >
-                          {(url) => (
-                            <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/30 p-3">
+                          <Show when={WHATSAPP_PROVIDER_LINKS[form.whatsappProvider]}>
+                            {(url) => (
+                              <a
+                                href={url()}
+                                target="_blank"
+                                rel="noreferrer"
+                                class="text-11-regular text-v2-text-text-accent underline"
+                              >
+                                {language.t("settings.agentui.field.whatsapp.providerLink", {
+                                  provider: WHATSAPP_PROVIDER_LABELS[form.whatsappProvider],
+                                })}
+                              </a>
+                            )}
+                          </Show>
+                          <For each={WHATSAPP_PROVIDER_FIELDS[form.whatsappProvider]}>
+                            {(field) => (
                               <div class="flex flex-col gap-1.5">
-                                <label class="settings-v2-server-dialog-label font-medium">
-                                  {language.t("settings.agentui.field.whatsapp.webhookUrl")}
-                                </label>
+                                <label class="settings-v2-server-dialog-label font-medium">{field.label}</label>
                                 <TextInputV2
-                                  value={url()}
-                                  readOnly
-                                  showCopyButton
-                                  class="!w-full self-stretch"
-                                  onCopyClick={() => {
-                                    void navigator.clipboard?.writeText(url())
-                                    showToast({ variant: "success", icon: "circle-check", title: "URL do Webhook copiada!" })
-                                  }}
+                                  value={form.whatsappConfig[field.key] ?? ""}
+                                  onInput={(event) =>
+                                    setForm("whatsappConfig", (cfg) => ({ ...cfg, [field.key]: event.currentTarget.value }))
+                                  }
+                                  placeholder={field.label + (field.required ? "" : ` (${language.t("common.optional")})`)}
                                 />
                               </div>
-                              <div class="flex flex-col gap-1.5">
+                            )}
+                          </For>
+                          <Show when={form.whatsappProvider === "izapia"}>
+                            <div class="flex flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3">
+                              <div class="flex items-center justify-between">
                                 <label class="settings-v2-server-dialog-label font-medium">
-                                  {language.t("settings.agentui.field.whatsapp.webhookSecret")}
+                                  {language.t("settings.agentui.field.whatsapp.izapiaSessions.label")}
                                 </label>
-                                <TextInputV2
-                                  value={form.whatsappWebhookSecret}
-                                  readOnly
-                                  showCopyButton
-                                  class="!w-full self-stretch"
-                                  onCopyClick={() => {
-                                    void navigator.clipboard?.writeText(form.whatsappWebhookSecret)
-                                    showToast({ variant: "success", icon: "circle-check", title: "Secret copiado!" })
-                                  }}
-                                />
+                                <ButtonV2
+                                  variant="outline"
+                                  size="small"
+                                  disabled={!form.whatsappConfig.apiKey?.trim() || izapiaSessionsLoading()}
+                                  onClick={() => void fetchIzapiaSessions({ force: true })}
+                                >
+                                  {izapiaSessionsLoading()
+                                    ? language.t("settings.agentui.field.whatsapp.izapiaSessions.loading")
+                                    : language.t("settings.agentui.field.whatsapp.izapiaSessions.fetch")}
+                                </ButtonV2>
+                              </div>
+                              <Show when={izapiaSessionsError()}>
+                                <span class="settings-v2-server-dialog-error">{izapiaSessionsError()}</span>
+                              </Show>
+                              <Show when={izapiaSessions().length > 0}>
+                                <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
+                                  <For each={izapiaSessions()}>
+                                    {(session) => (
+                                      <label
+                                        class={`
+                                          flex cursor-pointer items-center justify-between gap-2 rounded-md border
+                                          px-3 py-2 text-13-regular transition-colors
+                                          ${
+                                            form.whatsappSessionIds.includes(session.id)
+                                              ? "border-v2-border-border-focus bg-v2-background-bg-layer-01 shadow-sm"
+                                              : "border-v2-border-border-base bg-v2-background-bg-base hover:bg-v2-background-bg-layer-01"
+                                          }
+                                        `}
+                                      >
+                                        <span class="flex min-w-0 items-center gap-2.5">
+                                          <input
+                                            type="checkbox"
+                                            class="rounded border-v2-border-border-base text-v2-primary-primary-base focus:ring-1 focus:ring-v2-border-border-focus"
+                                            checked={form.whatsappSessionIds.includes(session.id)}
+                                            onChange={(event) => toggleIzapiaSession(session.id, event.currentTarget.checked)}
+                                          />
+                                          <span class="truncate font-medium text-v2-text-text-base">
+                                            {session.name || session.jid || session.id}
+                                          </span>
+                                        </span>
+                                        <span class="shrink-0 rounded px-1.5 py-0.5 text-11-regular font-mono bg-v2-surface-surface-base text-v2-text-text-muted border border-v2-border-border-base">
+                                          {session.status}
+                                        </span>
+                                      </label>
+                                    )}
+                                  </For>
+                                </div>
+                              </Show>
+                            </div>
+
+                            <div class="flex flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3">
+                              <div class="flex items-center justify-between">
+                                <div>
+                                  <label class="settings-v2-server-dialog-label font-medium">
+                                    {language.t("settings.agentui.field.whatsapp.izapiaGroups.label")}
+                                  </label>
+                                  <p class="text-11-regular text-v2-text-text-muted mt-0.5">
+                                    {language.t("settings.agentui.field.whatsapp.izapiaGroups.hint")}
+                                  </p>
+                                </div>
+                                <ButtonV2
+                                  variant="outline"
+                                  size="small"
+                                  disabled={form.whatsappSessionIds.length === 0 || izapiaGroupsLoading()}
+                                  onClick={() => void fetchIzapiaGroups({ force: true })}
+                                >
+                                  {izapiaGroupsLoading()
+                                    ? language.t("settings.agentui.field.whatsapp.izapiaGroups.loading")
+                                    : language.t("settings.agentui.field.whatsapp.izapiaGroups.fetch")}
+                                </ButtonV2>
+                              </div>
+                              <Show when={izapiaGroupsError()}>
+                                <span class="settings-v2-server-dialog-error">{izapiaGroupsError()}</span>
+                              </Show>
+                              <Show when={izapiaGroups().length > 0}>
+                                <div class="flex flex-col gap-1.5 max-h-56 overflow-y-auto pr-1">
+                                  <For each={izapiaGroups()}>
+                                    {(group) => (
+                                      <label
+                                        class={`
+                                          flex cursor-pointer items-center justify-between gap-2 rounded-md border
+                                          px-3 py-2 text-13-regular transition-colors
+                                          ${
+                                            form.whatsappAllowedGroups.includes(group.id)
+                                              ? "border-v2-border-border-focus bg-v2-background-bg-layer-01 shadow-sm"
+                                              : "border-v2-border-border-base bg-v2-background-bg-base hover:bg-v2-background-bg-layer-01"
+                                          }
+                                        `}
+                                      >
+                                        <span class="flex min-w-0 items-center gap-2.5">
+                                          <input
+                                            type="checkbox"
+                                            class="rounded border-v2-border-border-base text-v2-primary-primary-base focus:ring-1 focus:ring-v2-border-border-focus"
+                                            checked={form.whatsappAllowedGroups.includes(group.id)}
+                                            onChange={(event) => toggleIzapiaGroup(group.id, event.currentTarget.checked)}
+                                          />
+                                          <span class="truncate font-medium text-v2-text-text-base">{group.subject}</span>
+                                        </span>
+                                        <span class="shrink-0 rounded px-1.5 py-0.5 text-11-regular font-mono bg-v2-surface-surface-base text-v2-text-text-muted border border-v2-border-border-base">
+                                          {group.participantCount}
+                                        </span>
+                                      </label>
+                                    )}
+                                  </For>
+                                </div>
+                              </Show>
+                            </div>
+                          </Show>
+
+                          <div class="flex flex-col gap-1.5">
+                            <label class="settings-v2-server-dialog-label font-medium">
+                              {language.t("settings.agentui.field.whatsapp.allowedSenders.label")}
+                            </label>
+                            <p class="text-11-regular text-v2-text-text-muted">
+                              {language.t("settings.agentui.field.whatsapp.allowedSenders.hint")}
+                            </p>
+                            <TextInputV2
+                              placeholder={language.t("settings.agentui.field.whatsapp.allowedSenders.placeholder")}
+                              value={form.whatsappAllowedSenders}
+                              onInput={(event) => setForm("whatsappAllowedSenders", event.currentTarget.value)}
+                            />
+                          </div>
+
+                          <div class="flex flex-col gap-1.5">
+                            <label class="settings-v2-server-dialog-label font-medium">
+                              {language.t("settings.agentui.field.whatsapp.directory.label")}
+                            </label>
+                            <p class="text-11-regular text-v2-text-text-muted">
+                              {language.t("settings.agentui.field.whatsapp.directory.hint")}
+                            </p>
+                            <select
+                              class="h-8 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2 text-13-regular text-v2-text-text-base"
+                              value={form.whatsappDirectory || ""}
+                              onChange={(event) => setForm("whatsappDirectory", event.currentTarget.value || undefined)}
+                            >
+                              <option value="">{language.t("settings.agentui.field.whatsapp.directory.default")}</option>
+                              <For each={home.project.list()}>
+                                {(proj) => (
+                                  <option value={proj.worktree}>
+                                    {proj.name || proj.worktree}
+                                  </option>
+                                )}
+                              </For>
+                            </select>
+                          </div>
+
+                          <p class="text-11-regular text-v2-text-text-muted leading-relaxed">{language.t("settings.agentui.field.whatsapp.hint")}</p>
+                          <Show when={isPrivateServerUrl() && !publicTunnelUrl()}>
+                            <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3">
+                              <div class="flex flex-col gap-2">
+                                <p class="text-11-regular text-v2-text-text-muted leading-relaxed">
+                                  {language.t("settings.agentui.field.whatsapp.tunnel.tailscale.hint")}
+                                </p>
+                                <ButtonV2
+                                  variant="outline"
+                                  size="small"
+                                  disabled={tailscaleDetecting()}
+                                  onClick={() => void useTailscaleIp()}
+                                >
+                                  {tailscaleDetecting()
+                                    ? language.t("settings.agentui.field.whatsapp.tunnel.tailscale.detecting")
+                                    : language.t("settings.agentui.field.whatsapp.tunnel.tailscale.use")}
+                                </ButtonV2>
+                                <Show when={tailscaleError()}>
+                                  <span class="settings-v2-server-dialog-error">{tailscaleError()}</span>
+                                </Show>
+                              </div>
+
+                              <div class="flex flex-col gap-2 border-t border-v2-border-border-base pt-2.5">
+                                <p class="text-11-regular text-v2-text-text-muted leading-relaxed">
+                                  {language.t("settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.hint")}
+                                </p>
+                                <ButtonV2
+                                  variant="outline"
+                                  size="small"
+                                  disabled={funnelStarting()}
+                                  onClick={() => void useTailscaleFunnel()}
+                                >
+                                  {funnelStarting()
+                                    ? language.t("settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.starting")
+                                    : language.t("settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.use")}
+                                </ButtonV2>
+                                <Show when={funnelError()}>
+                                  <span class="settings-v2-server-dialog-error">{funnelError()}</span>
+                                </Show>
                               </div>
                             </div>
-                          )}
-                        </Show>
+                          </Show>
+                          <Show when={publicTunnelUrl()}>
+                            <div class="flex items-center justify-between gap-2 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-2.5">
+                              <span class="text-11-regular text-v2-text-text-accent font-mono break-all select-all">
+                                {language.t("settings.agentui.field.whatsapp.tunnel.active", { url: publicTunnelUrl()! })}
+                              </span>
+                              <ButtonV2
+                                variant="ghost"
+                                size="small"
+                                class="shrink-0"
+                                onClick={() => {
+                                  setPublicTunnelUrl(undefined)
+                                  setForm("whatsappPublicUrl", undefined)
+                                }}
+                              >
+                                {language.t("settings.agentui.field.whatsapp.tunnel.clear")}
+                              </ButtonV2>
+                            </div>
+                          </Show>
+                          <Show
+                            when={whatsappWebhookUrl()}
+                            fallback={
+                              <p class="text-11-regular text-v2-text-text-muted">
+                                {language.t("settings.agentui.field.whatsapp.webhookAfterSave")}
+                              </p>
+                            }
+                          >
+                            {(url) => (
+                              <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/30 p-3">
+                                <div class="flex flex-col gap-1.5">
+                                  <label class="settings-v2-server-dialog-label font-medium">
+                                    {language.t("settings.agentui.field.whatsapp.webhookUrl")}
+                                  </label>
+                                  <TextInputV2
+                                    value={url()}
+                                    readOnly
+                                    showCopyButton
+                                    class="!w-full self-stretch"
+                                    onCopyClick={() => {
+                                      void navigator.clipboard?.writeText(url())
+                                      showToast({ variant: "success", icon: "circle-check", title: "URL do Webhook copiada!" })
+                                    }}
+                                  />
+                                </div>
+                                <div class="flex flex-col gap-1.5">
+                                  <label class="settings-v2-server-dialog-label font-medium">
+                                    {language.t("settings.agentui.field.whatsapp.webhookSecret")}
+                                  </label>
+                                  <TextInputV2
+                                    value={form.whatsappWebhookSecret}
+                                    readOnly
+                                    showCopyButton
+                                    class="!w-full self-stretch"
+                                    onCopyClick={() => {
+                                      void navigator.clipboard?.writeText(form.whatsappWebhookSecret)
+                                      showToast({ variant: "success", icon: "circle-check", title: "Secret copiado!" })
+                                    }}
+                                  />
+                                </div>
+                              </div>
+                            )}
+                          </Show>
+                        </div>
                       </Show>
                     </div>
                   </div>
                 </TabsV2.Content>
 
                 <TabsV2.Content value="tools">
-                  <div class="flex w-full flex-col gap-3 px-4 py-6">
-                    <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.mcpServers")}</label>
-                    <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.field.mcpServers.hint")}</p>
-                    <Show
-                      when={!mcpServers.loading}
-                      fallback={<p class="text-11-regular text-v2-text-text-faint">{language.t("common.loading")}</p>}
-                    >
+                  <div class="flex w-full flex-col gap-6">
+                    <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
+                      <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.mcpServers")}</label>
+                      <p class="text-11-regular text-v2-text-text-muted">{language.t("settings.agentui.field.mcpServers.hint")}</p>
                       <Show
-                        when={(mcpServers() ?? []).length > 0}
-                        fallback={
-                          <p class="text-11-regular text-v2-text-text-faint">
-                            {directory()
-                              ? language.t("settings.agentui.field.mcpServers.empty")
-                              : language.t("settings.agentui.field.mcpServers.noDirectory")}
-                          </p>
-                        }
+                        when={!mcpServers.loading}
+                        fallback={<p class="text-11-regular text-v2-text-text-faint">{language.t("common.loading")}</p>}
                       >
-                        <For each={mcpServers()}>
-                          {(name) => (
-                            <div class="flex items-center justify-between">
-                              <span class="text-13-regular text-v2-text-text-base">{name}</span>
-                              <Switch
-                                checked={form.mcpServers.includes(name)}
-                                onChange={(checked) => toggleMcpServer(name, checked)}
-                              />
-                            </div>
-                          )}
-                        </For>
+                        <Show
+                          when={(mcpServers() ?? []).length > 0}
+                          fallback={
+                            <p class="text-11-regular text-v2-text-text-faint">
+                              {directory()
+                                ? language.t("settings.agentui.field.mcpServers.empty")
+                                : language.t("settings.agentui.field.mcpServers.noDirectory")}
+                            </p>
+                          }
+                        >
+                          <div class="flex flex-col gap-2">
+                            <For each={mcpServers()}>
+                              {(name) => (
+                                <div class="flex items-center justify-between rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-3 py-2">
+                                  <span class="text-13-regular font-medium text-v2-text-text-base">{name}</span>
+                                  <Switch
+                                    checked={form.mcpServers.includes(name)}
+                                    onChange={(checked) => toggleMcpServer(name, checked)}
+                                  />
+                                </div>
+                              )}
+                            </For>
+                          </div>
+                        </Show>
                       </Show>
-                    </Show>
+                    </div>
 
-                    <div class="mt-4 pt-4 border-t border-v2-border-border-faint flex flex-col gap-3">
+                    <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
                       <div class="flex items-center justify-between">
                         <div>
-                          <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.routines")}</label>
-                          <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.field.routines.hint")}</p>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.routines")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">{language.t("settings.agentui.field.routines.hint")}</p>
                         </div>
                         <Switch
                           checked={form.routinesEnabled}
@@ -1083,10 +1117,10 @@ export function AgentUIFormPage() {
                         />
                       </div>
 
-                      <div class="flex items-center justify-between border-t border-v2-border-border-faint pt-3">
+                      <div class="flex items-center justify-between border-t border-v2-border-border-base pt-3">
                         <div>
-                          <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.agenda")}</label>
-                          <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.field.agenda.hint")}</p>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.agenda")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">{language.t("settings.agentui.field.agenda.hint")}</p>
                         </div>
                         <Switch
                           checked={form.agendaEnabled}
@@ -1094,10 +1128,10 @@ export function AgentUIFormPage() {
                         />
                       </div>
 
-                      <div class="flex items-center justify-between border-t border-v2-border-border-faint pt-3">
+                      <div class="flex items-center justify-between border-t border-v2-border-border-base pt-3">
                         <div>
-                          <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.memory")}</label>
-                          <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.field.memory.hint")}</p>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.memory")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">{language.t("settings.agentui.field.memory.hint")}</p>
                         </div>
                         <Switch
                           checked={form.memoryEnabled}
@@ -1105,10 +1139,10 @@ export function AgentUIFormPage() {
                         />
                       </div>
 
-                      <div class="flex items-center justify-between border-t border-v2-border-border-faint pt-3">
+                      <div class="flex items-center justify-between border-t border-v2-border-border-base pt-3">
                         <div>
-                          <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.filesystem")}</label>
-                          <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.field.filesystem.hint")}</p>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.filesystem")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">{language.t("settings.agentui.field.filesystem.hint")}</p>
                         </div>
                         <Switch
                           checked={form.filesystemEnabled}
@@ -1116,10 +1150,10 @@ export function AgentUIFormPage() {
                         />
                       </div>
 
-                      <div class="flex items-center justify-between border-t border-v2-border-border-faint pt-3">
+                      <div class="flex items-center justify-between border-t border-v2-border-border-base pt-3">
                         <div>
-                          <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.terminal")}</label>
-                          <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.field.terminal.hint")}</p>
+                          <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.terminal")}</label>
+                          <p class="text-11-regular text-v2-text-text-muted mt-0.5">{language.t("settings.agentui.field.terminal.hint")}</p>
                         </div>
                         <Switch
                           checked={form.terminalEnabled}
@@ -1131,14 +1165,15 @@ export function AgentUIFormPage() {
                 </TabsV2.Content>
 
                 <TabsV2.Content value="knowledge">
-                  <div class="flex w-full flex-col gap-5 px-4 py-6">
-                    <div class="flex flex-col gap-2">
-                      <label class="settings-v2-server-dialog-label">{language.t("settings.agentui.field.ragSources")}</label>
+                  <div class="flex w-full flex-col gap-6">
+                    <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3.5">
+                      <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.ragSources")}</label>
+                      <p class="text-11-regular text-v2-text-text-muted">Adicione textos fixos ou URLs externas com informações para enriquecer o contexto do agente.</p>
                       <For each={form.ragSources}>
                         {(source, index) => (
                           <div class="flex items-start gap-2">
                             <TextInputV2
-                              class="w-[100px]"
+                              class="w-[140px]"
                               placeholder={language.t("settings.agentui.rag.label")}
                               value={source.label}
                               onInput={(event) => setForm("ragSources", index(), "label", event.currentTarget.value)}
@@ -1160,17 +1195,16 @@ export function AgentUIFormPage() {
                           </div>
                         )}
                       </For>
-                      <ButtonV2 variant="outline" onClick={addRagSource}>
+                      <ButtonV2 variant="outline" class="self-start" onClick={addRagSource}>
                         {language.t("settings.agentui.rag.add")}
                       </ButtonV2>
-                      <p class="text-11-regular text-v2-text-text-faint">{language.t("settings.agentui.rag.note")}</p>
+                      <p class="text-11-regular text-v2-text-text-muted">{language.t("settings.agentui.rag.note")}</p>
                     </div>
                   </div>
                 </TabsV2.Content>
-
-              </ScrollView>
-            </TabsV2>
-          </div>
+              </div>
+            </ScrollView>
+          </TabsV2>
         </div>
       </Show>
     </div>
