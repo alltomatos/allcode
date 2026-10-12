@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%" style="background:#090a0f; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b0d14"/>
+      <stop offset="100%" stop-color="#07080c"/>
+    </linearGradient>
+    <linearGradient id="primary-btn" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="card-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#181b26"/>
+      <stop offset="100%" stop-color="#12141d"/>
+    </linearGradient>
+    <filter id="shadow-card" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+    <filter id="glow-primary" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#7c3aed" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Left Navigation Rail & Sidebar -->
+  <rect x="0" y="0" width="60" height="1000" fill="#0d0f17"/>
+  <line x1="60" y1="0" x2="60" y2="1000" stroke="#1c2030" stroke-width="1"/>
+  <circle cx="30" cy="30" r="14" fill="#ef4444"/>
+
+  <rect x="60" y="0" width="220" height="1000" fill="#0f111a"/>
+  <line x1="280" y1="0" x2="280" y2="1000" stroke="#1c2030" stroke-width="1"/>
+  <text x="80" y="42" fill="#94a3b8" font-size="12" font-weight="600">MEUS AGENTES</text>
+  
+  <g transform="translate(70, 70)">
+    <rect x="0" y="126" width="200" height="36" rx="6" fill="#1e2235" stroke="#3b4261" stroke-width="1"/>
+    <circle cx="16" cy="144" r="5" fill="#7c3aed" filter="url(#glow-primary)"/>
+    <text x="32" y="148" fill="#f8fafc" font-size="13" font-weight="600">ProH-TI (Ativo)</text>
+  </g>
+
+  <!-- Main Container -->
+  <rect x="280" y="0" width="1320" height="1000" fill="url(#bg-grad)"/>
+
+  <!-- Top App Header -->
+  <g transform="translate(280, 0)">
+    <rect x="0" y="0" width="1320" height="64" fill="#0d0f18"/>
+    <line x1="0" y1="64" x2="1320" y2="64" stroke="#1e2232" stroke-width="1"/>
+    <text x="72" y="38" fill="#ffffff" font-size="17" font-weight="600">Editar Agente · ProH-TI</text>
+    <rect x="280" y="22" width="70" height="20" rx="10" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+    <text x="302" y="36" fill="#6ee7b7" font-size="11" font-weight="600">ONLINE</text>
+
+    <rect x="1204" y="15" width="90" height="34" rx="6" fill="url(#primary-btn)"/>
+    <text x="1232" y="37" fill="#ffffff" font-size="13" font-weight="600">Salvar</text>
+  </g>
+
+  <!-- Tabs Navigation Header -->
+  <g transform="translate(320, 80)">
+    <rect x="0" y="0" width="1240" height="48" rx="8" fill="#11131e" stroke="#1f2334" stroke-width="1"/>
+    <text x="35" y="30" fill="#94a3b8" font-size="13" font-weight="500">Geral</text>
+    
+    <!-- Tab 2: Personalidade & IA (ACTIVE) -->
+    <rect x="135" y="6" width="170" height="36" rx="6" fill="#1e2237" stroke="#6366f1" stroke-width="1.2"/>
+    <circle cx="155" cy="24" r="4" fill="#6366f1"/>
+    <text x="168" y="29" fill="#ffffff" font-size="13" font-weight="600">Personalidade &amp; IA</text>
+
+    <text x="345" y="30" fill="#94a3b8" font-size="13" font-weight="500">Canais</text>
+    <text x="450" y="30" fill="#94a3b8" font-size="13" font-weight="500">Ferramentas</text>
+    <text x="600" y="30" fill="#94a3b8" font-size="13" font-weight="500">Conhecimento</text>
+  </g>
+
+  <!-- Tab Personalidade Content -->
+  <g transform="translate(320, 150)">
+    
+    <!-- CARD 1: CRIAR COM IA / ASSISTENTE DE RASCUNHO -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="1240" height="110" rx="10" fill="url(#card-grad)" stroke="#2d224d" stroke-width="1.5" filter="url(#shadow-card)"/>
+      
+      <circle cx="35" cy="35" r="14" fill="#4c1d95"/>
+      <path d="M28 35 Q35 28 42 35 Q35 42 28 35" fill="#c084fc"/>
+      <text x="62" y="34" fill="#f8fafc" font-size="14" font-weight="600">Criar ou Refinar com Inteligência Artificial</text>
+      <text x="62" y="52" fill="#94a3b8" font-size="12">Descreva em linguagem natural o que deseja que o agente faça — o sistema gerará o papel e regras.</text>
+
+      <rect x="25" y="65" width="1040" height="34" rx="6" fill="#0b0d14" stroke="#2a3045" stroke-width="1"/>
+      <text x="38" y="87" fill="#64748b" font-size="12">ex.: Assistente sênior de suporte de TI focado em monitoramento de servidores, proativo e direto...</text>
+
+      <rect x="1080" y="65" width="135" height="34" rx="6" fill="#1e2238" stroke="#4f46e5" stroke-width="1"/>
+      <text x="1102" y="87" fill="#818cf8" font-size="12" font-weight="600">✨ Gerar com IA</text>
+    </g>
+
+    <!-- CARD 2: SYSTEM PROMPT / PERSONALIDADE COMPLETA -->
+    <g transform="translate(0, 135)">
+      <rect x="0" y="0" width="1240" height="420" rx="10" fill="url(#card-grad)" stroke="#22283a" stroke-width="1.5" filter="url(#shadow-card)"/>
+      <path d="M 0 10 Q 0 0 10 0 L 1230 0 Q 1240 0 1240 10 L 1240 45 L 0 45 Z" fill="#151824"/>
+      <line x1="0" y1="45" x2="1240" y2="45" stroke="#22283a" stroke-width="1"/>
+      
+      <text x="25" y="28" fill="#f8fafc" font-size="14" font-weight="600">Instruções do Sistema (System Prompt &amp; Personalidade)</text>
+      <text x="1150" y="28" fill="#64748b" font-size="11">Modo Markdown</text>
+
+      <!-- Editor de Texto Expandido -->
+      <g transform="translate(25, 60)">
+        <rect x="0" y="0" width="1190" height="330" rx="6" fill="#080a10" stroke="#1e2436" stroke-width="1"/>
+        
+        <text x="20" y="30" fill="#93c5fd" font-size="13" font-family="monospace">Você é um assistente de TI especializado da Prohospital.</text>
+        <text x="20" y="55" fill="#f8fafc" font-size="13" font-family="monospace">Seu objetivo principal é auxiliar o Ronaldo Davi e a equipe de engenharia.</text>
+        <text x="20" y="80" fill="#64748b" font-size="13" font-family="monospace">---------------------------------------------------------------------------------</text>
+        <text x="20" y="105" fill="#cbd5e1" font-size="13" font-family="monospace"># Diretrizes de Comportamento:</text>
+        <text x="20" y="130" fill="#cbd5e1" font-size="13" font-family="monospace">1. Seja proativo e verifique sempre os alertas pendentes antes de formular respostas.</text>
+        <text x="20" y="155" fill="#cbd5e1" font-size="13" font-family="monospace">2. Utilize as ferramentas de MCP integradas (Superkuma Prohospital, Izapia, Mcpmail).</text>
+        <text x="20" y="180" fill="#cbd5e1" font-size="13" font-family="monospace">3. Em grupos de WhatsApp, responda com objetividade e apenas quando acionado.</text>
+        <text x="20" y="205" fill="#cbd5e1" font-size="13" font-family="monospace">4. Não execute comandos destrutivos sem aprovação explícita do administrador.</text>
+
+        <!-- Barra de contagem e status do editor -->
+        <rect x="0" y="295" width="1190" height="35" rx="0" fill="#0d1017"/>
+        <line x1="0" y1="295" x2="1190" y2="295" stroke="#1e2436" stroke-width="1"/>
+        <text x="16" y="318" fill="#64748b" font-size="11">Caracteres: 542 / 12.000 max</text>
+        <text x="1100" y="318" fill="#38bdf8" font-size="11">Visualizar Prévia</text>
+      </g>
+    </g>
+
+  </g>
+</svg>

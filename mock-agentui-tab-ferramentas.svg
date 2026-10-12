@@ -1,0 +1,169 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="100%" height="100%" style="background:#090a0f; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b0d14"/>
+      <stop offset="100%" stop-color="#07080c"/>
+    </linearGradient>
+    <linearGradient id="primary-btn" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="card-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#181b26"/>
+      <stop offset="100%" stop-color="#12141d"/>
+    </linearGradient>
+    <filter id="shadow-card" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="12" flood-color="#000000" flood-opacity="0.45"/>
+    </filter>
+  </defs>
+
+  <!-- Left Navigation Rail & Sidebar -->
+  <rect x="0" y="0" width="60" height="1000" fill="#0d0f17"/>
+  <line x1="60" y1="0" x2="60" y2="1000" stroke="#1c2030" stroke-width="1"/>
+  <circle cx="30" cy="30" r="14" fill="#ef4444"/>
+
+  <rect x="60" y="0" width="220" height="1000" fill="#0f111a"/>
+  <line x1="280" y1="0" x2="280" y2="1000" stroke="#1c2030" stroke-width="1"/>
+  <text x="80" y="42" fill="#94a3b8" font-size="12" font-weight="600">MEUS AGENTES</text>
+
+  <!-- Main Container -->
+  <rect x="280" y="0" width="1320" height="1000" fill="url(#bg-grad)"/>
+
+  <!-- Top App Header -->
+  <g transform="translate(280, 0)">
+    <rect x="0" y="0" width="1320" height="64" fill="#0d0f18"/>
+    <line x1="0" y1="64" x2="1320" y2="64" stroke="#1e2232" stroke-width="1"/>
+    <text x="72" y="38" fill="#ffffff" font-size="17" font-weight="600">Editar Agente · ProH-TI</text>
+    <rect x="280" y="22" width="70" height="20" rx="10" fill="#064e3b" stroke="#059669" stroke-width="1"/>
+    <text x="302" y="36" fill="#6ee7b7" font-size="11" font-weight="600">ONLINE</text>
+    <rect x="1204" y="15" width="90" height="34" rx="6" fill="url(#primary-btn)"/>
+    <text x="1232" y="37" fill="#ffffff" font-size="13" font-weight="600">Salvar</text>
+  </g>
+
+  <!-- Tabs Navigation Header -->
+  <g transform="translate(320, 80)">
+    <rect x="0" y="0" width="1240" height="48" rx="8" fill="#11131e" stroke="#1f2334" stroke-width="1"/>
+    <text x="35" y="30" fill="#94a3b8" font-size="13" font-weight="500">Geral</text>
+    <text x="140" y="30" fill="#94a3b8" font-size="13" font-weight="500">Personalidade &amp; IA</text>
+    <text x="345" y="30" fill="#94a3b8" font-size="13" font-weight="500">Canais</text>
+
+    <!-- Tab 4: Ferramentas (ACTIVE) -->
+    <rect x="470" y="6" width="140" height="36" rx="6" fill="#1e2237" stroke="#6366f1" stroke-width="1.2"/>
+    <circle cx="490" cy="24" r="4" fill="#6366f1"/>
+    <text x="505" y="29" fill="#ffffff" font-size="13" font-weight="600">Ferramentas</text>
+
+    <text x="650" y="30" fill="#94a3b8" font-size="13" font-weight="500">Conhecimento</text>
+  </g>
+
+  <!-- Tab Ferramentas Content -->
+  <g transform="translate(320, 150)">
+    
+    <!-- CARD 1: SERVIDORES MCP (MODEL CONTEXT PROTOCOL) -->
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="1240" height="230" rx="10" fill="url(#card-grad)" stroke="#22283a" stroke-width="1.5" filter="url(#shadow-card)"/>
+      <path d="M 0 10 Q 0 0 10 0 L 1230 0 Q 1240 0 1240 10 L 1240 45 L 0 45 Z" fill="#151824"/>
+      <line x1="0" y1="45" x2="1240" y2="45" stroke="#22283a" stroke-width="1"/>
+      <text x="25" y="28" fill="#f8fafc" font-size="14" font-weight="600">Servidores MCP Conectados</text>
+      <text x="1000" y="28" fill="#94a3b8" font-size="12">Configurar em Settings → MCP ↗</text>
+
+      <!-- MCP List Grid -->
+      <g transform="translate(25, 65)">
+        <!-- MCP Item 1: Superkuma (Ativo) -->
+        <rect x="0" y="0" width="375" height="60" rx="8" fill="#111420" stroke="#3b82f6" stroke-width="1.2"/>
+        <circle cx="28" cy="30" r="10" fill="#1e3a8a"/>
+        <text x="23" y="34" fill="#60a5fa" font-size="11" font-weight="bold">SK</text>
+        <text x="48" y="26" fill="#f8fafc" font-size="13" font-weight="600">Superkuma prohospital</text>
+        <text x="48" y="44" fill="#64748b" font-size="11">Monitoramento de infra e banco de dados</text>
+        <rect x="315" y="19" width="44" height="22" rx="11" fill="#7c3aed"/>
+        <circle cx="348" cy="30" r="8" fill="#ffffff"/>
+
+        <!-- MCP Item 2: Izapia (Ativo) -->
+        <g transform="translate(405, 0)">
+          <rect x="0" y="0" width="375" height="60" rx="8" fill="#111420" stroke="#10b981" stroke-width="1.2"/>
+          <circle cx="28" cy="30" r="10" fill="#064e3b"/>
+          <text x="23" y="34" fill="#34d399" font-size="11" font-weight="bold">IZ</text>
+          <text x="48" y="26" fill="#f8fafc" font-size="13" font-weight="600">izapia</text>
+          <text x="48" y="44" fill="#64748b" font-size="11">Envio e recepção de mensagens e grupos</text>
+          <rect x="315" y="19" width="44" height="22" rx="11" fill="#7c3aed"/>
+          <circle cx="348" cy="30" r="8" fill="#ffffff"/>
+        </g>
+
+        <!-- MCP Item 3: Mcpmail (Ativo) -->
+        <g transform="translate(810, 0)">
+          <rect x="0" y="0" width="380" height="60" rx="8" fill="#111420" stroke="#6366f1" stroke-width="1.2"/>
+          <circle cx="28" cy="30" r="10" fill="#312e81"/>
+          <text x="23" y="34" fill="#a5b4fc" font-size="11" font-weight="bold">ML</text>
+          <text x="48" y="26" fill="#f8fafc" font-size="13" font-weight="600">mcpmail</text>
+          <text x="48" y="44" fill="#64748b" font-size="11">Leitura e envio corporativo de emails</text>
+          <rect x="320" y="19" width="44" height="22" rx="11" fill="#7c3aed"/>
+          <circle cx="353" cy="30" r="8" fill="#ffffff"/>
+        </g>
+
+        <!-- MCP Item 4: Microsoft 365 (Inativo) -->
+        <g transform="translate(0, 75)">
+          <rect x="0" y="0" width="375" height="60" rx="8" fill="#0d0f17" stroke="#252b3e" stroke-width="1"/>
+          <circle cx="28" cy="30" r="10" fill="#1e2230"/>
+          <text x="23" y="34" fill="#94a3b8" font-size="11" font-weight="bold">M3</text>
+          <text x="48" y="26" fill="#94a3b8" font-size="13" font-weight="600">Microsoft 365</text>
+          <text x="48" y="44" fill="#64748b" font-size="11">Outlook, Teams e Calendário da nuvem</text>
+          <rect x="315" y="19" width="44" height="22" rx="11" fill="#2d3348"/>
+          <circle cx="326" cy="30" r="8" fill="#64748b"/>
+        </g>
+      </g>
+    </g>
+
+    <!-- CARD 2: PERMISSÕES NATIVAS DO SISTEMA -->
+    <g transform="translate(0, 255)">
+      <rect x="0" y="0" width="1240" height="290" rx="10" fill="url(#card-grad)" stroke="#22283a" stroke-width="1.5" filter="url(#shadow-card)"/>
+      <path d="M 0 10 Q 0 0 10 0 L 1230 0 Q 1240 0 1240 10 L 1240 45 L 0 45 Z" fill="#151824"/>
+      <line x1="0" y1="45" x2="1240" y2="45" stroke="#22283a" stroke-width="1"/>
+      <text x="25" y="28" fill="#f8fafc" font-size="14" font-weight="600">Permissões de Sistema &amp; Módulos Nativos</text>
+
+      <g transform="translate(25, 65)">
+        <!-- Permissão 1: Rotinas -->
+        <rect x="0" y="0" width="580" height="60" rx="6" fill="#111420" stroke="#262d42" stroke-width="1"/>
+        <text x="18" y="25" fill="#f8fafc" font-size="13" font-weight="600">⏰ Rotinas &amp; Agendamentos Automáticos</text>
+        <text x="18" y="44" fill="#64748b" font-size="11.5">Permite ao agente consultar e disparar cron/schedules do sistema.</text>
+        <rect x="515" y="19" width="44" height="22" rx="11" fill="#7c3aed"/>
+        <circle cx="548" cy="30" r="8" fill="#ffffff"/>
+
+        <!-- Permissão 2: Agenda -->
+        <g transform="translate(610, 0)">
+          <rect x="0" y="0" width="580" height="60" rx="6" fill="#111420" stroke="#262d42" stroke-width="1"/>
+          <text x="18" y="25" fill="#f8fafc" font-size="13" font-weight="600">📅 Agenda &amp; Lembretes</text>
+          <text x="18" y="44" fill="#64748b" font-size="11.5">Permite criar compromissos e lembretes proativos para o usuário.</text>
+          <rect x="515" y="19" width="44" height="22" rx="11" fill="#7c3aed"/>
+          <circle cx="548" cy="30" r="8" fill="#ffffff"/>
+        </g>
+
+        <!-- Permissão 3: Memória Contínua -->
+        <g transform="translate(0, 75)">
+          <rect x="0" y="0" width="580" height="60" rx="6" fill="#111420" stroke="#262d42" stroke-width="1"/>
+          <text x="18" y="25" fill="#f8fafc" font-size="13" font-weight="600">🧠 Memória Contínua (Persistent Memory)</text>
+          <text x="18" y="44" fill="#64748b" font-size="11.5">Salva fatos e preferências do usuário entre conversas e sessões.</text>
+          <rect x="515" y="19" width="44" height="22" rx="11" fill="#7c3aed"/>
+          <circle cx="548" cy="30" r="8" fill="#ffffff"/>
+        </g>
+
+        <!-- Permissão 4: Sistema de Arquivos -->
+        <g transform="translate(610, 75)">
+          <rect x="0" y="0" width="580" height="60" rx="6" fill="#111420" stroke="#262d42" stroke-width="1"/>
+          <text x="18" y="25" fill="#f8fafc" font-size="13" font-weight="600">📁 Sistema de Arquivos Local (Filesystem)</text>
+          <text x="18" y="44" fill="#64748b" font-size="11.5">Acesso de leitura e escrita a documentos (read, write, edit, grep, glob).</text>
+          <rect x="515" y="19" width="44" height="22" rx="11" fill="#7c3aed"/>
+          <circle cx="548" cy="30" r="8" fill="#ffffff"/>
+        </g>
+
+        <!-- Permissão 5: Terminal & Shell -->
+        <g transform="translate(0, 150)">
+          <rect x="0" y="0" width="580" height="60" rx="6" fill="#0d0f17" stroke="#252b3e" stroke-width="1"/>
+          <text x="18" y="25" fill="#94a3b8" font-size="13" font-weight="600">💻 Terminal &amp; Linha de Comando (Bash)</text>
+          <text x="18" y="44" fill="#64748b" font-size="11.5">Execução direta de comandos no terminal (requer cautela).</text>
+          <rect x="515" y="19" width="44" height="22" rx="11" fill="#2d3348"/>
+          <circle cx="526" cy="30" r="8" fill="#64748b"/>
+        </g>
+      </g>
+    </g>
+
+  </g>
+</svg>
