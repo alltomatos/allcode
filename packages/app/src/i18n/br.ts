@@ -926,7 +926,7 @@ export const dict = {
   "sidebar.settings": "Configurações",
   "sidebar.help": "Ajuda",
   "sidebar.batuta": "Batuta",
-  "sidebar.tab.code": "Code",
+  "sidebar.tab.code": "Chat",
   "sidebar.tab.batuta": "Batuta",
   "sidebar.tab.agentui": "Agentes",
   "batuta.title": "O que é uma Batuta?",

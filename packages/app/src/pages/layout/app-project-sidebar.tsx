@@ -94,7 +94,7 @@ export const AppProjectSidebar: Component = () => {
                 }
               }}
             >
-              <Icon name="code" size="small" />
+              <Icon name="bubble-5" size="small" />
             </ProjectRailTabButton>
             <Show when={BATUTA_VISIBLE}>
               <ProjectRailTabButton
@@ -251,7 +251,7 @@ const ProjectSidebarTabs: Component<{
         label={props.language.t("sidebar.tab.code")}
         onClick={() => props.onSelect("code")}
       >
-        <Icon name="code" size="small" />
+        <Icon name="bubble-5" size="small" />
       </ProjectSidebarTabButton>
       <Show when={BATUTA_VISIBLE}>
         <ProjectSidebarTabButton

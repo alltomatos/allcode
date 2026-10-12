@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.21.86",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Navegação: Renomeação da Aba 'Code' para 'Chat' com Ícone de Conversa",
+              "description": "Atualizado o botão de navegação principal da barra lateral do app de 'Code' para 'Chat' com ícone representativo de conversa, refletindo com mais precisão a área principal de chat e sessões interativas com os agentes."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.85",
       "highlights": [
         {
