@@ -34,8 +34,6 @@ storage/
 *.bun-build
 tsconfig.tsbuildinfo
 
-# Batuta local test/runtime artifacts
-.batuta/
 # Ignore everything under .claude/ (local session state, worktrees, etc.)
 # except the fork-knowledge skill, which is meant to be shared/versioned with the repo.
 # Must use "/*" (not "/") on the parent so git still descends into it to evaluate

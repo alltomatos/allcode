@@ -14,7 +14,7 @@ import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { useProviders } from "@/hooks/use-providers"
 import { showToast } from "@/utils/toast"
-import { ModelPickerV2 } from "@/components/batuta/model-picker-v2"
+import { ModelPickerV2 } from "@/components/model-picker-v2"
 import "./settings-v2.css"
 
 type ComboModel = { model: string; priority: number }
@@ -226,6 +226,7 @@ export const DialogComboV2: Component<{
                 <div class="flex-1 min-w-0">
                   <ModelPickerV2
                     directory={props.directory}
+                    allowCombos={false}
                     requireVision={requireVision()}
                     requirePdf={requirePdf()}
                     value={row.model}

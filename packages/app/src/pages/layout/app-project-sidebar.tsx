@@ -13,13 +13,8 @@ import { createHomeProjectsController } from "@/pages/home/home-projects-control
 import { createHomeScrollController } from "@/pages/home/home-scroll-controller"
 import { HomeProjects } from "@/pages/home/home-projects"
 import { HomeUtilityNav } from "@/pages/home/home-projects-view"
-import { BatutaSidebarList } from "@/pages/batuta/batuta-sidebar-list"
 import { AgentUISidebarList } from "@/pages/agentui/agentui-sidebar-list"
 import { RoutinesSidebarList } from "@/pages/routines/routines-sidebar-list"
-
-// Batuta is still an active work-in-progress feature — only show its entry
-// point on dev builds, not to production users, until it's ready to ship.
-const BATUTA_VISIBLE = import.meta.env.VITE_OPENCODE_CHANNEL === "dev"
 
 // Persistent, collapsible project switcher shown alongside every route (Home
 // and an open session alike) — unlike the titlebar's grid-icon toggle, this
@@ -33,16 +28,6 @@ export const AppProjectSidebar: Component = () => {
   const projectsController = createHomeProjectsController(home)
   const scroll = createHomeScrollController(() => [])
 
-  // Safety net for anyone who had "batuta" persisted from a dev build before
-  // switching to a non-dev build (or from before this gate existed) — don't
-  // strand them on a hidden tab with no way back via the UI.
-  createEffect(() => {
-    if (BATUTA_VISIBLE) return
-    if (layout.projectSidebar.tab() !== "batuta") return
-    layout.projectSidebar.setTab("code")
-    if (location.pathname === "/batuta") navigate("/")
-  })
-
   const selectProject = (conn: ServerConnection.Any, directory: string) => {
     home.project.select(conn, directory)
     if (location.pathname !== "/") navigate("/")
@@ -50,12 +35,11 @@ export const AppProjectSidebar: Component = () => {
 
   const selectTab = (tab: ProjectSidebarTab) => {
     layout.projectSidebar.setTab(tab)
-    if (tab === "batuta" && location.pathname !== "/batuta") navigate("/batuta")
     if (tab === "agentui" && !location.pathname.startsWith("/agentui")) navigate("/agentui")
     if (tab === "schedule" && !location.pathname.startsWith("/rotinas")) navigate("/rotinas")
     if (
       tab === "code" &&
-      (location.pathname === "/batuta" || location.pathname.startsWith("/agentui") || location.pathname.startsWith("/rotinas"))
+      (location.pathname.startsWith("/agentui") || location.pathname.startsWith("/rotinas"))
     )
       navigate("/")
   }
@@ -96,21 +80,6 @@ export const AppProjectSidebar: Component = () => {
             >
               <Icon name="bubble-5" size="small" />
             </ProjectRailTabButton>
-            <Show when={BATUTA_VISIBLE}>
-              <ProjectRailTabButton
-                active={layout.projectSidebar.tab() === "batuta"}
-                label={language.t("sidebar.tab.batuta")}
-                onClick={() => {
-                  if (layout.projectSidebar.tab() === "batuta") {
-                    layout.projectSidebar.open()
-                  } else {
-                    selectTab("batuta")
-                  }
-                }}
-              >
-                <IconV2 name="batuta" size="small" />
-              </ProjectRailTabButton>
-            </Show>
             <ProjectRailTabButton
               active={layout.projectSidebar.tab() === "agentui"}
               label={language.t("sidebar.tab.agentui")}
@@ -212,12 +181,8 @@ export const AppProjectSidebar: Component = () => {
         <div class="flex min-h-0 flex-1 flex-col">
           <Show when={layout.projectSidebar.tab() === "code"} fallback={
             <ServerSDKProvider server={home.server.focused}>
-              <Show when={layout.projectSidebar.tab() === "batuta"} fallback={
-                <Show when={layout.projectSidebar.tab() === "schedule"} fallback={<AgentUISidebarList />}>
-                  <RoutinesSidebarList />
-                </Show>
-              }>
-                <BatutaSidebarList />
+              <Show when={layout.projectSidebar.tab() === "schedule"} fallback={<AgentUISidebarList />}>
+                <RoutinesSidebarList />
               </Show>
             </ServerSDKProvider>
           }>
@@ -253,15 +218,6 @@ const ProjectSidebarTabs: Component<{
       >
         <Icon name="bubble-5" size="small" />
       </ProjectSidebarTabButton>
-      <Show when={BATUTA_VISIBLE}>
-        <ProjectSidebarTabButton
-          active={props.tab === "batuta"}
-          label={props.language.t("sidebar.tab.batuta")}
-          onClick={() => props.onSelect("batuta")}
-        >
-          <IconV2 name="batuta" size="small" />
-        </ProjectSidebarTabButton>
-      </Show>
       <ProjectSidebarTabButton
         active={props.tab === "agentui"}
         label={props.language.t("sidebar.tab.agentui")}

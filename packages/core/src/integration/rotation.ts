@@ -52,8 +52,9 @@ export function getCooldownUntilByKey(keyOrId: string): number | undefined {
   return undefined
 }
 
-/** Whether a connection is currently outside its cooldown window, if any. */
+/** Whether a connection is enabled (not disabled by user) and currently outside its cooldown window, if any. */
 export function isAvailable(connection: IntegrationConnection.Info): boolean {
+  if (connection.type === "credential" && (connection as any).disabled) return false
   const until = cooldowns.get(connectionKey(connection))
   return until === undefined || until <= Date.now()
 }
@@ -62,7 +63,7 @@ export function isAvailable(connection: IntegrationConnection.Info): boolean {
  * Picks which connection to use for the next request against an
  * integration. Sticks to the same connection across calls (so a
  * multi-turn conversation doesn't hop accounts mid-stream) until it's
- * benched by `markUnavailable`, at which point it advances to the next
+ * benched by `markUnavailable` or disabled, at which point it advances to the next
  * available connection and remembers that one instead.
  */
 export function pick(
@@ -70,8 +71,11 @@ export function pick(
   connections: readonly IntegrationConnection.Info[],
 ): IntegrationConnection.Info | undefined {
   if (connections.length === 0) return undefined
-  const usable = connections.filter(isAvailable)
-  const pool = usable.length > 0 ? usable : connections
+  // Filter out disabled connections first. Disabled connections should NEVER be picked.
+  const enabled = connections.filter((c) => !(c.type === "credential" && (c as any).disabled))
+  if (enabled.length === 0) return undefined
+  const usable = enabled.filter(isAvailable)
+  const pool = usable.length > 0 ? usable : enabled
   const stickyKey = sticky.get(integrationID)
   const kept = stickyKey ? pool.find((connection) => connectionKey(connection) === stickyKey) : undefined
   const next = kept ?? pool[0]

@@ -22,7 +22,10 @@ export const CredentialHandler = HttpApiBuilder.group(Api, "server.credential", 
     .handle(
       "credential.update",
       Effect.fn(function* (ctx) {
-        yield* (yield* Integration.Service).connection.update(ctx.params.credentialID, { label: ctx.payload.label })
+        yield* (yield* Integration.Service).connection.update(ctx.params.credentialID, {
+          label: ctx.payload.label,
+          disabled: ctx.payload.disabled,
+        })
         return HttpApiSchema.NoContent.make()
       }),
     )

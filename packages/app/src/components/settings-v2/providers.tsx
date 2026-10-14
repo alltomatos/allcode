@@ -4,6 +4,7 @@ import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
 import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
 import { Icon } from "@opencode-ai/ui/icon"
 import { Spinner } from "@opencode-ai/ui/spinner"
+import { Switch as SwitchV2 } from "@opencode-ai/ui/v2/switch-v2"
 import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
 import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
 import { useDialog } from "@opencode-ai/ui/context/dialog"
@@ -124,6 +125,7 @@ const ProviderAccountList: Component<{
   const integrationApi = createMemo(() => createIntegrationFetchApi(serverSdk().server.http))
   const [removing, setRemoving] = createSignal<Set<string>>(new Set())
   const [refreshing, setRefreshing] = createSignal<Set<string>>(new Set())
+  const [toggling, setToggling] = createSignal<Set<string>>(new Set())
 
   const [quotas, setQuotas] = createSignal<Record<string, AccountQuotaModalData>>({})
   const [loadingQuota, setLoadingQuota] = createSignal<Set<string>>(new Set())
@@ -200,15 +202,22 @@ const ProviderAccountList: Component<{
         .catch(() => undefined),
   )
 
-  const accounts = createMemo(() => {
-    const raw = (integration.latest?.connections ?? []).filter((c) => c.type === "credential")
+  type AccountItem = {
+    id: string
+    label?: string
+    disabled?: boolean
+  }
+
+  const accounts = createMemo<AccountItem[]>(() => {
+    const raw = integration.latest?.connections ?? []
     const seen = new Set<string>()
-    const unique: typeof raw = []
+    const unique: AccountItem[] = []
     for (const c of raw) {
+      if (c.type !== "credential") continue
       const key = (c.label || c.id).trim().toLowerCase()
       if (seen.has(key)) continue
       seen.add(key)
-      unique.push(c)
+      unique.push({ id: c.id, label: c.label, disabled: Boolean((c as any).disabled) })
     }
     return unique
   })
@@ -253,6 +262,35 @@ const ProviderAccountList: Component<{
     }
   }
 
+  const handleToggleDisabled = async (account: { id: string; label?: string; disabled?: boolean }, enabled: boolean) => {
+    setToggling((prev) => new Set(prev).add(account.id))
+    try {
+      await integrationApi().credential.update({
+        credentialID: account.id,
+        disabled: !enabled,
+        location: props.directory() ? { directory: props.directory() } : undefined,
+      })
+      await refetch()
+      await fetchQuota(account)
+      props.onChanged?.()
+      showToast({
+        variant: "success",
+        icon: "circle-check",
+        title: language.t("settings.providers.health.toggleDisabledSuccess"),
+        description: account.label,
+      })
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      showToast({ title: language.t("common.requestFailed"), description: message })
+    } finally {
+      setToggling((prev) => {
+        const next = new Set(prev)
+        next.delete(account.id)
+        return next
+      })
+    }
+  }
+
   const handleRefresh = async (account: { id: string; label?: string }) => {
     setRefreshing((prev) => new Set(prev).add(account.id))
     try {
@@ -287,11 +325,17 @@ const ProviderAccountList: Component<{
             const quotaData = () => quotas()[account.id]
             const isLoading = () => loadingQuota().has(account.id)
             return (
-              <div class="settings-v2-provider-account-row py-1">
+              <div
+                class="settings-v2-provider-account-row py-1"
+                classList={{ "opacity-60": account.disabled }}
+              >
                 <div class="flex items-center gap-2.5 min-w-0 flex-1">
                   <span class="settings-v2-provider-account-label font-mono text-12-regular text-v2-text-text-base truncate max-w-[240px]">
                     {account.label}
                   </span>
+                  <Show when={account.disabled}>
+                    <Tag variant="neutral">{language.t("settings.providers.health.disabled")}</Tag>
+                  </Show>
                   <Show
                     when={quotaData()}
                     fallback={
@@ -310,7 +354,7 @@ const ProviderAccountList: Component<{
                         >
                           <Tag variant="accent">{language.t("settings.providers.quota.tier.pro")}</Tag>
                         </Show>
-                        <Show when={data().healthStatus === "cooldown"}>
+                        <Show when={!account.disabled && data().healthStatus === "cooldown"}>
                           <span
                             class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium leading-none cursor-pointer bg-v2-background-bg-layer-02 border border-v2-state-fg-warning/40 text-v2-state-fg-warning"
                             onClick={() => void handleResetCooldown(account)}
@@ -319,8 +363,10 @@ const ProviderAccountList: Component<{
                             {language.t("settings.providers.health.cooldown")}
                           </span>
                         </Show>
-                        <Show when={data().healthStatus === "exhausted"}>
-                          <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium leading-none bg-v2-background-bg-layer-02 border border-v2-state-fg-danger/40 text-v2-state-fg-danger">
+                        <Show when={!account.disabled && data().healthStatus === "exhausted"}>
+                          <span
+                            class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium leading-none bg-v2-background-bg-layer-02 border border-v2-state-fg-danger/40 text-v2-state-fg-danger"
+                          >
                             {language.t("settings.providers.health.exhausted")}
                           </span>
                         </Show>
@@ -345,7 +391,20 @@ const ProviderAccountList: Component<{
                     )}
                   </Show>
                 </div>
-                <div class="flex items-center gap-1.5 shrink-0">
+                <div class="flex items-center gap-2 shrink-0">
+                  <div
+                    class="flex items-center mr-1"
+                    title={language.t("settings.providers.health.toggleTooltip")}
+                  >
+                    <SwitchV2
+                      checked={!account.disabled}
+                      disabled={toggling().has(account.id)}
+                      onChange={(checked) => void handleToggleDisabled(account, checked)}
+                      hideLabel
+                    >
+                      {account.label}
+                    </SwitchV2>
+                  </div>
                   <ButtonV2
                     size="normal"
                     variant="ghost-muted"

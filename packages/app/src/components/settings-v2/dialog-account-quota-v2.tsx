@@ -16,11 +16,11 @@ export interface AccountQuotaModalData {
   accountLabel: string
   tier: "pro" | "free" | "unknown"
   overallPercentage: number
-  buckets: QuotaBucket[]
-  healthStatus?: "healthy" | "cooldown" | "exhausted"
+  healthStatus?: "healthy" | "cooldown" | "exhausted" | "disabled"
   cooldownUntil?: number | null
   providerID?: string
   credentialID?: string
+  buckets?: QuotaBucket[]
 }
 
 function formatReset(resetTime: string | null): string {
@@ -67,6 +67,7 @@ export const DialogAccountQuotaV2: Component<{
                     "bg-v2-state-fg-success": props.data.healthStatus === "healthy",
                     "bg-v2-state-fg-warning": props.data.healthStatus === "cooldown",
                     "bg-v2-state-fg-danger": props.data.healthStatus === "exhausted",
+                    "bg-v2-text-text-muted": props.data.healthStatus === "disabled",
                   }}
                 />
                 <span
@@ -75,13 +76,16 @@ export const DialogAccountQuotaV2: Component<{
                     "text-v2-state-fg-success": props.data.healthStatus === "healthy",
                     "text-v2-state-fg-warning": props.data.healthStatus === "cooldown",
                     "text-v2-state-fg-danger": props.data.healthStatus === "exhausted",
+                    "text-v2-text-text-muted": props.data.healthStatus === "disabled",
                   }}
                 >
                   {props.data.healthStatus === "healthy"
                     ? language.t("settings.providers.health.healthy")
                     : props.data.healthStatus === "cooldown"
                       ? language.t("settings.providers.health.cooldown")
-                      : language.t("settings.providers.health.exhausted")}
+                      : props.data.healthStatus === "disabled"
+                        ? language.t("settings.providers.health.disabled")
+                        : language.t("settings.providers.health.exhausted")}
                 </span>
                 <Show when={props.data.healthStatus === "cooldown" && props.data.cooldownUntil}>
                   <span class="text-11-regular text-v2-text-text-faint">
@@ -114,7 +118,7 @@ export const DialogAccountQuotaV2: Component<{
           <div class="flex flex-col divide-y divide-v2-border-border-base rounded-md border border-v2-border-border-base overflow-y-auto max-h-[360px]">
             <For
               each={
-                props.data.buckets.length > 0
+                props.data.buckets && props.data.buckets.length > 0
                   ? props.data.buckets
                   : [
                       { modelId: "gemini-2.5-flash", remainingFraction: 1, remainingPercentage: 100, resetTime: null },

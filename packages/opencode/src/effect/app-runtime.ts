@@ -43,7 +43,6 @@ import { Project } from "@/project/project"
 import { Vcs } from "@/project/vcs"
 import { Workspace } from "@/control-plane/workspace"
 import { Worktree } from "@/worktree"
-import { Batuta } from "@/batuta"
 import { Memory } from "@/memory"
 import { ExternalAgent } from "@/external-agent"
 import { Installation } from "@/installation"
@@ -105,7 +104,6 @@ export const AppLayer = AppNodeBuilderV1.build(
     Vcs.node,
     Workspace.node,
     Worktree.node,
-    Batuta.node,
     Memory.node,
     ExternalAgent.node,
     Installation.node,

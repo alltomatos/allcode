@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.21.87",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Arquitetura: Descontinuação e Remoção Completa do Batuta",
+              "description": "Removido todo o código legado e endpoints do Batuta (frontend, rotas HTTP, serviços e schemas de configuração), preservando e desacoplando os componentes essenciais compartilhados como ModelPickerV2."
+            },
+            {
+              "title": "Combos e ModelPickerV2: Suporte Completo no AgentUI e Persistência de Provedor",
+              "description": "Integrado suporte unificado a Combos no ModelPickerV2 (AgentUI, Rotinas e Memória) espelhando a experiência do Chat, com correção da retenção do provedor ao editar combos e resolução resiliente no backend."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.86",
       "highlights": [
         {

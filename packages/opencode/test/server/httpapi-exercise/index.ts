@@ -77,16 +77,6 @@ function agentUIFixture(id: string, overrides: Partial<Record<string, unknown>> 
   }
 }
 
-function batutaActivityFixture(id: string) {
-  return {
-    id,
-    name: `HTTP API Activity (${id})`,
-    goal: "exercise coverage",
-    orchestratorModel: "test/test-model",
-    workers: [] as unknown[],
-  }
-}
-
 function comboFixture(id: string) {
   return {
     id,
@@ -1921,95 +1911,6 @@ const scenarios: Scenario[] = [
       headers: ctx.headers(),
     }))
     .json(200, array),
-
-  // --- Batuta (external-agent orchestration) ---
-  http.protected
-    .post("/batuta", "batuta.add")
-    .mutating()
-    .at((ctx) => ({ path: "/batuta", headers: ctx.headers(), body: batutaActivityFixture("batuta_httpapi_add") }))
-    .json(200, (body) => {
-      object(body)
-      check(body.id === "batuta_httpapi_add", "batuta add should return the created activity")
-    }),
-  http.protected
-    .get("/batuta", "batuta.list")
-    .seeded((ctx) => {
-      const activity = batutaActivityFixture("batuta_httpapi_list")
-      return Effect.as(ctx.seedPost("/batuta", activity), activity)
-    })
-    .json(200, (body) => {
-      array(body)
-      check(
-        body.some((item) => isRecord(item) && item.id === "batuta_httpapi_list"),
-        "batuta list should include the seeded activity",
-      )
-    }),
-  http.protected
-    .delete("/batuta/{id}", "batuta.remove")
-    .mutating()
-    .seeded((ctx) => {
-      const activity = batutaActivityFixture("batuta_httpapi_remove")
-      return Effect.as(ctx.seedPost("/batuta", activity), activity)
-    })
-    .at((ctx) => ({ path: route("/batuta/{id}", { id: ctx.state.id }), headers: ctx.headers() }))
-    .json(200, (body) => {
-      object(body)
-      check(body.success === true, "batuta remove should return success")
-    }),
-  http.protected
-    .get("/batuta/branches", "batuta.branches")
-    .json(200, (body) => {
-      object(body)
-      array(body.branches)
-    }),
-  http.protected
-    .get("/batuta/{id}/pipeline-definition", "batuta.getPipelineDefinition.missing")
-    .at((ctx) => ({
-      path: route("/batuta/{id}/pipeline-definition", { id: "batuta_httpapi_missing" }),
-      headers: ctx.headers(),
-    }))
-    .status(404),
-  http.protected
-    .put("/batuta/{id}/pipeline-definition", "batuta.setPipelineDefinition.missing")
-    .mutating()
-    .at((ctx) => ({
-      path: route("/batuta/{id}/pipeline-definition", { id: "batuta_httpapi_missing" }),
-      headers: ctx.headers(),
-      body: { content: "# pipeline" },
-    }))
-    .status(404),
-  http.protected
-    .post("/batuta/{id}/start", "batuta.start.missing")
-    .mutating()
-    .at((ctx) => ({ path: route("/batuta/{id}/start", { id: "batuta_httpapi_missing" }), headers: ctx.headers() }))
-    .status(404),
-  http.protected
-    .post("/batuta/{id}/sync", "batuta.sync.missing")
-    .mutating()
-    .at((ctx) => ({ path: route("/batuta/{id}/sync", { id: "batuta_httpapi_missing" }), headers: ctx.headers() }))
-    .status(404),
-  http.protected
-    .post("/batuta/{id}/dispatch", "batuta.dispatch.missing")
-    .mutating()
-    .at((ctx) => ({ path: route("/batuta/{id}/dispatch", { id: "batuta_httpapi_missing" }), headers: ctx.headers() }))
-    .status(404),
-  http.protected
-    .post("/batuta/{id}/delegate", "batuta.delegate.missing")
-    .mutating()
-    .at((ctx) => ({
-      path: route("/batuta/{id}/delegate", { id: "batuta_httpapi_missing" }),
-      headers: ctx.headers(),
-      body: { label: "worker", prompt: "do it" },
-    }))
-    .status(404),
-  http.protected
-    .post("/batuta/{id}/pipeline-chat", "batuta.startPipelineChat.missing")
-    .mutating()
-    .at((ctx) => ({
-      path: route("/batuta/{id}/pipeline-chat", { id: "batuta_httpapi_missing" }),
-      headers: ctx.headers(),
-    }))
-    .status(404),
 
   // --- Combo (model failover groups) ---
   http.protected

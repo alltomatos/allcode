@@ -21,7 +21,7 @@ import { createHomeController } from "@/pages/home/home-controller"
 import { showToast } from "@/utils/toast"
 import { formatServerError } from "@/utils/server-errors"
 import { GlobalLoading } from "@/components/global-loading"
-import { ModelPickerV2 } from "@/components/batuta/model-picker-v2"
+import { ModelPickerV2 } from "@/components/model-picker-v2"
 import { DialogAgentUISandbox } from "@/components/settings-v2/dialog-agentui-sandbox"
 import { DialogAgentUIDiagnose } from "@/components/settings-v2/dialog-agentui-diagnose"
 import {
@@ -125,11 +125,6 @@ export function AgentUIFormPage() {
     }
     if (route.type === "session") return serverSync().session.get(route.sessionId)?.directory
     return home.project.selected()?.worktree ?? home.project.newSession()?.worktree
-  })
-
-  const [combos] = createResource(async () => {
-    const result = await serverSDK().client.combo.list()
-    return (result.data ?? []).map((c) => ({ id: c.id, name: c.name }))
   })
 
   // MCP servers this agent could be given tool access to — scoped to
@@ -643,7 +638,6 @@ export function AgentUIFormPage() {
                           <ModelPickerV2
                             value={form.model}
                             onChange={(value) => setForm("model", value)}
-                            combos={combos() ?? []}
                             directory={directory()}
                             requireAudio={filterAudioOnly()}
                           />

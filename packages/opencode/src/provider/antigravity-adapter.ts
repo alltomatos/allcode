@@ -287,22 +287,23 @@ export async function getLiveToken(
     const dbFile = CoreDatabase.path()
     const db = await getDb(dbFile)
     const rawRows = db
-      .prepare("SELECT id, label, value, time_updated, time_created FROM credential WHERE integration_id = ? ORDER BY time_updated DESC, time_created DESC")
-      .all(integrationID) as { id: string; label: string; value: string; time_updated?: number; time_created?: number }[]
+      .prepare("SELECT id, label, value, disabled, time_updated, time_created FROM credential WHERE integration_id = ? ORDER BY time_updated DESC, time_created DESC")
+      .all(integrationID) as { id: string; label: string; value: string; disabled?: number | boolean; time_updated?: number; time_created?: number }[]
     if (!rawRows.length) return { token: "", projectID: "aicode-consumers" }
 
     // Deduplicate in memory by email / label
     const seen = new Set<string>()
-    const rows: { id: string; value: string }[] = []
+    const rows: { id: string; value: string; disabled?: boolean }[] = []
     for (const r of rawRows) {
+      const isDisabled = r.disabled === 1 || r.disabled === true
       try {
         const p = JSON.parse(r.value)
         const email = p?.metadata?.email || r.label
         if (email && seen.has(email)) continue
         if (email) seen.add(email)
-        rows.push({ id: r.id, value: r.value })
+        rows.push({ id: r.id, value: r.value, disabled: isDisabled })
       } catch {
-        rows.push({ id: r.id, value: r.value })
+        rows.push({ id: r.id, value: r.value, disabled: isDisabled })
       }
     }
 
@@ -311,6 +312,7 @@ export async function getLiveToken(
       type: "credential" as const,
       id: r.id as any,
       label: r.id,
+      disabled: r.disabled,
     }))
 
     if (connections.every((c) => !IntegrationRotation.isAvailable(c))) {
@@ -430,7 +432,7 @@ export interface UserQuotaDetails {
   tier: "pro" | "free" | "unknown"
   buckets: QuotaBucketInfo[]
   overallPercentage: number
-  healthStatus?: "healthy" | "cooldown" | "exhausted"
+  healthStatus?: "healthy" | "cooldown" | "exhausted" | "disabled"
   cooldownUntil?: number | null
 }
 
@@ -441,10 +443,12 @@ export async function fetchUserQuotaDetails(
   try {
     const dbFile = CoreDatabase.path()
     const db = await getDb(dbFile)
-    const row = db.prepare("SELECT value FROM credential WHERE id = ?").get(credentialID) as
-      | { value: string }
+    const row = db.prepare("SELECT value, disabled FROM credential WHERE id = ?").get(credentialID) as
+      | { value: string; disabled?: number | boolean }
       | undefined
     if (!row) return null
+
+    const isDisabled = row.disabled === 1 || row.disabled === true
 
     const parsed = JSON.parse(row.value)
     const now = Date.now()
@@ -628,8 +632,10 @@ export async function fetchUserQuotaDetails(
 
     const overallPct = Math.round(avgFraction * 100)
     const cooldownUntil = IntegrationRotation.getCooldownUntilByKey(credentialID)
-    let healthStatus: "healthy" | "cooldown" | "exhausted" = "healthy"
-    if (cooldownUntil && cooldownUntil > Date.now()) {
+    let healthStatus: "healthy" | "cooldown" | "exhausted" | "disabled" = "healthy"
+    if (isDisabled) {
+      healthStatus = "disabled"
+    } else if (cooldownUntil && cooldownUntil > Date.now()) {
       healthStatus = "cooldown"
     } else if (overallPct <= 0) {
       healthStatus = "exhausted"

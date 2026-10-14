@@ -1,6 +1,7 @@
 export * as Connection from "./connection"
 
 import { Schema } from "effect"
+import { optional } from "./schema"
 import { Credential } from "./credential"
 
 export interface CredentialInfo extends Schema.Schema.Type<typeof CredentialInfo> {}
@@ -8,6 +9,7 @@ export const CredentialInfo = Schema.Struct({
   type: Schema.Literal("credential"),
   id: Credential.ID,
   label: Schema.String,
+  disabled: optional(Schema.Boolean),
 }).annotate({ identifier: "Connection.CredentialInfo" })
 
 export interface EnvInfo extends Schema.Schema.Type<typeof EnvInfo> {}

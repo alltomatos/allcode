@@ -15,19 +15,13 @@ Nem sempre já configurados: em clones frescos (ex.: sessões remotas/cloud, con
 | --- | --- |
 | `prod` | **Única** branch que gera release publicado. `.github/workflows/release-desktop.yml` dispara automaticamente em todo push nessa branch, builda Windows/macOS/Linux em paralelo via GitHub Actions, publica um release (draft) no GitHub com os três instaladores + arquivos `latest*.yml` do auto-updater. |
 | `dev` | Branch de desenvolvimento normal. Recebe trabalho novo antes de ser promovido pra `prod`. |
-| `batuta` | Feature branch pra tudo relacionado à orquestração multi-agente Batuta (ver seção própria abaixo). Tende a ficar à frente de `dev`/`prod` em features específicas de Batuta ainda não promovidas. |
 | `breniac` | Feature branch pro assistente de voz Breniac (ver `docs/prd/breniac-voice-assistant.md` na própria branch — o PRD só existe lá, não em `dev`/`prod` ainda). |
 
-**Padrão de promoção:** commits de uma feature branch (`batuta`/`breniac`) só vão pra `dev`/`prod` quando o usuário explicitamente pede ("promova pra dev", "leva isso pra produção"). Commits específicos de uma feature branch nem sempre se aplicam limpos nos outros branches — ex.: um arquivo que só existe em `batuta` (como `packages/opencode/src/external-agent/index.ts`) não pode ser cherry-picked pra `dev`/`prod` se essas branches não têm esse arquivo. **Sempre confira se o commit toca arquivos que só existem na branch de origem antes de propagar** — cherry-pick seletivo (só os commits que fazem sentido) é o padrão aqui, não merge cego da branch inteira.
+**Padrão de promoção:** commits de uma feature branch (`breniac`) só vão pra `dev`/`prod` quando o usuário explicitamente pede ("promova pra dev", "leva isso pra produção"). Commits específicos de uma feature branch nem sempre se aplicam limpos nos outros branches. **Sempre confira se o commit toca arquivos que só existem na branch de origem antes de propagar** — cherry-pick seletivo (só os commits que fazem sentido) é o padrão aqui, não merge cego da branch inteira.
 
 ## O que é exclusivo deste fork (não existe no upstream)
 
-- **Batuta** (orquestração multi-agente — orquestrador delega pra workers, incluindo agentes CLI externos):
-  - Config: `packages/core/src/v1/config/batuta.ts`
-  - Serviço de agente externo: `packages/opencode/src/external-agent/index.ts` (só existe na branch `batuta`)
-  - Rotas HTTP próprias: `packages/opencode/src/server/routes/instance/httpapi/{handlers,groups}/batuta.ts`
-  - UI: `packages/app/src/pages/batuta/` (form de atividade, cena de atividade ao vivo, lista lateral)
-  - Nenhum cliente mobile de terceiros (OpenCode Mobile, etc.) sabe dessas rotas — ver `docs/prd/mobile-app.md`.
+- **Batuta** *(Descontinuado)*: Feature legada de orquestração multi-agente, removida da codebase ativa.
 - **Breniac** (assistente de voz conversacional, foco em acessibilidade — na branch `breniac`):
   - PRD completo: `docs/prd/breniac-voice-assistant.md` (só nessa branch)
   - Rotas HTTP próprias: `packages/opencode/src/server/routes/instance/httpapi/{handlers,groups}/breniac.ts`

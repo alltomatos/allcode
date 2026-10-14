@@ -70,11 +70,8 @@ import { createSessionLineage } from "@/pages/session/session-lineage"
 
 import { SessionPage, SessionRouteErrorBoundary, TargetSessionRouteContent } from "@/pages/session"
 import { NewHome } from "@/pages/home"
-import { BatutaPage } from "@/pages/batuta"
-import { BatutaActivityFormPage } from "@/pages/batuta/activity-form"
 import { RoutinesPage } from "@/pages/routines"
 import { RoutineFormPage } from "@/pages/routines/routine-form"
-import { BatutaActivityLivePage } from "@/pages/batuta/activity-live"
 import { AgentUIPage } from "@/pages/agentui"
 import { AgentUIFormPage } from "@/pages/agentui-form"
 import { AgentUIAuditPage } from "@/pages/agentui-audit"
@@ -698,10 +695,6 @@ function Routes(props: { serverScoped?: JSX.Element }) {
       </Route>
       <Show when={settings.general.newLayoutDesigns()}>
         <Route path="/" component={NewHome} />
-        <Route path="/batuta" component={BatutaPage} />
-        <Route path="/batuta/new" component={BatutaActivityFormPage} />
-        <Route path="/batuta/:id/edit" component={BatutaActivityFormPage} />
-        <Route path="/batuta/:id/live" component={BatutaActivityLivePage} />
         <Route path="/rotinas" component={RoutinesPage} />
         <Route path="/rotinas/new" component={RoutineFormPage} />
         <Route path="/rotinas/:id/edit" component={RoutineFormPage} />

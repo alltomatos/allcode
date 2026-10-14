@@ -21,7 +21,6 @@ import { LSP } from "@/lsp/lsp"
 import { MCP } from "@/mcp"
 import { Telegram } from "@/telegram"
 import { Memory } from "@/memory"
-import { Batuta } from "@/batuta"
 import { Combo } from "@/combo"
 import { AgentUI } from "@/agentui"
 import { WhatsApp } from "@/whatsapp"
@@ -95,7 +94,6 @@ import {
 import { EventApi } from "./groups/event"
 import { PtyConnectApi } from "./groups/pty"
 import { eventHandlers } from "./handlers/event"
-import { batutaHandlers } from "./handlers/batuta"
 import { comboHandlers } from "./handlers/combo"
 import { agentuiHandlers } from "./handlers/agentui"
 import { configHandlers } from "./handlers/config"
@@ -183,7 +181,6 @@ const instanceApiRoutes = HttpApiBuilder.layer(InstanceHttpApi).pipe(
     instanceHandlers,
     mailAccountsHandlers,
     mcpHandlers,
-    batutaHandlers,
     comboHandlers,
     agentuiHandlers,
     projectHandlers,
@@ -285,7 +282,6 @@ const app = LayerNode.group([
   MailAccounts.node,
   Telegram.node,
   Memory.node,
-  Batuta.node,
   Combo.node,
   AgentUI.node,
   WhatsApp.node,

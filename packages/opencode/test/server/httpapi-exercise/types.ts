@@ -66,7 +66,7 @@ export type ScenarioContext = {
   llmText: (value: string) => Effect.Effect<void>
   llmWait: (count: number) => Effect.Effect<void>
   tuiRequest: (request: { path: string; body: unknown }) => Effect.Effect<void>
-  /** Seeds any JSON POST route through the real in-process app (e.g. POST /agentui, /batuta, /combo) and returns the decoded body. */
+  /** Seeds any JSON POST route through the real in-process app (e.g. POST /agentui, /combo) and returns the decoded body. */
   seedPost: (path: string, body: unknown) => Effect.Effect<unknown>
 }
 

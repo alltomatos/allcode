@@ -65,6 +65,7 @@ export default {
           \`connector_id\` text,
           \`method_id\` text,
           \`active\` integer,
+          \`disabled\` integer,
           \`time_created\` integer NOT NULL,
           \`time_updated\` integer NOT NULL
         );

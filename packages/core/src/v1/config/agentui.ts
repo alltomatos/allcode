@@ -120,7 +120,7 @@ export const Agent = Schema.Struct({
   personality: Schema.String.annotate({ description: "Custom system prompt describing this agent's role/tone" }),
   // Same encoding ModelPickerV2 already uses: "providerID/modelID" for a
   // direct model, "combo:<id>" to resolve through Combo.Service instead —
-  // see packages/app/src/components/batuta/model-picker-v2.tsx and
+  // see packages/app/src/components/model-picker-v2.tsx and
   // packages/opencode/src/combo/index.ts.
   model: Schema.String.annotate({
     description: "'providerID/modelID' for a direct model, or 'combo:<id>' to resolve through a saved combo",

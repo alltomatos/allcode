@@ -128,11 +128,16 @@ async function getLiveCredential(): Promise<{
     const dbFile = CoreDatabase.path()
     const db = await getDb(dbFile)
     const rows = db
-      .prepare("SELECT id, value FROM credential WHERE integration_id = ? ORDER BY time_updated ASC")
-      .all(INTEGRATION_ID) as { id: string; value: string }[]
+      .prepare("SELECT id, value, disabled FROM credential WHERE integration_id = ? ORDER BY time_updated ASC")
+      .all(INTEGRATION_ID) as { id: string; value: string; disabled?: number | boolean }[]
     if (!rows.length) return { access: "", region: SSO_OIDC_REGION }
 
-    const connections = rows.map((r) => ({ type: "credential" as const, id: r.id as any, label: r.id }))
+    const connections = rows.map((r) => ({
+      type: "credential" as const,
+      id: r.id as any,
+      label: r.id,
+      disabled: r.disabled === 1 || r.disabled === true,
+    }))
     if (connections.every((c) => !IntegrationRotation.isAvailable(c))) {
       return { access: "", region: SSO_OIDC_REGION, exhausted: true }
     }

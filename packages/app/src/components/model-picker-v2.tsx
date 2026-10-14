@@ -1,28 +1,28 @@
-import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { useLanguage } from "@/context/language"
-import { useProviders } from "@/hooks/use-providers"
+import { popularProviders, useProviders } from "@/hooks/use-providers"
+import { useModels } from "@/context/models"
 import { useServerSDK } from "@/context/server-sdk"
 import { createIntegrationFetchApi } from "@/utils/integration-fetch"
 
-// Combo values are encoded as "combo:<id>" so the picker's public contract
-// stays a single string everywhere it's already used (Batuta, Memória) —
-// callers that don't pass `combos` never see this prefix and behave exactly
-// as before.
+// Legacy prefix support for older stored values like "combo:<id>"
 const COMBO_PREFIX = "combo:"
 
 export interface ModelPickerV2Props {
-  /** "providerID/modelID", "combo:<id>", or empty string when nothing is selected yet */
+  /** "providerID/modelID", "combo/<id>", "combo:<id>", or empty string when nothing is selected yet */
   value: string
   onChange: (value: string) => void
   /** When provided, the provider dropdown also lists these as selectable combos. */
   combos?: { id: string; name: string }[]
+  /** Allow selecting Combos as a provider. Defaults to true (set to false in combo editor to prevent nesting). */
+  allowCombos?: boolean
   /**
    * Worktree to scope the provider catalog to. Without this, useProviders()
    * falls back to the global catalog, which misses providers only connected
    * per-project (e.g. Omniroute) — those still show in a real session's
    * chat composer (project-scoped) but silently disappear from this picker.
    * Pass the caller's own directory when one is available (AgentUI); other
-   * callers (Batuta, Memória) have no natural directory and keep the old
+   * callers (Memória) have no natural directory and keep the old
    * global-catalog behavior by omitting this.
    */
   directory?: string
@@ -35,14 +35,50 @@ export interface ModelPickerV2Props {
 }
 
 function splitModel(value: string) {
+  if (!value) return { providerID: "", modelID: "" }
+  if (value.startsWith(COMBO_PREFIX)) {
+    return { providerID: "combo", modelID: value.slice(COMBO_PREFIX.length) }
+  }
   const index = value.indexOf("/")
   if (index === -1) return { providerID: "", modelID: "" }
   return { providerID: value.slice(0, index), modelID: value.slice(index + 1) }
 }
 
+const sortProviders = (a: { id: string; name: string }, b: { id: string; name: string }) => {
+  if (a.id === "combo") return -1
+  if (b.id === "combo") return 1
+  const aIndex = popularProviders.indexOf(a.id)
+  const bIndex = popularProviders.indexOf(b.id)
+  const aPopular = aIndex >= 0
+  const bPopular = bIndex >= 0
+
+  if (aPopular && !bPopular) return -1
+  if (!aPopular && bPopular) return 1
+  if (aPopular && bPopular) return aIndex - bIndex
+  return a.name.localeCompare(b.name)
+}
+
+function resolveFallbackProvider(id: string, combos: { id: string; name: string }[], combosTitle: string) {
+  if (id === "combo") {
+    return {
+      id: "combo",
+      name: combosTitle,
+      models: Object.fromEntries(combos.map((c) => [c.id, { id: c.id, name: c.name }])),
+    }
+  }
+  if (id === "google-antigravity" || id === "google-antigravity-cli") {
+    return {
+      id,
+      name: id === "google-antigravity" ? "AGY" : "AGY CLI",
+      models: { ...ANTIGRAVITY_FALLBACK_MODELS },
+    }
+  }
+  return { id, name: id, models: {} }
+}
+
 const selectClass = `
   h-8 min-w-0 flex-1 cursor-pointer appearance-none truncate rounded-md border border-v2-border-border-base
-  bg-v2-background-bg-base bg-[image:var(--batuta-select-chevron)] bg-[position:right_8px_center] bg-no-repeat
+  bg-v2-background-bg-base bg-[image:var(--model-select-chevron)] bg-[position:right_8px_center] bg-no-repeat
   py-0 pl-2.5 pr-7 text-13-regular text-v2-text-text-base outline-none transition-colors duration-150
   hover:border-v2-border-border-strong hover:bg-v2-background-bg-layer-01
   focus-visible:border-v2-border-border-focus focus-visible:outline-none
@@ -70,6 +106,11 @@ export const ModelPickerV2: Component<ModelPickerV2Props> = (props) => {
   const providers = useProviders(() => props.directory)
   const integrationApi = createMemo(() => createIntegrationFetchApi(serverSdk().server.http))
 
+  let modelsContext: ReturnType<typeof useModels> | undefined
+  try {
+    modelsContext = useModels()
+  } catch {}
+
   const [integrationsList] = createResource(
     () => ({ directory: props.directory }),
     (input) =>
@@ -82,7 +123,7 @@ export const ModelPickerV2: Component<ModelPickerV2Props> = (props) => {
   )
 
   const [combosResource] = createResource(async () => {
-    if (props.combos) return props.combos
+    if (props.combos && props.combos.length > 0) return props.combos
     try {
       const res = await serverSdk().client.combo.list()
       return (res.data ?? []).map((c) => ({ id: c.id, name: c.name }))
@@ -91,7 +132,22 @@ export const ModelPickerV2: Component<ModelPickerV2Props> = (props) => {
     }
   })
 
-  const availableCombos = createMemo(() => props.combos ?? combosResource() ?? [])
+  const availableCombos = createMemo(() => {
+    if (props.combos && props.combos.length > 0) return props.combos
+    const fromModels = modelsContext
+      ?.list()
+      .filter((m) => m.providerID === "combo" || m.provider?.id === "combo")
+      .map((m) => ({ id: m.id, name: m.name }))
+    if (fromModels && fromModels.length > 0) return fromModels
+    const fromResource = combosResource()
+    if (fromResource && fromResource.length > 0) return fromResource
+    if (props.combos) return props.combos
+    return []
+  })
+  const allowCombos = createMemo(() => props.allowCombos !== false)
+
+  const selectedProviderID = createMemo(() => splitModel(props.value).providerID)
+  const selectedModelID = createMemo(() => splitModel(props.value).modelID)
 
   const providerList = createMemo(() => {
     const extraIntegrations = integrationsList() ?? []
@@ -99,6 +155,20 @@ export const ModelPickerV2: Component<ModelPickerV2Props> = (props) => {
 
     const allCatalog = providers.all()
     const seen = new Map<string, { id: string; name: string; models: Record<string, any> }>()
+
+    // Include Combos as a first-class selectable provider (identical to Chat)
+    if (allowCombos()) {
+      const combos = availableCombos()
+      const comboModels: Record<string, any> = {}
+      for (const c of combos) {
+        comboModels[c.id] = { id: c.id, name: c.name, providerID: "combo" }
+      }
+      seen.set("combo", {
+        id: "combo",
+        name: language.t("settings.combos.title"),
+        models: comboModels,
+      })
+    }
 
     // Filter providers.connected() identically to SettingsProvidersV2:
     // Only keep if it has active connections in integrations or valid configured credentials
@@ -167,31 +237,40 @@ export const ModelPickerV2: Component<ModelPickerV2Props> = (props) => {
       })
     }
 
+    // Ensure the currently selected provider is always present in seen so its option exists in DOM
+    const currentPid = selectedProviderID()
+    if (currentPid && !seen.has(currentPid)) {
+      const fallback = resolveFallbackProvider(currentPid, availableCombos(), language.t("settings.combos.title"))
+      seen.set(fallback.id, {
+        id: fallback.id,
+        name: fallback.name,
+        models: fallback.models ?? {},
+      })
+    }
+
     return Array.from(seen.values())
-      .filter((provider) => Object.keys(provider.models).length > 0)
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .filter((provider) => (allowCombos() && provider.id === "combo") || Object.keys(provider.models).length > 0)
+      .sort(sortProviders)
   })
-  const isCombo = createMemo(() => props.value.startsWith(COMBO_PREFIX))
-  const selectedComboID = createMemo(() => (isCombo() ? props.value.slice(COMBO_PREFIX.length) : ""))
-  const selectedProviderID = createMemo(() => (isCombo() ? "" : splitModel(props.value).providerID))
-  const selectedModelID = createMemo(() => splitModel(props.value).modelID)
+
   const selectedProvider = createMemo(() => {
     const id = selectedProviderID()
     if (!id) return undefined
     const found = providerList().find((provider) => provider.id === id)
     if (found) return found
-    if (id === "google-antigravity" || id === "google-antigravity-cli") {
-      return {
-        id,
-        name: id === "google-antigravity" ? "AGY" : "AGY CLI",
-        models: { ...ANTIGRAVITY_FALLBACK_MODELS },
-      }
-    }
-    return { id, name: id, models: {} }
+    return resolveFallbackProvider(id, availableCombos(), language.t("settings.combos.title"))
   })
+
   const allModels = createMemo(() => {
     const provider = selectedProvider()
     if (!provider) return []
+    if (provider.id === "combo") {
+      return availableCombos().map((c) => ({
+        id: c.id,
+        name: c.name,
+        providerID: "combo",
+      }))
+    }
     let models = Object.values(provider.models)
 
     if (props.requireVision) {
@@ -253,70 +332,77 @@ export const ModelPickerV2: Component<ModelPickerV2Props> = (props) => {
   })
   const modelListTruncated = createMemo(() => filteredModels().length > MODEL_RENDER_CAP)
 
+  let providerSelectRef: HTMLSelectElement | undefined
+  let modelSelectRef: HTMLSelectElement | undefined
+
+  createEffect(() => {
+    const pId = selectedProviderID()
+    providerList()
+    if (providerSelectRef) {
+      providerSelectRef.value = pId || ""
+    }
+  })
+
+  createEffect(() => {
+    const mId = selectedModelID()
+    modelList()
+    if (modelSelectRef) {
+      modelSelectRef.value = mId || ""
+    }
+  })
+
   return (
     <div
       class="flex min-w-0 flex-1 items-center gap-2"
       style={{
-        "--batuta-select-chevron": `url("data:image/svg+xml,${encodeURIComponent(
+        "--model-select-chevron": `url("data:image/svg+xml,${encodeURIComponent(
           '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 6.5L8 9.5L11 6.5" stroke="%239299A6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
         )}")`,
       }}
     >
       <select
+        ref={providerSelectRef}
         class={selectClass}
-        value={isCombo() ? `${COMBO_PREFIX}${selectedComboID()}` : selectedProviderID()}
+        value={selectedProviderID()}
         onChange={(event) => {
           const next = event.currentTarget.value
           if (!next) return props.onChange("")
-          props.onChange(next.startsWith(COMBO_PREFIX) ? next : `${next}/`)
+          props.onChange(`${next}/`)
         }}
       >
         <option value="">{language.t("batuta.model.provider.placeholder")}</option>
-        <Show when={availableCombos().length > 0}>
-          <optgroup label={language.t("settings.combos.title")}>
-            <For each={availableCombos()}>
-              {(combo) => <option value={`${COMBO_PREFIX}${combo.id}`}>{combo.name}</option>}
-            </For>
-          </optgroup>
-        </Show>
-        <optgroup label={language.t("batuta.model.provider.placeholder")}>
-          <For each={providerList()}>{(provider) => <option value={provider.id}>{provider.name}</option>}</For>
-          <Show when={selectedProviderID() && !providerList().some((p) => p.id === selectedProviderID())}>
-            <option value={selectedProviderID()}>{selectedProvider()?.name || selectedProviderID()}</option>
-          </Show>
-        </optgroup>
+        <For each={providerList()}>{(provider) => <option value={provider.id}>{provider.name}</option>}</For>
       </select>
-      <Show when={!isCombo()}>
-        <div class="flex min-w-0 flex-1 flex-col gap-1">
-          <Show when={allModels().length > 0}>
-            <input
-              type="text"
-              class="h-8 min-w-0 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2.5 text-13-regular text-v2-text-text-base outline-none placeholder:text-v2-text-text-faint focus-visible:border-v2-border-border-focus"
-              placeholder={language.t("batuta.model.model.filterPlaceholder")}
-              value={modelFilter()}
-              onInput={(event) => setModelFilter(event.currentTarget.value)}
-            />
-          </Show>
-          <select
-            class={selectClass}
-            disabled={!selectedProvider()}
-            value={selectedModelID()}
-            onChange={(event) => {
-              const provider = selectedProvider()
-              if (!provider || !event.currentTarget.value) return
-              props.onChange(`${provider.id}/${event.currentTarget.value}`)
-            }}
-          >
-            <option value="">{language.t("batuta.model.model.placeholder")}</option>
-            <For each={modelList()}>{(model) => <option value={model.id}>{model.name}</option>}</For>
-          </select>
-          <Show when={modelListTruncated()}>
-            <span class="text-11-regular text-v2-text-text-faint">
-              {language.t("batuta.model.model.truncated", { count: MODEL_RENDER_CAP })}
-            </span>
-          </Show>
-        </div>
-      </Show>
+      <div class="flex min-w-0 flex-1 flex-col gap-1">
+        <Show when={allModels().length > 0}>
+          <input
+            type="text"
+            class="h-8 min-w-0 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2.5 text-13-regular text-v2-text-text-base outline-none placeholder:text-v2-text-text-faint focus-visible:border-v2-border-border-focus"
+            placeholder={language.t("batuta.model.model.filterPlaceholder")}
+            value={modelFilter()}
+            onInput={(event) => setModelFilter(event.currentTarget.value)}
+          />
+        </Show>
+        <select
+          ref={modelSelectRef}
+          class={selectClass}
+          disabled={!selectedProvider()}
+          value={selectedModelID()}
+          onChange={(event) => {
+            const provider = selectedProvider()
+            if (!provider || !event.currentTarget.value) return
+            props.onChange(`${provider.id}/${event.currentTarget.value}`)
+          }}
+        >
+          <option value="">{language.t("batuta.model.model.placeholder")}</option>
+          <For each={modelList()}>{(model) => <option value={model.id}>{model.name}</option>}</For>
+        </select>
+        <Show when={modelListTruncated()}>
+          <span class="text-11-regular text-v2-text-text-faint">
+            {language.t("batuta.model.model.truncated", { count: MODEL_RENDER_CAP })}
+          </span>
+        </Show>
+      </div>
     </div>
   )
 }

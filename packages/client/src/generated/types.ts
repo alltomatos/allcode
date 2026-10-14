@@ -2112,7 +2112,7 @@ export type IntegrationsListOutput = {
       | { readonly type: "env"; readonly names: ReadonlyArray<string> }
     >
     readonly connections: ReadonlyArray<
-      | { readonly type: "credential"; readonly id: string; readonly label: string }
+      | { readonly type: "credential"; readonly id: string; readonly label: string; readonly disabled?: boolean }
       | { readonly type: "env"; readonly name: string }
     >
   }>
@@ -2164,7 +2164,7 @@ export type IntegrationsGetOutput = {
       | { readonly type: "env"; readonly names: ReadonlyArray<string> }
     >
     readonly connections: ReadonlyArray<
-      | { readonly type: "credential"; readonly id: string; readonly label: string }
+      | { readonly type: "credential"; readonly id: string; readonly label: string; readonly disabled?: boolean }
       | { readonly type: "env"; readonly name: string }
     >
   } | null
@@ -2347,6 +2347,7 @@ export type CredentialsCreateOutput = {
         readonly metadata?: { readonly [x: string]: JsonValue }
       }
     | { readonly type: "key"; readonly key: string; readonly metadata?: { readonly [x: string]: JsonValue } }
+  readonly disabled?: boolean
 }
 
 export type CredentialsUpdateInput = {
@@ -2354,7 +2355,8 @@ export type CredentialsUpdateInput = {
   readonly location?: {
     readonly location?: { readonly directory?: string | undefined; readonly workspace?: string | undefined } | undefined
   }["location"]
-  readonly label: { readonly label: string }["label"]
+  readonly label?: { readonly label?: string | undefined; readonly disabled?: boolean | undefined }["label"]
+  readonly disabled?: { readonly label?: string | undefined; readonly disabled?: boolean | undefined }["disabled"]
 }
 
 export type CredentialsUpdateOutput = void

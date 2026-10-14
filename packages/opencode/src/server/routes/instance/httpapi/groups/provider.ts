@@ -43,7 +43,7 @@ export const UserQuotaDetailsSchema = Schema.Struct({
   tier: Schema.Literals(["pro", "free", "unknown"]),
   buckets: Schema.Array(QuotaBucketInfoSchema),
   overallPercentage: Schema.Number,
-  healthStatus: Schema.optional(Schema.Literals(["healthy", "cooldown", "exhausted"])),
+  healthStatus: Schema.optional(Schema.Literals(["healthy", "cooldown", "exhausted", "disabled"])),
   cooldownUntil: Schema.optional(Schema.NullOr(Schema.Number)),
 })
 

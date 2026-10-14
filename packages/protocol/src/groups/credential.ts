@@ -23,7 +23,10 @@ export const CredentialGroup = HttpApiGroup.make("server.credential")
     HttpApiEndpoint.patch("credential.update", "/api/credential/:credentialID", {
       params: { credentialID: Credential.ID },
       query: LocationQuery,
-      payload: Schema.Struct({ label: Schema.String }),
+      payload: Schema.Struct({
+        label: Schema.optional(Schema.String),
+        disabled: Schema.optional(Schema.Boolean),
+      }),
       success: HttpApiSchema.NoContent,
     })
       .annotateMerge(locationQueryOpenApi)
@@ -31,7 +34,7 @@ export const CredentialGroup = HttpApiGroup.make("server.credential")
         OpenApi.annotations({
           identifier: "v2.credential.update",
           summary: "Update credential",
-          description: "Update a stored credential label.",
+          description: "Update a stored credential label or disabled status.",
         }),
       ),
   )

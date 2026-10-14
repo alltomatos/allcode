@@ -94,8 +94,7 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service> = La
     const cfgSvc = yield* Config.Service
     const provider = yield* Provider.Service
 
-    // Same overlay-on-top-of-disk-config pattern as Batuta.Service.add/remove
-    // (packages/opencode/src/batuta/index.ts) — Config.Service.updateGlobal
+    // Overlay-on-top-of-disk-config pattern: Config.Service.updateGlobal
     // only invalidates its own global cache, not the per-instance merged
     // view Config.Service.get() reads, so a freshly added/removed combo
     // wouldn't be visible via get() alone until some later reload.

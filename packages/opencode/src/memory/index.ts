@@ -331,6 +331,12 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
           if (separator < 0) return undefined
           providerID = spec.slice(0, separator)
           modelID = spec.slice(separator + 1)
+          if (providerID === "combo") {
+            const comboResolved = yield* combos.resolve(modelID).pipe(Effect.orElseSucceed(() => undefined))
+            if (!comboResolved) return undefined
+            providerID = comboResolved.providerID
+            modelID = comboResolved.modelID
+          }
         }
 
         if (providerID === "opencode" && (modelID.includes("free") || modelID.includes("lightning"))) {

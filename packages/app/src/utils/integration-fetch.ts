@@ -111,10 +111,10 @@ export function createIntegrationFetchApi(http: ServerConnection.HttpBase) {
         request(http, "DELETE", `/api/credential/${encodeURIComponent(params.credentialID)}`, {
           location: params.location,
         }),
-      update: (params: { credentialID: string; label?: string; location?: Location }) =>
+      update: (params: { credentialID: string; label?: string; disabled?: boolean; location?: Location }) =>
         request(http, "PATCH", `/api/credential/${encodeURIComponent(params.credentialID)}`, {
           location: params.location,
-          body: { label: params.label },
+          body: { label: params.label, disabled: params.disabled },
         }),
     },
   }

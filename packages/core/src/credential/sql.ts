@@ -10,5 +10,6 @@ export const CredentialTable = sqliteTable("credential", {
   connector_id: text(),
   method_id: text(),
   active: integer({ mode: "boolean" }),
+  disabled: integer({ mode: "boolean" }),
   ...Timestamps,
 })

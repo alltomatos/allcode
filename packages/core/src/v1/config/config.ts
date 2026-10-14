@@ -6,7 +6,6 @@ import { ConfigExperimental } from "../../config/experimental"
 import { ConfigReference } from "../../config/reference"
 import { ConfigAgentV1 } from "./agent"
 import { ConfigAttachmentV1 } from "./attachment"
-import { ConfigBatutaV1 } from "./batuta"
 import { ConfigComboV1 } from "./combo"
 import { ConfigAgentUIV1 } from "./agentui"
 import { ConfigCommandV1 } from "./command"
@@ -121,11 +120,8 @@ export const Info = Schema.Struct({
   mcp: Schema.optional(
     Schema.Record(Schema.String, Schema.Union([ConfigMCPV1.Info, Schema.Struct({ enabled: Schema.Boolean })])),
   ).annotate({ description: "MCP (Model Context Protocol) server configurations" }),
-  batuta: Schema.optional(ConfigBatutaV1.Info).annotate({
-    description: "Batuta orchestration activities (orchestrator + worker subagent delegation)",
-  }),
   combo: Schema.optional(ConfigComboV1.Info).annotate({
-    description: "Model combos: named groups of models with failover/rate-limit, selectable anywhere a model is (chat, AgentUI, Batuta)",
+    description: "Model combos: named groups of models with failover/rate-limit, selectable anywhere a model is (chat, AgentUI, Routines)",
   }),
   agentui: Schema.optional(ConfigAgentUIV1.Info).annotate({
     description: "Custom conversational agents (personality, channel, RAG sources, guardrails) — see epic #144",

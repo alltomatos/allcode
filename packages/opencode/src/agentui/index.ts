@@ -215,8 +215,7 @@ const layer = Layer.effect(
     const provider = yield* Provider.Service
     const storage = yield* Storage.Service
 
-    // Same overlay-on-top-of-disk-config pattern as Batuta.Service and
-    // Combo.Service (packages/opencode/src/batuta/index.ts, src/combo/index.ts)
+    // Same overlay-on-top-of-disk-config pattern as Combo.Service (src/combo/index.ts)
     // — Config.Service.updateGlobal only invalidates its own global cache,
     // not the per-instance merged view Config.Service.get() reads.
     const overlay = new Map<string, ConfigAgentUIV1.Agent | undefined>()
@@ -452,6 +451,9 @@ const layer = Layer.effect(
       const providerID = spec.slice(0, separator)
       const modelID = spec.slice(separator + 1)
       if (!providerID || !modelID) return undefined
+      if (providerID === "combo") {
+        return yield* combos.resolve(modelID).pipe(Effect.orElseSucceed(() => undefined))
+      }
       return { providerID, modelID }
     })
 
@@ -766,10 +768,13 @@ const layer = Layer.effect(
         })
 
         if (Exit.isSuccess(modelCheck)) {
+          const isCombo = agent.model.startsWith("combo:") || agent.model.startsWith("combo/")
           items.push({
             name: "Modelo LLM",
             status: "ok",
-            message: `Modelo pronto e conectado: ${resolved.providerID}/${resolved.modelID}`,
+            message: isCombo
+              ? `Combo ativo resolvido para: ${resolved.providerID}/${resolved.modelID}`
+              : `Modelo pronto e conectado: ${resolved.providerID}/${resolved.modelID}`,
           })
         } else {
           const err = Cause.squash(modelCheck.cause)

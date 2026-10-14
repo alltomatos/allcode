@@ -686,7 +686,7 @@ export function make(options: ClientOptions) {
             method: "PATCH",
             path: `/api/credential/${encodeURIComponent(input.credentialID)}`,
             query: { location: input["location"] },
-            body: { label: input["label"] },
+            body: { label: input["label"], disabled: input["disabled"] },
             successStatus: 204,
             declaredStatuses: [401, 400],
             empty: true,

@@ -116,13 +116,12 @@ Depois é só adicionar esse endereço como servidor remoto em **Configurações
 
 **Bot do Telegram**: conecte em Configurações → Integrações → Telegram (token do @BotFather). Cada pedido roda em segundo plano; se um turno ficar travado (ex.: uma pergunta sem resposta) ele cancela sozinho depois de 10 minutos e avisa no chat — ou use `/cancel` pra cancelar na hora, sem precisar reiniciar o servidor. `/new` começa uma sessão nova a qualquer momento.
 
-### Abas do app: Code, AgentUI e Batuta
+### Abas do app: Code e AgentUI
 
-O app desktop organiza o trabalho em três abas na barra lateral:
+O app desktop organiza o trabalho em abas na barra lateral:
 
 - **Code** — a aba padrão: sessões de codificação normais, com o agente OpenCode operando no seu projeto (terminal e browser embutidos, permissões, etc).
 - **AgentUI** — construtor de agentes de chat próprios: configure um agente com system prompt, modelo e skills selecionadas, teste num sandbox de chat embutido, e habilite/desabilite por sessão. Editor baseado em páginas, direto na sidebar.
-- **Batuta** — orquestrador de agentes externos (`claude`, `codex`, etc). Detecta quais CLIs de terceiros estão instalados no servidor conectado (sem spawnar subprocesso, só varredura de PATH), instala a skill `batuta-cli` nos agentes selecionados para que reportem progresso de volta ao Batuta, e expõe um form de worker cujo combobox só habilita agentes que já têm a skill instalada. Feature em desenvolvimento ativo — visível apenas em builds `dev`.
 
 ### Agents
 

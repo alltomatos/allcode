@@ -19,7 +19,6 @@ import { SessionRunState } from "@/session/run-state"
 import { SessionStatus } from "@/session/status"
 
 import { TaskTool, type TaskPromptOps } from "../../src/tool/task"
-import { Batuta } from "@/batuta"
 import { ExternalAgent } from "@/external-agent"
 import { Truncate } from "@/tool/truncate"
 import { ToolRegistry } from "@/tool/registry"
@@ -57,7 +56,6 @@ const layer = (flags: Partial<RuntimeFlags.Info> = {}) =>
       Database.node,
       RuntimeFlags.node,
       Ripgrep.node,
-      Batuta.node,
       ExternalAgent.node,
     ]),
     [
@@ -1107,91 +1105,6 @@ describe("tool.task", () => {
 
       expect((yield* jobs.get(child.id))?.status).toBe("cancelled")
       expect((yield* jobs.get(grandchild.id))?.status).toBe("cancelled")
-    }),
-  )
-
-  it.instance("execute delegates to a Batuta worker by label, using its model", () =>
-    Effect.gen(function* () {
-      const batutaSvc = yield* Batuta.Service
-      const sessions = yield* Session.Service
-      const instance = yield* TestInstance
-      const workerModel = {
-        providerID: ProviderV2.ID.make("worker-provider"),
-        modelID: ModelV2.ID.make("worker-model"),
-      }
-      const activityID = "activity-1"
-      yield* batutaSvc.add({
-        id: activityID,
-        name: "Test activity",
-        goal: "do the thing",
-        orchestratorModel: `${ref.providerID}/${ref.modelID}`,
-        workers: [{ id: "w1", label: "reviewer", model: `${workerModel.providerID}/${workerModel.modelID}` }],
-        directory: instance.directory,
-      })
-      yield* batutaSvc.start(activityID)
-
-      // resolveWorker only sees a worker once the activity's Architect has
-      // handed off and dispatch() has created the orchestrator session — a
-      // bare start() (the Architect session) never registers it. Replicate
-      // that handoff on disk the same way the real flow does.
-      const handoffDir = path.join(instance.directory, ".batuta", activityID)
-      yield* Effect.promise(() => fs.mkdir(handoffDir, { recursive: true }))
-      yield* Effect.promise(() => fs.writeFile(path.join(handoffDir, "handoff.md"), "- reviewer: reviewed the diff"))
-      yield* batutaSvc.checkHandoff(activityID)
-      const { sessionID } = yield* batutaSvc.dispatch(activityID)
-
-      const user = yield* sessions.updateMessage({
-        id: MessageID.ascending(),
-        role: "user",
-        sessionID,
-        agent: "build",
-        model: ref,
-        time: { created: Date.now() },
-      })
-      const assistant: SessionV1.Assistant = {
-        id: MessageID.ascending(),
-        role: "assistant",
-        parentID: user.id,
-        sessionID,
-        mode: "build",
-        agent: "build",
-        cost: 0,
-        path: { cwd: "/tmp", root: "/tmp" },
-        tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } },
-        modelID: ref.modelID,
-        providerID: ref.providerID,
-        time: { created: Date.now() },
-      }
-      yield* sessions.updateMessage(assistant)
-
-      const tool = yield* TaskTool
-      const def = yield* tool.init()
-      let seen: SessionPrompt.PromptInput | undefined
-      const promptOps = stubOps({ text: "reviewed", onPrompt: (input) => (seen = input) })
-
-      const result = yield* def.execute(
-        {
-          description: "review the change",
-          prompt: "please review",
-          subagent_type: "reviewer",
-        },
-        {
-          sessionID,
-          messageID: assistant.id,
-          agent: "build",
-          abort: new AbortController().signal,
-          extra: { promptOps, bypassAgentCheck: true },
-          messages: [],
-          metadata: () => Effect.void,
-          ask: () => Effect.void,
-        },
-      )
-
-      const kids = yield* sessions.children(sessionID)
-      expect(kids).toHaveLength(1)
-      expect(seen?.model?.providerID).toBe(workerModel.providerID)
-      expect(seen?.model?.modelID).toBe(workerModel.modelID)
-      expect(result.output).toContain("state=\"completed\"")
     }),
   )
 })

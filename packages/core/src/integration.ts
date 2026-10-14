@@ -176,7 +176,7 @@ export interface Interface extends State.Transformable<Draft> {
     /** Updates a stored credential exposed as a connection. */
     readonly update: (
       credentialID: Credential.ID,
-      updates: Partial<Pick<Credential.Info, "label">>,
+      updates: Partial<Pick<Credential.Info, "label" | "disabled">>,
     ) => Effect.Effect<void>
     /** Removes a stored credential connection. */
     readonly remove: (credentialID: Credential.ID) => Effect.Effect<void>
@@ -294,6 +294,7 @@ export const locationLayer = Layer.effect(
           type: "credential" as const,
           id: credential.id,
           label: credential.label,
+          disabled: credential.disabled,
         }))
         .toReversed()
       const env = (entry?.methods ?? [])

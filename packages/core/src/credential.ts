@@ -25,6 +25,7 @@ export class Info extends Schema.Class<Info>("Credential.Info")({
   integrationID: Integration.ID,
   label: Schema.String,
   value: Value,
+  disabled: Schema.Boolean.pipe(Schema.optional),
 }) {}
 
 export interface Interface {
@@ -40,8 +41,8 @@ export interface Interface {
     readonly value: Value
     readonly label?: string
   }) => Effect.Effect<Info>
-  /** Updates the label or secret value of a stored credential. */
-  readonly update: (id: ID, updates: Partial<Pick<Info, "label" | "value">>) => Effect.Effect<void>
+  /** Updates the label, secret value, or disabled flag of a stored credential. */
+  readonly update: (id: ID, updates: Partial<Pick<Info, "label" | "value" | "disabled">>) => Effect.Effect<void>
   /** Removes a stored credential. */
   readonly remove: (id: ID) => Effect.Effect<void>
 }
@@ -60,6 +61,7 @@ const layer = Layer.effect(
         integrationID: row.integration_id,
         label: row.label,
         value: decode(row.value),
+        disabled: row.disabled === true ? true : undefined,
       })
     }
 
@@ -191,10 +193,15 @@ const layer = Layer.effect(
         return credential
       }),
       update: Effect.fn("Credential.update")(function* (id, updates) {
-        if (!updates.label && !updates.value) return
+        if (!updates.label && !updates.value && updates.disabled === undefined) return
         yield* db
           .update(CredentialTable)
-          .set({ label: updates.label, value: updates.value })
+          .set({
+            ...(updates.label !== undefined ? { label: updates.label } : {}),
+            ...(updates.value !== undefined ? { value: updates.value } : {}),
+            ...(updates.disabled !== undefined ? { disabled: updates.disabled } : {}),
+            time_updated: Date.now(),
+          })
           .where(eq(CredentialTable.id, id))
           .run()
           .pipe(Effect.orDie)

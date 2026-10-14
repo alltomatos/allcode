@@ -380,13 +380,14 @@ type Endpoint9_1Request = Parameters<RawClient["server.credential"]["credential.
 type Endpoint9_1Input = {
   readonly credentialID: Endpoint9_1Request["params"]["credentialID"]
   readonly location?: Endpoint9_1Request["query"]["location"]
-  readonly label: Endpoint9_1Request["payload"]["label"]
+  readonly label?: Endpoint9_1Request["payload"]["label"]
+  readonly disabled?: Endpoint9_1Request["payload"]["disabled"]
 }
 const Endpoint9_1 = (raw: RawClient["server.credential"]) => (input: Endpoint9_1Input) =>
   raw["credential.update"]({
     params: { credentialID: input["credentialID"] },
     query: { location: input["location"] },
-    payload: { label: input["label"] },
+    payload: { label: input["label"], disabled: input["disabled"] },
   }).pipe(Effect.mapError(mapClientError))
 
 type Endpoint9_2Request = Parameters<RawClient["server.credential"]["credential.remove"]>[0]

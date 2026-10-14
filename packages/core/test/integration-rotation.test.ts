@@ -132,4 +132,19 @@ describe("IntegrationRotation", () => {
     const third = IntegrationRotation.pick(id, connections)!
     expect(third).toEqual(connections[2])
   })
+
+  test("skips disabled connections and never picks them", () => {
+    const id = Integration.ID.make("rotation-test-disabled")
+    const disabledConn: IntegrationConnection.Info = {
+      type: "credential",
+      id: Credential.ID.make("disabled-a"),
+      label: "disabled-a",
+      disabled: true,
+    }
+    const enabledConn = credential("enabled-b")
+    expect(IntegrationRotation.isAvailable(disabledConn)).toBe(false)
+    expect(IntegrationRotation.isAvailable(enabledConn)).toBe(true)
+    expect(IntegrationRotation.pick(id, [disabledConn, enabledConn])).toEqual(enabledConn)
+    expect(IntegrationRotation.pick(id, [disabledConn])).toBeUndefined()
+  })
 })
