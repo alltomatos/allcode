@@ -62,6 +62,7 @@ import { AnimatedCountList } from "./tool-count-summary"
 import { ToolStatusTitle } from "./tool-status-title"
 import { patchFiles } from "./apply-patch-file"
 import { partDefaultOpen } from "./part-default-open"
+import { dataUrlFromMediaValue, mediaKindFromPath, mimeTypeFromPath } from "../pierre/media"
 import { animate } from "motion"
 import { attached, inline, kind, typeLabel } from "./message-file"
 import { readPartText } from "./message-part-text"
@@ -2278,11 +2279,38 @@ ToolRegistry.register({
   name: "write",
   render(props) {
     const i18n = useI18n()
+    const dialog = useDialog()
     const fileComponent = useFileComponent()
     const diagnostics = createMemo(() => getDiagnostics(props.metadata.diagnostics, props.input.filePath))
     const path = createMemo(() => props.input.filePath || "")
     const filename = () => getFilename(props.input.filePath ?? "")
     const pending = () => props.status === "pending" || props.status === "running"
+
+    const mediaKind = createMemo(() => mediaKindFromPath(path()))
+    const isImageOrSvg = createMemo(() => {
+      const k = mediaKind()
+      return k === "image" || k === "svg"
+    })
+
+    const imageSource = createMemo(() => {
+      if (!isImageOrSvg() || !props.input.content) return undefined
+      const k = mediaKind()!
+      const content = props.input.content
+      const direct = dataUrlFromMediaValue(content, k)
+      if (direct) return direct
+
+      if (k === "svg") {
+        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(content)}`
+      }
+
+      const mime = mimeTypeFromPath(path()) ?? "image/png"
+      return `data:${mime};base64,${content}`
+    })
+
+    const openImagePreview = (url: string, alt?: string) => {
+      dialog.show(() => <ImagePreview src={url} alt={alt} />)
+    }
+
     return (
       <div data-component="write-tool">
         <BasicTool
@@ -2310,6 +2338,20 @@ ToolRegistry.register({
             </div>
           }
         >
+          <Show when={imageSource()}>
+            {(src) => (
+              <div
+                data-slot="write-tool-image-preview"
+                onClick={() => openImagePreview(src(), filename())}
+              >
+                <img
+                  src={src()}
+                  alt={filename()}
+                  data-slot="write-tool-image"
+                />
+              </div>
+            )}
+          </Show>
           <Show when={props.input.content && path()}>
             <ToolFileAccordion path={path()}>
               <div data-component="write-content">

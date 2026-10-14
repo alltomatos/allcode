@@ -32,6 +32,8 @@ import { markdownBlockKey, type MarkdownToken } from "./markdown-worker-protocol
 import { shouldResetCodeTokens, type RenderedCodeState } from "./markdown-code-state"
 import { getCachedMarkdown, sanitizeMarkdown, touchCachedMarkdown, type MarkdownCacheEntry } from "./markdown-cache"
 import { inlineCodeKind } from "./markdown-inline-code-kind"
+import { useOptionalDialog } from "@opencode-ai/ui/context/dialog"
+import { ImagePreview } from "@opencode-ai/ui/image-preview"
 
 type RenderedBlock =
   | (MarkdownCacheEntry & { key: string; mode: Exclude<Block["mode"], "code"> })
@@ -285,7 +287,7 @@ function decorate(root: HTMLDivElement, labels: CopyLabels) {
   markCodeLinks(root)
 }
 
-function setupCodeCopy(root: HTMLDivElement, getLabels: () => CopyLabels) {
+function setupCodeCopy(root: HTMLDivElement, getLabels: () => CopyLabels, onImageClick?: (src: string, alt?: string) => void) {
   const timeouts = new Map<HTMLElement, ReturnType<typeof setTimeout>>()
 
   const updateLabel = (button: HTMLElement) => {
@@ -297,6 +299,12 @@ function setupCodeCopy(root: HTMLDivElement, getLabels: () => CopyLabels) {
   const handleClick = async (event: MouseEvent) => {
     const target = event.target
     if (!(target instanceof Element)) return
+
+    if (onImageClick && target instanceof HTMLImageElement && target.src) {
+      event.preventDefault()
+      onImageClick(target.src, target.alt || undefined)
+      return
+    }
 
     const button = target.closest('[data-slot="markdown-copy-button"]')
     if (!(button instanceof HTMLElement)) return
@@ -372,6 +380,7 @@ export function Markdown(
 ) {
   const [local, others] = splitProps(props, ["text", "cacheKey", "streaming", "class", "classList"])
   const i18n = useI18n()
+  const dialog = useOptionalDialog()
   const [root, setRoot] = createSignal<HTMLDivElement>()
   const owner = createUniqueId()
   const activeCodeKeys = new Set<string>()
@@ -526,10 +535,18 @@ export function Markdown(
       .querySelectorAll<HTMLElement>('[data-slot="markdown-copy-button"]')
       .forEach((button) => setCopyState(button, labels, button.dataset.copied === "true"))
     if (!copyCleanup)
-      copyCleanup = setupCodeCopy(container, () => ({
-        copy: i18n.t("ui.message.copy"),
-        copied: i18n.t("ui.message.copied"),
-      }))
+      copyCleanup = setupCodeCopy(
+        container,
+        () => ({
+          copy: i18n.t("ui.message.copy"),
+          copied: i18n.t("ui.message.copied"),
+        }),
+        dialog
+          ? (src, alt) => {
+              dialog.show(() => <ImagePreview src={src} alt={alt} />)
+            }
+          : undefined,
+      )
   })
 
   onCleanup(() => {

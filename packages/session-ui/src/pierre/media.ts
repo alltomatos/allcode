@@ -5,6 +5,26 @@ export type MediaKind = "image" | "audio" | "svg"
 const imageExtensions = new Set(["png", "jpg", "jpeg", "gif", "webp", "avif", "bmp", "ico", "tif", "tiff", "heic"])
 const audioExtensions = new Set(["mp3", "wav", "ogg", "m4a", "aac", "flac", "opus"])
 
+const imageMimeTypes: Record<string, string> = {
+  png: "image/png",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  gif: "image/gif",
+  webp: "image/webp",
+  avif: "image/avif",
+  bmp: "image/bmp",
+  ico: "image/x-icon",
+  svg: "image/svg+xml",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+  heic: "image/heic",
+}
+
+export function mimeTypeFromPath(path: string | undefined): string | undefined {
+  const ext = fileExtension(path)
+  return imageMimeTypes[ext]
+}
+
 type MediaValue = unknown
 
 function mediaRecord(value: unknown) {

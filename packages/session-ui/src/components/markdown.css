@@ -299,6 +299,12 @@
     border-radius: 4px;
     margin: 1.5rem 0;
     display: block;
+    cursor: zoom-in;
+    transition: opacity 0.15s ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
   }
 }
 

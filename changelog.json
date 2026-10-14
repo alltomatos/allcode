@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.21.88",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Timeline: Visualização e Zoom de Imagens Geradas",
+              "description": "Adicionada exibição direta de preview de imagens (SVG, PNG, JPG, WebP, BMP, etc.) na timeline ao serem criadas por ferramentas de escrita, com suporte a ampliação em modal em tela cheia ao clicar na imagem ou em tags <img> no Markdown."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.87",
       "highlights": [
         {

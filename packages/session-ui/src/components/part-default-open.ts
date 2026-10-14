@@ -1,4 +1,5 @@
 import type { Part as PartType, ToolPart } from "@opencode-ai/sdk/v2"
+import { mediaKindFromPath } from "../pierre/media"
 
 function deletionOnly(part: ToolPart) {
   if (!("metadata" in part.state)) return false
@@ -34,10 +35,20 @@ function onlyMarkdownFiles(part: ToolPart) {
   return paths.every((path) => path.toLowerCase().endsWith(".md"))
 }
 
+function hasMediaFiles(part: ToolPart) {
+  const paths = toolFilePaths(part)
+  if (paths.length === 0) return false
+  return paths.some((path) => {
+    const kind = mediaKindFromPath(path)
+    return kind === "image" || kind === "svg"
+  })
+}
+
 export function partDefaultOpen(part: PartType, shell = false, edit = false) {
   if (part.type !== "tool") return
   if (part.tool === "bash" || part.tool === "shell") return shell
   if (part.tool === "edit" || part.tool === "write" || part.tool === "patch" || part.tool === "apply_patch") {
+    if (hasMediaFiles(part)) return true
     if (onlyMarkdownFiles(part)) return false
     if (!edit) return false
     return !deletionOnly(part)

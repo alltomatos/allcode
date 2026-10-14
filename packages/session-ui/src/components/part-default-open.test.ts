@@ -67,6 +67,12 @@ describe("partDefaultOpen", () => {
   test("keeps non-markdown writes expanded when edit expansion is enabled", () => {
     expect(partDefaultOpen(tool("write", {}, { filePath: "src/index.ts" }), false, true)).toBe(true)
   })
+
+  test("keeps image writes expanded even when edit expansion is disabled", () => {
+    expect(partDefaultOpen(tool("write", {}, { filePath: "assets/logo.svg" }), false, false)).toBe(true)
+    expect(partDefaultOpen(tool("write", {}, { filePath: "assets/photo.png" }), false, false)).toBe(true)
+    expect(partDefaultOpen(tool("write", {}, { filePath: "assets/banner.webp" }), false, false)).toBe(true)
+  })
 })
 
 function tool(name: string, metadata: Record<string, unknown>, input: Record<string, unknown> = {}): PartType {

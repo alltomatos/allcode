@@ -195,3 +195,26 @@ export function useDialog() {
     },
   }
 }
+
+export function useOptionalDialog() {
+  const ctx = useContext(Context)
+  const owner = getOwner()
+  if (!owner || !ctx) return undefined
+
+  return {
+    get active() {
+      return ctx.stack().at(-1)
+    },
+    show(element: DialogElement, onClose?: () => void) {
+      const base = ctx.stack().at(-1)?.owner ?? owner
+      return startTransition(() => ctx.show(element, base, onClose))
+    },
+    push(element: DialogElement, onClose?: () => void) {
+      const base = ctx.stack().at(-1)?.owner ?? owner
+      return startTransition(() => ctx.push(element, base, onClose))
+    },
+    close() {
+      ctx.close()
+    },
+  }
+}
