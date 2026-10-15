@@ -49,7 +49,7 @@ if (typeof window !== "undefined") {
 }
 
 export function isBrowserPanelAvailable() {
-  return typeof window !== "undefined" && !!browserPanelAPI()
+  return typeof window !== "undefined"
 }
 
 export function isBrowserPanelOpen() {
@@ -184,7 +184,12 @@ export const BrowserPanelOverlay: Component<{ stacked?: boolean }> = (props) => 
                 const value = addressInput().trim()
                 if (!value) return
                 const url = value.startsWith("http://") || value.startsWith("https://") ? value : `https://${value}`
-                void browserPanelAPI()?.navigate(url)
+                const api = browserPanelAPI()
+                if (api) {
+                  void api.navigate(url)
+                } else {
+                  setState((prev) => ({ ...prev, url, title: url, isLoading: false }))
+                }
               }}
             >
               <TextInputV2
@@ -200,12 +205,30 @@ export const BrowserPanelOverlay: Component<{ stacked?: boolean }> = (props) => 
               type="button"
               variant="ghost-muted"
               size="small"
+              icon={<Icon name="square-arrow-top-right" />}
+              aria-label={language.t("common.openInNewTab") ?? "Open in new tab"}
+              onClick={() => {
+                if (state().url) window.open(state().url, "_blank", "noopener,noreferrer")
+              }}
+            />
+            <IconButtonV2
+              type="button"
+              variant="ghost-muted"
+              size="small"
               icon={<Icon name="close" />}
               aria-label={language.t("common.close")}
               onClick={closeBrowserPanel}
             />
           </div>
-          <div ref={placeholder} class="flex-1 min-h-0" />
+          <div ref={placeholder} class="flex-1 min-h-0 relative">
+            <Show when={!browserPanelAPI() && !!state().url}>
+              <iframe
+                src={state().url}
+                class="w-full h-full border-none"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+              />
+            </Show>
+          </div>
         </div>
     </Show>
   )
