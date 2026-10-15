@@ -39,7 +39,7 @@ export function createHomeProjectsController(home: HomeController) {
   }
 
   function canRevealProject(conn: ServerConnection.Any) {
-    return platform.platform === "desktop" && !!platform.openPath && ServerConnection.local(conn)
+    return platform.capabilities.canOpenInLocalEditor && !!platform.openPath && ServerConnection.local(conn)
   }
 
   return {

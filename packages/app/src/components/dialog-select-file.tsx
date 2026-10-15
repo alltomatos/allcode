@@ -36,7 +36,7 @@ export function DialogSelectFile(props: { mode?: DialogSelectFileMode; onOpenFil
     return <DialogCommandPaletteV2 onOpenFile={props.onOpenFile} />
   }
 
-  if (filesOnly() && platform.platform === "desktop" && settings.general.newLayoutDesigns()) {
+  if (filesOnly() && settings.general.newLayoutDesigns()) {
     return <DialogSelectFileDesktopV2 onOpenFile={props.onOpenFile} />
   }
 

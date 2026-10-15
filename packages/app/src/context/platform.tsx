@@ -178,7 +178,37 @@ type PlatformBase = {
   recordFatalRendererError?(error: FatalRendererErrorLog): Promise<void>
 }
 
-export type Platform = PlatformBase &
+export type PlatformCapabilities = {
+  readonly canPickDirectoryNative: boolean
+  readonly canOpenInLocalEditor: boolean
+  readonly hasEmbeddedBrowser: boolean
+  readonly hasWindowControls: boolean
+  readonly supportsCustomThemes: boolean
+}
+
+export function defaultPlatformCapabilities(platform: PlatformName): PlatformCapabilities {
+  if (platform === "desktop") {
+    return {
+      canPickDirectoryNative: true,
+      canOpenInLocalEditor: true,
+      hasEmbeddedBrowser: true,
+      hasWindowControls: true,
+      supportsCustomThemes: true,
+    }
+  }
+
+  return {
+    canPickDirectoryNative: false,
+    canOpenInLocalEditor: true,
+    hasEmbeddedBrowser: false,
+    hasWindowControls: false,
+    supportsCustomThemes: true,
+  }
+}
+
+export type Platform = PlatformBase & {
+  capabilities: PlatformCapabilities
+} &
   (
     | { platform: "web"; os?: never }
     | {

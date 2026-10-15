@@ -236,7 +236,7 @@ export function SessionHeader() {
     app: undefined as OpenApp | undefined,
   })
 
-  const canOpen = createMemo(() => platform.platform === "desktop" && !!platform.openPath && server.isLocal())
+  const canOpen = createMemo(() => platform.capabilities.canOpenInLocalEditor && !!platform.openPath && server.isLocal())
   const current = createMemo(
     () =>
       options().find((o) => o.id === prefs.app) ??

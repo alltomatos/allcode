@@ -176,7 +176,7 @@ export function TimelineHeader(props: {
                 "gap-3": !settings.general.newLayoutDesigns(),
               }}
             >
-              <Show when={platform.platform === "desktop"}>
+              <Show when={true}>
                 <IconButtonV2
                   type="button"
                   variant="ghost-muted"

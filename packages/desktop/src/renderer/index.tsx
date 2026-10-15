@@ -8,6 +8,7 @@ import {
   normalizeLocale,
   type Locale,
   type Platform,
+  defaultPlatformCapabilities,
   PlatformProvider,
   createDraftStore,
   ServerConnection,
@@ -180,6 +181,7 @@ const createPlatform = (windowState: DesktopWindowState): Platform => {
 
   return {
     platform: "desktop",
+    capabilities: defaultPlatformCapabilities("desktop"),
     os,
     version: pkg.version,
     windowID: windowState.id,
