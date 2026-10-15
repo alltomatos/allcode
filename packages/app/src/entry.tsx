@@ -9,6 +9,7 @@ import { createBrowserDraftStore } from "@/utils/draft-store"
 import { dict as en } from "@/i18n/en"
 import { dict as zh } from "@/i18n/zh"
 import { authFromToken } from "@/utils/server"
+import { buildEditorUri } from "@/utils/editor-uri"
 import pkg from "../package.json"
 import { ServerConnection } from "./context/server"
 
@@ -124,6 +125,12 @@ const platform: Platform = {
   openExternal,
   restart,
   notify,
+  openPath: async (path: string, app?: string) => {
+    const uri = buildEditorUri(path, app)
+    if (uri) {
+      window.open(uri, "_self")
+    }
+  },
   getDefaultServer: async () => {
     const stored = readDefaultServerUrl()
     return stored ? ServerConnection.Key.make(stored) : null
