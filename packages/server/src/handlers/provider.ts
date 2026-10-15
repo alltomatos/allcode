@@ -5,6 +5,20 @@ import { Api } from "../api"
 import { ProviderNotFoundError } from "@opencode-ai/protocol/errors"
 import { response } from "../location"
 
+function cleanProvider(provider: any) {
+  if (provider?.api?.settings && typeof provider.api.settings === "object") {
+    const { fetch: _, ...safeSettings } = provider.api.settings
+    return {
+      ...provider,
+      api: {
+        ...provider.api,
+        settings: safeSettings,
+      },
+    }
+  }
+  return provider
+}
+
 export const ProviderHandler = HttpApiBuilder.group(Api, "server.provider", (handlers) =>
   Effect.gen(function* () {
     return handlers
@@ -12,7 +26,8 @@ export const ProviderHandler = HttpApiBuilder.group(Api, "server.provider", (han
         "provider.list",
         Effect.fn(function* () {
           const catalog = yield* Catalog.Service
-          return yield* response(catalog.provider.available())
+          const list = yield* catalog.provider.available()
+          return yield* response(Effect.succeed(list.map(cleanProvider)))
         }),
       )
       .handle(
@@ -25,7 +40,7 @@ export const ProviderHandler = HttpApiBuilder.group(Api, "server.provider", (han
               providerID: ctx.params.providerID,
               message: `Provider not found: ${ctx.params.providerID}`,
             })
-          return yield* response(Effect.succeed(provider))
+          return yield* response(Effect.succeed(cleanProvider(provider)))
         }),
       )
   }),
