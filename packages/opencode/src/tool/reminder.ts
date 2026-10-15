@@ -168,7 +168,8 @@ export const ReminderTool = Tool.define(
             }
 
             const createdReminders = []
-            const channels = params.channels ?? ["desktop"]
+            const channels: ("desktop" | "whatsapp" | "agentui" | "telegram")[] =
+              params.channels && params.channels.length > 0 ? [...params.channels] : ["desktop", "whatsapp"]
             const message = params.message ?? params.title
 
             // 1. Alerta Antecipado (se solicitado)

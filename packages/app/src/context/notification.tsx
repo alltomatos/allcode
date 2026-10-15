@@ -17,6 +17,7 @@ import { ServerConnection, useServer } from "./server"
 import { type DraftTab, useTabs } from "./tabs"
 import { parseServerKey } from "@/utils/session-route"
 import type { ServerScope } from "@/utils/server-scope"
+import { showToast } from "@/utils/toast"
 
 type NotificationBase = {
   directory?: string
@@ -363,6 +364,23 @@ function createServerNotificationState(input: {
           input.navigate(href),
         )
       }
+
+      showToast({
+        variant: "success",
+        icon: "circle-check",
+        title: language.t("notification.session.responseReady.title"),
+        description: session.title ?? sessionID,
+        actions: [
+          {
+            label: language.t("notification.action.goToSession"),
+            onClick: () => input.navigate(href),
+          },
+          {
+            label: language.t("common.dismiss"),
+            onClick: "dismiss",
+          },
+        ],
+      })
     })
   }
 
@@ -396,6 +414,23 @@ function createServerNotificationState(input: {
       if (settings.notifications.errors()) {
         void platform.notify(language.t("notification.session.error.title"), description, () => input.navigate(href))
       }
+
+      showToast({
+        variant: "error",
+        icon: "circle-x",
+        title: language.t("notification.session.error.title"),
+        description,
+        actions: [
+          {
+            label: language.t("notification.action.goToSession"),
+            onClick: () => input.navigate(href),
+          },
+          {
+            label: language.t("common.dismiss"),
+            onClick: "dismiss",
+          },
+        ],
+      })
     })
   }
 

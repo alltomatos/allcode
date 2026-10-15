@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.21.89",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "LLM: Alinhamento de Headers para Camada Gratuita do OpenCode",
+              "description": "Adicionado header obrigatório x-opencode-session-id e padronizado identificador x-opencode-client para prevenir erro 403 FreeTierError no provedor OpenCode."
+            },
+            {
+              "title": "Plataforma Web: Notificações em Toast e Paridade de Recursos",
+              "description": "Adicionado suporte a toasts informativos para conclusões de sessão e erros de execução, melhorias em rotinas com timeout estendido e suporte a lembretes por múltiplos canais."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.88",
       "highlights": [
         {

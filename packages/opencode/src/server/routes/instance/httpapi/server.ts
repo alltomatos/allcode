@@ -66,6 +66,7 @@ import { ScheduleRunner } from "@opencode-ai/core/schedule/runner"
 import { ScheduleMcpCaller } from "@/schedule/mcp-caller"
 import { ScheduleSkillCaller } from "@/schedule/skill-caller"
 import { ScheduleAgentUICaller } from "@/schedule/agentui-caller"
+import { ScheduleReminderCaller } from "@/schedule/reminder-caller"
 import { EventV2 } from "@opencode-ai/core/event"
 import { ModelsDev } from "@opencode-ai/core/models-dev"
 import { Npm } from "@opencode-ai/core/npm"
@@ -308,6 +309,7 @@ const app = LayerNode.group([
   ScheduleSkillCaller.node,
   ScheduleMcpCaller.node,
   ScheduleAgentUICaller.node,
+  ScheduleReminderCaller.node,
 ])
 
 export function createRoutes(
@@ -350,6 +352,7 @@ export function createRoutes(
         [ScheduleRunner.mcpCallerNode, ScheduleMcpCaller.node],
         [ScheduleRunner.skillCallerNode, ScheduleSkillCaller.node],
         [ScheduleRunner.agentUICallerNode, ScheduleAgentUICaller.node],
+        [ScheduleRunner.reminderCallerNode, ScheduleReminderCaller.node],
       ]),
     ),
     // Must stay last: layers provided later in this pipe build beneath earlier ones,

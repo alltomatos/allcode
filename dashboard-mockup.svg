@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600" width="100%" height="100%" style="background:#0f172a; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="primary-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" />
+      <stop offset="100%" stop-color="#1d4ed8" />
+    </linearGradient>
+    <linearGradient id="emerald-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="chart-area" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0" />
+    </linearGradient>
+    <filter id="card-shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- SIDEBAR -->
+  <rect x="0" y="0" width="220" height="600" fill="#1e293b" />
+  
+  <!-- Logo / Brand -->
+  <circle cx="42" cy="42" r="14" fill="url(#primary-grad)" />
+  <path d="M37 42 L41 46 L47 38" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <text x="66" y="47" fill="#f8fafc" font-size="16" font-weight="700" letter-spacing="0.5">MetricsHQ</text>
+  
+  <!-- Navigation Items -->
+  <!-- Active Item -->
+  <rect x="16" y="88" width="188" height="40" rx="8" fill="#3b82f6" fill-opacity="0.15" />
+  <circle cx="38" cy="108" r="4" fill="#3b82f6" />
+  <text x="54" y="113" fill="#60a5fa" font-size="13" font-weight="600">Dashboard</text>
+
+  <!-- Inactive Items -->
+  <text x="54" y="157" fill="#94a3b8" font-size="13" font-weight="500">Analytics</text>
+  <circle cx="38" cy="152" r="4" fill="#64748b" />
+
+  <text x="54" y="201" fill="#94a3b8" font-size="13" font-weight="500">Transações</text>
+  <circle cx="38" cy="196" r="4" fill="#64748b" />
+
+  <text x="54" y="245" fill="#94a3b8" font-size="13" font-weight="500">Clientes</text>
+  <circle cx="38" cy="240" r="4" fill="#64748b" />
+
+  <text x="54" y="289" fill="#94a3b8" font-size="13" font-weight="500">Configurações</text>
+  <circle cx="38" cy="284" r="4" fill="#64748b" />
+
+  <!-- User / Footer Profile -->
+  <line x1="20" y1="520" x2="200" y2="520" stroke="#334155" stroke-width="1" />
+  <circle cx="42" cy="556" r="16" fill="#475569" />
+  <text x="42" y="561" fill="#f8fafc" font-size="12" font-weight="bold" text-anchor="middle">RO</text>
+  <text x="68" y="552" fill="#f8fafc" font-size="12" font-weight="600">Ronaldo Dev</text>
+  <text x="68" y="567" fill="#64748b" font-size="10">Admin Pro</text>
+
+  <!-- TOP HEADER -->
+  <rect x="220" y="0" width="780" height="70" fill="#0f172a" />
+  <line x1="220" y1="70" x2="1000" y2="70" stroke="#1e293b" stroke-width="1" />
+  <text x="250" y="44" fill="#f8fafc" font-size="20" font-weight="700">Visão Geral</text>
+  
+  <!-- Search Bar / Action -->
+  <rect x="740" y="20" width="160" height="32" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1" />
+  <text x="754" y="41" fill="#64748b" font-size="11">Buscar relatórios...</text>
+  <rect x="912" y="20" width="60" height="32" rx="6" fill="url(#primary-grad)" />
+  <text x="942" y="40" fill="#ffffff" font-size="11" font-weight="600" text-anchor="middle">Exportar</text>
+
+  <!-- METRIC CARDS ROW -->
+  <!-- Card 1: Receita Total -->
+  <g filter="url(#card-shadow)">
+    <rect x="250" y="90" width="220" height="95" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="270" y="116" fill="#94a3b8" font-size="12" font-weight="500">Receita Total</text>
+    <text x="270" y="152" fill="#f8fafc" font-size="22" font-weight="800">R$ 128.450</text>
+    <rect x="390" y="106" width="60" height="20" rx="10" fill="#10b981" fill-opacity="0.15" />
+    <text x="420" y="120" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle">+14.2%</text>
+  </g>
+
+  <!-- Card 2: Novos Assinantes -->
+  <g filter="url(#card-shadow)">
+    <rect x="495" y="90" width="220" height="95" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="515" y="116" fill="#94a3b8" font-size="12" font-weight="500">Assinaturas Ativas</text>
+    <text x="515" y="152" fill="#f8fafc" font-size="22" font-weight="800">1.429</text>
+    <rect x="635" y="106" width="60" height="20" rx="10" fill="#10b981" fill-opacity="0.15" />
+    <text x="665" y="120" fill="#34d399" font-size="10" font-weight="700" text-anchor="middle">+8.7%</text>
+  </g>
+
+  <!-- Card 3: Taxa de Conversão -->
+  <g filter="url(#card-shadow)">
+    <rect x="740" y="90" width="230" height="95" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="760" y="116" fill="#94a3b8" font-size="12" font-weight="500">Conversão de Checkout</text>
+    <text x="760" y="152" fill="#f8fafc" font-size="22" font-weight="800">3.84%</text>
+    <rect x="885" y="106" width="65" height="20" rx="10" fill="#3b82f6" fill-opacity="0.15" />
+    <text x="917" y="120" fill="#60a5fa" font-size="10" font-weight="700" text-anchor="middle">+2.1%</text>
+  </g>
+
+  <!-- MAIN CHART: Evolução de Vendas -->
+  <g filter="url(#card-shadow)">
+    <rect x="250" y="205" width="465" height="365" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="272" y="238" fill="#f8fafc" font-size="15" font-weight="700">Fluxo de Vendas Semanal</text>
+    <text x="272" y="256" fill="#64748b" font-size="11">Últimos 7 dias em comparação ao período anterior</text>
+
+    <!-- Grid lines -->
+    <line x1="272" y1="310" x2="685" y2="310" stroke="#334155" stroke-dasharray="4" stroke-width="0.8" />
+    <line x1="272" y1="380" x2="685" y2="380" stroke="#334155" stroke-dasharray="4" stroke-width="0.8" />
+    <line x1="272" y1="450" x2="685" y2="450" stroke="#334155" stroke-dasharray="4" stroke-width="0.8" />
+    <line x1="272" y1="520" x2="685" y2="520" stroke="#475569" stroke-width="1" />
+
+    <!-- Chart Line & Filled Area -->
+    <path d="M285 470 Q 345 420, 395 440 T 505 350 T 605 320 T 675 290 L 675 520 L 285 520 Z" fill="url(#chart-area)" />
+    <path d="M285 470 Q 345 420, 395 440 T 505 350 T 605 320 T 675 290" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Chart Points -->
+    <circle cx="285" cy="470" r="4" fill="#3b82f6" stroke="#1e293b" stroke-width="2" />
+    <circle cx="395" cy="440" r="4" fill="#3b82f6" stroke="#1e293b" stroke-width="2" />
+    <circle cx="505" cy="350" r="4" fill="#3b82f6" stroke="#1e293b" stroke-width="2" />
+    <circle cx="605" cy="320" r="4" fill="#3b82f6" stroke="#1e293b" stroke-width="2" />
+    <circle cx="675" cy="290" r="5" fill="#60a5fa" stroke="#1e293b" stroke-width="2" />
+
+    <!-- X-Axis Labels -->
+    <text x="285" y="540" fill="#64748b" font-size="10" text-anchor="middle">Seg</text>
+    <text x="350" y="540" fill="#64748b" font-size="10" text-anchor="middle">Ter</text>
+    <text x="415" y="540" fill="#64748b" font-size="10" text-anchor="middle">Qua</text>
+    <text x="480" y="540" fill="#64748b" font-size="10" text-anchor="middle">Qui</text>
+    <text x="545" y="540" fill="#64748b" font-size="10" text-anchor="middle">Sex</text>
+    <text x="610" y="540" fill="#64748b" font-size="10" text-anchor="middle">Sáb</text>
+    <text x="675" y="540" fill="#64748b" font-size="10" text-anchor="middle">Dom</text>
+  </g>
+
+  <!-- SIDE CARD: Últimas Transações -->
+  <g filter="url(#card-shadow)">
+    <rect x="735" y="205" width="235" height="365" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" />
+    <text x="755" y="238" fill="#f8fafc" font-size="15" font-weight="700">Atividades Recentes</text>
+
+    <!-- Transação 1 -->
+    <circle cx="770" cy="280" r="14" fill="#10b981" fill-opacity="0.15" />
+    <path d="M766 280 L769 283 L775 277" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="794" y="278" fill="#f8fafc" font-size="12" font-weight="600">Assinatura Anual</text>
+    <text x="794" y="291" fill="#64748b" font-size="10">Há 5 minutos</text>
+    <text x="950" y="284" fill="#34d399" font-size="11" font-weight="700" text-anchor="end">+R$ 980</text>
+
+    <line x1="755" y1="310" x2="950" y2="310" stroke="#334155" stroke-width="0.8" />
+
+    <!-- Transação 2 -->
+    <circle cx="770" cy="340" r="14" fill="#3b82f6" fill-opacity="0.15" />
+    <path d="M766 340 L769 343 L775 337" stroke="#3b82f6" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="794" y="338" fill="#f8fafc" font-size="12" font-weight="600">Plano Pro Mensal</text>
+    <text x="794" y="351" fill="#64748b" font-size="10">Há 22 minutos</text>
+    <text x="950" y="344" fill="#60a5fa" font-size="11" font-weight="700" text-anchor="end">+R$ 120</text>
+
+    <line x1="755" y1="370" x2="950" y2="370" stroke="#334155" stroke-width="0.8" />
+
+    <!-- Transação 3 -->
+    <circle cx="770" cy="400" r="14" fill="#10b981" fill-opacity="0.15" />
+    <path d="M766 400 L769 403 L775 337" stroke="#10b981" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="794" y="398" fill="#f8fafc" font-size="12" font-weight="600">Upgrade Enterprise</text>
+    <text x="794" y="411" fill="#64748b" font-size="10">Há 1 hora</text>
+    <text x="950" y="404" fill="#34d399" font-size="11" font-weight="700" text-anchor="end">+R$ 2.400</text>
+
+    <line x1="755" y1="430" x2="950" y2="430" stroke="#334155" stroke-width="0.8" />
+
+    <!-- Transação 4 -->
+    <circle cx="770" cy="460" r="14" fill="#ef4444" fill-opacity="0.15" />
+    <path d="M767 457 L773 463 M773 457 L767 463" stroke="#ef4444" stroke-width="2" fill="none" stroke-linecap="round" />
+    <text x="794" y="458" fill="#f8fafc" font-size="12" font-weight="600">Reembolso</text>
+    <text x="794" y="471" fill="#64748b" font-size="10">Há 3 horas</text>
+    <text x="950" y="464" fill="#f87171" font-size="11" font-weight="700" text-anchor="end">-R$ 120</text>
+
+    <!-- Banner de Status do Servidor no Rodapé do Card -->
+    <rect x="755" y="505" width="195" height="42" rx="6" fill="#0f172a" />
+    <circle cx="772" cy="526" r="4" fill="#10b981" />
+    <text x="784" y="524" fill="#e2e8f0" font-size="11" font-weight="600">Status da API</text>
+    <text x="784" y="537" fill="#64748b" font-size="9">Todos os sistemas normais</text>
+  </g>
+</svg>

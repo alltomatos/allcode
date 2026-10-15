@@ -11,6 +11,7 @@ export const scheduleHandlers = HttpApiBuilder.group(Api, "server.schedule", (ha
     const skillCaller = yield* ScheduleRunner.SkillCaller
     const mcpCaller = yield* ScheduleRunner.McpCaller
     const agentUICaller = yield* ScheduleRunner.AgentUICaller
+    const reminderCaller = yield* ScheduleRunner.ReminderCaller
 
     return handlers
       .handle(
@@ -45,6 +46,7 @@ export const scheduleHandlers = HttpApiBuilder.group(Api, "server.schedule", (ha
             Effect.provideService(ScheduleRunner.SkillCaller, skillCaller),
             Effect.provideService(ScheduleRunner.McpCaller, mcpCaller),
             Effect.provideService(ScheduleRunner.AgentUICaller, agentUICaller),
+            Effect.provideService(ScheduleRunner.ReminderCaller, reminderCaller),
             Effect.catchCause((cause) =>
               new ScheduleValidationError({
                 name: "ScheduleValidationError",
@@ -61,6 +63,7 @@ export const scheduleHandlers = HttpApiBuilder.group(Api, "server.schedule", (ha
             Effect.provideService(ScheduleRunner.SkillCaller, skillCaller),
             Effect.provideService(ScheduleRunner.McpCaller, mcpCaller),
             Effect.provideService(ScheduleRunner.AgentUICaller, agentUICaller),
+            Effect.provideService(ScheduleRunner.ReminderCaller, reminderCaller),
             Effect.catchCause((cause) =>
               new ScheduleValidationError({
                 name: "ScheduleValidationError",

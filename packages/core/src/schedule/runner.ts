@@ -135,7 +135,7 @@ const mcpCallerUnsupportedLayer = Layer.succeed(
 
 export const mcpCallerNode = makeGlobalNode({ service: McpCaller, layer: mcpCallerUnsupportedLayer, deps: [] })
 
-const DEFAULT_TIMEOUT_MS = 300_000
+const DEFAULT_TIMEOUT_MS = 1_800_000 // 30 minutos
 
 function executeCommand(
   command: string,
