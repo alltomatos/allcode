@@ -26,7 +26,7 @@ GitHub (`alltomatos/opencode`, branch default `dev`) é a fonte persistente de r
 | [**[E16] Rotinas Agendadas Cross-Platform**](https://github.com/alltomatos/opencode/issues/213) | Agendamento e automação de rotinas em segundo plano multiplataforma | in_progress | [#213](https://github.com/alltomatos/opencode/issues/213) |
 | [**[E17] Otimização de Performance e Latência de UI/Navegação**](https://github.com/alltomatos/opencode/issues/228) | Otimização de queries SQLite, transição de timeline sem render stall, favicon glob e desoneração do boot desktop | done | [#228](https://github.com/alltomatos/opencode/issues/228) |
 | [**[E18] Multi-Account OAuth e Resiliência de Provedores**](https://github.com/alltomatos/opencode/issues/248) | Suporte multi-conta para Google Antigravity, Kiro AI e Kilo Code, com rotação em 429 e resiliência | in_progress | [#248](https://github.com/alltomatos/opencode/issues/248) |
-| [**[E19] Paridade Total de Plataforma Web com o Desktop**](https://github.com/alltomatos/opencode/issues/261) | Paridade funcional de UI/UX, persistência IndexedDB, navegação de FS virtual e desacoplamento do Electron | in_progress | [#261](https://github.com/alltomatos/opencode/issues/261) |
+| [**[E19] Paridade Total de Plataforma Web com o Desktop**](https://github.com/alltomatos/opencode/issues/261) | Paridade funcional de UI/UX, persistência IndexedDB, navegação de FS virtual e desacoplamento do Electron | done | [#261](https://github.com/alltomatos/opencode/issues/261) |
 
 ---
 
@@ -83,5 +83,5 @@ GitHub (`alltomatos/opencode`, branch default `dev`) é a fonte persistente de r
 ### M7: Full Web Parity & Universal Access
 - **Objetivo:** Paridade funcional e de design completa entre Desktop e Web, liberando acesso universal via navegador sem perda de ergonomia.
 - **Epics vinculadas:**
-  - [**[E19] Paridade Total de Plataforma Web com o Desktop**](https://github.com/alltomatos/opencode/issues/261) (`in_progress`)
-- **Estado:** `in_progress`
+  - [**[E19] Paridade Total de Plataforma Web com o Desktop**](https://github.com/alltomatos/opencode/issues/261) (`done`)
+- **Estado:** `done`
