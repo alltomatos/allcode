@@ -199,3 +199,118 @@ it.instance("handleWebhook() ignores messages from senders not in allowedSenders
     yield* agentUI.remove(created.id)
   }),
 )
+
+it.instance("handleWebhook() honors mentionOnly in groups", () =>
+  Effect.gen(function* () {
+    const agentUI = yield* AgentUI.Service
+    const created = {
+      ...agent({ id: "agent-mention-only" }),
+      channels: [
+        {
+          type: "whatsapp" as const,
+          provider: "waha" as const,
+          config: { baseUrl: "http://localhost:3000", apiKey: "k" },
+          directory: "/tmp/does-not-matter",
+          allowedGroups: ["120363411697978760@g.us"],
+          mentionOnly: true,
+          webhookSecret: "secret-mention",
+        },
+      ],
+    }
+    yield* agentUI.add(created)
+
+    const svc = yield* WhatsApp.Service
+    // Mensagem no grupo sem menção
+    const exitNoMention = yield* svc
+      .handleWebhook({
+        agentID: created.id,
+        secret: "secret-mention",
+        body: {
+          event: "message",
+          payload: {
+            id: "msg-no-mention",
+            from: "120363411697978760@g.us",
+            participant: "5585998490991@c.us",
+            body: "Mensagem comum no grupo sem marcar ninguém",
+            fromMe: false,
+          },
+        },
+        headers: {},
+      })
+      .pipe(Effect.exit)
+
+    expect(Exit.isSuccess(exitNoMention)).toBe(true)
+
+    yield* agentUI.remove(created.id)
+  }),
+)
+
+it.instance("handleWebhook() honors groupAllowedSenders isolation between groups", () =>
+  Effect.gen(function* () {
+    const agentUI = yield* AgentUI.Service
+    const created = {
+      ...agent({ id: "agent-group-isolation" }),
+      channels: [
+        {
+          type: "whatsapp" as const,
+          provider: "waha" as const,
+          config: { baseUrl: "http://localhost:3000", apiKey: "k" },
+          directory: "/tmp/does-not-matter",
+          allowedGroups: ["group-y@g.us", "group-h@g.us"],
+          // No group-y apenas o contato 5585998490991 pode interagir
+          groupAllowedSenders: {
+            "group-y@g.us": ["5585998490991"],
+            "group-h@g.us": ["5585888888888"],
+          },
+          webhookSecret: "secret-isolation",
+        },
+      ],
+    }
+    yield* agentUI.add(created)
+
+    const svc = yield* WhatsApp.Service
+    // Mensagem de 5585888888888 no group-y (NÃO PERMITIDO no group-y)
+    const exitBlocked = yield* svc
+      .handleWebhook({
+        agentID: created.id,
+        secret: "secret-isolation",
+        body: {
+          event: "message",
+          payload: {
+            id: "msg-blocked",
+            from: "group-y@g.us",
+            participant: "5585888888888@c.us",
+            body: "Tentando falar no group-y",
+            fromMe: false,
+          },
+        },
+        headers: {},
+      })
+      .pipe(Effect.exit)
+
+    expect(Exit.isSuccess(exitBlocked)).toBe(true)
+
+    // Mensagem de 5585998490991 no group-y (PERMITIDO no group-y)
+    const exitAllowed = yield* svc
+      .handleWebhook({
+        agentID: created.id,
+        secret: "secret-isolation",
+        body: {
+          event: "message",
+          payload: {
+            id: "msg-allowed",
+            from: "group-y@g.us",
+            participant: "5585998490991@c.us",
+            body: "Falando no group-y permitido",
+            fromMe: false,
+          },
+        },
+        headers: {},
+      })
+      .pipe(Effect.exit)
+
+    expect(Exit.isSuccess(exitAllowed)).toBe(true)
+
+    yield* agentUI.remove(created.id)
+  }),
+)

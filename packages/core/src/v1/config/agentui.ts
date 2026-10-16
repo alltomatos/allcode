@@ -75,6 +75,15 @@ export const WhatsAppChannelBinding = Schema.Struct({
   allowedSenders: Schema.optional(Schema.mutable(Schema.Array(Schema.String))).annotate({
     description: "WhatsApp numbers/JIDs allowed to interact with this agent. Empty/absent means anyone can interact.",
   }),
+  // Senders allowed per specific group (groupId -> array of sender numbers/JIDs).
+  // When defined for a group, only these senders (plus global allowedSenders) can interact in that group.
+  groupAllowedSenders: Schema.optional(Schema.Record(Schema.String, Schema.Array(Schema.String))).annotate({
+    description: "Per-group allowed senders mapping (groupId -> sender numbers/JIDs).",
+  }),
+  // If true, the bot only responds in groups when explicitly mentioned or tagged.
+  mentionOnly: Schema.optional(Schema.Boolean).annotate({
+    description: "Whether the agent should only respond in groups when explicitly mentioned (@) or quoted.",
+  }),
   directory: Schema.optional(Schema.String).annotate({
     description: "Connected project directory this agent's WhatsApp channel operates against.",
   }),

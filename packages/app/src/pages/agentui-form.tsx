@@ -24,6 +24,7 @@ import { GlobalLoading } from "@/components/global-loading"
 import { ModelPickerV2 } from "@/components/model-picker-v2"
 import { DialogAgentUISandbox } from "@/components/settings-v2/dialog-agentui-sandbox"
 import { DialogAgentUIDiagnose } from "@/components/settings-v2/dialog-agentui-diagnose"
+import { DialogIzapiaGroupParticipants } from "@/components/settings-v2/dialog-izapia-group-participants"
 import {
   WHATSAPP_PROVIDER_FIELDS,
   WHATSAPP_PROVIDER_LABELS,
@@ -61,6 +62,8 @@ type AgentUIFormState = {
   whatsappSessionIds: string[]
   whatsappAllowedGroups: string[]
   whatsappAllowedSenders: string
+  whatsappGroupAllowedSenders: Record<string, string[]>
+  whatsappMentionOnly: boolean
   whatsappPublicUrl?: string
   whatsappDirectory?: string
   whatsappWebhookSecret: string
@@ -91,6 +94,8 @@ function emptyForm(): AgentUIFormState {
     whatsappSessionIds: [],
     whatsappAllowedGroups: [],
     whatsappAllowedSenders: "",
+    whatsappGroupAllowedSenders: {},
+    whatsappMentionOnly: false,
     whatsappPublicUrl: undefined,
     whatsappDirectory: undefined,
     whatsappWebhookSecret: "",
@@ -172,6 +177,8 @@ export function AgentUIFormPage() {
       whatsappSessionIds: [...(agent.channels.find((c) => c.type === "whatsapp")?.sessionIds ?? [])],
       whatsappAllowedGroups: [...(agent.channels.find((c) => c.type === "whatsapp")?.allowedGroups ?? [])],
       whatsappAllowedSenders: (agent.channels.find((c) => c.type === "whatsapp")?.allowedSenders ?? []).join(", "),
+      whatsappGroupAllowedSenders: (agent.channels.find((c) => c.type === "whatsapp") as any)?.groupAllowedSenders ?? {},
+      whatsappMentionOnly: (agent.channels.find((c) => c.type === "whatsapp") as any)?.mentionOnly === true,
       whatsappPublicUrl: (agent.channels.find((c) => c.type === "whatsapp") as any)?.publicUrl,
       whatsappDirectory: agent.channels.find((c) => c.type === "whatsapp")?.directory,
       whatsappWebhookSecret: agent.channels.find((c) => c.type === "whatsapp")?.webhookSecret ?? "",
@@ -367,6 +374,8 @@ export function AgentUIFormPage() {
           sessionIds?: string[]
           allowedGroups?: string[]
           allowedSenders?: string[]
+          groupAllowedSenders?: Record<string, string[]>
+          mentionOnly?: boolean
           publicUrl?: string
           directory?: string
           webhookSecret: string
@@ -382,6 +391,9 @@ export function AgentUIFormPage() {
         sessionIds: form.whatsappProvider === "izapia" ? form.whatsappSessionIds : undefined,
         allowedGroups: form.whatsappProvider === "izapia" ? form.whatsappAllowedGroups : undefined,
         allowedSenders: senders.length > 0 ? senders : undefined,
+        groupAllowedSenders:
+          Object.keys(form.whatsappGroupAllowedSenders).length > 0 ? form.whatsappGroupAllowedSenders : undefined,
+        mentionOnly: form.whatsappMentionOnly,
         publicUrl: publicTunnelUrl() ?? form.whatsappPublicUrl ?? undefined,
         directory: form.whatsappDirectory || undefined,
         webhookSecret: whatsappWebhookSecret,
@@ -807,7 +819,7 @@ export function AgentUIFormPage() {
                             </For>
 
                             <Show when={form.whatsappProvider === "izapia"}>
-                              <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-background-bg-base p-4">
+                              <div class="flex flex-col gap-3 p-1">
                                 <div class="flex items-center justify-between">
                                   <div>
                                     <label class="settings-v2-server-dialog-label font-medium">
@@ -832,18 +844,18 @@ export function AgentUIFormPage() {
                                 <Show when={izapiaSessions().length > 0}>
                                   <div class="flex flex-col gap-1.5 max-h-48 overflow-y-auto pr-1">
                                     <For each={izapiaSessions()}>
-                                      {(session) => (
-                                        <label
-                                          class={`
-                                            flex cursor-pointer items-center justify-between gap-2 rounded-md border
-                                            px-3 py-2 text-13-regular transition-colors
-                                            ${
-                                              form.whatsappSessionIds.includes(session.id)
-                                                ? "border-v2-border-border-focus bg-v2-background-bg-layer-01 shadow-sm"
-                                                : "border-v2-border-border-base bg-v2-surface-surface-raised/40 hover:bg-v2-background-bg-layer-01"
-                                            }
-                                          `}
-                                        >
+                                       {(session) => (
+                                         <label
+                                           class={`
+                                             flex cursor-pointer items-center justify-between gap-2 rounded-md border
+                                             px-3 py-2 text-13-regular transition-all duration-150
+                                             ${
+                                               form.whatsappSessionIds.includes(session.id)
+                                                 ? "border-v2-border-border-base bg-v2-background-bg-layer-02/70 text-v2-text-text-base shadow-sm"
+                                                 : "border-v2-border-border-base/50 bg-v2-surface-surface-raised/20 text-v2-text-text-muted hover:border-v2-border-border-base hover:bg-v2-background-bg-layer-01"
+                                             }
+                                           `}
+                                         >
                                           <span class="flex min-w-0 items-center gap-2.5">
                                             <input
                                               type="checkbox"
@@ -865,7 +877,7 @@ export function AgentUIFormPage() {
                                 </Show>
                               </div>
 
-                              <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-border-base bg-v2-background-bg-base p-4">
+                              <div class="flex flex-col gap-3 p-1">
                                 <div class="flex items-center justify-between">
                                   <div>
                                     <label class="settings-v2-server-dialog-label font-medium">
@@ -891,52 +903,93 @@ export function AgentUIFormPage() {
                                 </Show>
                                 <Show when={izapiaGroups().length > 0}>
                                   <div class="flex flex-col gap-1.5 max-h-56 overflow-y-auto pr-1">
-                                    <For each={izapiaGroups()}>
-                                      {(group) => (
-                                        <label
-                                          class={`
-                                            flex cursor-pointer items-center justify-between gap-2 rounded-md border
-                                            px-3 py-2 text-13-regular transition-colors
-                                            ${
-                                              form.whatsappAllowedGroups.includes(group.id)
-                                                ? "border-v2-border-border-focus bg-v2-background-bg-layer-01 shadow-sm"
-                                                : "border-v2-border-border-base bg-v2-surface-surface-raised/40 hover:bg-v2-background-bg-layer-01"
-                                            }
-                                          `}
-                                        >
-                                          <span class="flex min-w-0 items-center gap-2.5">
-                                            <input
-                                              type="checkbox"
-                                              class="rounded border-v2-border-border-base text-v2-primary-primary-base focus:ring-1 focus:ring-v2-border-border-focus"
-                                              checked={form.whatsappAllowedGroups.includes(group.id)}
-                                              onChange={(event) => toggleIzapiaGroup(group.id, event.currentTarget.checked)}
-                                            />
-                                            <span class="truncate font-medium text-v2-text-text-base">{group.subject}</span>
-                                          </span>
-                                          <span class="shrink-0 rounded px-1.5 py-0.5 text-11-regular font-mono bg-v2-surface-surface-base text-v2-text-text-muted border border-v2-border-border-base">
-                                            {group.participantCount}
-                                          </span>
-                                        </label>
-                                      )}
-                                    </For>
-                                  </div>
+                                     <For each={izapiaGroups()}>
+                                       {(group) => (
+                                         <div
+                                           class={`
+                                             flex items-center justify-between gap-2 rounded-md border
+                                             px-3 py-2 text-13-regular transition-all duration-150
+                                             ${
+                                               form.whatsappAllowedGroups.includes(group.id)
+                                                 ? "border-v2-border-border-base bg-v2-background-bg-layer-02/70 text-v2-text-text-base shadow-sm"
+                                                 : "border-v2-border-border-base/50 bg-v2-surface-surface-raised/20 text-v2-text-text-muted hover:border-v2-border-border-base hover:bg-v2-background-bg-layer-01"
+                                             }
+                                           `}
+                                         >
+                                           <label class="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5">
+                                             <input
+                                               type="checkbox"
+                                               class="rounded border-v2-border-border-base text-v2-primary-primary-base focus:ring-1 focus:ring-v2-border-border-focus"
+                                               checked={form.whatsappAllowedGroups.includes(group.id)}
+                                               onChange={(event) => toggleIzapiaGroup(group.id, event.currentTarget.checked)}
+                                             />
+                                             <span class="truncate font-medium text-v2-text-text-base">{group.subject}</span>
+                                           </label>
+                                            <div class="flex items-center gap-2 shrink-0">
+                                              <ButtonV2
+                                                variant="outline"
+                                                size="small"
+                                                class="text-11-medium px-2 py-0.5 h-6"
+                                                onClick={(e: MouseEvent) => {
+                                                  e.preventDefault()
+                                                  e.stopPropagation()
+                                                  dialog.push(() => (
+                                                    <DialogIzapiaGroupParticipants
+                                                      group={group}
+                                                      apiKey={form.whatsappConfig.apiKey?.trim() ?? ""}
+                                                      initialGroupSenders={form.whatsappGroupAllowedSenders[group.id]}
+                                                      initialGlobalSenders={form.whatsappAllowedSenders}
+                                                      onApply={({ groupSenders, globalSenders }) => {
+                                                        setForm("whatsappGroupAllowedSenders", (map) => {
+                                                          const next = { ...map }
+                                                          if (groupSenders.length > 0) {
+                                                            next[group.id] = groupSenders
+                                                          } else {
+                                                            delete next[group.id]
+                                                          }
+                                                          return next
+                                                        })
+                                                        setForm("whatsappAllowedSenders", globalSenders)
+                                                      }}
+                                                    />
+                                                  ))
+                                                }}
+                                              >
+                                                {language.t("settings.agentui.field.whatsapp.izapiaGroups.participants")}
+                                                <Show when={form.whatsappGroupAllowedSenders[group.id]?.length}>
+                                                  {(count) => (
+                                                    <span class="ml-1 rounded-full bg-v2-primary-primary-base/20 px-1 text-9-medium text-v2-primary-primary-base">
+                                                      {count()}
+                                                    </span>
+                                                  )}
+                                                </Show>
+                                              </ButtonV2>
+                                              <span class="rounded px-1.5 py-0.5 text-11-regular font-mono bg-v2-surface-surface-base text-v2-text-text-muted border border-v2-border-border-base">
+                                                {group.participantCount}
+                                              </span>
+                                            </div>
+                                         </div>
+                                       )}
+                                     </For>
+                                   </div>
                                 </Show>
                               </div>
-                            </Show>
 
-                            <div class="flex flex-col gap-1.5">
-                              <label class="settings-v2-server-dialog-label font-medium">
-                                {language.t("settings.agentui.field.whatsapp.allowedSenders.label")}
-                              </label>
-                              <p class="text-11-regular text-v2-text-text-muted">
-                                {language.t("settings.agentui.field.whatsapp.allowedSenders.hint")}
-                              </p>
-                              <TextInputV2
-                                placeholder={language.t("settings.agentui.field.whatsapp.allowedSenders.placeholder")}
-                                value={form.whatsappAllowedSenders}
-                                onInput={(event) => setForm("whatsappAllowedSenders", event.currentTarget.value)}
-                              />
-                            </div>
+                              <div class="flex items-center justify-between rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-01/30 p-3">
+                                <div class="flex flex-col gap-0.5 pr-4">
+                                  <span class="text-13-medium text-v2-text-text-base">
+                                    {language.t("settings.agentui.field.whatsapp.mentionOnly.label")}
+                                  </span>
+                                  <p class="text-11-regular text-v2-text-text-muted">
+                                    {language.t("settings.agentui.field.whatsapp.mentionOnly.hint")}
+                                  </p>
+                                </div>
+                                <Switch
+                                  checked={form.whatsappMentionOnly}
+                                  onChange={(checked) => setForm("whatsappMentionOnly", checked)}
+                                />
+                              </div>
+                            </Show>
 
                             <div class="flex flex-col gap-1.5">
                               <label class="settings-v2-server-dialog-label font-medium">

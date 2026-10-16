@@ -3,6 +3,7 @@ import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable
 import { AgentUINotFoundError } from "@/agentui"
 import {
   IzapiaGroup,
+  IzapiaGroupParticipant,
   IzapiaSession,
   WhatsAppChannelNotConfiguredError,
   WhatsAppInvalidWebhookError,
@@ -17,6 +18,11 @@ const root = "/whatsapp"
 export const WebhookResponse = Schema.Struct({ ok: Schema.Literal(true) })
 export const IzapiaSessionsPayload = Schema.Struct({ apiKey: Schema.String })
 export const IzapiaGroupsPayload = Schema.Struct({ apiKey: Schema.String, sids: Schema.Array(Schema.String) })
+export const IzapiaGroupParticipantsPayload = Schema.Struct({
+  apiKey: Schema.String,
+  sid: Schema.String,
+  groupId: Schema.String,
+})
 
 export const WhatsAppApi = HttpApi.make("whatsapp")
   .add(
@@ -76,6 +82,17 @@ export const WhatsAppApi = HttpApi.make("whatsapp")
             identifier: "whatsapp.izapiaGroups",
             summary: "List izapia groups",
             description: "Lists WhatsApp groups across the given izapia sessions, deduped by group id.",
+          }),
+        ),
+        HttpApiEndpoint.post("izapiaGroupParticipants", `${root}/izapia/group-participants`, {
+          payload: IzapiaGroupParticipantsPayload,
+          success: described(Schema.Array(IzapiaGroupParticipant), "Participants in an izapia group"),
+          error: WhatsAppProviderApiError,
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "whatsapp.izapiaGroupParticipants",
+            summary: "List izapia group participants",
+            description: "Lists participants of a specific izapia WhatsApp group with resolved profile names.",
           }),
         ),
       )

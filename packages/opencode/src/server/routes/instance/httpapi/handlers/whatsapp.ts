@@ -39,9 +39,20 @@ export const whatsappHandlers = HttpApiBuilder.group(InstanceHttpApi, "whatsapp"
       return yield* whatsapp.listIzapiaGroups({ apiKey: ctx.payload.apiKey, sids: [...ctx.payload.sids] })
     })
 
+    const izapiaGroupParticipants = Effect.fn("WhatsAppHttpApi.izapiaGroupParticipants")(function* (ctx: {
+      payload: { apiKey: string; sid: string; groupId: string }
+    }) {
+      return yield* whatsapp.listIzapiaGroupParticipants({
+        apiKey: ctx.payload.apiKey,
+        sid: ctx.payload.sid,
+        groupId: ctx.payload.groupId,
+      })
+    })
+
     return handlers
       .handleRaw("webhook", webhook)
       .handle("izapiaSessions", izapiaSessions)
       .handle("izapiaGroups", izapiaGroups)
+      .handle("izapiaGroupParticipants", izapiaGroupParticipants)
   }),
 )

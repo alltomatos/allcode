@@ -57,6 +57,15 @@ export const IzapiaGroup = Schema.Struct({
 })
 export type IzapiaGroup = Schema.Schema.Type<typeof IzapiaGroup>
 
+export const IzapiaGroupParticipant = Schema.Struct({
+  jid: Schema.String,
+  name: Schema.optional(Schema.String),
+  phone: Schema.optional(Schema.String),
+  isAdmin: Schema.Boolean,
+  isSuperAdmin: Schema.Boolean,
+})
+export type IzapiaGroupParticipant = Schema.Schema.Type<typeof IzapiaGroupParticipant>
+
 // izapia is multi-tenant / multi-session: its API base is fixed across all
 // accounts (unlike self-hosted WAHA/Evolution which need a user-provided
 // baseUrl).
@@ -77,13 +86,23 @@ function normalizePhoneNumber(value: string): string {
 }
 
 function isSenderAllowed(channel: ConfigAgentUIV1.WhatsAppChannelBinding, message: WaMessage): boolean {
-  const allowed = channel.allowedSenders
-  if (!Array.isArray(allowed) || allowed.length === 0) return true
+  const globalAllowed = channel.allowedSenders
+  const isGroup = message.chatId.endsWith("@g.us")
+  const groupRules = (channel as any).groupAllowedSenders as Record<string, string[]> | undefined
+  const groupSpecificAllowed = isGroup && groupRules ? groupRules[message.chatId] : undefined
+
+  // Se for um grupo e o grupo tiver uma lista explícita de participantes permitidos:
+  // Só quem estiver nessa lista de grupo (ou na lista global se definida) pode falar.
+  // Se nem a lista de grupo nem a global estiverem configuradas, qualquer um pode falar.
+  const hasGroupRule = Array.isArray(groupSpecificAllowed) && groupSpecificAllowed.length > 0
+  const hasGlobalRule = Array.isArray(globalAllowed) && globalAllowed.length > 0
+
+  if (!hasGroupRule && !hasGlobalRule) return true
 
   // Coleta possíveis identificadores do remetente
   const candidates: string[] = []
   if (message.from) candidates.push(message.from)
-  if (message.chatId && !message.chatId.endsWith("@g.us")) candidates.push(message.chatId)
+  if (!isGroup && message.chatId) candidates.push(message.chatId)
 
   // Extrai de campos brutos se existirem no payload de diferentes provedores
   const raw = message.raw && typeof message.raw === "object" ? (message.raw as Record<string, unknown>) : undefined
@@ -93,7 +112,17 @@ function isSenderAllowed(channel: ConfigAgentUIV1.WhatsAppChannelBinding, messag
     if (typeof raw.sender === "string") candidates.push(raw.sender)
   }
 
-  const normalizedAllowed = allowed.map((item) => {
+  // Lista de regras efetivas para esta mensagem
+  const allowedList: string[] = []
+  if (hasGroupRule) {
+    allowedList.push(...groupSpecificAllowed!)
+  }
+  // Se tiver regra global, os remetentes globais também são permitidos
+  if (hasGlobalRule) {
+    allowedList.push(...globalAllowed!)
+  }
+
+  const normalizedAllowed = allowedList.map((item) => {
     const digits = normalizePhoneNumber(item)
     return { raw: item.trim(), digits }
   })
@@ -104,6 +133,52 @@ function isSenderAllowed(channel: ConfigAgentUIV1.WhatsAppChannelBinding, messag
       if (rule.raw && candidate === rule.raw) return true
       if (rule.digits && candidateDigits.includes(rule.digits)) return true
     }
+  }
+
+  return false
+}
+
+function isMentioned(message: WaMessage, botJids: string[], botNumbers: string[]): boolean {
+  // Se veio em grupo, verifica se foi mencionado
+  const text = (message.text || "").toLowerCase()
+
+  // 1. Verifica no raw da mensagem se tem mentionedJid ou contextInfo.mentionedJid
+  const raw = message.raw && typeof message.raw === "object" ? (message.raw as Record<string, unknown>) : undefined
+  const data = raw && typeof raw.data === "object" ? (raw.data as Record<string, unknown>) : undefined
+  const contextInfo =
+    (raw?.contextInfo && typeof raw.contextInfo === "object" ? (raw.contextInfo as Record<string, unknown>) : undefined) ||
+    (data?.contextInfo && typeof data.contextInfo === "object" ? (data.contextInfo as Record<string, unknown>) : undefined)
+
+  const mentionedJids: string[] = []
+  if (Array.isArray(raw?.mentionedJid)) {
+    for (const jid of raw.mentionedJid) if (typeof jid === "string") mentionedJids.push(jid)
+  }
+  if (Array.isArray(data?.mentionedJid)) {
+    for (const jid of data.mentionedJid) if (typeof jid === "string") mentionedJids.push(jid)
+  }
+  if (Array.isArray(contextInfo?.mentionedJid)) {
+    for (const jid of contextInfo.mentionedJid) if (typeof jid === "string") mentionedJids.push(jid)
+  }
+
+  for (const botJid of botJids) {
+    if (mentionedJids.includes(botJid)) return true
+    const botUser = botJid.split("@")[0].split(":")[0]
+    if (botUser && mentionedJids.some((j) => j.startsWith(botUser))) return true
+  }
+
+  // 2. Verifica se foi citado (quoted message do bot)
+  const participantQuoted = typeof contextInfo?.participant === "string" ? contextInfo.participant : undefined
+  if (participantQuoted) {
+    for (const botJid of botJids) {
+      if (participantQuoted === botJid) return true
+      const botUser = botJid.split("@")[0].split(":")[0]
+      if (botUser && participantQuoted.startsWith(botUser)) return true
+    }
+  }
+
+  // 3. Fallback de texto: checa se contém @<numero_do_bot>
+  for (const num of botNumbers) {
+    if (num && text.includes(`@${num}`)) return true
   }
 
   return false
@@ -123,6 +198,11 @@ export interface Interface {
     apiKey: string
   }) => Effect.Effect<{ id: string; name?: string; status: string; jid?: string }[], WhatsAppProviderApiError>
   readonly listIzapiaGroups: (input: { apiKey: string; sids: string[] }) => Effect.Effect<IzapiaGroup[], never>
+  readonly listIzapiaGroupParticipants: (input: {
+    apiKey: string
+    sid: string
+    groupId: string
+  }) => Effect.Effect<IzapiaGroupParticipant[], WhatsAppProviderApiError>
 }
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/WhatsApp") {}
@@ -396,6 +476,30 @@ const layer = Layer.effect(
 
         if (!text && !attachment) continue
 
+        // Se mentionOnly estiver ativo no canal e a mensagem for de um grupo,
+        // só responde se o bot for explicitamente mencionado (@) ou citado
+        if (channel.mentionOnly && event.message.chatId.endsWith("@g.us")) {
+          // Descobre JIDs e números dos bots da sessão
+          const botJids: string[] = []
+          const botNumbers: string[] = []
+          const rawSessionJid = typeof (rawData as any)?.instance_jid === "string" ? (rawData as any).instance_jid : undefined
+          if (rawSessionJid) {
+            botJids.push(rawSessionJid)
+            botNumbers.push(normalizePhoneNumber(rawSessionJid))
+          }
+          if (event.instanceId) {
+            // Tenta pegar da lista de sessões ou JID conhecido
+            const sidDigits = normalizePhoneNumber(event.instanceId)
+            if (sidDigits.length >= 10) botNumbers.push(sidDigits)
+          }
+          // Extrai menções conhecidas
+          const mentioned = isMentioned(event.message, botJids, botNumbers)
+          if (!mentioned) {
+            // Se não foi mencionado no grupo, ignora
+            continue
+          }
+        }
+
         yield* enqueue({
           agentID: input.agentID,
           directory,
@@ -467,7 +571,87 @@ const layer = Layer.effect(
       return Array.from(byID.values()).sort((a, b) => a.subject.localeCompare(b.subject))
     })
 
-    return Service.of({ handleWebhook, listIzapiaSessions, listIzapiaGroups })
+    const listIzapiaGroupParticipants = Effect.fn("WhatsApp.listIzapiaGroupParticipants")(function* (input: {
+      apiKey: string
+      sid: string
+      groupId: string
+    }) {
+      const response = yield* Effect.tryPromise({
+        try: () =>
+          fetch(`${IZAPIA_BASE_URL}/api/v1/sessions/${input.sid}/groups/${input.groupId}`, {
+            headers: { authorization: `Bearer ${input.apiKey}` },
+          }),
+        catch: (cause) => new WhatsAppProviderApiError({ reason: String(cause) }),
+      })
+      if (!response.ok) {
+        return yield* new WhatsAppProviderApiError({ reason: `izapia respondeu ${response.status} ao consultar grupo` })
+      }
+      const body = yield* Effect.tryPromise({
+        try: () => response.json() as Promise<unknown>,
+        catch: (cause) => new WhatsAppProviderApiError({ reason: String(cause) }),
+      })
+      const record = body && typeof body === "object" ? (body as Record<string, unknown>) : undefined
+      const data = record?.data && typeof record.data === "object" ? (record.data as Record<string, unknown>) : record
+      const rawParticipants = Array.isArray(data?.participants) ? (data.participants as Record<string, unknown>[]) : []
+
+      // Opcional: tenta resolver nomes dos contatos
+      const participants: IzapiaGroupParticipant[] = rawParticipants.map((p) => {
+        const jid = String(p.jid ?? "")
+        const digits = normalizePhoneNumber(jid)
+        return {
+          jid,
+          name: typeof p.push_name === "string" ? p.push_name : undefined,
+          phone: digits.length >= 8 ? digits : undefined,
+          isAdmin: Boolean(p.is_admin),
+          isSuperAdmin: Boolean(p.is_super_admin),
+        }
+      })
+
+      // Enriquece participantes com os contatos da sessão se possível
+      const contactsRes = yield* Effect.tryPromise(() =>
+        fetch(`${IZAPIA_BASE_URL}/api/v1/sessions/${input.sid}/contacts`, {
+          headers: { authorization: `Bearer ${input.apiKey}` },
+        }).then((res) => (res.ok ? res.json() : null)),
+      ).pipe(Effect.option)
+
+      if (contactsRes._tag === "Some" && contactsRes.value) {
+        const cBody = contactsRes.value as Record<string, unknown>
+        const cList = Array.isArray(cBody) ? cBody : Array.isArray(cBody?.data) ? (cBody.data as Record<string, unknown>[]) : []
+        const contactMap = new Map<string, { name?: string; phone?: string }>()
+        for (const c of cList) {
+          const cJid = String(c.jid ?? "")
+          const cName = String(c.full_name || c.push_name || c.first_name || c.business_name || "").trim()
+          const cPhone = normalizePhoneNumber(cJid)
+          if (cJid) {
+            contactMap.set(cJid, { name: cName || undefined, phone: cPhone.length >= 8 ? cPhone : undefined })
+          }
+          // Adiciona também mapeamento por dispositivo ou número se aplicável
+          if (Array.isArray(c.devices)) {
+            for (const d of c.devices) {
+              if (typeof d === "string") {
+                contactMap.set(d, { name: cName || undefined, phone: cPhone.length >= 8 ? cPhone : undefined })
+                const baseD = d.split(":")[0]
+                if (baseD) contactMap.set(baseD, { name: cName || undefined, phone: cPhone.length >= 8 ? cPhone : undefined })
+              }
+            }
+          }
+        }
+
+        return participants.map((part) => {
+          const found = contactMap.get(part.jid) || contactMap.get(part.jid.split(":")[0])
+          if (!found) return part
+          return {
+            ...part,
+            name: part.name || found.name,
+            phone: part.phone || found.phone,
+          }
+        })
+      }
+
+      return participants
+    })
+
+    return Service.of({ handleWebhook, listIzapiaSessions, listIzapiaGroups, listIzapiaGroupParticipants })
   }),
 )
 

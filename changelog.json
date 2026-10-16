@@ -1,6 +1,28 @@
 {
   "releases": [
     {
+      "tag": "v1.21.91",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AgentUI: Gestão Granular de Participantes por Grupo no WhatsApp",
+              "description": "Adicionado modal dedicado para seleção de participantes autorizados diretamente dos grupos da Izapia, com controle de escopo individual por grupo ou global."
+            },
+            {
+              "title": "AgentUI: Resposta Apenas por Menção (@) em Grupos",
+              "description": "Adicionado toggle para restringir respostas do bot em grupos apenas quando mencionado diretamente ou citado via quote."
+            },
+            {
+              "title": "UI/UX: Refinamento Visual e Limpeza da Tela de Canais",
+              "description": "Alinhamento com diretrizes UI/UX Pro Max, removendo containers e bordas excessivas para uma experiência mais limpa e fluida."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.90",
       "highlights": [
         {
