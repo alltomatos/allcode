@@ -291,10 +291,11 @@ export const runOne = Effect.fn("v2.Schedule.runOne")(function* (id: Schedule.ID
   if (!schedule) return yield* Effect.fail(new NotFoundError({ id }))
 
   const result = yield* runAction(schedule.action, schedule.workspace, schedule.lastSessionId)
+  const isSuccess = result.exitCode === 0
   const updated = yield* schedules.update(schedule.id, {
     lastRunAt: Date.now(),
-    lastStatus: result.exitCode === 0 ? "success" : "error",
-    lastError: result.error,
+    lastStatus: isSuccess ? "success" : "error",
+    lastError: isSuccess ? null : (result.error ?? null),
     lastSessionId: result.sessionId ?? schedule.lastSessionId,
   })
   return updated!
@@ -329,11 +330,12 @@ const tick = Effect.fn("v2.Schedule.tick")(function* () {
     }
 
     const result = yield* runAction(schedule.action, schedule.workspace, schedule.lastSessionId)
+    const isSuccess = result.exitCode === 0
     yield* schedules.update(schedule.id, {
       lastRunAt: nowMs,
       enabled: schedule.trigger.kind === "once" ? false : schedule.enabled,
-      lastStatus: result.exitCode === 0 ? "success" : "error",
-      lastError: result.error,
+      lastStatus: isSuccess ? "success" : "error",
+      lastError: isSuccess ? null : (result.error ?? null),
       lastSessionId: result.sessionId ?? schedule.lastSessionId,
     })
 

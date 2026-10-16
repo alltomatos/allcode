@@ -320,14 +320,14 @@ export const RoutinesPage: Component = () => {
 
                         {/* Rodapé do Card com Ações e Metadados */}
                         <div class="flex flex-col gap-2.5 pt-2 border-t border-v2-border-border-base">
-                          <Show when={schedule.lastRunAt || schedule.lastError}>
+                          <Show when={schedule.lastRunAt || (schedule.lastStatus === "error" && schedule.lastError)}>
                             <div class="flex items-center gap-2 text-11-regular flex-wrap">
                               <Show when={schedule.lastRunAt}>
                                 <span class="text-v2-text-text-faint truncate">
                                   Última execução: {new Date(schedule.lastRunAt!).toLocaleString()}
                                 </span>
                               </Show>
-                              <Show when={schedule.lastError}>
+                              <Show when={schedule.lastStatus === "error" && schedule.lastError}>
                                 <span class="truncate text-v2-state-fg-danger font-mono" title={schedule.lastError}>
                                   Erro: {schedule.lastError}
                                 </span>

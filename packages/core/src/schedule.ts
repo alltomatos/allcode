@@ -66,7 +66,7 @@ export interface UpdateInput {
   readonly enabled?: boolean
   readonly lastRunAt?: number
   readonly lastStatus?: "success" | "error"
-  readonly lastError?: string
+  readonly lastError?: string | null
   readonly lastSessionId?: string
 }
 

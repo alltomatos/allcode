@@ -1,6 +1,28 @@
 {
   "releases": [
     {
+      "tag": "v1.21.90",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Rotinas: Limpeza e Correção de Erros de Execuções Anteriores",
+              "description": "Corrigida persistência do estado da rotina para limpar lastError ao concluir com sucesso e ajustar a interface para não exibir mensagens de erro anteriores em execuções concluídas."
+            },
+            {
+              "title": "Rotinas: Timeout Estendido e Execução Resiliente",
+              "description": "Timeout padrão ajustado para 30 minutos em rotinas com instruções analíticas complexas e sincronização assíncrona."
+            },
+            {
+              "title": "Lembretes e Notificações: WhatsApp e Toasts no Desktop",
+              "description": "Ativado dispatcher multi-canal para envio de lembretes via Izapia/WhatsApp e toasts clicáveis na interface ao término de qualquer sessão ou rotina."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.89",
       "highlights": [
         {
