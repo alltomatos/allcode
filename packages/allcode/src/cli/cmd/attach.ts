@@ -6,12 +6,12 @@ import { ServerAuth } from "@/server/auth"
 
 export const AttachCommand = cmd({
   command: "attach <url>",
-  describe: "attach to a running opencode server",
+  describe: "attach to a running allcode server",
   builder: (yargs) =>
     yargs
       .positional("url", {
         type: "string",
-        describe: "http://localhost:4096",
+        describe: "http://localhost:1953",
         demandOption: true,
       })
       .option("dir", {
@@ -35,12 +35,12 @@ export const AttachCommand = cmd({
       .option("password", {
         alias: ["p"],
         type: "string",
-        describe: "basic auth password (defaults to OPENCODE_SERVER_PASSWORD)",
+        describe: "basic auth password (defaults to ALLCODE_SERVER_PASSWORD / OPENCODE_SERVER_PASSWORD)",
       })
       .option("username", {
         alias: ["u"],
         type: "string",
-        describe: "basic auth username (defaults to OPENCODE_SERVER_USERNAME or 'opencode')",
+        describe: "basic auth username (defaults to ALLCODE_SERVER_USERNAME or 'allcode')",
       })
       .option("mini", {
         type: "boolean",
