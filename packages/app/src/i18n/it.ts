@@ -1,4 +1,4 @@
-ï»¿export const dict = {
+export const dict = {
   "command.category.suggested": "Suggeriti",
   "command.category.view": "Visualizzazione",
   "command.category.project": "Progetto",
@@ -73,7 +73,7 @@
   "command.permissions.autoaccept.enable": "Accetta automaticamente le autorizzazioni",
   "command.permissions.autoaccept.disable": "Interrompi l'accettazione automatica delle autorizzazioni",
   "command.workspace.toggle": "Attiva o disattiva le aree di lavoro",
-  "command.workspace.toggle.description": "Abilita o disabilita piÃ¹ aree di lavoro nella barra laterale",
+  "command.workspace.toggle.description": "Abilita o disabilita più aree di lavoro nella barra laterale",
   "command.session.undo": "Annulla",
   "command.session.undo.description": "Annulla l'ultimo messaggio",
   "command.session.redo": "Ripeti",
@@ -105,7 +105,7 @@
   "dialog.provider.opencodeGo.tagline": "Abbonamento economico per tutti",
   "dialog.provider.anthropic.note": "Accesso diretto ai modelli Claude, inclusi Pro e Max",
   "dialog.provider.copilot.note": "Modelli di IA per assistere nella programmazione tramite GitHub Copilot",
-  "dialog.provider.openai.note": "Modelli GPT veloci e potenti per attivitÃ  generiche di IA",
+  "dialog.provider.openai.note": "Modelli GPT veloci e potenti per attività generiche di IA",
   "dialog.provider.google.note": "Modelli Gemini per risposte rapide e strutturate",
   "dialog.provider.openrouter.note": "Accedi a tutti i modelli supportati da un unico provider",
   "dialog.provider.vercel.note": "Accesso unificato ai modelli di IA con instradamento intelligente",
@@ -116,7 +116,7 @@
   "dialog.model.manage.description": "Personalizza quali modelli appaiono nel selettore del modello.",
   "dialog.model.manage.provider.toggle": "Attiva o disattiva tutti i modelli {{provider}}",
   "dialog.model.unpaid.freeModels.title": "Modelli gratuiti forniti da OpenCode",
-  "dialog.model.unpaid.addMore.title": "Aggiungi altri modelli dai provider piÃ¹ diffusi",
+  "dialog.model.unpaid.addMore.title": "Aggiungi altri modelli dai provider più diffusi",
   "dialog.model.unpaid.viewMoreProviders": "Scopri oltre 70 provider",
   "dialog.provider.viewAll": "Mostra altri provider",
   "provider.connect.title": "Connetti {{provider}}",
@@ -132,7 +132,7 @@
     "Inserisci la chiave API di {{provider}} per connettere il tuo account e utilizzare i modelli {{provider}} in OpenCode.",
   "provider.connect.apiKey.label": "Chiave API di {{provider}}",
   "provider.connect.apiKey.placeholder": "Chiave API",
-  "provider.connect.apiKey.required": "Ãˆ richiesta la chiave API",
+  "provider.connect.apiKey.required": "È richiesta la chiave API",
   "provider.connect.opencodeZen.line1":
     "OpenCode Zen offre l'accesso a una selezione di modelli affidabili e ottimizzati per gli agenti di programmazione.",
   "provider.connect.opencodeZen.line2":
@@ -146,7 +146,7 @@
     " per ottenere il codice di autorizzazione, connettere il tuo account e usare i modelli {{provider}} in OpenCode.",
   "provider.connect.oauth.code.label": "Codice di autorizzazione {{method}}",
   "provider.connect.oauth.code.placeholder": "Codice di autorizzazione",
-  "provider.connect.oauth.code.required": "Ãˆ richiesto il codice di autorizzazione",
+  "provider.connect.oauth.code.required": "È richiesto il codice di autorizzazione",
   "provider.connect.oauth.code.invalid": "Codice di autorizzazione non valido",
   "provider.connect.oauth.auto.visit.prefix": "Visita ",
   "provider.connect.oauth.auto.visit.link": "questo collegamento",
@@ -184,19 +184,19 @@
   "provider.custom.headers.value.placeholder": "valore",
   "provider.custom.headers.remove": "Rimuovi intestazione",
   "provider.custom.headers.add": "Aggiungi intestazione",
-  "provider.custom.error.providerID.required": "L'ID provider Ã¨ obbligatorio",
+  "provider.custom.error.providerID.required": "L'ID provider è obbligatorio",
   "provider.custom.error.providerID.format": "Utilizza lettere minuscole, numeri, trattini o trattini bassi",
-  "provider.custom.error.providerID.exists": "Questo ID provider esiste giÃ ",
-  "provider.custom.error.name.required": "Il nome visualizzato Ã¨ obbligatorio",
-  "provider.custom.error.baseURL.required": "L'URL di base Ã¨ obbligatorio",
+  "provider.custom.error.providerID.exists": "Questo ID provider esiste già",
+  "provider.custom.error.name.required": "Il nome visualizzato è obbligatorio",
+  "provider.custom.error.baseURL.required": "L'URL di base è obbligatorio",
   "provider.custom.error.baseURL.format": "Deve iniziare con http:// o https://",
   "provider.custom.error.required": "Necessario",
   "provider.custom.error.duplicate": "Duplicato",
   "provider.custom.unavailable": "I provider personalizzati non sono disponibili su questo server",
   "provider.disconnect.toast.disconnected.title": "{{provider}} disconnesso",
-  "provider.disconnect.toast.disconnected.description": "I modelli {{provider}} non sono piÃ¹ disponibili.",
+  "provider.disconnect.toast.disconnected.description": "I modelli {{provider}} non sono più disponibili.",
   "model.tag.free": "Gratuito",
-  "model.tag.latest": "PiÃ¹ recente",
+  "model.tag.latest": "Più recente",
   "model.provider.anthropic": "Anthropic",
   "model.provider.openai": "OpenAI",
   "model.provider.google": "Google",
@@ -240,15 +240,15 @@
   "prompt.mode.shell": "Shell",
   "prompt.mode.normal": "Prompt",
   "prompt.mode.shell.exit": "esc per uscire",
-  "session.child.promptDisabled": "Non Ã¨ possibile inviare prompt alle sessioni dei subagenti.",
+  "session.child.promptDisabled": "Non è possibile inviare prompt alle sessioni dei subagenti.",
   "session.child.backToParent": "Torna alla sessione principale.",
   "prompt.example.1": "Correggi un TODO nel codice sorgente",
-  "prompt.example.2": "Qual Ã¨ lo stack tecnologico di questo progetto?",
+  "prompt.example.2": "Qual è lo stack tecnologico di questo progetto?",
   "prompt.example.3": "Correggi i test non funzionanti",
   "prompt.example.4": "Spiega come funziona l'autenticazione",
-  "prompt.example.5": "Trova e correggi le vulnerabilitÃ  di sicurezza",
+  "prompt.example.5": "Trova e correggi le vulnerabilità di sicurezza",
   "prompt.example.6": "Aggiungi test unitari per il servizio utente",
-  "prompt.example.7": "Rifattorizza questa funzione per renderla piÃ¹ leggibile",
+  "prompt.example.7": "Rifattorizza questa funzione per renderla più leggibile",
   "prompt.example.8": "Cosa significa questo errore?",
   "prompt.example.9": "Aiutami a eseguire il debug di questo problema",
   "prompt.example.10": "Genera documentazione API",
@@ -288,8 +288,8 @@
   "prompt.action.send": "Invia",
   "prompt.action.stop": "Interrompi",
   "prompt.toast.pasteUnsupported.title": "Allegato non supportato",
-  "prompt.toast.pasteUnsupported.description": "Qui Ã¨ possibile allegare solo immagini, PDF o file di testo.",
-  "prompt.toast.attachmentDuplicate.title": "Questo file Ã¨ giÃ  stato caricato",
+  "prompt.toast.pasteUnsupported.description": "Qui è possibile allegare solo immagini, PDF o file di testo.",
+  "prompt.toast.attachmentDuplicate.title": "Questo file è già stato caricato",
   "prompt.toast.modelAgentRequired.title": "Seleziona un agente e un modello",
   "prompt.toast.modelAgentRequired.description": "Scegli un agente e un modello prima di inviare un prompt.",
   "prompt.toast.worktreeCreateFailed.title": "Impossibile creare il worktree",
@@ -362,14 +362,14 @@
   "wsl.onboarding.step.opencode": "OpenCode",
   "wsl.onboarding.checkingRuntime": "Controllo WSL...",
   "wsl.onboarding.restartRequired": "Windows deve essere riavviato per completare l'installazione di WSL.",
-  "wsl.onboarding.ready": "WSL Ã¨ pronto.",
-  "wsl.onboarding.required": "WSL Ã¨ necessario per continuare.",
+  "wsl.onboarding.ready": "WSL è pronto.",
+  "wsl.onboarding.required": "WSL è necessario per continuare.",
   "wsl.onboarding.checkingDistros": "Controllo delle distribuzioni...",
   "wsl.onboarding.installingDistro": "Installazione di {{distro}}...",
   "wsl.onboarding.checkingDistro": "Controllo {{distro}}...",
   "wsl.onboarding.listingDistros": "Elenco delle distribuzioni...",
-  "wsl.onboarding.distroReady": "{{distro}} Ã¨ pronto.",
-  "wsl.onboarding.distroNotInstalled": "{{distro}} non Ã¨ ancora installato.",
+  "wsl.onboarding.distroReady": "{{distro}} è pronto.",
+  "wsl.onboarding.distroNotInstalled": "{{distro}} non è ancora installato.",
   "wsl.onboarding.openDistroOnce": "Apri {{distro}} una volta per completare la configurazione.",
   "wsl.onboarding.finishingDistro": "Completamento della configurazione di {{distro}}.",
   "wsl.onboarding.pickDistro": "Scegli una distribuzione o installane una qui sotto.",
@@ -379,8 +379,8 @@
   "wsl.onboarding.updatingOpencodeIn": "Aggiornamento OpenCode in {{distro}}...",
   "wsl.onboarding.updateOpencodeIn": "Aggiorna OpenCode in {{distro}}.",
   "wsl.onboarding.updateOpencode": "Aggiorna OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode Ã¨ pronto in {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode Ã¨ pronto.",
+  "wsl.onboarding.opencodeReadyIn": "OpenCode è pronto in {{distro}}.",
+  "wsl.onboarding.opencodeReady": "OpenCode è pronto.",
   "wsl.onboarding.installOpencodeIn": "Installa OpenCode in {{distro}}.",
   "wsl.onboarding.installOpencode": "Installa OpenCode",
   "wsl.onboarding.chooseDistroFirst": "Scegli prima una distribuzione.",
@@ -392,12 +392,12 @@
   "wsl.onboarding.distroStatus.checking": "Controllo...",
   "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode non installato",
   "wsl.onboarding.distroStatus.missingTools": "bash e curl non disponibili",
-  "wsl.onboarding.distroStatus.unsupported": "Non supportato Â· Utilizza WSL 2",
+  "wsl.onboarding.distroStatus.unsupported": "Non supportato · Utilizza WSL 2",
   "wsl.onboarding.needAnotherDistro": "Hai bisogno di un'altra distribuzione?",
   "wsl.onboarding.needAnotherDistroHint": "Installa una distribuzione Linux dal catalogo WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL non installato",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Sottosistema Windows per Linux) Ã¨ necessario prima che OpenCode possa aggiungere un server WSL",
+    "WSL (Sottosistema Windows per Linux) è necessario prima che OpenCode possa aggiungere un server WSL",
   "wsl.onboarding.wslUnavailable.title": "WSL non disponibile",
   "wsl.onboarding.wslUnavailable.description": "OpenCode non ha potuto verificare WSL su questa macchina.",
   "wsl.onboarding.installWsl": "Installa WSL",
@@ -405,13 +405,13 @@
     "Riavvia Windows per completare l'installazione WSL, quindi riapri OpenCode.",
   "wsl.onboarding.next": "Avanti",
   "wsl.onboarding.refresh": "Aggiorna",
-  "wsl.onboarding.allDistrosAdded": "Tutte le distribuzioni installate sono giÃ  aggiunte.",
+  "wsl.onboarding.allDistrosAdded": "Tutte le distribuzioni installate sono già aggiunte.",
   "wsl.onboarding.noDistros": "Nessuna distribuzione ancora rilevata.",
   "wsl.onboarding.install": "Installa",
   "wsl.onboarding.installing": "Installazione...",
   "wsl.onboarding.installDistro": "Installa la distribuzione",
   "wsl.onboarding.searchDistros": "Cerca distribuzioni",
-  "wsl.onboarding.wsl2Required": "WSL 2 Ã¨ obbligatorio.",
+  "wsl.onboarding.wsl2Required": "WSL 2 è obbligatorio.",
   "wsl.onboarding.toolsRequired": "Questa distribuzione richiede bash e curl.",
   "wsl.onboarding.openTerminal": "Apri terminale",
   "wsl.onboarding.path": "Percorso: {{path}}",
@@ -421,12 +421,12 @@
   "wsl.onboarding.desktopVersion": "desktop {{version}}",
   "wsl.onboarding.versionMismatch": "La versione installata non corrisponde alla versione dell'app desktop.",
   "wsl.onboarding.adding": "Aggiunta...",
-  "help.tabs.toast.ariaLabel": "NovitÃ : le schede. Organizza il lavoro e le sessioni attive con le schede",
+  "help.tabs.toast.ariaLabel": "Novità: le schede. Organizza il lavoro e le sessioni attive con le schede",
   "help.tabs.toast.dismiss": "Ignora le informazioni sulle schede",
-  "help.tabs.title": "NovitÃ : le schede",
+  "help.tabs.title": "Novità: le schede",
   "help.tabs.description": "Organizza il lavoro e le sessioni attive con le schede",
   "help.tabs.date": "14 luglio",
-  "help.tabs.introduction": "OpenCode Desktop ora Ã¨ incentrato sulle schede.",
+  "help.tabs.introduction": "OpenCode Desktop ora è incentrato sulle schede.",
   "help.tabs.sessions":
     "Avvia una nuova sessione in una scheda oppure apri una sessione esistente da uno dei tuoi progetti. Apri una nuova scheda quando inizi qualcosa di nuovo e chiudila quando hai finito.",
   "help.tabs.organize":
@@ -435,7 +435,7 @@
     "Troverai tutte le sessioni e i progetti nella nuova schermata Home. Quando selezioni una sessione, questa si apre in una scheda.",
   "help.tabs.persistence": "Quando riapri l'app, le schede sono ancora aperte.",
   "help.tabs.worktrees":
-    "Il nuovo design non supporta ancora Git Worktrees, ma il supporto arriverÃ  presto. Se preferisci continuare a utilizzare la disposizione precedente, puoi passare da una disposizione all'altra nelle Impostazioni. Tieni presente che la nuova disposizione diventerÃ  permanente tra alcune settimane.",
+    "Il nuovo design non supporta ancora Git Worktrees, ma il supporto arriverà presto. Se preferisci continuare a utilizzare la disposizione precedente, puoi passare da una disposizione all'altra nelle Impostazioni. Tieni presente che la nuova disposizione diventerà permanente tra alcune settimane.",
   "server.row.noUsername": "nessun nome utente",
   "dialog.project.edit.title": "Modifica progetto",
   "dialog.project.edit.name": "Nome",
@@ -452,8 +452,8 @@
   "dialog.releaseNotes.action.getStarted": "Inizia",
   "dialog.releaseNotes.action.next": "Avanti",
   "dialog.releaseNotes.action.hideFuture": "Non mostrarli in futuro",
-  "dialog.releaseNotes.media.alt": "Anteprima delle novitÃ ",
-  "dialog.usageExceeded.dontShowAgain": "Non mostrare piÃ¹",
+  "dialog.releaseNotes.media.alt": "Anteprima delle novità",
+  "dialog.usageExceeded.dontShowAgain": "Non mostrare più",
 
   "context.breakdown.title": "Ripartizione del contesto",
   "context.breakdown.note":
@@ -482,36 +482,36 @@
   "context.stats.assistantMessages": "Messaggi dell'assistente",
   "context.stats.totalCost": "Costo totale",
   "context.stats.sessionCreated": "Sessione creata",
-  "context.stats.lastActivity": "Ultima attivitÃ ",
+  "context.stats.lastActivity": "Ultima attività",
   "context.usage.tokens": "Token",
   "context.usage.usage": "Utilizzo",
   "context.usage.cost": "Costo",
   "context.usage.clickToView": "Fai clic per visualizzare il contesto",
   "context.usage.view": "Visualizza l'utilizzo del contesto",
   "language.en": "English",
-  "language.zh": "ç®€ä½“ä¸­æ–‡",
-  "language.zht": "ç¹é«”ä¸­æ–‡",
-  "language.ko": "í•œêµ­ì–´",
+  "language.zh": "????",
+  "language.zht": "????",
+  "language.ko": "???",
   "language.de": "Deutsch",
-  "language.es": "EspaÃ±ol",
-  "language.fr": "FranÃ§ais",
+  "language.es": "Español",
+  "language.fr": "Français",
   "language.da": "Dansk",
-  "language.ja": "æ—¥æœ¬èªž",
+  "language.ja": "???",
   "language.pl": "Polski",
-  "language.ru": "Ð ÑƒÑÑÐºÐ¸Ð¹",
-  "language.ar": "Ø§Ù„Ø¹Ø±Ø¨ÙŠØ©",
+  "language.ru": "???????",
+  "language.ar": "???????",
   "language.no": "Norsk",
-  "language.br": "PortuguÃªs (Brasil)",
+  "language.br": "Português (Brasil)",
   "language.bs": "Bosanski",
-  "language.uk": "Ð£ÐºÑ€Ð°Ñ—Ð½ÑÑŒÐºÐ°",
-  "language.th": "à¹„à¸—à¸¢",
-  "language.tr": "TÃ¼rkÃ§e",
+  "language.uk": "??????????",
+  "language.th": "???",
+  "language.tr": "Türkçe",
   "toast.language.title": "Lingua",
   "toast.language.description": "Lingua impostata su {{language}}",
   "toast.theme.title": "Tema cambiato",
   "toast.scheme.title": "Combinazione di colori",
   "toast.workspace.enabled.title": "Aree di lavoro abilitate",
-  "toast.workspace.enabled.description": "Nella barra laterale vengono ora visualizzati piÃ¹ worktree",
+  "toast.workspace.enabled.description": "Nella barra laterale vengono ora visualizzati più worktree",
   "toast.workspace.disabled.title": "Aree di lavoro disabilitate",
   "toast.workspace.disabled.description": "Nella barra laterale viene mostrato solo il worktree principale",
   "toast.permissions.autoaccept.on.title": "Accettazione automatica delle autorizzazioni",
@@ -528,26 +528,26 @@
   "toast.session.share.success.title": "Sessione condivisa",
   "toast.session.share.success.description": "URL di condivisione copiato negli appunti",
   "toast.session.share.failed.title": "Impossibile condividere la sessione",
-  "toast.session.share.failed.description": "Si Ã¨ verificato un errore durante la condivisione della sessione",
+  "toast.session.share.failed.description": "Si è verificato un errore durante la condivisione della sessione",
   "toast.session.unshare.success.title": "Sessione non condivisa",
   "toast.session.unshare.success.description": "Condivisione della sessione annullata!",
   "toast.session.unshare.failed.title": "Impossibile annullare la condivisione della sessione",
   "toast.session.unshare.failed.description":
-    "Si Ã¨ verificato un errore durante l'annullamento della condivisione della sessione",
+    "Si è verificato un errore durante l'annullamento della condivisione della sessione",
   "toast.session.export.success.title": "Sessione esportata",
   "toast.session.export.success.description": "Sessione salvata in {{filename}}",
   "toast.session.export.failed.title": "Impossibile esportare la sessione",
-  "toast.session.export.failed.description": "Si Ã¨ verificato un errore durante lâ€™esportazione della sessione",
+  "toast.session.export.failed.description": "Si è verificato un errore durante l’esportazione della sessione",
 
   "toast.session.listFailed.title": "Impossibile caricare le sessioni per {{project}}",
   "toast.project.reloadFailed.title": "Impossibile ricaricare {{project}}",
   "toast.update.title": "Aggiornamento disponibile",
-  "toast.update.description": "Una nuova versione di OpenCode ({{version}}) Ã¨ ora disponibile per l'installazione.",
+  "toast.update.description": "Una nuova versione di OpenCode ({{version}}) è ora disponibile per l'installazione.",
   "toast.update.action.installRestart": "Installa e riavvia",
   "toast.update.action.notYet": "Non ancora",
-  "error.page.title": "Qualcosa Ã¨ andato storto",
-  "error.page.description": "Si Ã¨ verificato un errore durante il caricamento dell'applicazione.",
-  "error.page.description.localServerStartup": "Si Ã¨ verificato un errore durante l'avvio del server locale.",
+  "error.page.title": "Qualcosa è andato storto",
+  "error.page.description": "Si è verificato un errore durante il caricamento dell'applicazione.",
+  "error.page.description.localServerStartup": "Si è verificato un errore durante l'avvio del server locale.",
   "error.page.details.label": "Dettagli errore",
   "error.page.action.restart": "Riavvia",
   "error.page.action.report": "Segnala errore",
@@ -561,8 +561,8 @@
   "error.page.report.discord": "su Discord",
   "error.page.version": "Versione: {{version}}",
   "error.dev.rootNotFound":
-    "Elemento radice non trovato. Hai dimenticato di aggiungerlo al tuo index.html? O forse l'attributo id Ã¨ stato scritto in modo errato?",
-  "error.serverSync.connectFailed": "Impossibile connettersi al server. C'Ã¨ un server in esecuzione a `{{url}}`?",
+    "Elemento radice non trovato. Hai dimenticato di aggiungerlo al tuo index.html? O forse l'attributo id è stato scritto in modo errato?",
+  "error.serverSync.connectFailed": "Impossibile connettersi al server. C'è un server in esecuzione a `{{url}}`?",
   "error.serverSDK.noServerAvailable": "Nessun server disponibile",
   "error.serverSDK.serverNotAvailable": "Server non disponibile",
   "error.childStore.persistedCacheCreateFailed": "Impossibile creare la cache persistente",
@@ -585,13 +585,13 @@
   "error.chain.providerAuthFailed": "Autenticazione del provider non riuscita ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Impossibile inizializzare il provider "{{provider}}". Controlla credenziali e configurazione.',
-  "error.chain.configJsonInvalid": "Il file di configurazione in {{path}} non Ã¨ valido JSON(C)",
-  "error.chain.configJsonInvalidWithMessage": "Il file di configurazione in {{path}} non Ã¨ valido JSON(C): {{message}}",
+  "error.chain.configJsonInvalid": "Il file di configurazione in {{path}} non è valido JSON(C)",
+  "error.chain.configJsonInvalidWithMessage": "Il file di configurazione in {{path}} non è valido JSON(C): {{message}}",
   "error.chain.configDirectoryTypo":
-    'La directory "{{dir}}" in {{path}} non Ã¨ valida. Rinominare la directory in "{{suggestion}}" o rimuoverla. Questo Ã¨ un errore di battitura comune.',
+    'La directory "{{dir}}" in {{path}} non è valida. Rinominare la directory in "{{suggestion}}" o rimuoverla. Questo è un errore di battitura comune.',
   "error.chain.configFrontmatterError": "Impossibile analizzare il frontmatter in {{path}}:\n{{message}}",
-  "error.chain.configInvalid": "Il file di configurazione in {{path}} non Ã¨ valido",
-  "error.chain.configInvalidWithMessage": "Il file di configurazione in {{path}} non Ã¨ valido: {{message}}",
+  "error.chain.configInvalid": "Il file di configurazione in {{path}} non è valido",
+  "error.chain.configInvalidWithMessage": "Il file di configurazione in {{path}} non è valido: {{message}}",
   "notification.permission.title": "Autorizzazione richiesta",
   "notification.permission.description": "{{sessionTitle}} in {{projectName}} necessita dell'autorizzazione",
   "notification.question.title": "Domanda",
@@ -599,7 +599,7 @@
   "notification.action.goToSession": "Vai alla sessione",
   "notification.session.responseReady.title": "Risposta pronta",
   "notification.session.error.title": "Errore di sessione",
-  "notification.session.error.fallbackDescription": "Si Ã¨ verificato un errore",
+  "notification.session.error.fallbackDescription": "Si è verificato un errore",
   "home.recentProjects": "Progetti recenti",
   "home.empty.title": "Nessun progetto recente",
   "home.empty.description": "Inizia aprendo un progetto locale",
@@ -625,7 +625,7 @@
   "session.tab.unknown": "Sessione sconosciuta",
   "session.panel.reviewAndFiles": "Revisione e file",
   "session.error.notFound": "Impossibile trovare questa sessione",
-  "session.error.notFound.description": "Questa scheda punta a una sessione che non esiste piÃ¹ su questo server.",
+  "session.error.notFound.description": "Questa scheda punta a una sessione che non esiste più su questo server.",
   "session.error.notFound.closeTab": "Chiudi scheda",
   "session.error.serverConnection": "Impossibile connettersi a questo server",
   "session.review.filesChanged": "{{count}} file modificati",
@@ -639,24 +639,24 @@
   "session.review.noVcs.createGit.actionLoading": "Creazione del repository Git in corso...",
   "session.review.noVcs.createGit.action": "Crea un repository Git",
   "session.review.noSnapshot":
-    "Il tracciamento degli snapshot Ã¨ disabilitato nella configurazione, quindi le modifiche della sessione non sono disponibili",
+    "Il tracciamento degli snapshot è disabilitato nella configurazione, quindi le modifiche della sessione non sono disponibili",
   "session.review.noChanges": "Nessuna modifica",
   "session.review.noUncommittedChanges": "Ancora nessuna modifica senza commit",
   "session.review.noBranchChanges": "Ancora nessuna modifica del branch",
   "session.files.selectToOpen": "Seleziona un file da aprire",
   "session.files.all": "Tutti i file",
   "session.files.empty": "Nessun file",
-  "session.files.binaryContent": "File binario (il contenuto non puÃ² essere visualizzato)",
+  "session.files.binaryContent": "File binario (il contenuto non può essere visualizzato)",
   "session.messages.renderEarlier": "Visualizza i messaggi precedenti",
   "session.messages.loadingEarlier": "Caricamento dei messaggi precedenti...",
   "session.messages.loadEarlier": "Carica i messaggi precedenti",
   "session.messages.loading": "Caricamento messaggi...",
   "session.messages.jumpToLatest": "Vai all'ultimo",
   "session.context.addToContext": "Aggiungi {{selection}} al contesto",
-  "session.todo.title": "AttivitÃ ",
+  "session.todo.title": "Attività",
   "session.todo.collapse": "Comprimi",
   "session.todo.expand": "Espandi",
-  "session.todo.progress": "{{done}} di {{total}} attivitÃ  completate",
+  "session.todo.progress": "{{done}} di {{total}} attività completate",
   "session.question.progress": "{{current}} di {{total}} domande",
   "session.question.minimize": "Riduci la domanda",
   "session.question.restore": "Ripristina la domanda",
@@ -732,9 +732,9 @@
   "status.popover.action.manageServers": "Gestisci server",
   "session.share.popover.title": "Pubblica sul web",
   "session.share.popover.description.shared":
-    "Questa sessione Ã¨ pubblica sul web. Ãˆ accessibile a chiunque abbia il collegamento.",
+    "Questa sessione è pubblica sul web. È accessibile a chiunque abbia il collegamento.",
   "session.share.popover.description.unshared":
-    "Condividi la sessione pubblicamente sul web. SarÃ  accessibile a chiunque abbia il collegamento.",
+    "Condividi la sessione pubblicamente sul web. Sarà accessibile a chiunque abbia il collegamento.",
   "session.share.action.share": "Condividi",
   "session.share.action.publish": "Pubblica",
   "session.share.action.publishing": "Pubblicazione...",
@@ -753,10 +753,10 @@
   "terminal.connectionLost.title": "Connessione persa",
   "terminal.connectionLost.abnormalClose": "WebSocket chiuso in modo anomalo: {{code}}",
   "terminal.connectionLost.description":
-    "La connessione del terminale Ã¨ stata interrotta. CiÃ² puÃ² verificarsi al riavvio del server.",
+    "La connessione del terminale è stata interrotta. Ciò può verificarsi al riavvio del server.",
   "terminal.connectTicket.csrfError":
-    "Il ticket di connessione PTY Ã¨ stato rifiutato dai controlli sull'origine o CSRF. Verifica la configurazione CORS del server.",
-  "terminal.connectTicket.statusError": "Il ticket di connessione PTY non Ã¨ riuscito con lo stato {{status}}",
+    "Il ticket di connessione PTY è stato rifiutato dai controlli sull'origine o CSRF. Verifica la configurazione CORS del server.",
+  "terminal.connectTicket.statusError": "Il ticket di connessione PTY non è riuscito con lo stato {{status}}",
   "titlebar.update": "Aggiorna",
   "titlebar.updateVersion": "Aggiorna {{version}}",
   "common.closeTab": "Chiudi scheda",
@@ -765,7 +765,7 @@
   "common.requestFailed": "Richiesta non riuscita",
   "common.optional": "facoltativo",
   "common.moreOptions": "Altre opzioni",
-  "common.learnMore": "Saperne di piÃ¹",
+  "common.learnMore": "Saperne di più",
   "common.rename": "Rinomina",
   "common.export": "Esporta",
   "common.reset": "Ripristina",
@@ -787,7 +787,7 @@
   "common.key.home": "Home",
   "common.key.end": "Fine",
   "common.key.pageUp": "Pag su",
-  "common.key.pageDown": "Pag giÃ¹",
+  "common.key.pageDown": "Pag giù",
   "common.key.insert": "Ins",
   "common.unknown": "sconosciuto",
   "common.time.justNow": "Adesso",
@@ -801,7 +801,7 @@
   "sidebar.workspaces.enable": "Abilita aree di lavoro",
   "sidebar.workspaces.disable": "Disabilita aree di lavoro",
   "sidebar.gettingStarted.title": "Introduzione",
-  "sidebar.gettingStarted.line1": "OpenCode include modelli gratuiti cosÃ¬ puoi iniziare immediatamente.",
+  "sidebar.gettingStarted.line1": "OpenCode include modelli gratuiti così puoi iniziare immediatamente.",
   "sidebar.gettingStarted.line2": "Connetti un provider per usare altri modelli, tra cui Claude, GPT, Gemini e altri.",
   "sidebar.project.recentSessions": "Sessioni recenti",
   "sidebar.project.viewAllSessions": "Visualizza tutte le sessioni",
@@ -821,12 +821,12 @@
   "debugBar.jank.tip": "Fotogrammi con durata superiore a 32 ms negli ultimi 5 secondi.",
   "debugBar.long.label": "LONG",
   "debugBar.long.tip":
-    "Tempo bloccato e numero di attivitÃ  lunghe negli ultimi 5 secondi. AttivitÃ  piÃ¹ lunga: {{max}}.",
+    "Tempo bloccato e numero di attività lunghe negli ultimi 5 secondi. Attività più lunga: {{max}}.",
   "debugBar.delay.label": "DELAY",
   "debugBar.delay.tip": "Peggiore ritardo di risposta all'input osservato negli ultimi 5 secondi.",
   "debugBar.inp.label": "INP",
   "debugBar.inp.tip":
-    "Durata approssimativa dell'interazione negli ultimi 5 secondi. Ãˆ una misura simile a INP, non l'INP ufficiale di Web Vitals.",
+    "Durata approssimativa dell'interazione negli ultimi 5 secondi. È una misura simile a INP, non l'INP ufficiale di Web Vitals.",
   "debugBar.cls.label": "CLS",
   "debugBar.cls.tip": "Spostamento cumulativo del layout per la durata corrente dell'app.",
   "debugBar.mem.label": "MEM",
@@ -837,7 +837,7 @@
   "debugBar.focus.on": "ON",
   "debugBar.focus.off": "OFF",
   "debugBar.direction.label": "DIR",
-  "debugBar.direction.tip": "Forza la direzione del layout dellâ€™intera app senza cambiare la lingua selezionata",
+  "debugBar.direction.tip": "Forza la direzione del layout dell’intera app senza cambiare la lingua selezionata",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
   "app.name.desktop": "OpenCode Desktop",
@@ -910,7 +910,7 @@
   "settings.general.row.newInterface.description":
     "Utilizza le nuove schede e il layout della home page. Passa da un layout all'altro per un periodo limitato.",
   "settings.general.row.newInterfaceNotice.title": "Ora stai utilizzando il nuovo layout",
-  "settings.general.row.newInterfaceNotice.description": "Il layout precedente non Ã¨ piÃ¹ disponibile",
+  "settings.general.row.newInterfaceNotice.description": "Il layout precedente non è più disponibile",
   "settings.general.row.newInterfaceNotice.dismiss": "Ignora",
   "settings.general.row.pinchZoom.title": "Pizzica per ingrandire",
   "settings.general.row.pinchZoom.description":
@@ -918,9 +918,9 @@
   "settings.general.row.wayland.title": "Usa Wayland nativo",
   "settings.general.row.wayland.description": "Disabilita il fallback X11 su Wayland. Richiede il riavvio.",
   "settings.general.row.wayland.tooltip":
-    "Su Linux con monitor dalle diverse frequenze di aggiornamento, Wayland nativo puÃ² essere piÃ¹ stabile.",
+    "Su Linux con monitor dalle diverse frequenze di aggiornamento, Wayland nativo può essere più stabile.",
   "settings.general.row.releaseNotes.title": "Note sulla versione",
-  "settings.general.row.releaseNotes.description": "Mostra i popup NovitÃ  dopo gli aggiornamenti",
+  "settings.general.row.releaseNotes.description": "Mostra i popup Novità dopo gli aggiornamenti",
   "settings.updates.row.startup.title": "Controlla gli aggiornamenti all'avvio",
   "settings.updates.row.startup.description": "Controlla automaticamente gli aggiornamenti all'avvio di OpenCode",
   "settings.updates.row.check.title": "Controlla gli aggiornamenti",
@@ -929,7 +929,7 @@
   "settings.updates.action.checking": "Controllo...",
   "settings.updates.action.downloading": "Download in corso...",
   "settings.updates.action.installing": "Installazione...",
-  "settings.updates.toast.latest.title": "OpenCode Ã¨ aggiornato",
+  "settings.updates.toast.latest.title": "OpenCode è aggiornato",
   "settings.updates.toast.latest.description": "Stai utilizzando l'ultima versione di OpenCode.",
   "sound.option.none": "Nessuno",
   "sound.option.alert01": "Avviso 01",
@@ -971,24 +971,24 @@
   "sound.option.nope10": "No 10",
   "sound.option.nope11": "No 11",
   "sound.option.nope12": "No 12",
-  "sound.option.yup01": "SÃ¬ 01",
-  "sound.option.yup02": "SÃ¬ 02",
-  "sound.option.yup03": "SÃ¬ 03",
-  "sound.option.yup04": "SÃ¬ 04",
-  "sound.option.yup05": "SÃ¬ 05",
-  "sound.option.yup06": "SÃ¬ 06",
+  "sound.option.yup01": "Sì 01",
+  "sound.option.yup02": "Sì 02",
+  "sound.option.yup03": "Sì 03",
+  "sound.option.yup04": "Sì 04",
+  "sound.option.yup05": "Sì 05",
+  "sound.option.yup06": "Sì 06",
   "settings.general.notifications.agent.title": "Agente",
   "settings.general.notifications.agent.description":
     "Mostra una notifica di sistema quando l'agente ha terminato o richiede attenzione",
   "settings.general.notifications.permissions.title": "Autorizzazioni",
   "settings.general.notifications.permissions.description":
-    "Mostra la notifica di sistema quando Ã¨ richiesta un'autorizzazione",
+    "Mostra la notifica di sistema quando è richiesta un'autorizzazione",
   "settings.general.notifications.errors.title": "Errori",
   "settings.general.notifications.errors.description": "Mostra la notifica di sistema quando si verifica un errore",
   "settings.general.sounds.agent.title": "Agente",
   "settings.general.sounds.agent.description": "Riproduci un suono quando l'agente ha terminato o richiede attenzione",
   "settings.general.sounds.permissions.title": "Autorizzazioni",
-  "settings.general.sounds.permissions.description": "Riproduci l'audio quando Ã¨ richiesta un'autorizzazione",
+  "settings.general.sounds.permissions.description": "Riproduci l'audio quando è richiesta un'autorizzazione",
   "settings.general.sounds.errors.title": "Errori",
   "settings.general.sounds.errors.description": "Riproduci un suono quando si verifica un errore",
   "settings.shortcuts.title": "Scorciatoie da tastiera",
@@ -996,8 +996,8 @@
   "settings.shortcuts.reset.toast.title": "Scorciatoie ripristinate",
   "settings.shortcuts.reset.toast.description":
     "Le scorciatoie da tastiera sono state ripristinate ai valori predefiniti.",
-  "settings.shortcuts.conflict.title": "Scorciatoia giÃ  in uso",
-  "settings.shortcuts.conflict.description": "{{keybind}} Ã¨ giÃ  assegnato a {{titles}}.",
+  "settings.shortcuts.conflict.title": "Scorciatoia già in uso",
+  "settings.shortcuts.conflict.description": "{{keybind}} è già assegnato a {{titles}}.",
   "settings.shortcuts.unassigned": "Non assegnato",
   "settings.shortcuts.pressKeys": "Premi i tasti",
   "settings.shortcuts.search.placeholder": "Cerca scorciatoie",
@@ -1013,7 +1013,7 @@
   "settings.providers.section.connected": "Provider connessi",
   "settings.providers.connected.empty": "Nessun provider connesso",
   "settings.providers.connected.environmentDescription": "Connesso tramite le variabili di ambiente",
-  "settings.providers.section.popular": "Provider piÃ¹ diffusi",
+  "settings.providers.section.popular": "Provider più diffusi",
   "settings.providers.custom.description": "Aggiungi un provider compatibile con OpenAI tramite l'URL di base.",
   "settings.providers.tag.environment": "Ambiente",
   "settings.providers.tag.config": "Configurazione",
@@ -1029,7 +1029,7 @@
   "settings.mcp.description": "Le impostazioni MCP saranno configurabili qui.",
   "settings.permissions.title": "Autorizzazioni",
   "settings.permissions.description":
-    "Controlla quali strumenti puÃ² utilizzare il server per impostazione predefinita.",
+    "Controlla quali strumenti può utilizzare il server per impostazione predefinita.",
   "settings.permissions.section.tools": "Strumenti",
   "settings.permissions.toast.updateFailed.title": "Impossibile aggiornare le autorizzazioni",
   "settings.permissions.action.allow": "Consenti",
@@ -1047,14 +1047,14 @@
   "settings.permissions.tool.list.description": "Elenca i file all'interno di una directory",
   "settings.permissions.tool.bash.title": "Bash",
   "settings.permissions.tool.bash.description": "Esegui i comandi della shell",
-  "settings.permissions.tool.task.title": "AttivitÃ ",
+  "settings.permissions.tool.task.title": "Attività",
   "settings.permissions.tool.task.description": "Avvia subagenti",
   "settings.permissions.tool.skill.title": "Skill",
   "settings.permissions.tool.skill.description": "Carica una skill in base al nome",
   "settings.permissions.tool.lsp.title": "LSP",
   "settings.permissions.tool.lsp.description": "Esegui query sul server di linguaggio",
-  "settings.permissions.tool.todowrite.title": "Scrittura attivitÃ ",
-  "settings.permissions.tool.todowrite.description": "Aggiorna l'elenco delle attivitÃ ",
+  "settings.permissions.tool.todowrite.title": "Scrittura attività",
+  "settings.permissions.tool.todowrite.description": "Aggiorna l'elenco delle attività",
   "settings.permissions.tool.webfetch.title": "Recupero dal web",
   "settings.permissions.tool.webfetch.description": "Recupera contenuto da un URL",
   "settings.permissions.tool.websearch.title": "Ricerca sul web",
@@ -1077,7 +1077,7 @@
   "workspace.reset.failed.title": "Impossibile reimpostare l'area di lavoro",
   "workspace.reset.success.title": "Area di lavoro reimpostata",
   "workspace.reset.success.description": "L'area di lavoro ora corrisponde al branch predefinito.",
-  "workspace.error.stillPreparing": "L'area di lavoro Ã¨ ancora in preparazione",
+  "workspace.error.stillPreparing": "L'area di lavoro è ancora in preparazione",
   "workspace.status.checking": "Verifica delle modifiche non integrate in corso...",
   "workspace.status.error": "Impossibile verificare lo stato di Git.",
   "workspace.status.clean": "Nessuna modifica non integrata rilevata.",
@@ -1088,11 +1088,11 @@
   "workspace.reset.title": "Reimposta l'area di lavoro",
   "workspace.reset.confirm": 'Reimpostare l\'area di lavoro "{{name}}"?',
   "workspace.reset.button": "Reimposta l'area di lavoro",
-  "workspace.reset.archived.none": "Nessuna sessione attiva verrÃ  archiviata.",
-  "workspace.reset.archived.one": "1 sessione verrÃ  archiviata.",
+  "workspace.reset.archived.none": "Nessuna sessione attiva verrà archiviata.",
+  "workspace.reset.archived.one": "1 sessione verrà archiviata.",
   "workspace.reset.archived.many": "Verranno archiviate {{count}} sessioni.",
-  "workspace.reset.note": "L'area di lavoro verrÃ  reimpostata in modo che corrisponda al branch predefinito.",
-  "desktop.menu.app": "OpenCode",
+  "workspace.reset.note": "L'area di lavoro verrà reimpostata in modo che corrisponda al branch predefinito.",
+  "desktop.menu.app": "AllCode",
   "desktop.menu.file": "File",
   "desktop.menu.edit": "Modifica",
   "desktop.menu.view": "Vista",
@@ -1137,20 +1137,20 @@
   "desktop.menu.shareFeedback": "Invia feedback",
   "desktop.menu.reportBug": "Segnala un bug",
   "desktop.menu.ariaLabel": "Menu OpenCode",
-  "desktop.updater.dialog.checkFailed.message": "Impossibile verificare la disponibilitÃ  di aggiornamenti.",
+  "desktop.updater.dialog.checkFailed.message": "Impossibile verificare la disponibilità di aggiornamenti.",
   "desktop.updater.dialog.checkFailed.title": "Errore di aggiornamento",
-  "desktop.updater.dialog.upToDate.message": "La versione Ã¨ aggiornata.",
+  "desktop.updater.dialog.upToDate.message": "La versione è aggiornata.",
   "desktop.updater.dialog.upToDate.title": "Nessun aggiornamento",
-  "desktop.updater.dialog.ready.message": "L'aggiornamento {{version}} Ã¨ stato scaricato. Riavviare ora?",
+  "desktop.updater.dialog.ready.message": "L'aggiornamento {{version}} è stato scaricato. Riavviare ora?",
   "desktop.updater.dialog.ready.title": "Aggiornamento pronto",
   "desktop.updater.dialog.restart": "Riavvia",
-  "desktop.updater.dialog.later": "PiÃ¹ tardi",
+  "desktop.updater.dialog.later": "Più tardi",
   "desktop.recovery.action.relaunch": "Riapri",
   "desktop.recovery.action.exportLogs": "Esporta log",
   "desktop.recovery.action.keepWaiting": "Continua ad attendere",
   "desktop.recovery.action.quit": "Esci",
   "desktop.recovery.loadFailed": "Impossibile caricare OpenCode",
-  "desktop.recovery.terminated": "La finestra di OpenCode si Ã¨ chiusa in modo imprevisto",
+  "desktop.recovery.terminated": "La finestra di OpenCode si è chiusa in modo imprevisto",
   "desktop.recovery.unresponsive": "OpenCode non risponde",
   "desktop.recovery.unresponsive.detail": "Puoi riaprire l'app, aprire i log o continuare ad attendere.",
   "desktop.recovery.loadFailed.detail": "Finestra: {{window}}\nURL: {{url}}\nErrore: {{code}} {{description}}",
@@ -1161,29 +1161,29 @@
   "desktop.dialog.saveFile": "Salva file",
   "desktop.dialog.files": "File",
   "desktop.server.local": "Server locale",
-  "desktop.wsl.error.windowsOnly": "WSL Ã¨ disponibile solo in Windows",
-  "desktop.wsl.error.unavailable": "WSL non Ã¨ disponibile",
+  "desktop.wsl.error.windowsOnly": "WSL è disponibile solo in Windows",
+  "desktop.wsl.error.unavailable": "WSL non è disponibile",
   "desktop.wsl.error.listInstalled": "Impossibile elencare le distribuzioni WSL installate",
   "desktop.wsl.error.listOnline": "Impossibile elencare le distribuzioni WSL disponibili online",
   "desktop.wsl.error.executeDistro": "Impossibile eseguire comandi nella distribuzione",
   "desktop.wsl.error.installWsl": "Installazione di WSL non riuscita",
   "desktop.wsl.error.installDistro": "Impossibile installare la distribuzione: {{distro}}",
   "desktop.wsl.error.installOpencode": "Installazione di OpenCode non riuscita",
-  "desktop.wsl.error.alreadyAdded": "{{distro}} Ã¨ giÃ  stata aggiunta",
-  "desktop.wsl.error.opencodeMissing": "opencode non Ã¨ installato in questa distribuzione",
-  "desktop.wsl.error.opencodeCannotRun": "opencode Ã¨ installato, ma non Ã¨ stato possibile eseguirlo",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode non Ã¨ installato in {{distro}}",
+  "desktop.wsl.error.alreadyAdded": "{{distro}} è già stata aggiunta",
+  "desktop.wsl.error.opencodeMissing": "opencode non è installato in questa distribuzione",
+  "desktop.wsl.error.opencodeCannotRun": "opencode è installato, ma non è stato possibile eseguirlo",
+  "desktop.wsl.error.opencodeNotInstalled": "OpenCode non è installato in {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "L'aggiornamento di OpenCode Ã¨ terminato, ma {{distro}} segnala ancora la versione {{installed}}; era prevista la versione {{expected}}",
+    "L'aggiornamento di OpenCode è terminato, ma {{distro}} segnala ancora la versione {{installed}}; era prevista la versione {{expected}}",
   "desktop.wsl.error.noVersion": "nessuna versione",
-  "desktop.wsl.error.serverExited": "Il server WSL si Ã¨ chiuso dopo l'avvio (code={{code}} signal={{signal}})",
+  "desktop.wsl.error.serverExited": "Il server WSL si è chiuso dopo l'avvio (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
-    "Il server WSL si Ã¨ chiuso prima di diventare operativo (code={{code}} signal={{signal}}){{output}}",
+    "Il server WSL si è chiuso prima di diventare operativo (code={{code}} signal={{signal}}){{output}}",
   "desktop.wsl.error.healthTimeout":
     "Il controllo dello stato del sidecar per {{distro}} ha superato il tempo limite di {{timeout}}ms",
   "desktop.wsl.error.commandTimeout": "{{command}} {{args}} ha superato il tempo limite di {{timeout}}ms",
   "desktop.wsl.error.failedPort": "Impossibile ottenere la porta",
-  "desktop.picker.error.notSelected": "Il file non Ã¨ stato selezionato nella finestra di selezione",
+  "desktop.picker.error.notSelected": "Il file non è stato selezionato nella finestra di selezione",
   "desktop.picker.error.sizeLimit": "Gli allegati selezionati superano il limite di {{limit}} MB",
   "dialog.provider.omniroute.note": "Bring your own gateway URL and key, all models imported automatically",
   "dialog.model.selectProvider.title": "Select provider",
@@ -1244,7 +1244,7 @@
   "batuta.form.field.workers.command.needsSkill": "Install the batuta-cli skill for this agent in Settings > Agents first",
   "batuta.form.field.workers.args.placeholder": "Arguments (space-separated)",
   "batuta.form.field.worktree.label": "Isolated worker worktrees",
-  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout â€” the orchestrator reviews and merges each worker's result. This is not configurable.",
+  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout — the orchestrator reviews and merges each worker's result. This is not configurable.",
   "batuta.form.field.directory.label": "Project",
   "batuta.form.field.directory.description": "The folder this activity's orchestrator and workers run in.",
   "batuta.form.field.directory.error.required": "Choose or add a project folder.",
@@ -1274,25 +1274,25 @@
   "batuta.pipeline.phase.testing": "Testing",
   "batuta.pipeline.phase.quality": "Quality",
   "batuta.pipeline.phase.delivery": "Delivery",
-  "batuta.pipeline.definition.missing": "No pipeline flow defined yet â€” the Architect will define it while studying the project. Issues appear grouped once it does.",
+  "batuta.pipeline.definition.missing": "No pipeline flow defined yet — the Architect will define it while studying the project. Issues appear grouped once it does.",
   "batuta.pipeline.editor.open": "Edit flow",
   "batuta.pipeline.editor.title": "Pipeline flow",
   "batuta.pipeline.editor.description": "Shared across every activity in this project (docs/batuta-pipeline.md). Define phases as \"## Phase name\" headings, each followed by a list of skill slugs (e.g. \"- tdd\"). The Orchestrator re-reads this periodically, so edits apply even mid-run.",
   "batuta.pipeline.editor.save": "Save",
   "batuta.pipeline.editor.tab.editor": "Text",
   "batuta.pipeline.editor.tab.chat": "Chat",
-  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md â€” it won't appear in the sessions list and can't touch anything else.",
+  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md — it won't appear in the sessions list and can't touch anything else.",
   "batuta.pipeline.chat.placeholder": "Describe the change you want to the pipeline flow...",
   "batuta.pipeline.chat.send": "Send",
-  "batuta.pipeline.chat.empty": "No messages yet â€” send one to start adjusting the flow.",
+  "batuta.pipeline.chat.empty": "No messages yet — send one to start adjusting the flow.",
   "batuta.pipeline.chat.starting": "Starting chat...",
   "batuta.pipeline.stage.architecture": "Architecture",
   "batuta.pipeline.stage.architecture.detail": "The Architect studied the project against the activity's goal, wrote/updated the docs (PRD, DER), used /grill-me to clarify ambiguity, and sliced the work into issues.",
   "batuta.pipeline.stage.orchestration": "Orchestration",
   "batuta.pipeline.stage.orchestration.detail": "The Orchestrator received the Architect's handoff (docs + issues) and started dispatching each issue to the right worker or skill.",
   "batuta.panel.detail.open": "Open full session",
-  "batuta.panel.detail.empty": "Nothing yet â€” waiting for this agent to start working.",
-  "batuta.panel.ready.title": "Architect finished â€” review the plan before starting",
+  "batuta.panel.detail.empty": "Nothing yet — waiting for this agent to start working.",
+  "batuta.panel.ready.title": "Architect finished — review the plan before starting",
   "batuta.panel.ready.dispatch": "Start activity",
   "batuta.form.field.branch.label": "Branch",
   "batuta.form.field.branch.description": "Branch the main checkout will be on when the activity starts. Leave the detected branch as-is, or type a new name to create and switch to it.",
@@ -1317,11 +1317,11 @@
   "settings.general.row.devTools.open": "Open DevTools",
   "settings.general.row.debugMode.title": "Debug mode",
   "settings.general.row.debugMode.description": "Shows a DevTools icon in the titlebar, reachable from any screen, and enables the remote debugging (CDP) port even in packaged/production builds. Requires restarting the app.",
-  "settings.general.row.debugMode.descriptionOn": "Enabled â€” restart the app for the remote debugging port to take effect.",
+  "settings.general.row.debugMode.descriptionOn": "Enabled — restart the app for the remote debugging port to take effect.",
   "settings.general.row.debugMode.restart": "Restart now",
   "settings.general.row.computerUse.title": "Computer use",
-  "settings.general.row.computerUse.description": "Lets the agent control this computer directly â€” mouse, keyboard, and screen â€” not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
-  "settings.general.row.computerUse.descriptionOn": "Enabled â€” restart the app for computer use to take effect.",
+  "settings.general.row.computerUse.description": "Lets the agent control this computer directly — mouse, keyboard, and screen — not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
+  "settings.general.row.computerUse.descriptionOn": "Enabled — restart the app for computer use to take effect.",
   "settings.general.row.computerUse.restart": "Restart now",
   "settings.providers.view.list": "List view",
   "settings.providers.view.grid": "Grid view",
@@ -1376,7 +1376,7 @@
   "settings.externalAgents.selectAll.title": "Select all detected agents",
   "settings.externalAgents.selectAll.description": "Installs the batuta-cli skill on every detected agent. Turn off to pick agents individually.",
   "settings.externalAgents.status.detected": "Detected on the connected server",
-  "settings.externalAgents.status.notDetected": "Not detected â€” install the CLI and click Refresh",
+  "settings.externalAgents.status.notDetected": "Not detected — install the CLI and click Refresh",
   "settings.marketplace.title": "Marketplace",
   "settings.marketplace.add.button": "Add",
   "settings.marketplace.skills.add.title": "Add skill source",
@@ -1385,7 +1385,7 @@
   "settings.marketplace.mcp.add.title": "Add MCP connector",
   "settings.marketplace.suggestions.title": "Suggestions",
   "settings.marketplace.suggestions.use": "Use",
-  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format â€” paste the real catalog URL to confirm before it imports anything.",
+  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format — paste the real catalog URL to confirm before it imports anything.",
   "settings.marketplace.catalogs.title": "Catalogs",
   "settings.marketplace.catalogs.view": "View",
   "common.remove": "Remove",
@@ -1399,8 +1399,8 @@
   "provider.omniroute.mcp.skip": "Skip MCP",
   "provider.omniroute.mcp.autoconfig": "Connecting will automatically configure the Omniroute MCP server for you.", // TODO: translate (auto-filled from en)
   "dialog.server.menu.qr": "Show QR code", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.title": "QR code â€” {{name}}", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server â€” the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.title": "QR code — {{name}}", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server — the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copy": "Copy pairing data", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copied": "Pairing data copied", // TODO: translate (auto-filled from en)
   "sshTunnel.server.viewLogs": "View logs / Connect", // TODO: translate (auto-filled from en)
@@ -1453,10 +1453,10 @@
   "home.server.type.ssh": "ssh", // TODO: translate (auto-filled from en)
   "home.server.type.tailscale": "tailscale", // TODO: translate (auto-filled from en)
   "settings.general.row.bugReports.title": "Automatic bug reports", // TODO: translate (auto-filled from en)
-  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only â€” never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
+  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only — never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
   "settings.memory.title": "Memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.title": "Forget this project's memory too?", // TODO: translate (auto-filled from en)
-  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) â€” forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
+  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) — forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
   "project.forgetMemory.keep": "Keep memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.forget": "Forget memory", // TODO: translate (auto-filled from en)
   "settings.memory.field.enabled.title": "Enable memory", // TODO: translate (auto-filled from en)
@@ -1479,8 +1479,8 @@
   "settings.integrations.telegram.error.required": "Enter a bot token", // TODO: translate (auto-filled from en)
   "settings.integrations.telegram.toast.connected.title": "Telegram bot connected", // TODO: translate (auto-filled from en)
   "dialog.server.qr.loopbackWarning": "This server only listens on this computer (127.0.0.1) and Tailscale isn't running here, so a phone can't reach it with this code. Start Tailscale on this machine, or pair with a server that has a real network address instead.", // TODO: translate (auto-filled from en)
-  "batuta.model.model.filterPlaceholder": "Filter modelsâ€¦", // TODO: translate (auto-filled from en)
-  "batuta.model.model.truncated": "Showing the first {{count}} matches â€” keep typing to narrow it down", // TODO: translate (auto-filled from en)
+  "batuta.model.model.filterPlaceholder": "Filter models…", // TODO: translate (auto-filled from en)
+  "batuta.model.model.truncated": "Showing the first {{count}} matches — keep typing to narrow it down", // TODO: translate (auto-filled from en)
   "settings.combos.title": "Combos", // TODO: translate (auto-filled from en)
   "settings.combos.add.button": "Add combo", // TODO: translate (auto-filled from en)
   "settings.combos.empty": "No combos yet.", // TODO: translate (auto-filled from en)
@@ -1508,42 +1508,42 @@
   "settings.agentui.dialog.addTitle": "Create agent", // TODO: translate (auto-filled from en)
   "settings.agentui.dialog.editTitle": "Edit agent", // TODO: translate (auto-filled from en)
   "settings.agentui.ai.title": "Crea con l'IA",
-  "settings.agentui.ai.hint": "Descrivi con parole tue l'agente che desideri â€” nome, personalitÃ  e impostazioni verranno bozzati qui sotto per la tua revisione.",
+  "settings.agentui.ai.hint": "Descrivi con parole tue l'agente che desideri — nome, personalità e impostazioni verranno bozzati qui sotto per la tua revisione.",
   "settings.agentui.ai.placeholder": "es. Una receptionist gentile di uno studio dentistico che risponde a domande sugli appuntamenti...",
   "settings.agentui.ai.generate": "Genera",
-  "settings.agentui.ai.generating": "Generazioneâ€¦",
-  "settings.agentui.ai.toast.generated": "Bozza generata â€” rivedila prima di salvare",
+  "settings.agentui.ai.generating": "Generazione…",
+  "settings.agentui.ai.toast.generated": "Bozza generata — rivedila prima di salvare",
   "settings.agentui.tabs.general": "General", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.channels": "Channels", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.tools": "Tools", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.knowledge": "Knowledge", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers": "MCP servers", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default â€” agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings â†’ MCP first.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default — agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings ? MCP first.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers.noDirectory": "Open a project first to see its MCP servers.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard â†’", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard ?", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.fetch": "Fetch sessions", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaSessions.loading": "Fetchingâ€¦", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaSessions.loading": "Fetching…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.empty": "No sessions found for this API key.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.label": "WhatsApp sessions (select one or more)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.label": "Groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in â€” groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in — groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.fetch": "Fetch groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.loading": "Fetchingâ€¦", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.loading": "Fetching…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.empty": "No groups found for the selected sessions.", // TODO: translate (auto-filled from en)
     "settings.agentui.field.whatsapp.tunnel.tailscale.hint": "Simplest option if you already have Tailscale running on this machine and the provider's server: use this machine's Tailscale IP directly, no tunnel process needed.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.use": "Use Tailscale IP", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "Detectingâ€¦", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "Detecting…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.notFound": "No Tailscale IP found. Is Tailscale installed and running?", // TODO: translate (auto-filled from en)
-"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) â€” the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
+"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) — the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.start": "Start public tunnel", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.starting": "Startingâ€¦", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} â€” the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.starting": "Starting…", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} — the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.error": "Couldn't start the tunnel. Is cloudflared installed?", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.audit": "Audit", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.title": "Message log", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.refresh": "Refresh", // TODO: translate (auto-filled from en)
-  "settings.agentui.audit.loading": "Loadingâ€¦", // TODO: translate (auto-filled from en)
+  "settings.agentui.audit.loading": "Loading…", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.needsSave": "Save the agent first to see its message log.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.empty": "No messages logged yet.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.blocked": "Blocked", // TODO: translate (auto-filled from en)
@@ -1553,12 +1553,12 @@
   "settings.agentui.field.personality": "Personality", // TODO: translate (auto-filled from en)
   "settings.agentui.field.model": "Model", // TODO: translate (auto-filled from en)
   "settings.agentui.field.telegram": "Reply on Telegram", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.telegramToken.placeholder": "Token del bot (facoltativo â€” lascia vuoto per condividere il bot globale)",
-  "settings.agentui.field.telegramToken.hint": "Incolla un token da @BotFather per dare a questo agente il proprio bot Telegram dedicato. Lascia vuoto per raggiungerlo tramite il bot condiviso in Impostazioni â†’ Integrazioni, usando il suo prefisso comando.",
+  "settings.agentui.field.telegramToken.placeholder": "Token del bot (facoltativo — lascia vuoto per condividere il bot globale)",
+  "settings.agentui.field.telegramToken.hint": "Incolla un token da @BotFather per dare a questo agente il proprio bot Telegram dedicato. Lascia vuoto per raggiungerlo tramite il bot condiviso in Impostazioni ? Integrazioni, usando il suo prefisso comando.",
   "settings.agentui.field.whatsapp": "Rispondi su WhatsApp",
-  "settings.agentui.field.whatsapp.hint": "Usa un'API WhatsApp non ufficiale (tramite waconector) â€” scegli un provider e compila i dati di connessione. I provider self-hosted richiedono un proprio server/container in esecuzione separata; questo si limita a connettersi.",
-  "settings.agentui.field.whatsapp.webhookUrl": "URL del webhook â€” incollalo nella dashboard del provider",
-  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret â€” some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.hint": "Usa un'API WhatsApp non ufficiale (tramite waconector) — scegli un provider e compila i dati di connessione. I provider self-hosted richiedono un proprio server/container in esecuzione separata; questo si limita a connettersi.",
+  "settings.agentui.field.whatsapp.webhookUrl": "URL del webhook — incollalo nella dashboard del provider",
+  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret — some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.webhookAfterSave": "L'URL del webhook da configurare presso il provider appare qui dopo il salvataggio.",
   "settings.agentui.field.commandTriggers": "Command triggers (space-separated, e.g. ! #)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.guardrails": "Guardrails", // TODO: translate (auto-filled from en)
@@ -1569,13 +1569,13 @@
   "settings.agentui.rag.label": "Label", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.value": "Text or URL", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.add": "Add source", // TODO: translate (auto-filled from en)
-  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase â€” these are stored as-is for now.", // TODO: translate (auto-filled from en)
+  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase — these are stored as-is for now.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.enabled": "Enabled",
   "settings.agentui.enable": "Enable agent",
   "settings.agentui.disable": "Disable agent",
   "settings.agentui.sandbox.open": "Test",
   "settings.agentui.sandbox.title": "Test {{name}}",
-  "settings.agentui.sandbox.empty": "Send a message to try this agent â€” same personality, model and guardrails it uses for real, in a private test conversation.",
+  "settings.agentui.sandbox.empty": "Send a message to try this agent — same personality, model and guardrails it uses for real, in a private test conversation.",
   "settings.agentui.sandbox.placeholder": "Type a message...",
   "settings.agentui.sandbox.send": "Send",
   "settings.agentui.sandbox.reset": "New conversation",

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=AllCode
+Exec=/opt/AllCode/ai.allcode.desktop %U
+Terminal=false
+Type=Application
+Icon=ai.allcode.desktop
+StartupWMClass=ai.allcode.desktop
+Comment=AI-powered development tool
+Categories=Development;
+MimeType=x-scheme-handler/allcode;

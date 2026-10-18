@@ -91,18 +91,42 @@ export function transformShareData(shareData: ShareData[]): {
 
 type ExportData = { info: SDKSession; messages: Array<{ info: Message; parts: Part[] }> }
 
+import { importFromLegacyOpenCode } from "./import-legacy"
+
 export const ImportCommand = effectCmd({
-  command: "import <file>",
-  describe: "import session data from JSON file or URL",
+  command: "import [file]",
+  describe: "import session data from JSON file, URL, or legacy OpenCode installation",
   builder: (yargs) =>
-    yargs.positional("file", {
-      describe: "path to JSON file or share URL",
-      type: "string",
-      demandOption: true,
-    }),
+    yargs
+      .positional("file", {
+        describe: "path to JSON file or share URL",
+        type: "string",
+      })
+      .option("opencode", {
+        type: "boolean",
+        describe: "import sessions and configuration from OpenCode installation",
+      }),
   handler: Effect.fn("Cli.import")(function* (args) {
     const ctx = yield* InstanceRef
     if (!ctx) return yield* Effect.die("InstanceRef not provided")
+
+    if (args.opencode || args.file === "opencode") {
+      const summary = yield* importFromLegacyOpenCode(ctx)
+      process.stdout.write(`AllCode Legacy Migration Summary:${EOL}`)
+      process.stdout.write(`  - Sessions imported: ${summary.sessionsImported}${EOL}`)
+      process.stdout.write(`  - Messages imported: ${summary.messagesImported}${EOL}`)
+      process.stdout.write(`  - Parts imported: ${summary.partsImported}${EOL}`)
+      process.stdout.write(
+        `  - Project config imported: ${summary.projectConfigImported ? "Yes (.opencode -> .allcode)" : "None / skipped"}${EOL}`,
+      )
+      return
+    }
+
+    if (!args.file) {
+      process.stdout.write(`Please specify a file/URL to import or run with --opencode to migrate from OpenCode.${EOL}`)
+      return
+    }
+
     return yield* runImport(args.file, ctx)
   }),
 })

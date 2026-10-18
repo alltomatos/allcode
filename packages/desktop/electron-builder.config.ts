@@ -36,13 +36,13 @@ const channel = (() => {
 })()
 
 const APP_IDS = {
-  dev: "ai.opencode.desktop.dev",
-  beta: "ai.opencode.desktop.beta",
-  prod: "ai.opencode.desktop",
+  dev: "ai.allcode.desktop.dev",
+  beta: "ai.allcode.desktop.beta",
+  prod: "ai.allcode.desktop",
 } as const
 
 const getBase = (appId: string): Configuration => ({
-  artifactName: "opencode-desktop-${os}-${arch}.${ext}",
+  artifactName: "allcode-desktop-${os}-${arch}.${ext}",
   directories: {
     output: "dist",
     buildResources: "resources",
@@ -55,14 +55,14 @@ const getBase = (appId: string): Configuration => ({
   extraMetadata: {
     desktopName: `${appId}.desktop`,
   },
-  files: ["out/**/*", "resources/**/*", "!resources/opencode-cli*"],
+  files: ["out/**/*", "resources/**/*", "!resources/allcode-cli*"],
   extraResources: [
     ...(channel === "dev"
       ? [
           {
             from: "resources/",
             to: "",
-            filter: ["opencode-cli*"],
+            filter: ["allcode-cli*"],
           },
         ]
       : []),
@@ -124,7 +124,7 @@ const getBase = (appId: string): Configuration => ({
   },
   protocols: {
     name: "OpenCode",
-    schemes: ["opencode"],
+    schemes: ["allcode"],
   },
   win: {
     icon: `resources/icons/icon.ico`,
@@ -164,36 +164,36 @@ function getConfig() {
       return {
         ...base,
         appId,
-        productName: "OpenCode Dev",
+        productName: "AllCode Dev",
         // Same repo as prod, separate electron-updater channel ("dev" instead
         // of "latest") — CI publishes here on every push to the dev branch so
         // testers can install this build and get auto-updates that track dev,
         // without touching the prod release feed at all.
-        publish: { provider: "github", owner: "alltomatos", repo: "opencode", channel: "dev" },
+        publish: { provider: "github", owner: "alltomatos", repo: "allcode", channel: "dev" },
         deb: { fpm: [metainfoFpm(appId)] },
-        rpm: { packageName: "opencode-dev", fpm: [metainfoFpm(appId)] },
+        rpm: { packageName: "allcode-dev", fpm: [metainfoFpm(appId)] },
       }
     }
     case "beta": {
       return {
         ...base,
         appId,
-        productName: "OpenCode Beta",
-        protocols: { name: "OpenCode Beta", schemes: ["opencode"] },
-        publish: { provider: "github", owner: "anomalyco", repo: "opencode-beta", channel: "latest" },
+        productName: "AllCode Beta",
+        protocols: { name: "AllCode Beta", schemes: ["allcode"] },
+        publish: { provider: "github", owner: "alltomatos", repo: "allcode-beta", channel: "latest" },
         deb: { fpm: [metainfoFpm(appId)] },
-        rpm: { packageName: "opencode-beta", fpm: [metainfoFpm(appId)] },
+        rpm: { packageName: "allcode-beta", fpm: [metainfoFpm(appId)] },
       }
     }
     case "prod": {
       return {
         ...base,
         appId,
-        productName: "OpenCode by Alltomatos",
-        protocols: { name: "OpenCode", schemes: ["opencode"] },
-        publish: { provider: "github", owner: "alltomatos", repo: "opencode", channel: "latest" },
+        productName: "AllCode",
+        protocols: { name: "AllCode", schemes: ["allcode"] },
+        publish: { provider: "github", owner: "alltomatos", repo: "allcode", channel: "latest" },
         deb: { fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },
-        rpm: { packageName: "opencode", fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },
+        rpm: { packageName: "allcode", fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },
       }
     }
   }

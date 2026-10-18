@@ -13,5 +13,5 @@ await $`bun ./scripts/copy-icons.ts ${process.env.OPENCODE_CHANNEL ?? "dev"}`
 
 await $`bun build ../mcpmail/src/index.ts --target=node --outfile=./resources/mcpmail/index.js`
 
-await $`cd ../opencode && bun script/build-node.ts`
+await $`cd ../allcode && bun script/build-node.ts`
 await downloadCliToResources()

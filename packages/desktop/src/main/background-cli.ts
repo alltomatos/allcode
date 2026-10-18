@@ -9,7 +9,14 @@ import { app } from "electron"
 const execFileAsync = promisify(execFile)
 const root = dirname(fileURLToPath(import.meta.url))
 const stateHome = process.env.XDG_STATE_HOME
-const desktopStateNames = ["ai.opencode.desktop.dev", "ai.opencode.desktop.beta", "ai.opencode.desktop"]
+const desktopStateNames = [
+  "ai.allcode.desktop.dev",
+  "ai.allcode.desktop.beta",
+  "ai.allcode.desktop",
+  "ai.opencode.desktop.dev",
+  "ai.opencode.desktop.beta",
+  "ai.opencode.desktop",
+]
 
 type Logger = {
   log(message: string, meta?: Record<string, unknown>): void
@@ -121,5 +128,14 @@ function endpoint(url: string | undefined) {
 }
 
 function executableName() {
-  return process.platform === "win32" ? "opencode-cli.exe" : "opencode-cli"
+  if (process.platform === "win32") {
+    return existsSync(join(process.resourcesPath ?? "", "allcode-cli.exe")) ||
+      existsSync(join(root, "../../resources", "allcode-cli.exe"))
+      ? "allcode-cli.exe"
+      : "opencode-cli.exe"
+  }
+  return existsSync(join(process.resourcesPath ?? "", "allcode-cli")) ||
+    existsSync(join(root, "../../resources", "allcode-cli"))
+    ? "allcode-cli"
+    : "opencode-cli"
 }

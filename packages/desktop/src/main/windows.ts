@@ -197,7 +197,7 @@ export function createMainWindow(id: string = randomUUID(), opts: { show?: boole
     height: state.height,
     show: false,
     autoHideMenuBar: true,
-    title: "OpenCode by Alltomatos",
+    title: "AllCode",
     icon: iconPath(),
     backgroundColor: backgroundColor ?? defaultBackgroundColor(),
     ...(process.platform === "darwin"

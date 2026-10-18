@@ -90,7 +90,7 @@ export function preferAppEnv(userDataPath: string) {
     // dados que devem continuar compartilhados entre canais; redirecionar
     // XDG_DATA_HOME inteiro deixa o canal "esquecido" de todos os
     // providers conectados, sobrando só o catálogo padrão (opencode zen).
-    OPENCODE_DB: process.env.OPENCODE_DB ?? join(userDataPath, "opencode.db"),
+    OPENCODE_DB: process.env.ALLCODE_DB ?? process.env.OPENCODE_DB ?? join(userDataPath, "allcode.db"),
   })
   return shellEnv
 }

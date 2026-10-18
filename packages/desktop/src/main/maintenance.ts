@@ -27,7 +27,7 @@ const LAST_PURGED_EVENTS_KEY = "lastMaintenancePurgedEvents"
 
 export async function getSystemMaintenanceStatus(): Promise<SystemMaintenanceStatus> {
   const userDataPath = app.getPath("userData")
-  const dbPath = process.env.OPENCODE_DB ?? join(userDataPath, "opencode.db")
+  const dbPath = process.env.ALLCODE_DB ?? process.env.OPENCODE_DB ?? join(userDataPath, "allcode.db")
   const walPath = `${dbPath}-wal`
 
   let dbSizeBytes = 0
@@ -101,7 +101,7 @@ export async function runSystemMaintenance(options?: {
 }): Promise<SystemMaintenanceResult> {
   const start = Date.now()
   const userDataPath = app.getPath("userData")
-  const dbPath = process.env.OPENCODE_DB ?? join(userDataPath, "opencode.db")
+  const dbPath = process.env.ALLCODE_DB ?? process.env.OPENCODE_DB ?? join(userDataPath, "allcode.db")
   const walPath = `${dbPath}-wal`
 
   let beforeBytes = 0

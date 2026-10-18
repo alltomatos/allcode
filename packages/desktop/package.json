@@ -1,13 +1,13 @@
 {
-  "name": "@opencode-ai/desktop",
+  "name": "@allcode/desktop",
   "private": true,
   "version": "1.21.91",
   "type": "module",
   "license": "MIT",
-  "homepage": "https://opencode.ai",
+  "homepage": "https://allcode.alltomatos.com",
   "author": {
-    "name": "OpenCode",
-    "email": "hello@opencode.ai"
+    "name": "AllCode by Alltomatos",
+    "email": "contact@alltomatos.com"
   },
   "scripts": {
     "typecheck": "tsgo -b",

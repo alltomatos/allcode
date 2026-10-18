@@ -11,6 +11,7 @@ import { HttpApiApp } from "./routes/instance/httpapi/server"
 import { disposeMiddleware } from "./routes/instance/httpapi/lifecycle"
 import { WebSocketTracker } from "./routes/instance/httpapi/websocket-tracker"
 import { PublicApi } from "./routes/instance/httpapi/public"
+import { Branding } from "@opencode-ai/core/branding"
 import type { CorsOptions } from "@opencode-ai/server/cors"
 import { lazy } from "@/util/lazy"
 import { ensureBackgroundTokenRefresh } from "@/provider/antigravity-adapter"
@@ -120,9 +121,9 @@ function listenerLayer(opts: ListenOptions, port: number) {
 
 function startWithPortFallback(opts: ListenOptions) {
   if (opts.port !== 0) return startListener(opts, opts.port)
-  // Match the legacy listener port-resolution behavior: explicit `0` prefers
-  // 4096 first, then any free port.
-  return startListener(opts, 4096).pipe(Effect.catch(() => startListener(opts, 0)))
+  // Match listener port-resolution behavior: explicit `0` prefers
+  // Branding.defaultPort first (1953), then any free port.
+  return startListener(opts, Branding.defaultPort).pipe(Effect.catch(() => startListener(opts, 0)))
 }
 
 function startListener(opts: ListenOptions, port: number) {

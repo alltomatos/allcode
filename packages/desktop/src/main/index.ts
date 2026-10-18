@@ -64,17 +64,17 @@ import { getCloseToTray } from "./auto-start"
 import { createOrUpdateTray, destroyTray, updateTrayMenu } from "./tray"
 
 const APP_NAMES: Record<string, string> = {
-  dev: "OpenCode Dev",
-  beta: "OpenCode Beta",
-  prod: "OpenCode",
+  dev: "AllCode Dev",
+  beta: "AllCode Beta",
+  prod: "AllCode",
 }
 const APP_IDS: Record<string, string> = {
-  dev: "ai.opencode.desktop.dev",
-  beta: "ai.opencode.desktop.beta",
-  prod: "ai.opencode.desktop",
+  dev: "ai.allcode.desktop.dev",
+  beta: "ai.allcode.desktop.beta",
+  prod: "ai.allcode.desktop",
 }
-const TEST_ONBOARDING = process.env.OPENCODE_TEST_ONBOARDING === "1"
-const SIDECAR_VERSION = process.env.OPENCODE_SIDECAR_V2 === "1" ? "v2" : "v1"
+const TEST_ONBOARDING = process.env.ALLCODE_TEST_ONBOARDING === "1" || process.env.OPENCODE_TEST_ONBOARDING === "1"
+const SIDECAR_VERSION = process.env.ALLCODE_SIDECAR_V2 === "1" || process.env.OPENCODE_SIDECAR_V2 === "1" ? "v2" : "v1"
 const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
 
 let logger: ReturnType<typeof initLogging>
@@ -167,7 +167,7 @@ const main = Effect.gen(function* () {
 
   process.env.OPENCODE_DISABLE_EMBEDDED_WEB_UI = "true"
 
-  const appId = app.isPackaged ? APP_IDS[CHANNEL] : "ai.opencode.desktop.dev"
+  const appId = app.isPackaged ? APP_IDS[CHANNEL] : "ai.allcode.desktop.dev"
   const onboardingTestRoot = ((): string | undefined => {
     if (!TEST_ONBOARDING) return
 
@@ -183,7 +183,7 @@ const main = Effect.gen(function* () {
     process.env.XDG_STATE_HOME = join(root, "state")
     return root
   })()
-  app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : "OpenCode Dev")
+  app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : "AllCode Dev")
   app.setAppUserModelId(appId)
   app.setPath(
     "userData",
@@ -261,8 +261,9 @@ const main = Effect.gen(function* () {
   const features = app.commandLine.getSwitchValue("enable-features")
   app.commandLine.appendSwitch("enable-features", features ? `${jsCallStackFeature},${features}` : jsCallStackFeature)
   const debugMode = getDebugModeEnabled()
-  if (!app.isPackaged || debugMode) app.commandLine.appendSwitch("remote-debugging-port", "9222")
-  if (debugMode) logger.log("debug mode enabled", { remoteDebuggingPort: 9222 })
+  const debugPort = process.env.ALLCODE_REMOTE_DEBUGGING_PORT ?? (app.isPackaged ? "0" : "9223")
+  if (!app.isPackaged || debugMode) app.commandLine.appendSwitch("remote-debugging-port", debugPort)
+  if (debugMode) logger.log("debug mode enabled", { remoteDebuggingPort: debugPort })
 
   if (!app.requestSingleInstanceLock()) {
     app.quit()
@@ -272,7 +273,7 @@ const main = Effect.gen(function* () {
   const shellEnv = preferAppEnv(app.getPath("userData"))
 
   app.on("second-instance", (_event: Event, argv: string[]) => {
-    const urls = argv.filter((arg: string) => arg.startsWith("opencode://"))
+    const urls = argv.filter((arg: string) => arg.startsWith("allcode://") || arg.startsWith("opencode://"))
     if (urls.length) {
       logger.log("deep link received via second-instance", { urls })
       emitDeepLinks(urls)
@@ -342,7 +343,7 @@ const main = Effect.gen(function* () {
       }),
     ),
   )
-  app.setAsDefaultProtocolClient("opencode")
+  app.setAsDefaultProtocolClient("allcode")
   registerRendererProtocol()
   setDockIcon()
   const updater = setupAutoUpdater(stopSidecars)
@@ -481,7 +482,7 @@ const main = Effect.gen(function* () {
 
     yield* Deferred.succeed(serverReady, {
       url,
-      username: "opencode",
+      username: "allcode",
       password,
     })
 

@@ -83,7 +83,7 @@ export function updateTrayMenu() {
 
   const template = [
     {
-      label: nativeT("desktop.menu.app") || "OpenCode",
+      label: nativeT("desktop.menu.app") || "AllCode",
       enabled: false,
     },
     { type: "separator" as const },
@@ -128,7 +128,7 @@ export function updateTrayMenu() {
     },
     { type: "separator" as const },
     {
-      label: nativeT("desktop.recovery.action.quit") || "Encerrar OpenCode",
+      label: nativeT("desktop.recovery.action.quit") || "Encerrar AllCode",
       click: () => {
         setAppQuitting(true)
         app.quit()
@@ -149,7 +149,7 @@ export function createOrUpdateTray() {
   try {
     const icon = getTrayIcon()
     trayInstance = new Tray(icon)
-    trayInstance.setToolTip("OpenCode by Alltomatos")
+    trayInstance.setToolTip("AllCode")
 
     trayInstance.on("click", () => {
       showMainWindow()
