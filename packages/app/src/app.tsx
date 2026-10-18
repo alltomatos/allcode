@@ -1,12 +1,12 @@
-import "@/index.css"
+﻿import "@/index.css"
 import * as Sentry from "@sentry/solid"
-import { I18nProvider } from "@opencode-ai/ui/context"
-import { DialogProvider } from "@opencode-ai/ui/context/dialog"
-import { FileComponentProvider } from "@opencode-ai/ui/context/file"
-import { File } from "@opencode-ai/session-ui/file"
-import { Font } from "@opencode-ai/ui/font"
-import { Splash } from "@opencode-ai/ui/logo"
-import { ThemeProvider } from "@opencode-ai/ui/theme/context"
+import { I18nProvider } from "@allcode/ui/context"
+import { DialogProvider } from "@allcode/ui/context/dialog"
+import { FileComponentProvider } from "@allcode/ui/context/file"
+import { File } from "@allcode/session-ui/file"
+import { Font } from "@allcode/ui/font"
+import { Splash } from "@allcode/ui/logo"
+import { ThemeProvider } from "@allcode/ui/theme/context"
 import { MetaProvider } from "@solidjs/meta"
 import {
   type BaseRouterProps,
@@ -20,7 +20,7 @@ import {
 } from "@solidjs/router"
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import { Effect } from "effect"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+import { base64Encode } from "@allcode/core/util/encode"
 import {
   type Component,
   createEffect,
@@ -755,3 +755,4 @@ function LegacyNewSessionRoute() {
     </Show>
   )
 }
+

@@ -1,12 +1,12 @@
-import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { Switch as SwitchV2 } from "@opencode-ai/ui/v2/switch-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { Icon } from "@allcode/ui/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { Tag } from "@allcode/ui/v2/badge-v2"
+import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation } from "@tanstack/solid-query"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
@@ -391,3 +391,4 @@ export const SettingsMcpV2: Component = () => {
     </>
   )
 }
+

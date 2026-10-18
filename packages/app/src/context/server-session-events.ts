@@ -1,6 +1,6 @@
-import { Binary } from "@opencode-ai/core/util/binary"
-import type { Message, Part, PermissionRequest, QuestionRequest, Session, SessionStatus, Todo } from "@opencode-ai/sdk/v2/client"
-import type { SessionMessageInfo } from "@opencode-ai/client/promise"
+﻿import { Binary } from "@allcode/core/util/binary"
+import type { Message, Part, PermissionRequest, QuestionRequest, Session, SessionStatus, Todo } from "@allcode/sdk/v2/client"
+import type { SessionMessageInfo } from "@allcode/client/promise"
 import { produce, reconcile } from "solid-js/store"
 import { message as cleanMessage } from "@/utils/diffs"
 import { messageKey } from "@/utils/session-message"
@@ -382,3 +382,4 @@ export function createLegacyEventApplier(deps: {
     }
   }
 }
+

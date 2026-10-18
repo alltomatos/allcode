@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { Hooks, PluginInput } from "@opencode-ai/plugin"
+﻿import { describe, expect, test } from "bun:test"
+import type { Hooks, PluginInput } from "@allcode/plugin"
 import { CerebrasPlugin } from "../../src/plugin/cerebras"
 
 type ChatParams = NonNullable<Hooks["chat.params"]>
@@ -45,3 +45,4 @@ describe("CerebrasPlugin", () => {
     expect(params.maxOutputTokens).toBe(32_000)
   })
 })
+

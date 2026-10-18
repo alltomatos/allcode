@@ -1,8 +1,8 @@
-import { expect, test } from "bun:test"
+﻿import { expect, test } from "bun:test"
 import { setTimeout as sleep } from "node:timers/promises"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { Effect, Layer } from "effect"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import { McpAuth } from "../../src/mcp/auth"
 
 function authFile() {
@@ -76,3 +76,4 @@ test("serializes concurrent auth file updates across service instances", async (
     }),
   )
 })
+

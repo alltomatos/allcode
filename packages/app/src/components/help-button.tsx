@@ -1,5 +1,5 @@
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
+﻿import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { isRTL } from "@kobalte/core/i18n"
 import { createSignal, Show } from "solid-js"
 import { Drawer, DrawerClose, DrawerContent } from "@/components/ui/drawer"
@@ -141,3 +141,4 @@ export function TabsInfoPopup() {
     </Drawer>
   )
 }
+

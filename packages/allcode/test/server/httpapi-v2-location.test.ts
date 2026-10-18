@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, test } from "bun:test"
-import { EventV2 } from "@opencode-ai/core/event"
-import { Location } from "@opencode-ai/core/location"
+﻿import { afterEach, describe, expect, test } from "bun:test"
+import { EventV2 } from "@allcode/core/event"
+import { Location } from "@allcode/core/location"
 import { Context, Schema } from "effect"
 import { HttpApiApp } from "../../src/server/routes/instance/httpapi/server"
 import { resetDatabase } from "../fixture/db"
@@ -124,3 +124,4 @@ describe("v2 location HttpApi", () => {
     await reader.return(undefined)
   })
 })
+

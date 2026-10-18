@@ -1,9 +1,9 @@
-import { Show, createEffect, type Component, type JSX } from "solid-js"
+﻿import { Show, createEffect, type Component, type JSX } from "solid-js"
 import { useLocation, useNavigate } from "@solidjs/router"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon } from "@allcode/ui/icon"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { useLayout, type ProjectSidebarTab } from "@/context/layout"
 import { useLanguage } from "@/context/language"
 import type { ServerConnection } from "@/context/server"
@@ -301,4 +301,5 @@ const ProjectRailTabButton: Component<{
     </TooltipV2>
   )
 }
+
 

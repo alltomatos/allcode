@@ -1,11 +1,11 @@
-import type { Todo } from "@opencode-ai/sdk/v2"
-import { AnimatedNumber } from "@opencode-ai/ui/animated-number"
-import { Checkbox } from "@opencode-ai/ui/checkbox"
-import { DockTray } from "@opencode-ai/ui/dock-surface"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { useSpring } from "@opencode-ai/ui/motion-spring"
-import { TextReveal } from "@opencode-ai/ui/text-reveal"
-import { TextStrikethrough } from "@opencode-ai/ui/text-strikethrough"
+﻿import type { Todo } from "@allcode/sdk/v2"
+import { AnimatedNumber } from "@allcode/ui/animated-number"
+import { Checkbox } from "@allcode/ui/checkbox"
+import { DockTray } from "@allcode/ui/dock-surface"
+import { IconButton } from "@allcode/ui/icon-button"
+import { useSpring } from "@allcode/ui/motion-spring"
+import { TextReveal } from "@allcode/ui/text-reveal"
+import { TextStrikethrough } from "@allcode/ui/text-strikethrough"
 import { createResizeObserver } from "@solid-primitives/resize-observer"
 import { Index, createEffect, createMemo } from "solid-js"
 import { Dynamic } from "solid-js/web"
@@ -275,3 +275,4 @@ function TodoList(props: { todos: Todo[] }) {
     </div>
   )
 }
+

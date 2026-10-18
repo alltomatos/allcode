@@ -1,6 +1,6 @@
-import { Context, Effect, Exit, Fiber } from "effect"
+﻿import { Context, Effect, Exit, Fiber } from "effect"
 import { WorkspaceContext } from "@/control-plane/workspace-context"
-import type { WorkspaceV2 } from "@opencode-ai/core/workspace"
+import type { WorkspaceV2 } from "@allcode/core/workspace"
 import { InstanceRef, WorkspaceRef } from "./instance-ref"
 import { attachWith } from "./run-service"
 
@@ -82,3 +82,4 @@ export function make(): Effect.Effect<Shape> {
 }
 
 export * as EffectBridge from "./bridge"
+

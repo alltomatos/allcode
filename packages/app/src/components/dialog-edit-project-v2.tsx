@@ -1,11 +1,11 @@
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { DividerV2 } from "@opencode-ai/ui/v2/divider-v2"
-import { Field } from "@opencode-ai/ui/v2/field-v2"
-import { Icon } from "@opencode-ai/ui/v2/icon"
-import { ProjectAvatar, PROJECT_AVATAR_VARIANTS } from "@opencode-ai/ui/v2/project-avatar-v2"
-import { TextareaV2 } from "@opencode-ai/ui/v2/textarea-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
+﻿import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { DividerV2 } from "@allcode/ui/v2/divider-v2"
+import { Field } from "@allcode/ui/v2/field-v2"
+import { Icon } from "@allcode/ui/v2/icon"
+import { ProjectAvatar, PROJECT_AVATAR_VARIANTS } from "@allcode/ui/v2/project-avatar-v2"
+import { TextareaV2 } from "@allcode/ui/v2/textarea-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { For, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { getProjectAvatarVariant, type LocalProject } from "@/context/layout"
@@ -154,3 +154,4 @@ export function DialogEditProjectV2(props: { project: LocalProject; server: Serv
     </Dialog>
   )
 }
+

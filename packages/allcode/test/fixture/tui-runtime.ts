@@ -1,8 +1,8 @@
-import { spyOn } from "bun:test"
+﻿import { spyOn } from "bun:test"
 import path from "path"
-import { resolve, type Info, type Resolved } from "@opencode-ai/tui/config"
+import { resolve, type Info, type Resolved } from "@allcode/tui/config"
 import { TuiConfig } from "../../src/config/tui"
-import { TuiKeybind } from "@opencode-ai/tui/config/keybind"
+import { TuiKeybind } from "@allcode/tui/config/keybind"
 
 type PluginSpec = string | [string, Record<string, unknown>]
 type PluginOrigin = {
@@ -54,3 +54,4 @@ export function mockTuiRuntime(dir: string, plugin: PluginSpec[], opts?: { plugi
     },
   }
 }
+

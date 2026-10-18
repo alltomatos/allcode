@@ -1,9 +1,9 @@
-import { useNavigate, useParams } from "@solidjs/router"
+﻿import { useNavigate, useParams } from "@solidjs/router"
 import { onCleanup } from "solid-js"
 import { useCommand } from "@/context/command"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { useDialog } from "@allcode/ui/context/dialog"
 
 export function useSettingsDialog(defaultValue?: string) {
   const dialog = useDialog()
@@ -53,3 +53,4 @@ export function useSettingsCommand() {
 
   return show
 }
+

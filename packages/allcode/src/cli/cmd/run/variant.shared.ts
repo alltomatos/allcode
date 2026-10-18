@@ -1,4 +1,4 @@
-// Model variant resolution and persistence.
+﻿// Model variant resolution and persistence.
 //
 // Variants are provider-specific reasoning effort levels (e.g., "high", "max").
 // Resolution priority: CLI --variant flag > saved preference > session history.
@@ -7,11 +7,11 @@
 // so your last-used variant sticks. Cycling (ctrl+t) updates both the active
 // variant and the persisted file.
 import path from "path"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+import { FSUtil } from "@allcode/core/fs-util"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { Context, Effect, Layer } from "effect"
 import { makeRuntime } from "@/effect/run-service"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { isRecord } from "@/util/record"
 import { createSession, sessionVariant, type RunSession, type SessionMessages } from "./session.shared"
 import type { RunInput, RunProvider } from "./types"
@@ -214,3 +214,4 @@ export async function resolveSavedVariant(model: RunInput["model"]): Promise<str
 export function saveVariant(model: RunInput["model"], variant: string | undefined): void {
   void runtime.saveVariant(model, variant)
 }
+

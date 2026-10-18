@@ -1,7 +1,7 @@
 export * as EnvironmentRegistry from "./environment-registry"
 
-import { Global } from "@opencode-ai/core/global"
-import { Environment } from "@opencode-ai/schema/environment"
+import { Global } from "@allcode/core/global"
+import { Environment } from "@allcode/schema/environment"
 import { Context, Effect, FileSystem, Layer, Schema } from "effect"
 import path from "path"
 

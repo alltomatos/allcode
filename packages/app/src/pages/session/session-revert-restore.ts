@@ -1,6 +1,6 @@
-import { batch, createMemo } from "solid-js"
+﻿import { batch, createMemo } from "solid-js"
 import { useMutation } from "@tanstack/solid-query"
-import type { UserMessage } from "@opencode-ai/sdk/v2"
+import type { UserMessage } from "@allcode/sdk/v2"
 import type { useSDK } from "@/context/sdk"
 import type { useSync } from "@/context/sync"
 import type { usePrompt, Prompt } from "@/context/prompt"
@@ -147,3 +147,4 @@ export function createRevertRestore(deps: {
 
   return { revertMutation, restoreMutation, reverting, restoring, revert, restore, rolled }
 }
+

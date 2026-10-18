@@ -1,8 +1,8 @@
-import { usePlatform } from "@/context/platform"
+﻿import { usePlatform } from "@/context/platform"
 import { useLanguage } from "@/context/language"
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Dialog } from "@opencode-ai/ui/dialog"
+import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { Dialog } from "@allcode/ui/dialog"
 import { JSX } from "solid-js"
 
 export type DialogGoUpsellProps = {
@@ -44,3 +44,4 @@ export function DialogUsageExceeded(props: DialogGoUpsellProps) {
     </Dialog>
   )
 }
+

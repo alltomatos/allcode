@@ -1,6 +1,6 @@
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+﻿import { PermissionV1 } from "@allcode/core/v1/permission"
 import { Effect, Schema } from "effect"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
+import { SessionV1 } from "@allcode/core/v1/session"
 import type { JSONSchema7 } from "@ai-sdk/provider"
 import type { MessageV2 } from "../session/message-v2"
 import type { Permission } from "../permission"
@@ -181,3 +181,4 @@ export function init<P extends Schema.Decoder<unknown>, M extends Metadata>(
 }
 
 export * as Tool from "./tool"
+

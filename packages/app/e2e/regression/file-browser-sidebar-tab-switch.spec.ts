@@ -1,4 +1,4 @@
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { base64Encode } from "@allcode/core/util/encode"
 import { expect, test, type Page } from "@playwright/test"
 import { mockOpenCodeServer } from "../utils/mock-server"
 import { expectSessionTitle } from "../utils/waits"
@@ -185,3 +185,4 @@ async function setup(
     { directory, server, sessionID },
   )
 }
+

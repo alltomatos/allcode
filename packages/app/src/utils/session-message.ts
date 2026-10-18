@@ -1,11 +1,11 @@
-import type {
+﻿import type {
   SessionMessageAssistant,
   SessionMessageAssistantTool,
   SessionMessageInfo,
   SessionMessageShell,
   SessionMessageUser,
-} from "@opencode-ai/client/promise"
-import type { AssistantMessage, FilePart, Message, Part, ToolPart, UserMessage } from "@opencode-ai/sdk/v2"
+} from "@allcode/client/promise"
+import type { AssistantMessage, FilePart, Message, Part, ToolPart, UserMessage } from "@allcode/sdk/v2"
 import { Option, Schema } from "effect"
 
 const emptyTokens = { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } }
@@ -364,3 +364,4 @@ function toolPart(sessionID: string, messageID: string, tool: SessionMessageAssi
     metadata: { providerState: tool.providerState, providerResultState: tool.providerResultState },
   }
 }
+

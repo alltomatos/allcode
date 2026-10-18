@@ -1,7 +1,7 @@
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { DividerV2 } from "@opencode-ai/ui/v2/divider-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { DividerV2 } from "@allcode/ui/v2/divider-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { type Component, createResource, Show } from "solid-js"
 import QRCode from "qrcode"
 import { useLanguage } from "@/context/language"
@@ -120,3 +120,4 @@ export const DialogServerQrCode: Component<{
     </Dialog>
   )
 }
+

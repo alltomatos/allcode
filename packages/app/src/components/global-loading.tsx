@@ -1,5 +1,5 @@
-import { createMemo, Show, type JSX } from "solid-js"
-import { Spinner } from "@opencode-ai/ui/spinner"
+﻿import { createMemo, Show, type JSX } from "solid-js"
+import { Spinner } from "@allcode/ui/spinner"
 import { useLanguage } from "@/context/language"
 
 export interface GlobalLoadingProps {
@@ -93,3 +93,4 @@ export function GlobalLoading(props: GlobalLoadingProps = {}) {
 }
 
 export default GlobalLoading
+

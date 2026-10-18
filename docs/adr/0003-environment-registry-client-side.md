@@ -16,7 +16,7 @@ O registro de ambientes (`EnvironmentRegistry`) vive **exclusivamente no lado do
 
 Cada daemon/servidor `opencode` é um processo local ao host onde está executando e não tem necessidade de conhecer outros servidores remotos. É o cliente que precisa selecionar, alternar e conectar a múltiplos ambientes.
 
-O schema canônico `Environment.Info` e `Environment.ID` reside em `@opencode-ai/schema/environment`, fornecendo interoperabilidade de tipos entre clientes e ferramentas de automação.
+O schema canônico `Environment.Info` e `Environment.ID` reside em `@allcode/schema/environment`, fornecendo interoperabilidade de tipos entre clientes e ferramentas de automação.
 
 ## Consequências
 - Não é necessário hospedar um "meta-servidor" ou endpoint central para que clientes operem múltiplos servidores remotos.

@@ -1,9 +1,9 @@
-import { Match, Show, Switch, createMemo, type ComponentProps, type JSX } from "solid-js"
-import { ProgressCircle } from "@opencode-ai/ui/progress-circle"
-import { ProgressCircleV2 } from "@opencode-ai/ui/v2/progress-circle-v2"
-import { Button } from "@opencode-ai/ui/button"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+﻿import { Match, Show, Switch, createMemo, type ComponentProps, type JSX } from "solid-js"
+import { ProgressCircle } from "@allcode/ui/progress-circle"
+import { ProgressCircleV2 } from "@allcode/ui/v2/progress-circle-v2"
+import { Button } from "@allcode/ui/button"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { createMediaQuery } from "@solid-primitives/media"
 
 import { useFile } from "@/context/file"
@@ -167,3 +167,4 @@ export function SessionContextUsage(props: SessionContextUsageProps) {
     </Show>
   )
 }
+

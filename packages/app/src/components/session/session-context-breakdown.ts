@@ -1,4 +1,4 @@
-import type { Message, Part } from "@opencode-ai/sdk/v2/client"
+﻿import type { Message, Part } from "@allcode/sdk/v2/client"
 
 export type SessionContextBreakdownKey = "system" | "user" | "assistant" | "tool" | "other"
 
@@ -130,3 +130,4 @@ export function estimateSessionContextBreakdown(args: {
   const total = scaled.system + scaled.user + scaled.assistant + scaled.tool
   return build({ ...scaled, other: Math.max(0, args.input - total) }, args.input)
 }
+

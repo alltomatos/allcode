@@ -1,7 +1,7 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import { adaptServerEvent, coalesceServerEvents, enqueueServerEvent, resumeStreamAfterPageShow } from "./server-sdk"
-import type { OpenCodeEvent } from "@opencode-ai/client/promise"
-import type { Event } from "@opencode-ai/sdk/v2/client"
+import type { OpenCodeEvent } from "@allcode/client/promise"
+import type { Event } from "@allcode/sdk/v2/client"
 
 describe("resumeStreamAfterPageShow", () => {
   test("restarts a stream only after a back-forward cache restore", () => {
@@ -194,3 +194,4 @@ describe("enqueueServerEvent", () => {
     expect(events).toHaveLength(2)
   })
 })
+

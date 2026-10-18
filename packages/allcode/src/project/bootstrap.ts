@@ -1,4 +1,4 @@
-import { makeGlobalNode } from "@opencode-ai/core/effect/app-node"
+﻿import { makeGlobalNode } from "@allcode/core/effect/app-node"
 import { Plugin } from "../plugin"
 import { Format } from "../format"
 import { LSP } from "@/lsp/lsp"
@@ -56,3 +56,4 @@ export const node = makeGlobalNode({
 })
 
 export * as InstanceBootstrap from "./bootstrap"
+

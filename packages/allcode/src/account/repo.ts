@@ -1,10 +1,10 @@
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
 import { eq } from "drizzle-orm"
-import { serviceUse } from "@opencode-ai/core/effect/service-use"
+import { serviceUse } from "@allcode/core/effect/service-use"
 import { Effect, Layer, Option, Schema, Context } from "effect"
 
-import { Database } from "@opencode-ai/core/database/database"
-import { AccountStateTable, AccountTable } from "@opencode-ai/core/account/sql"
+import { Database } from "@allcode/core/database/database"
+import { AccountStateTable, AccountTable } from "@allcode/core/account/sql"
 import { AccessToken, AccountID, AccountRepoError, Info, OrgID, RefreshToken } from "./schema"
 import { normalizeServerUrl } from "./url"
 
@@ -169,3 +169,4 @@ const layer = Layer.effect(
 export const node = LayerNode.make({ service: Service, layer: layer, deps: [Database.node] })
 
 export * as AccountRepo from "./repo"
+

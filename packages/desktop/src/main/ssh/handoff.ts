@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process"
 import { basename } from "node:path"
-import type { SshServerConfig } from "@opencode-ai/app/ssh-tunnel/types"
-import type { Message, Part, Session } from "@opencode-ai/sdk/v2/client"
+import type { SshServerConfig } from "@allcode/app/ssh-tunnel/types"
+import type { Message, Part, Session } from "@allcode/sdk/v2/client"
 import { runRemoteCommand } from "./sidecar"
 
 export type SessionExportData = {

@@ -1,4 +1,4 @@
-import { useDirectoryPicker } from "@/components/directory-picker"
+﻿import { useDirectoryPicker } from "@/components/directory-picker"
 import { useServerManagementController } from "@/components/dialog-select-server"
 import { useSettingsCommand } from "@/components/settings-dialog"
 import { DialogServerV2 } from "@/components/settings-v2/dialog-server-v2"
@@ -12,7 +12,7 @@ import { DialogForgetProjectMemory } from "@/components/dialog-forget-project-me
 import { closeHomeProject, errorMessage, homeProjectDirectories } from "@/pages/layout/helpers"
 import { Persist, persisted } from "@/utils/persist"
 import { showToast } from "@/utils/toast"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createResource } from "solid-js"
 import { createStore } from "solid-js/store"
 import type { HomeController } from "./home-controller"
@@ -152,3 +152,4 @@ export function createHomeProjectsController(home: HomeController) {
 }
 
 export type HomeProjectsController = ReturnType<typeof createHomeProjectsController>
+

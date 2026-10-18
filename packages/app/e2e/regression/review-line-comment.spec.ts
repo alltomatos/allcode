@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test, type Page } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { mockOpenCodeServer } from "../utils/mock-server"
 import { expectAppVisible, expectSessionTitle } from "../utils/waits"
 
@@ -167,3 +167,4 @@ async function openReview(page: Page) {
   await expect(file.getByRole("button", { expanded: true })).toBeVisible()
   await expect(file.getByText("export const value = 'after'", { exact: true })).toBeVisible()
 }
+

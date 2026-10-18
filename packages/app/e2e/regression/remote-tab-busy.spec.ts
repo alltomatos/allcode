@@ -1,5 +1,5 @@
-import { expect, test, type Page, type Route } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test, type Page, type Route } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { currentSession } from "../utils/mock-server"
 
 const serverA = "http://127.0.0.1:4096"
@@ -129,3 +129,4 @@ function sse(route: Route, current: boolean) {
     body: current ? 'data: {"id":"evt_connected","type":"server.connected","data":{}}\n\n' : ": ok\n\n",
   })
 }
+

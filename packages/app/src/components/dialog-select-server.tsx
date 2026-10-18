@@ -1,13 +1,13 @@
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Dialog, DialogHeader, DialogTitle, DialogBody } from "@opencode-ai/ui/v2/dialog-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { List } from "@opencode-ai/ui/list"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
-import { Field } from "@opencode-ai/ui/v2/field-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
+﻿import { useDialog } from "@allcode/ui/context/dialog"
+import { Dialog, DialogHeader, DialogTitle, DialogBody } from "@allcode/ui/v2/dialog-v2"
+import { Icon } from "@allcode/ui/icon"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { List } from "@allcode/ui/list"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { MenuV2 } from "@allcode/ui/v2/menu-v2"
+import { Field } from "@allcode/ui/v2/field-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { useMutation } from "@tanstack/solid-query"
 import { showToast } from "@/utils/toast"
 import { useNavigate } from "@solidjs/router"
@@ -783,3 +783,4 @@ export function ServerConnectionForm(props: { controller: ReturnType<typeof useS
     </div>
   )
 }
+

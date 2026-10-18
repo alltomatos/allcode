@@ -1,9 +1,9 @@
-/** @jsxImportSource @opentui/solid */
+﻿/** @jsxImportSource @opentui/solid */
 import type { ScrollBoxRenderable } from "@opentui/core"
 import { useKeyboard } from "@opentui/solid"
-import { registerOpencodeSpinner } from "@opencode-ai/tui/component/register-spinner"
+import { registerOpencodeSpinner } from "@allcode/tui/component/register-spinner"
 import { Show, createMemo, indexArray } from "solid-js"
-import { SPINNER_FRAMES } from "@opencode-ai/tui/component/spinner"
+import { SPINNER_FRAMES } from "@allcode/tui/component/spinner"
 import { RunEntryContent, separatorRows } from "./scrollback.writer"
 import type { FooterSubagentDetail, FooterSubagentTab, RunDiffStyle } from "./types"
 import type { RunFooterTheme, RunTheme } from "./theme"
@@ -173,3 +173,4 @@ export function RunFooterSubagentBody(props: {
     </box>
   )
 }
+

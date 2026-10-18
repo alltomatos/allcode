@@ -1,5 +1,5 @@
-import { AgentUI } from "@/agentui"
-import type { ConfigAgentUIV1 } from "@opencode-ai/core/v1/config/agentui"
+﻿import { AgentUI } from "@/agentui"
+import type { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
@@ -71,3 +71,4 @@ export const agentuiHandlers = HttpApiBuilder.group(InstanceHttpApi, "agentui", 
       .handle("diagnose", diagnose)
   }),
 )
+

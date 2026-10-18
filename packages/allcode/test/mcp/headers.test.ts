@@ -1,8 +1,8 @@
-import { describe, expect } from "bun:test"
+﻿import { describe, expect } from "bun:test"
 import { Server } from "@modelcontextprotocol/sdk/server/index.js"
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js"
 import { ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect } from "effect"
 import { testEffect } from "../lib/effect"
 import { MCP } from "../../src/mcp/index"
@@ -100,3 +100,4 @@ describe("mcp.headers", () => {
     }),
   )
 })
+

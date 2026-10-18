@@ -1,4 +1,4 @@
-import { NodeHttpServer, NodeServices } from "@effect/platform-node"
+﻿import { NodeHttpServer, NodeServices } from "@effect/platform-node"
 import { describe, expect } from "bun:test"
 import { Context, Effect, Layer, Queue, Ref, Schema, Stream } from "effect"
 import {
@@ -16,11 +16,11 @@ import Http from "node:http"
 import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { registerAdapter } from "../../src/control-plane/adapters"
-import { WorkspaceV2 } from "@opencode-ai/core/workspace"
+import { WorkspaceV2 } from "@allcode/core/workspace"
 import type { WorkspaceAdapter } from "../../src/control-plane/types"
 import { Workspace } from "../../src/control-plane/workspace"
-import { WorkspaceTable } from "@opencode-ai/core/control-plane/workspace.sql"
-import { Database } from "@opencode-ai/core/database/database"
+import { WorkspaceTable } from "@allcode/core/control-plane/workspace.sql"
+import { Database } from "@allcode/core/database/database"
 import { Project } from "../../src/project/project"
 import { Session } from "../../src/session/session"
 import { WorkspacePaths } from "../../src/server/routes/instance/httpapi/groups/workspace"
@@ -550,3 +550,4 @@ describe("HttpApi workspace routing middleware", () => {
     }),
   )
 })
+

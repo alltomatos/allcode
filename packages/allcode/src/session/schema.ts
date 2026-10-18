@@ -1,8 +1,8 @@
-import { Schema } from "effect"
+﻿import { Schema } from "effect"
 
 import { Identifier } from "@/id/id"
-import { SessionV2 } from "@opencode-ai/core/session"
-import { statics } from "@opencode-ai/core/schema"
+import { SessionV2 } from "@allcode/core/session"
+import { statics } from "@allcode/core/schema"
 
 export const SessionID = SessionV2.ID
 export type SessionID = Schema.Schema.Type<typeof SessionID>
@@ -24,3 +24,4 @@ export const PartID = Schema.String.check(Schema.isStartsWith("prt")).pipe(
 )
 
 export type PartID = Schema.Schema.Type<typeof PartID>
+

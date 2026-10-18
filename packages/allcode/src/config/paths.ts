@@ -1,12 +1,12 @@
-export * as ConfigPaths from "./paths"
+﻿export * as ConfigPaths from "./paths"
 
 import path from "path"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
-import { Branding } from "@opencode-ai/core/branding"
+import { Flag } from "@allcode/core/flag/flag"
+import { Global } from "@allcode/core/global"
+import { Branding } from "@allcode/core/branding"
 import { unique } from "remeda"
 import * as Effect from "effect/Effect"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 
 export const files = Effect.fn("ConfigPaths.projectFiles")(function* (
   name: string,
@@ -56,3 +56,4 @@ export const directories = Effect.fn("ConfigPaths.directories")(function* (direc
 export function fileInDirectory(dir: string, name: string) {
   return [path.join(dir, `${name}.json`), path.join(dir, `${name}.jsonc`)]
 }
+

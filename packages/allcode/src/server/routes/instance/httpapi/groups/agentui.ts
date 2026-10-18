@@ -1,4 +1,4 @@
-import { ConfigAgentUIV1 } from "@opencode-ai/core/v1/config/agentui"
+﻿import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { AgentUINotFoundError, AgentUIGenerateFailedError, AuditEntry } from "@/agentui"
@@ -182,3 +182,4 @@ export const AgentUIApi = HttpApi.make("agentui")
       description: "Experimental HttpApi surface for selected instance routes.",
     }),
   )
+

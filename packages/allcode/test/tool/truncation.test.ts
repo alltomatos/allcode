@@ -1,8 +1,8 @@
-import { describe, test, expect } from "bun:test"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { filesystem } from "@opencode-ai/core/effect/app-node-platform"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+﻿import { describe, test, expect } from "bun:test"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { filesystem } from "@allcode/core/effect/app-node-platform"
+import { FSUtil } from "@allcode/core/fs-util"
 import { Effect, FileSystem } from "effect"
 import { Truncate } from "@/tool/truncate"
 import { Config } from "@/config/config"
@@ -264,3 +264,4 @@ describe("Truncate", () => {
     )
   })
 })
+

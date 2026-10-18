@@ -1,10 +1,10 @@
-import { createMemo, For, Show, type Accessor, type JSX } from "solid-js"
+﻿import { createMemo, For, Show, type Accessor, type JSX } from "solid-js"
 import { createStore } from "solid-js/store"
-import { base64Encode } from "@opencode-ai/core/util/encode"
-import { Button } from "@opencode-ai/ui/button"
-import { ContextMenu } from "@opencode-ai/ui/context-menu"
-import { HoverCard } from "@opencode-ai/ui/hover-card"
-import { Icon } from "@opencode-ai/ui/icon"
+import { base64Encode } from "@allcode/core/util/encode"
+import { Button } from "@allcode/ui/button"
+import { ContextMenu } from "@allcode/ui/context-menu"
+import { HoverCard } from "@allcode/ui/hover-card"
+import { Icon } from "@allcode/ui/icon"
 import { createSortable } from "@thisbeyond/solid-dnd"
 import { useLayout, type LocalProject } from "@/context/layout"
 import { useServerSync } from "@/context/server-sync"
@@ -375,3 +375,4 @@ export const SortableProject = (props: {
     </div>
   )
 }
+

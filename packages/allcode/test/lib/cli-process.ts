@@ -1,4 +1,4 @@
-// Subprocess test harness for the opencode CLI. Spawns the real binary against
+﻿// Subprocess test harness for the opencode CLI. Spawns the real binary against
 // a TestLLMServer running in-process at a random port, with full env isolation.
 //
 // This is the missing test tier: in-process tests can't catch bugs that span
@@ -18,10 +18,10 @@
 // without changing the fixture. Long-lived commands like `serve` will need a
 // different return shape — see the TODO at the bottom of OpencodeCli.
 import { test, type TestOptions } from "bun:test"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { AppProcess } from "@opencode-ai/core/process"
+import { FSUtil } from "@allcode/core/fs-util"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { AppProcess } from "@allcode/core/process"
 import { Deferred, Duration, Effect, Layer, Queue, Schedule, Scope, Stream } from "effect"
 import { FetchHttpClient, HttpClient } from "effect/unstable/http"
 import { ChildProcess } from "effect/unstable/process"
@@ -540,3 +540,4 @@ export const cliIt = {
       opts,
     ),
 }
+

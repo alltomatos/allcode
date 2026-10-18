@@ -1,5 +1,5 @@
-import { Effect } from "effect"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+﻿import { Effect } from "effect"
+import { FSUtil } from "@allcode/core/fs-util"
 
 const BOM_CODE = 0xfeff
 const BOM = String.fromCharCode(BOM_CODE)
@@ -25,3 +25,4 @@ export const syncFile = Effect.fn("Bom.syncFile")(function* (fs: FSUtil.Interfac
   yield* fs.writeWithDirs(filePath, join(current.text, bom))
   return current.text
 })
+

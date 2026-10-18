@@ -1,6 +1,6 @@
-import { Pty } from "@opencode-ai/core/pty"
-import { PtyTicket } from "@opencode-ai/core/pty/ticket"
-import { PtyID } from "@opencode-ai/core/pty/schema"
+﻿import { Pty } from "@allcode/core/pty"
+import { PtyTicket } from "@allcode/core/pty/ticket"
+import { PtyID } from "@allcode/core/pty/schema"
 import { PTY_CONNECT_TICKET_QUERY } from "@/server/shared/pty-ticket"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
@@ -170,3 +170,4 @@ export const PtyConnectApi = HttpApi.make("pty-connect").add(
     .middleware(WorkspaceRoutingMiddleware)
     .middleware(PtyConnectAuthorization),
 )
+

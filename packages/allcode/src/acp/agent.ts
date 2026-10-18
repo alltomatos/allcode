@@ -1,4 +1,4 @@
-import {
+﻿import {
   RequestError,
   type Agent as ACPAgent,
   type AgentSideConnection,
@@ -17,7 +17,7 @@ import {
   type SetSessionModeRequest,
 } from "@agentclientprotocol/sdk"
 import { Effect } from "effect"
-import type { OpencodeClient } from "@opencode-ai/sdk/v2"
+import type { OpencodeClient } from "@allcode/sdk/v2"
 import * as ACPError from "./error"
 import * as ACPService from "./service"
 
@@ -93,3 +93,4 @@ function run<A>(effect: Effect.Effect<A, ACPService.Error>) {
 }
 
 export * as ACP from "./agent"
+

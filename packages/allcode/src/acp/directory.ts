@@ -1,11 +1,11 @@
-import { Agent } from "@/agent/agent"
+﻿import { Agent } from "@/agent/agent"
 import { Command } from "@/command"
 import { InstanceRef } from "@/effect/instance-ref"
 import { InstanceBootstrap } from "@/project/bootstrap"
 import { InstanceStore } from "@/project/instance-store"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 import { Provider } from "@/provider/provider"
 import { Context, Effect, Layer, SynchronizedRef } from "effect"
 import type * as ACPError from "./error"
@@ -210,3 +210,4 @@ export const loaderNode = LayerNode.make({
 export const node = LayerNode.make({ service: Service, layer, deps: [loaderNode] })
 
 export * as Directory from "./directory"
+

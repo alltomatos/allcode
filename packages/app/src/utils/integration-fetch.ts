@@ -1,4 +1,4 @@
-// The vendored @opencode-ai/client tarball (packages/app/vendor) predates the
+﻿// The vendored @allcode/client tarball (packages/app/vendor) predates the
 // Integration/Credential API — it has no generated client for `/api/integration/*`
 // and `/api/credential/*`, so `serverSDK().api.integration.*` resolves those
 // calls as bare relative paths (fetched against the app's own origin instead
@@ -14,7 +14,7 @@ import type {
   IntegrationAttemptStatus,
   IntegrationInfo,
   IntegrationOauthConnectOutput,
-} from "@opencode-ai/client/promise"
+} from "@allcode/client/promise"
 
 export type {
   IntegrationAttemptStatus,
@@ -119,3 +119,4 @@ export function createIntegrationFetchApi(http: ServerConnection.HttpBase) {
     },
   }
 }
+

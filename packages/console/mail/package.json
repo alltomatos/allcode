@@ -1,5 +1,5 @@
-{
-  "name": "@opencode-ai/console-mail",
+﻿{
+  "name": "@allcode/console-mail",
   "version": "1.18.21",
   "dependencies": {
     "@jsx-email/all": "2.2.3",
@@ -20,3 +20,4 @@
   "type": "module",
   "license": "MIT"
 }
+

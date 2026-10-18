@@ -1,6 +1,6 @@
-import { useI18n } from "@opencode-ai/ui/context/i18n"
+import { useI18n } from "@allcode/ui/context/i18n"
 import morphdom from "morphdom"
-import { checksum } from "@opencode-ai/core/util/encode"
+import { checksum } from "@allcode/core/util/encode"
 import {
   type Accessor,
   type ComponentProps,
@@ -13,9 +13,9 @@ import {
   splitProps,
 } from "solid-js"
 import { isServer, render } from "solid-js/web"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { canReusePendingBlock, completedProjection } from "./markdown-projection"
 import type { Block, Projection } from "./markdown-stream"
 import {
@@ -32,8 +32,8 @@ import { markdownBlockKey, type MarkdownToken } from "./markdown-worker-protocol
 import { shouldResetCodeTokens, type RenderedCodeState } from "./markdown-code-state"
 import { getCachedMarkdown, sanitizeMarkdown, touchCachedMarkdown, type MarkdownCacheEntry } from "./markdown-cache"
 import { inlineCodeKind } from "./markdown-inline-code-kind"
-import { useOptionalDialog } from "@opencode-ai/ui/context/dialog"
-import { ImagePreview } from "@opencode-ai/ui/image-preview"
+import { useOptionalDialog } from "@allcode/ui/context/dialog"
+import { ImagePreview } from "@allcode/ui/image-preview"
 
 type RenderedBlock =
   | (MarkdownCacheEntry & { key: string; mode: Exclude<Block["mode"], "code"> })

@@ -1,7 +1,7 @@
-import { createMemo } from "solid-js"
+﻿import { createMemo } from "solid-js"
 import { createQuery, skipToken, type QueryClient } from "@tanstack/solid-query"
 import { debounce } from "@solid-primitives/scheduled"
-import type { UserMessage, VcsFileDiff } from "@opencode-ai/sdk/v2"
+import type { UserMessage, VcsFileDiff } from "@allcode/sdk/v2"
 import { diffs as list } from "@/utils/diffs"
 import { reviewDiffDirectory, reviewDiffNeedsLoad, reviewRootDirectory } from "@/pages/session/v2/review-diff-kinds"
 import type { useSDK } from "@/context/sdk"
@@ -196,3 +196,4 @@ export function createVcsReview(deps: {
     stopVcs,
   }
 }
+

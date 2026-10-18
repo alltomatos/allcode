@@ -1,5 +1,5 @@
-{
-  "name": "@opencode-ai/web",
+﻿{
+  "name": "@allcode/web",
   "type": "module",
   "license": "MIT",
   "version": "1.18.21",
@@ -42,3 +42,4 @@
     "typescript": "catalog:"
   }
 }
+

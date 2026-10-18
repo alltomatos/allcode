@@ -1,10 +1,10 @@
-import { createResource, createSignal, Show, type Component } from "solid-js"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { Field } from "@opencode-ai/ui/v2/field-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { Spinner } from "@opencode-ai/ui/spinner"
+﻿import { createResource, createSignal, Show, type Component } from "solid-js"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Icon } from "@allcode/ui/icon"
+import { Tag } from "@allcode/ui/v2/badge-v2"
+import { Field } from "@allcode/ui/v2/field-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { Spinner } from "@allcode/ui/spinner"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { showToast } from "@/utils/toast"
@@ -132,3 +132,4 @@ export const SettingsIntegrationsV2: Component = () => {
     </>
   )
 }
+

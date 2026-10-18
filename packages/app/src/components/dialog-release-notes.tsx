@@ -1,8 +1,8 @@
-import { createSignal, For, Show } from "solid-js"
-import { Dialog, DialogHeader, DialogTitle, DialogBody, DialogFooter } from "@opencode-ai/ui/v2/dialog-v2"
-import { Button } from "@opencode-ai/ui/button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { createSignal, For, Show } from "solid-js"
+import { Dialog, DialogHeader, DialogTitle, DialogBody, DialogFooter } from "@allcode/ui/v2/dialog-v2"
+import { Button } from "@allcode/ui/button"
+import { Icon } from "@allcode/ui/icon"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
 
@@ -208,3 +208,4 @@ function MediaReleaseNotes(props: { highlights: Highlight[] }) {
     </Dialog>
   )
 }
+

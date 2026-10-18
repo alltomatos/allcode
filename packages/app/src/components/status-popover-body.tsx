@@ -1,8 +1,8 @@
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Switch } from "@opencode-ai/ui/switch"
-import { Tabs } from "@opencode-ai/ui/tabs"
+﻿import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { Icon } from "@allcode/ui/icon"
+import { Switch } from "@allcode/ui/switch"
+import { Tabs } from "@allcode/ui/tabs"
 import { showToast } from "@/utils/toast"
 import { useNavigate } from "@solidjs/router"
 import { type Accessor, createEffect, createMemo, For, type JSXElement, onCleanup, Show } from "solid-js"
@@ -512,3 +512,4 @@ export function StatusPopoverBody(props: { shown: Accessor<boolean> }) {
     </div>
   )
 }
+

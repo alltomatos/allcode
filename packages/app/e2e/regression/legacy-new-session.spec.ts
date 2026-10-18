@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { mockOpenCodeServer } from "../utils/mock-server"
 
 const draftID = "draft_legacy_new_session"
@@ -40,3 +40,4 @@ test("redirects a draft to the legacy new-session route", async ({ page }) => {
   await expect(page.locator("header[data-tauri-drag-region]")).toBeVisible()
   await expect(page.locator('[data-component="prompt-input"]')).toBeVisible()
 })
+

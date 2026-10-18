@@ -1,13 +1,13 @@
-import { afterEach, describe, expect } from "bun:test"
+﻿import { afterEach, describe, expect } from "bun:test"
 import { $ } from "bun"
 import fs from "fs/promises"
 import path from "path"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer } from "effect"
 import { HttpClientResponse } from "effect/unstable/http"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { Database } from "@opencode-ai/core/database/database"
+import { FSUtil } from "@allcode/core/fs-util"
+import { Database } from "@allcode/core/database/database"
 import { Snapshot } from "@/snapshot"
 import { InstanceBootstrap } from "@/project/bootstrap"
 import { InstanceStore } from "@/project/instance-store"
@@ -125,3 +125,4 @@ describe("project directories and copies endpoints", () => {
     { git: true },
   )
 })
+

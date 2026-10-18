@@ -1,7 +1,7 @@
-import path from "path"
+﻿import path from "path"
 import { writeHeapSnapshot } from "node:v8"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
+import { Flag } from "@allcode/core/flag/flag"
+import { Global } from "@allcode/core/global"
 const MINUTE = 60_000
 const LIMIT = 2 * 1024 * 1024 * 1024
 
@@ -43,3 +43,4 @@ export function start() {
 }
 
 export * as Heap from "./heap"
+

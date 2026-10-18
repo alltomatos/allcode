@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+﻿#!/usr/bin/env bun
 
 import { $ } from "bun"
 import path from "path"
@@ -13,7 +13,7 @@ process.chdir(dir)
 
 const generated = await import("./generate.ts")
 
-import { Script } from "@opencode-ai/script"
+import { Script } from "@allcode/script"
 import pkg from "../package.json"
 
 const singleFlag = process.argv.includes("--single")
@@ -244,3 +244,4 @@ if (Script.release) {
 }
 
 export { binaries }
+

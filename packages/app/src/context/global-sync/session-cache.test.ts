@@ -1,6 +1,6 @@
-import { describe, expect, test } from "bun:test"
-import type { Message, Part, PermissionRequest, QuestionRequest, SessionStatus, Todo } from "@opencode-ai/sdk/v2/client"
-import type { FileDiffInfo } from "@opencode-ai/client/promise"
+﻿import { describe, expect, test } from "bun:test"
+import type { Message, Part, PermissionRequest, QuestionRequest, SessionStatus, Todo } from "@allcode/sdk/v2/client"
+import type { FileDiffInfo } from "@allcode/client/promise"
 import { dropSessionCaches, pickSessionCacheEvictions } from "./session-cache"
 
 const msg = (id: string, sessionID: string) =>
@@ -102,3 +102,4 @@ describe("app session cache", () => {
     expect([...seen]).toEqual(["ses_1", "ses_4"])
   })
 })
+

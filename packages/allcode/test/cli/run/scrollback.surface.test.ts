@@ -1,5 +1,5 @@
-import { afterEach, expect, test } from "bun:test"
-import type { ToolPart } from "@opencode-ai/sdk/v2"
+﻿import { afterEach, expect, test } from "bun:test"
+import type { ToolPart } from "@allcode/sdk/v2"
 import { RGBA, SyntaxStyle } from "@opentui/core"
 import { MockTreeSitterClient, createTestRenderer, type TestRenderer } from "@opentui/core/testing"
 import { RunScrollbackStream } from "@/cli/cmd/run/scrollback.surface"
@@ -1090,3 +1090,4 @@ test("renders promoted task markdown without a leading blank row", async () => {
     out.scrollback.destroy()
   }
 })
+

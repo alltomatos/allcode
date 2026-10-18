@@ -1,7 +1,7 @@
-import { Schema } from "effect"
+﻿import { Schema } from "effect"
 
 import { Identifier } from "@/id/id"
-import { statics } from "@opencode-ai/core/schema"
+import { statics } from "@allcode/core/schema"
 
 export const EventID = Schema.String.check(Schema.isStartsWith("evt")).pipe(
   Schema.brand("EventID"),
@@ -9,3 +9,4 @@ export const EventID = Schema.String.check(Schema.isStartsWith("evt")).pipe(
     ascending: (id?: string) => s.make(Identifier.ascending("event", id)),
   })),
 )
+

@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test, type Page } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { mockOpenCodeServer } from "../utils/mock-server"
 import { dismissTabsIntroToast, expectAppVisible } from "../utils/waits"
 
@@ -83,3 +83,4 @@ async function idleComposer(page: Page) {
   await page.mouse.move(0, 0)
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur())
 }
+

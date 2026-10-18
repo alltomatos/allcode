@@ -1,5 +1,5 @@
-import { createEffect } from "solid-js"
-import { checksum } from "@opencode-ai/core/util/encode"
+﻿import { createEffect } from "solid-js"
+import { checksum } from "@allcode/core/util/encode"
 import type { useSessionLayout } from "@/pages/session/session-layout"
 
 type TreeStore = { reviewScroll: HTMLDivElement | undefined; pendingDiff: string | undefined }
@@ -104,3 +104,4 @@ export function createReviewDiffScroll(deps: {
 
   return { reviewDiffId, reviewDiffTop, scrollToReviewDiff, focusReviewDiff }
 }
+

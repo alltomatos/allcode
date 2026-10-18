@@ -4,7 +4,7 @@
 
 O objetivo desta arquitetura é permitir que usuários interajam conversacionalmente com agentes (no Chat principal do OpenCode ou através de instâncias de **AgentUI** conectadas a Desktop, Telegram ou WhatsApp) e solicitem o agendamento de lembretes pontuais com suporte a alertas antecipados (ex.: "me lembre no dia 15/10 às 14:00 e me avise 1 dia antes").
 
-A infraestrutura subjacente de rotinas (`packages/core/src/schedule/` e `@opencode-ai/schema/schedule`) suporta disparos periódicos (`cron`, `interval`). Esta arquitetura estende o modelo para suportar disparos pontuais (`once`) e introduz uma tool dedicada de alta ergonomia para LLMs (`reminder`), enquanto mantém a tool administrativa `routine` com capacidades completas de CRUD.
+A infraestrutura subjacente de rotinas (`packages/core/src/schedule/` e `@allcode/schema/schedule`) suporta disparos periódicos (`cron`, `interval`). Esta arquitetura estende o modelo para suportar disparos pontuais (`once`) e introduz uma tool dedicada de alta ergonomia para LLMs (`reminder`), enquanto mantém a tool administrativa `routine` com capacidades completas de CRUD.
 
 ---
 
@@ -15,7 +15,7 @@ A infraestrutura subjacente de rotinas (`packages/core/src/schedule/` e `@openco
 - **Motivação:** LLMs cometem menos erros de alucinação quando interagem com interfaces focadas. Em vez de exigir que o modelo calcule crons arbitrários e monte estruturas complexas de actions, a tool `reminder` recebe parâmetros semânticos (`targetDate`, `remindBefore`, `title`, `channels`) e o runtime decompõe isso nas rotinas correspondentes de forma segura e atômica.
 
 ### Decisão 2: Suporte a Gatilho de Disparo Único (`OnceTrigger`)
-- **Escolha:** Adicionar `kind: "once"` com `timestamp: number` (epoch millis) em `@opencode-ai/schema/schedule`.
+- **Escolha:** Adicionar `kind: "once"` com `timestamp: number` (epoch millis) em `@allcode/schema/schedule`.
 - **Comportamento:** O `ScheduleRunner` avalia itens `once` cujo `timestamp <= Date.now()` e que ainda não tenham sido executados (`lastRunAt === undefined`). Após o disparo bem-sucedido, o status é persistido e a rotina é desativada (`enabled: false`), garantindo idempotência e prevenindo re-disparos em caso de restart do daemon.
 
 ### Decisão 3: Notificação Multicanal & Injeção Conversacional

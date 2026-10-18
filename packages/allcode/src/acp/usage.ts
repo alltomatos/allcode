@@ -1,12 +1,12 @@
-import type { AgentSideConnection, Usage } from "@agentclientprotocol/sdk"
-import type { AssistantMessage as OpenCodeAssistantMessage, Message } from "@opencode-ai/sdk/v2"
+﻿import type { AgentSideConnection, Usage } from "@agentclientprotocol/sdk"
+import type { AssistantMessage as OpenCodeAssistantMessage, Message } from "@allcode/sdk/v2"
 import { InstanceRef } from "@/effect/instance-ref"
 import { InstanceBootstrap } from "@/project/bootstrap"
 import { InstanceStore } from "@/project/instance-store"
-import { makeGlobalNode, Node } from "@opencode-ai/core/effect/app-node"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { makeGlobalNode, Node } from "@allcode/core/effect/app-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 import { Provider } from "@/provider/provider"
 import { Context, Effect, Layer, SynchronizedRef } from "effect"
 
@@ -241,3 +241,4 @@ export const contextLimitLoaderNode = makeGlobalNode({
 export const node = makeGlobalNode({ service: Service, layer, deps: [messageLoaderNode, contextLimitLoaderNode] })
 
 export * as UsageService from "./usage"
+

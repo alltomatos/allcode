@@ -1,5 +1,5 @@
-import { describe, expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { describe, expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect } from "effect"
 import { Auth } from "../../src/auth"
 import { testEffect } from "../lib/effect"
@@ -73,3 +73,4 @@ describe("Auth", () => {
     }),
   )
 })
+

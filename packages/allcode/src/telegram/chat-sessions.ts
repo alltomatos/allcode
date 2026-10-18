@@ -1,10 +1,10 @@
-export * as TelegramChatSessions from "./chat-sessions"
+﻿export * as TelegramChatSessions from "./chat-sessions"
 
 import path from "node:path"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Effect, Layer } from "effect"
-import { Global } from "@opencode-ai/core/global"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { Global } from "@allcode/core/global"
+import { FSUtil } from "@allcode/core/fs-util"
 
 // Per-Telegram-chat state, persisted to disk so a bot restart doesn't lose
 // it and start fresh conversations / forget a chat's chosen repo or model.
@@ -81,3 +81,4 @@ const layer = Layer.effect(
 )
 
 export const node = LayerNode.make({ service: Service, layer: layer, deps: [FSUtil.node] })
+

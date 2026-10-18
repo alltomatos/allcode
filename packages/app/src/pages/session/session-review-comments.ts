@@ -1,6 +1,6 @@
-import { createMemo } from "solid-js"
+﻿import { createMemo } from "solid-js"
 import { selectionFromLines, type FileSelection, type SelectedLineRange } from "@/context/file"
-import { previewSelectedLines } from "@opencode-ai/session-ui/pierre/selection-bridge"
+import { previewSelectedLines } from "@allcode/session-ui/pierre/selection-bridge"
 import type { useFile } from "@/context/file"
 import type { useComments } from "@/context/comments"
 import type { usePrompt } from "@/context/prompt"
@@ -79,3 +79,4 @@ export function createReviewComments(deps: {
 
   return { selectionPreview, addCommentToContext, updateCommentInContext, removeCommentFromContext, reviewCommentActions }
 }
+

@@ -1,6 +1,6 @@
-import { Match, Show, Switch } from "solid-js"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { ResizeHandle } from "@opencode-ai/ui/resize-handle"
+﻿import { Match, Show, Switch } from "solid-js"
+import { Tabs } from "@allcode/ui/tabs"
+import { ResizeHandle } from "@allcode/ui/resize-handle"
 
 import FileTree from "@/components/file-tree"
 import { useFile } from "@/context/file"
@@ -159,3 +159,4 @@ export function SessionSidePanelFileTree(props: {
     </Show>
   )
 }
+

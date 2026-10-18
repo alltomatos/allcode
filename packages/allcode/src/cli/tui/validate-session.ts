@@ -1,4 +1,4 @@
-import { createOpencodeClient } from "@opencode-ai/sdk/v2"
+﻿import { createOpencodeClient } from "@allcode/sdk/v2"
 import { SessionID } from "@/session/schema"
 import { Schema } from "effect"
 
@@ -27,3 +27,4 @@ export async function validateSession(input: {
     headers: input.headers,
   }).session.get({ sessionID }, { throwOnError: true })
 }
+

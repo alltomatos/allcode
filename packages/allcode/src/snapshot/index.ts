@@ -1,15 +1,15 @@
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Cause, Duration, Effect, Layer, Schedule, Schema, Semaphore, Context } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import { formatPatch, structuredPatch } from "diff"
 import path from "path"
-import { AppProcess } from "@opencode-ai/core/process"
+import { AppProcess } from "@allcode/core/process"
 import { InstanceState } from "@/effect/instance-state"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { Hash } from "@opencode-ai/core/util/hash"
+import { FSUtil } from "@allcode/core/fs-util"
+import { Hash } from "@allcode/core/util/hash"
 import { Config } from "@/config/config"
-import { Global } from "@opencode-ai/core/global"
-import { Info } from "@opencode-ai/schema/file-diff"
+import { Global } from "@allcode/core/global"
+import { Info } from "@allcode/schema/file-diff"
 
 export const Patch = Schema.Struct({
   hash: Schema.String,
@@ -805,3 +805,4 @@ export const node = LayerNode.make({
 })
 
 export * as Snapshot from "."
+

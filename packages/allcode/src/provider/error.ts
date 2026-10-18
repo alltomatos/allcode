@@ -1,8 +1,8 @@
-import { APICallError } from "ai"
+﻿import { APICallError } from "ai"
 import { STATUS_CODES } from "http"
 import { iife } from "@/util/iife"
-import type { ProviderV2 } from "@opencode-ai/core/provider"
-import { isContextOverflow } from "@opencode-ai/llm"
+import type { ProviderV2 } from "@allcode/core/provider"
+import { isContextOverflow } from "@allcode/llm"
 
 export class HeaderTimeoutError extends Error {
   public override readonly name = "ProviderHeaderTimeoutError"
@@ -193,3 +193,4 @@ export function parseAPICallError(input: { providerID: ProviderV2.ID; error: API
 }
 
 export * as ProviderError from "./error"
+

@@ -1,4 +1,4 @@
-import yargs from "yargs"
+﻿import yargs from "yargs"
 import { hideBin } from "yargs/helpers"
 import { RunCommand } from "./cli/cmd/run"
 import { GenerateCommand } from "./cli/cmd/generate"
@@ -9,7 +9,7 @@ import { UpgradeCommand } from "./cli/cmd/upgrade"
 import { UninstallCommand } from "./cli/cmd/uninstall"
 import { ModelsCommand } from "./cli/cmd/models"
 import { UI } from "./cli/ui"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
+import { InstallationVersion } from "@allcode/core/installation/version"
 import { FormatError } from "./cli/error"
 import { ServeCommand } from "./cli/cmd/serve"
 import { DebugCommand } from "./cli/cmd/debug"
@@ -28,7 +28,7 @@ import { SessionCommand } from "./cli/cmd/session"
 import { DbCommand } from "./cli/cmd/db"
 import { errorMessage } from "./util/error"
 import { PluginCommand } from "./cli/cmd/plug"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { DefaultSkills } from "./skill/default-skills"
 import { DefaultPython } from "./provider/agentrouter/default-python"
 import { Heap } from "./cli/heap"
@@ -146,3 +146,4 @@ try {
   // Explicitly exit to avoid any hanging subprocesses.
   process.exit()
 }
+

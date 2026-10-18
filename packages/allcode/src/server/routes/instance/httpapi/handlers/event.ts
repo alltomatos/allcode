@@ -1,7 +1,7 @@
-import { EventV2Bridge } from "@/event-v2-bridge"
+﻿import { EventV2Bridge } from "@/event-v2-bridge"
 import { InstanceState } from "@/effect/instance-state"
 import { GlobalBus } from "@/bus/global"
-import { EventV2 } from "@opencode-ai/core/event"
+import { EventV2 } from "@allcode/core/event"
 import { Effect, Queue } from "effect"
 import * as Stream from "effect/Stream"
 import { HttpServerResponse } from "effect/unstable/http"
@@ -97,3 +97,4 @@ export const eventHandlers = HttpApiBuilder.group(EventApi, "event", (handlers) 
     )
   }),
 )
+

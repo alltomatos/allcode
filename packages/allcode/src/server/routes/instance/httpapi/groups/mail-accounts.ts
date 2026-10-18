@@ -1,5 +1,5 @@
-import { MailAccounts } from "@/mail-accounts"
-import { PositiveInt } from "@opencode-ai/core/schema"
+﻿import { MailAccounts } from "@/mail-accounts"
+import { PositiveInt } from "@allcode/core/schema"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { Authorization } from "../middleware/authorization"
@@ -96,3 +96,4 @@ export const MailAccountsApi = HttpApi.make("mail-accounts").add(
     .middleware(WorkspaceRoutingMiddleware)
     .middleware(Authorization),
 )
+

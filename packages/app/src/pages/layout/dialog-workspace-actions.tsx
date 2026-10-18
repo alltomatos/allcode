@@ -1,10 +1,10 @@
-import { createMemo, onMount } from "solid-js"
+﻿import { createMemo, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
-import type { Session } from "@opencode-ai/sdk/v2/client"
-import { Button } from "@opencode-ai/ui/button"
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { getFilename } from "@opencode-ai/core/util/path"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import type { Session } from "@allcode/sdk/v2/client"
+import { Button } from "@allcode/ui/button"
+import { Dialog } from "@allcode/ui/dialog"
+import { getFilename } from "@allcode/core/util/path"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { listAllSessions } from "@/utils/session"
@@ -150,3 +150,4 @@ export function DialogResetWorkspace(props: {
     </Dialog>
   )
 }
+

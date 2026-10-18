@@ -1,6 +1,6 @@
-import { Effect, Schema } from "effect"
+﻿import { Effect, Schema } from "effect"
 import * as path from "path"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import * as Bom from "../util/bom"
 
 export const PatchSchema = Schema.Struct({
@@ -684,3 +684,4 @@ export const maybeParseApplyPatchVerified = Effect.fn("Patch.maybeParseApplyPatc
 })
 
 export * as Patch from "."
+

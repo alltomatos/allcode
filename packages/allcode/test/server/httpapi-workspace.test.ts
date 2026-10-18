@@ -1,20 +1,20 @@
-import { afterEach, describe, expect, mock } from "bun:test"
+﻿import { afterEach, describe, expect, mock } from "bun:test"
 import nodeFs from "node:fs"
 import { mkdir } from "node:fs/promises"
 import path from "node:path"
 import { Effect, Layer, Stream } from "effect"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { Flag } from "@allcode/core/flag/flag"
 import { registerAdapter } from "../../src/control-plane/adapters"
-import { WorkspaceV2 } from "@opencode-ai/core/workspace"
+import { WorkspaceV2 } from "@allcode/core/workspace"
 import type { WorkspaceAdapter } from "../../src/control-plane/types"
 import { Workspace } from "../../src/control-plane/workspace"
 import { WorkspacePaths } from "../../src/server/routes/instance/httpapi/groups/workspace"
 import { EventPaths } from "../../src/server/routes/instance/httpapi/groups/event"
 import { Session } from "@/session/session"
-import { Database } from "@opencode-ai/core/database/database"
-import { Ripgrep } from "@opencode-ai/core/ripgrep"
+import { Database } from "@allcode/core/database/database"
+import { Ripgrep } from "@allcode/core/ripgrep"
 import { Server } from "../../src/server/server"
 import { resetDatabase } from "../fixture/db"
 import { disposeAllInstances, provideInstance, tmpdirScoped } from "../fixture/fixture"
@@ -610,3 +610,4 @@ describe("workspace HttpApi", () => {
     }),
   )
 })
+

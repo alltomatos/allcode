@@ -1,10 +1,10 @@
-import { useParams } from "@solidjs/router"
+﻿import { useParams } from "@solidjs/router"
 import { createMemo } from "solid-js"
 import { useLayout } from "@/context/layout"
 import { SessionRouteKey, SessionStateKey } from "@/utils/server-scope"
 import { useSDK } from "@/context/sdk"
 import { useServerSDK } from "@/context/server-sdk"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+import { base64Encode } from "@allcode/core/util/encode"
 
 export const useSessionKey = () => {
   const params = useParams()
@@ -28,3 +28,4 @@ export const useSessionLayout = () => {
     view: createMemo(() => layout.view(sessionKey)),
   }
 }
+

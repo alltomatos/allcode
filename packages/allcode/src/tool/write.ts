@@ -1,4 +1,4 @@
-import { Schema } from "effect"
+﻿import { Schema } from "effect"
 import * as path from "path"
 import { Effect } from "effect"
 import * as Tool from "./tool"
@@ -6,10 +6,10 @@ import { LSP } from "@/lsp/lsp"
 import { createTwoFilesPatch } from "diff"
 import DESCRIPTION from "./write.txt"
 import { EventV2Bridge } from "@/event-v2-bridge"
-import { FileSystem } from "@opencode-ai/core/filesystem"
-import { Watcher } from "@opencode-ai/core/filesystem/watcher"
+import { FileSystem } from "@allcode/core/filesystem"
+import { Watcher } from "@allcode/core/filesystem/watcher"
 import { Format } from "../format"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import { InstanceState } from "@/effect/instance-state"
 import { trimDiff } from "./edit"
 import { assertExternalDirectoryEffect } from "./external-directory"
@@ -102,3 +102,4 @@ export const WriteTool = Tool.define(
     }
   }),
 )
+

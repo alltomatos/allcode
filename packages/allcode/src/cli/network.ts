@@ -1,5 +1,5 @@
-import type { Argv, InferredOptionTypes } from "yargs"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
+﻿import type { Argv, InferredOptionTypes } from "yargs"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
 import type { Config } from "@/config/config"
 import { Effect } from "effect"
 
@@ -78,3 +78,4 @@ export function resolveNetworkOptionsNoConfig(args: NetworkOptions, config?: Con
 
   return { hostname, port, mdns, mdnsDomain, cors }
 }
+

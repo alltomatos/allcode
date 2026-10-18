@@ -1,7 +1,7 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import { createEffect, createMemo, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
-import type { Todo } from "@opencode-ai/sdk/v2"
+import type { Todo } from "@allcode/sdk/v2"
 import { useServerSync } from "@/context/global-sync"
 import { PromptInput } from "@/components/prompt-input"
 import { usePrompt } from "@/context/prompt"
@@ -620,3 +620,4 @@ export const Playground = {
     )
   },
 }
+

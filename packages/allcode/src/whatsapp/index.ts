@@ -1,7 +1,7 @@
-export * as WhatsApp from "./index"
+﻿export * as WhatsApp from "./index"
 
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { ConfigAgentUIV1 } from "@opencode-ai/core/v1/config/agentui"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import { AgentUI } from "@/agentui"
 import { Context, Duration, Effect, Fiber, Layer, Schedule, Schema, Scope } from "effect"
 import path from "node:path"
@@ -660,3 +660,4 @@ export const node = LayerNode.make({
   layer,
   deps: [AgentUI.node],
 })
+

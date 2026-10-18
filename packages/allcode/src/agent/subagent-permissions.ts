@@ -1,4 +1,4 @@
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+﻿import { PermissionV1 } from "@allcode/core/v1/permission"
 import type { Agent } from "./agent"
 
 /**
@@ -25,3 +25,4 @@ export function deriveSubagentSessionPermission(input: {
     ...(canTask ? [] : [{ permission: "task" as const, pattern: "*" as const, action: "deny" as const }]),
   ]
 }
+

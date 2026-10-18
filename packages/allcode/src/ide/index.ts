@@ -1,7 +1,7 @@
-import { Schema } from "effect"
-import { NamedError } from "@opencode-ai/core/util/error"
+﻿import { Schema } from "effect"
+import { NamedError } from "@allcode/core/util/error"
 import { Process } from "@/util/process"
-import { IdeEvent } from "@opencode-ai/schema/ide-event"
+import { IdeEvent } from "@allcode/schema/ide-event"
 
 const SUPPORTED_IDES = [
   { name: "Windsurf" as const, cmd: "windsurf" },
@@ -52,3 +52,4 @@ export async function install(ide: (typeof SUPPORTED_IDES)[number]["name"]) {
 }
 
 export * as Ide from "."
+

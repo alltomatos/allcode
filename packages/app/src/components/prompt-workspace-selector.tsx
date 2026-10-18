@@ -1,9 +1,9 @@
-import { For, Show } from "solid-js"
-import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { getFilename } from "@opencode-ai/core/util/path"
+﻿import { For, Show } from "solid-js"
+import { MenuV2 } from "@allcode/ui/v2/menu-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
+import { Icon } from "@allcode/ui/icon"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { getFilename } from "@allcode/core/util/path"
 import { useLanguage } from "@/context/language"
 import { BranchSelectorV2 } from "@/components/branch-selector-v2"
 
@@ -121,3 +121,4 @@ export function PromptGitStatus(props: { branch?: string; noGit?: boolean }) {
     </>
   )
 }
+

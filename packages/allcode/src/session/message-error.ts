@@ -1,5 +1,5 @@
-import { Schema } from "effect"
-import { NamedError } from "@opencode-ai/core/util/error"
+﻿import { Schema } from "effect"
+import { NamedError } from "@allcode/core/util/error"
 
 export const OutputLengthError = NamedError.create("MessageOutputLengthError", {})
 
@@ -12,3 +12,4 @@ export const Shared = [AuthError.EffectSchema, NamedError.Unknown.EffectSchema, 
 export const SharedSchema = Schema.Union(Shared)
 
 export * as MessageError from "./message-error"
+

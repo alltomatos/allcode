@@ -1,4 +1,4 @@
-import {
+﻿import {
   createEffect,
   createMemo,
   createResource,
@@ -13,14 +13,14 @@ import {
 } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useLocation, useNavigate, useParams } from "@solidjs/router"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Button } from "@opencode-ai/ui/button"
-import { Tooltip, TooltipKeybind } from "@opencode-ai/ui/tooltip"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { KeybindV2 } from "@opencode-ai/ui/v2/keybind-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { IconButton } from "@allcode/ui/icon-button"
+import { Icon } from "@allcode/ui/icon"
+import { Button } from "@allcode/ui/button"
+import { Tooltip, TooltipKeybind } from "@allcode/ui/tooltip"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { KeybindV2 } from "@allcode/ui/v2/keybind-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 
 import { LayoutRoute, useLayout } from "@/context/layout"
 import { usePlatform } from "@/context/platform"
@@ -729,7 +729,7 @@ function GlobalDevToolsButton(props: { variant: "v2" | "legacy" }) {
             variant="ghost-muted"
             size="large"
             class="!w-9 shrink-0"
-            // "console" doesn't exist in the v2 icon set (@opencode-ai/ui/v2/icon) — it
+            // "console" doesn't exist in the v2 icon set (@allcode/ui/v2/icon) — it
             // only has a small, unrelated set of names. Reuse the legacy Icon component's
             // "console" glyph instead of adding a whole new icon just for this button;
             // IconButtonV2's `icon` prop takes any JSX.Element, not just IconV2.
@@ -769,3 +769,4 @@ function ChannelIndicator(props: { debugTools?: { visible: boolean; toggle: () =
     </>
   )
 }
+

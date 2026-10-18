@@ -1,6 +1,6 @@
-import { createMemo, createResource, onMount, type Accessor } from "solid-js"
-import type { ColorScheme } from "@opencode-ai/ui/theme/context"
-import { useTheme } from "@opencode-ai/ui/theme/context"
+﻿import { createMemo, createResource, onMount, type Accessor } from "solid-js"
+import type { ColorScheme } from "@allcode/ui/theme/context"
+import { useTheme } from "@allcode/ui/theme/context"
 import { usePermission } from "@/context/permission"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
@@ -171,3 +171,4 @@ export type PermissionScopeController = ReturnType<typeof createPermissionScopeC
 export type ShellSettingsController = ReturnType<typeof createShellSettingsController>
 export type AppearanceSettingsController = ReturnType<typeof createAppearanceSettingsController>
 export type SoundSettingsController = ReturnType<typeof createSoundSettingsController>
+

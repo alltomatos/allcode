@@ -1,4 +1,4 @@
-import type { ProjectV2 } from "@opencode-ai/core/project"
+﻿import type { ProjectV2 } from "@allcode/core/project"
 import type { WorkspaceAdapter, WorkspaceAdapterEntry } from "../types"
 import { WorktreeAdapter } from "./worktree"
 
@@ -39,3 +39,4 @@ export function registerAdapter(projectID: ProjectV2.ID, type: string, adapter: 
   adapters.set(type, adapter)
   state.set(projectID, adapters)
 }
+

@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test, type Page } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { fixture, pageMessages } from "./session-timeline.fixture"
 import { trackPageErrors, expectNoSmokeErrors } from "../utils/errors"
 import { mockOpenCodeServer } from "../utils/mock-server"
@@ -738,3 +738,4 @@ async function switchTitlebarSession(page: Page, sessionID: string, title: strin
 async function expectSessionReady(page: Page) {
   await expectAppVisible(page.getByRole("textbox", { name: "Prompt" }))
 }
+

@@ -1,6 +1,6 @@
-import { Binary } from "@opencode-ai/core/util/binary"
-import { retry } from "@opencode-ai/core/util/retry"
-import type { SessionApi, SessionMessageInfo } from "@opencode-ai/client/promise"
+﻿import { Binary } from "@allcode/core/util/binary"
+import { retry } from "@allcode/core/util/retry"
+import type { SessionApi, SessionMessageInfo } from "@allcode/client/promise"
 import type {
   Message,
   OpencodeClient,
@@ -10,8 +10,8 @@ import type {
   Session,
   SessionStatus,
   Todo,
-} from "@opencode-ai/sdk/v2/client"
-import type { FileDiffInfo } from "@opencode-ai/client/promise"
+} from "@allcode/sdk/v2/client"
+import type { FileDiffInfo } from "@allcode/client/promise"
 import { createStore, produce, reconcile, type SetStoreFunction } from "solid-js/store"
 import { sessionNotFoundError } from "@/utils/server-errors"
 import { rootSession } from "@/utils/session-route"
@@ -434,3 +434,4 @@ export function createServerSession(
 }
 
 export type ServerSession = ReturnType<typeof createServerSession>
+

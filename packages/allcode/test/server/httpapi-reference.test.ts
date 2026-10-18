@@ -1,7 +1,7 @@
-import { afterEach, describe, expect, test } from "bun:test"
+﻿import { afterEach, describe, expect, test } from "bun:test"
 import path from "path"
 import { Server } from "../../src/server/server"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { resetDatabase } from "../fixture/db"
 import { disposeAllInstances, tmpdir } from "../fixture/fixture"
 import { Effect } from "effect"
@@ -61,3 +61,4 @@ describe("reference HttpApi", () => {
     ])
   })
 })
+

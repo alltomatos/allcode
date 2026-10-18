@@ -1,9 +1,9 @@
-import { Show, type JSX } from "solid-js"
-import { DropdownMenu } from "@opencode-ai/ui/dropdown-menu"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
+﻿import { Show, type JSX } from "solid-js"
+import { DropdownMenu } from "@allcode/ui/dropdown-menu"
+import { Icon } from "@allcode/ui/icon"
+import { IconButton } from "@allcode/ui/icon-button"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 
 import { useCommand } from "@/context/command"
 import { DESKTOP_MENU, desktopMenuVisible, type DesktopMenuAction, type DesktopMenuEntry } from "@/desktop-menu"
@@ -133,3 +133,4 @@ function DesktopMenuItem(props: { label: string; keybind?: string; disabled?: bo
     </DropdownMenu.Item>
   )
 }
+

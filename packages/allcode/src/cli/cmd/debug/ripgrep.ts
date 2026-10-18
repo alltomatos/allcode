@@ -1,6 +1,6 @@
-import { EOL } from "os"
+﻿import { EOL } from "os"
 import { Effect } from "effect"
-import { Ripgrep } from "@opencode-ai/core/ripgrep"
+import { Ripgrep } from "@allcode/core/ripgrep"
 import { effectCmd } from "../../effect-cmd"
 import { cmd } from "../cmd"
 import { InstanceRef } from "@/effect/instance-ref"
@@ -77,3 +77,4 @@ const SearchCommand = effectCmd({
     process.stdout.write(JSON.stringify(results, null, 2) + EOL)
   }),
 })
+

@@ -1,7 +1,7 @@
-import crypto from "node:crypto"
-import { Database as CoreDatabase } from "@opencode-ai/core/database/database"
-import { IntegrationRotation } from "@opencode-ai/core/integration/rotation"
-import { Integration } from "@opencode-ai/core/integration"
+﻿import crypto from "node:crypto"
+import { Database as CoreDatabase } from "@allcode/core/database/database"
+import { IntegrationRotation } from "@allcode/core/integration/rotation"
+import { Integration } from "@allcode/core/integration"
 
 const MODEL_ALIASES: Record<string, string> = {
   "gemini-3.8-flash-high": "gemini-3.8-flash-tiered",
@@ -863,3 +863,4 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
     })
   }
 }
+

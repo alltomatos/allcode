@@ -1,4 +1,4 @@
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { base64Encode } from "@allcode/core/util/encode"
 import type { Page } from "@playwright/test"
 import { mockOpenCodeServer } from "../../utils/mock-server"
 import { expectAppVisible, expectSessionTitle } from "../../utils/waits"
@@ -502,3 +502,4 @@ function provider() {
     default: { providerID: "opencode", modelID: "claude-opus-4-6" },
   }
 }
+

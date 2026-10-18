@@ -1,7 +1,7 @@
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { DividerV2 } from "@opencode-ai/ui/v2/divider-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { DividerV2 } from "@allcode/ui/v2/divider-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createMemo, createSignal, For, Show, type Component } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useProviders } from "@/hooks/use-providers"
@@ -119,3 +119,4 @@ export const DialogMemoryRecommendedModels: Component<{
     </Dialog>
   )
 }
+

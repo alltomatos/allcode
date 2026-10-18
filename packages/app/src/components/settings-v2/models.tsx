@@ -1,9 +1,9 @@
-import { useFilteredList } from "@opencode-ai/ui/hooks"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
-import { Switch } from "@opencode-ai/ui/v2/switch-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
+﻿import { useFilteredList } from "@allcode/ui/hooks"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { Switch } from "@allcode/ui/v2/switch-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { type Component, For, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useLanguage } from "@/context/language"
@@ -213,3 +213,4 @@ export const SettingsModelsV2: Component = () => {
     </>
   )
 }
+

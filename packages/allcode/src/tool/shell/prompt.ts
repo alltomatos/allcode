@@ -1,7 +1,7 @@
-import { Schema } from "effect"
+﻿import { Schema } from "effect"
 import DESCRIPTION from "./shell.txt"
-import { PositiveInt } from "@opencode-ai/core/schema"
-import { Global } from "@opencode-ai/core/global"
+import { PositiveInt } from "@allcode/core/schema"
+import { Global } from "@allcode/core/global"
 import { ShellID } from "./id"
 
 const PS = new Set(["powershell", "pwsh"])
@@ -291,3 +291,4 @@ export function render(name: string, platform: NodeJS.Platform, limits: Limits, 
 }
 
 export * as ShellPrompt from "./prompt"
+

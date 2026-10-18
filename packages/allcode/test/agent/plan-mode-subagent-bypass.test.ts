@@ -1,5 +1,5 @@
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { expect } from "bun:test"
 import { Effect } from "effect"
 import { Agent } from "../../src/agent/agent"
@@ -158,3 +158,4 @@ it.effect("subagent inherits parent session deny rules as hard runtime ceilings"
     expect(Permission.evaluate("bash", "git status", effective).action).toBe("deny")
   }),
 )
+

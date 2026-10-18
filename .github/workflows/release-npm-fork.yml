@@ -6,7 +6,7 @@ name: release-npm-fork
 #   npm install -g @alltomatos/opencode@dev     # every push to dev
 #   npm install -g @alltomatos/opencode@latest  # every push to prod
 #
-# Separate from upstream's own opencode-ai/@opencode-ai/* npm packages
+# Separate from upstream's own opencode-ai/@allcode/* npm packages
 # (published only from anomalyco/opencode by publish.yml) — this fork does
 # not have permission to publish under that name, and shouldn't.
 

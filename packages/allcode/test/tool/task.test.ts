@@ -1,17 +1,17 @@
-import { afterEach, describe, expect } from "bun:test"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
-import { Database } from "@opencode-ai/core/database/database"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { afterEach, describe, expect } from "bun:test"
+import { SessionV1 } from "@allcode/core/v1/session"
+import { Database } from "@allcode/core/database/database"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { InstanceBootstrap } from "@/project/bootstrap"
 import { InstanceStore } from "@/project/instance-store"
-import { SessionProjector } from "@opencode-ai/core/session/projector"
+import { SessionProjector } from "@allcode/core/session/projector"
 import { Cause, Deferred, Effect, Exit, Fiber, Layer } from "effect"
 import { Agent } from "../../src/agent/agent"
 import { BackgroundJob } from "@/background/job"
 import { EventV2Bridge } from "@/event-v2-bridge"
 import { Config } from "@/config/config"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { Ripgrep } from "@opencode-ai/core/ripgrep"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
+import { Ripgrep } from "@allcode/core/ripgrep"
 import { Session } from "@/session/session"
 import type { SessionPrompt } from "../../src/session/prompt"
 import { MessageID, PartID, SessionID } from "../../src/session/schema"
@@ -27,8 +27,8 @@ import { disposeAllInstances, TestInstance } from "../fixture/fixture"
 import * as fs from "fs/promises"
 import * as path from "path"
 import { testEffect } from "../lib/effect"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 
 afterEach(async () => {
   await disposeAllInstances()
@@ -1108,3 +1108,4 @@ describe("tool.task", () => {
     }),
   )
 })
+

@@ -1,8 +1,8 @@
-export * as ScheduleMcpCaller from "./mcp-caller"
+﻿export * as ScheduleMcpCaller from "./mcp-caller"
 
 import { Effect, Layer } from "effect"
-import { makeGlobalNode } from "@opencode-ai/core/effect/app-node"
-import { ScheduleRunner } from "@opencode-ai/core/schedule/runner"
+import { makeGlobalNode } from "@allcode/core/effect/app-node"
+import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { MCP } from "@/mcp"
 
 function extractErrorText(content: readonly { type: string; text?: string }[]): string {
@@ -46,3 +46,4 @@ export const layer = Layer.effect(
 )
 
 export const node = makeGlobalNode({ service: ScheduleRunner.McpCaller, layer, deps: [MCP.node] })
+

@@ -1,8 +1,8 @@
-import { intro, log, outro, spinner } from "@clack/prompts"
+﻿import { intro, log, outro, spinner } from "@clack/prompts"
 import { Effect } from "effect"
 
 import { ConfigPaths } from "@/config/paths"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { installPlugin, patchPluginConfig, readPluginManifest } from "../../plugin/install"
 import { resolvePluginTarget } from "../../plugin/shared"
 import { errorMessage } from "../../util/error"
@@ -228,3 +228,4 @@ export const PluginCommand = effectCmd({
     if (!ok) process.exitCode = 1
   }),
 })
+

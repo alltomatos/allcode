@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { Event } from "@opencode-ai/sdk/v2"
+﻿import { describe, expect, test } from "bun:test"
+import type { Event } from "@allcode/sdk/v2"
 import { entryBody } from "@/cli/cmd/run/entry.body"
 import {
   bootstrapSubagentCalls,
@@ -545,3 +545,4 @@ describe("run subagent data", () => {
     ])
   })
 })
+

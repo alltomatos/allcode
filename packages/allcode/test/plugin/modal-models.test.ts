@@ -1,5 +1,5 @@
-import { expect, test } from "bun:test"
-import type { Model, Provider } from "@opencode-ai/sdk/v2"
+﻿import { expect, test } from "bun:test"
+import type { Model, Provider } from "@allcode/sdk/v2"
 import { ModalPlugin } from "@/plugin/modal/modal"
 
 const BASE_MODEL_ID = "thinkingmachines/Inkling-NVFP4"
@@ -196,3 +196,4 @@ test("hides Modal models when discovery fails", async () => {
 
   expect(models).toEqual({})
 })
+

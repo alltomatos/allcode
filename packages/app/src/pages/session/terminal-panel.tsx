@@ -1,10 +1,10 @@
-import { For, Show, createEffect, createMemo, on, onCleanup, onMount } from "solid-js"
+﻿import { For, Show, createEffect, createMemo, on, onCleanup, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 import { makeEventListener } from "@solid-primitives/event-listener"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { ResizeHandle } from "@opencode-ai/ui/resize-handle"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { TooltipKeybind } from "@opencode-ai/ui/tooltip"
+import { Tabs } from "@allcode/ui/tabs"
+import { ResizeHandle } from "@allcode/ui/resize-handle"
+import { IconButton } from "@allcode/ui/icon-button"
+import { TooltipKeybind } from "@allcode/ui/tooltip"
 import { DragDropProvider, DragDropSensors, DragOverlay, SortableProvider, closestCenter } from "@thisbeyond/solid-dnd"
 import type { DragEvent } from "@thisbeyond/solid-dnd"
 import { ConstrainDragYAxis, getDraggableId } from "@/utils/solid-dnd"
@@ -341,3 +341,4 @@ export function TerminalPanel() {
     </div>
   )
 }
+

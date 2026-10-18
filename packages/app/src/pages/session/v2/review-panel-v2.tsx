@@ -1,14 +1,14 @@
-import { createMemo, createResource, createSignal, Show, type JSX } from "solid-js"
-import type { SnapshotFileDiff, VcsFileDiff } from "@opencode-ai/sdk/v2"
-import type { FileDiffInfo } from "@opencode-ai/client/promise"
+﻿import { createMemo, createResource, createSignal, Show, type JSX } from "solid-js"
+import type { SnapshotFileDiff, VcsFileDiff } from "@allcode/sdk/v2"
+import type { FileDiffInfo } from "@allcode/client/promise"
 import {
   SESSION_REVIEW_V2_SIDEBAR_WIDTH_MAX,
   SESSION_REVIEW_V2_SIDEBAR_WIDTH_MIN,
   SessionReviewV2,
   SessionReviewV2Sidebar,
-} from "@opencode-ai/session-ui/v2/session-review-v2"
-import { SessionReviewFilePreviewV2 } from "@opencode-ai/session-ui/v2/session-review-file-preview-v2"
-import { DiffChanges } from "@opencode-ai/ui/v2/diff-changes-v2"
+} from "@allcode/session-ui/v2/session-review-v2"
+import { SessionReviewFilePreviewV2 } from "@allcode/session-ui/v2/session-review-file-preview-v2"
+import { DiffChanges } from "@allcode/ui/v2/diff-changes-v2"
 import type {
   SessionReviewComment,
   SessionReviewCommentActions,
@@ -17,7 +17,7 @@ import type {
   SessionReviewDiffStyle,
   SessionReviewFocus,
   SessionReviewLineComment,
-} from "@opencode-ai/session-ui/session-review"
+} from "@allcode/session-ui/session-review"
 import FileTreeV2 from "@/components/file-tree-v2"
 import { useLanguage } from "@/context/language"
 import { useSDK } from "@/context/sdk"
@@ -253,3 +253,4 @@ function ReviewPanelV2Sidebar(props: {
     </SessionReviewV2Sidebar>
   )
 }
+

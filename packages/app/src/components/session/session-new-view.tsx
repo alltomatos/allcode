@@ -1,11 +1,11 @@
-import { Show, createMemo } from "solid-js"
+﻿import { Show, createMemo } from "solid-js"
 import { DateTime } from "luxon"
 import { useSync } from "@/context/sync"
 import { useSDK } from "@/context/sdk"
 import { useLanguage } from "@/context/language"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Mark } from "@opencode-ai/ui/logo"
-import { getDirectory, getFilename } from "@opencode-ai/core/util/path"
+import { Icon } from "@allcode/ui/icon"
+import { Mark } from "@allcode/ui/logo"
+import { getDirectory, getFilename } from "@allcode/core/util/path"
 import { BranchSelectorV2 } from "@/components/branch-selector-v2"
 
 const MAIN_WORKTREE = "main"
@@ -115,3 +115,4 @@ export function NewSessionView(props: NewSessionViewProps) {
     </div>
   )
 }
+

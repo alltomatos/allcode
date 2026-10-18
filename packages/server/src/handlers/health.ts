@@ -1,6 +1,6 @@
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
+import { InstallationVersion } from "@allcode/core/installation/version"
 import { Api } from "../api"
 
 export const HealthHandler = HttpApiBuilder.group(Api, "server.health", (handlers) =>

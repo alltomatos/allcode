@@ -1,7 +1,7 @@
-import { afterEach, describe, expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { Global } from "@opencode-ai/core/global"
+﻿import { afterEach, describe, expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { FSUtil } from "@allcode/core/fs-util"
+import { Global } from "@allcode/core/global"
 import { Effect, Layer } from "effect"
 import path from "path"
 import { unlink } from "fs/promises"
@@ -477,3 +477,4 @@ describe("provider HttpApi", () => {
     )
   })
 })
+

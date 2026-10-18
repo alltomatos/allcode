@@ -1,8 +1,8 @@
-import { Agent } from "@/agent/agent"
+﻿import { Agent } from "@/agent/agent"
 import { Command } from "@/command"
 import * as InstanceState from "@/effect/instance-state"
 import { Format } from "@/format"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { LSP } from "@/lsp/lsp"
 import { Vcs } from "@/project/vcs"
 import { Skill } from "@/skill"
@@ -131,3 +131,4 @@ export const instanceHandlers = HttpApiBuilder.group(InstanceHttpApi, "instance"
       .handle("formatter", getFormatter)
   }),
 )
+

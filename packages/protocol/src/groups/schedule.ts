@@ -1,4 +1,4 @@
-import { Schedule } from "@opencode-ai/schema/schedule"
+import { Schedule } from "@allcode/schema/schedule"
 import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/unstable/httpapi"
 import { LocationQuery, locationQueryOpenApi } from "./location"

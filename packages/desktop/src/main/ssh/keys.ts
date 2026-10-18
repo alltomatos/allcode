@@ -1,7 +1,7 @@
 import { readdir, readFile } from "node:fs/promises"
 import { homedir } from "node:os"
 import { join } from "node:path"
-import type { SshKeyInfo } from "@opencode-ai/app/ssh-tunnel/types"
+import type { SshKeyInfo } from "@allcode/app/ssh-tunnel/types"
 
 const SKIP_NAMES = new Set(["known_hosts", "known_hosts.old", "config", "authorized_keys"])
 

@@ -1,4 +1,4 @@
-import type { Event, Session, SessionV2Info, V2SessionListResponse } from "@opencode-ai/sdk/v2/client"
+﻿import type { Event, Session, SessionV2Info, V2SessionListResponse } from "@allcode/sdk/v2/client"
 import type { QueryClient } from "@tanstack/solid-query"
 import { trimSessions } from "./session-trim"
 import { pathKey } from "@/utils/path-key"
@@ -172,3 +172,4 @@ function toLegacySummary(session: SessionV2Info): Session {
     time: session.time,
   }
 }
+

@@ -1,7 +1,7 @@
-import { afterEach, describe, expect } from "bun:test"
+﻿import { afterEach, describe, expect } from "bun:test"
 import path from "path"
 import { Effect, Layer } from "effect"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { ToolRegistry } from "@/tool/registry"
 import { Memory } from "@/memory"
 import { disposeAllInstances } from "../fixture/fixture"
@@ -100,3 +100,4 @@ describe("tool.registry memory tools", () => {
     }),
   )
 })
+

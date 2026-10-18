@@ -1,4 +1,4 @@
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { base64Encode } from "@allcode/core/util/encode"
 import { expect, test, type Page } from "@playwright/test"
 import {
   assistantMessage,
@@ -240,3 +240,4 @@ function visibleContentHidden(page: Page) {
     () => (window as Window & { __historyRootProbe?: { hidden: boolean } }).__historyRootProbe!.hidden,
   )
 }
+

@@ -1,7 +1,7 @@
-import { cmd } from "./cmd"
+﻿import { cmd } from "./cmd"
 import * as prompts from "@clack/prompts"
 import { UI } from "../ui"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import path from "path"
 import fs from "fs/promises"
 import { Filesystem } from "@/util/filesystem"
@@ -257,3 +257,4 @@ export const AgentCommand = cmd({
   builder: (yargs) => yargs.command(AgentCreateCommand).command(AgentListCommand).demandCommand(),
   async handler() {},
 })
+

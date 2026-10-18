@@ -1,6 +1,6 @@
-import { expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
+﻿import { expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
 import { Effect, Exit, Layer } from "effect"
 import { AgentUI } from "../../src/agentui/index"
 import { WhatsApp } from "../../src/whatsapp/index"
@@ -314,3 +314,4 @@ it.instance("handleWebhook() honors groupAllowedSenders isolation between groups
     yield* agentUI.remove(created.id)
   }),
 )
+

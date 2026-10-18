@@ -1,4 +1,4 @@
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { useDialog } from "@allcode/ui/context/dialog"
 import { showToast } from "@/utils/toast"
 import {
   createEffect,
@@ -16,7 +16,7 @@ import {
 import { createStore } from "solid-js/store"
 import { useNavigate } from "@solidjs/router"
 import { createVirtualizer, defaultRangeExtractor, elementScroll, type VirtualItem } from "@tanstack/solid-virtual"
-import { Card } from "@opencode-ai/ui/card"
+import { Card } from "@allcode/ui/card"
 import {
   ContextToolGroup,
   Message,
@@ -24,19 +24,19 @@ import {
   Part as MessagePart,
   partDefaultOpen,
   type UserActions,
-} from "@opencode-ai/session-ui/message-part"
-import { FileIcon } from "@opencode-ai/ui/file-icon"
-import { Icon } from "@opencode-ai/ui/icon"
-import { SessionRetry } from "@opencode-ai/session-ui/session-retry"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
+} from "@allcode/session-ui/message-part"
+import { FileIcon } from "@allcode/ui/file-icon"
+import { Icon } from "@allcode/ui/icon"
+import { SessionRetry } from "@allcode/session-ui/session-retry"
+import { ScrollView } from "@allcode/ui/scroll-view"
 import type {
   AssistantMessage,
   Message as MessageType,
   Part as PartType,
   ToolPart,
   UserMessage,
-} from "@opencode-ai/sdk/v2"
-import { getFilename } from "@opencode-ai/core/util/path"
+} from "@allcode/sdk/v2"
+import { getFilename } from "@allcode/core/util/path"
 import { useLanguage } from "@/context/language"
 import { useSessionLayout } from "@/pages/session/session-layout"
 import { useSessionArchive } from "@/pages/session/session-archive"
@@ -907,3 +907,4 @@ export function MessageTimeline(props: {
     </div>
   )
 }
+

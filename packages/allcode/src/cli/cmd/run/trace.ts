@@ -1,4 +1,4 @@
-// Dev-only JSONL event trace for direct interactive mode.
+﻿// Dev-only JSONL event trace for direct interactive mode.
 //
 // Enable with OPENCODE_DIRECT_TRACE=1. Writes one JSON line per event to
 // ~/.local/share/opencode/log/direct/<timestamp>-<pid>.jsonl. Also writes
@@ -13,7 +13,7 @@
 // active based on the env var, and subsequent calls return the cached result.
 import fs from "fs"
 import path from "path"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 
 export type Trace = {
   write(type: string, data?: unknown): void
@@ -92,3 +92,4 @@ export function trace(): Trace | undefined {
   })
   return state
 }
+

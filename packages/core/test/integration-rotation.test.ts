@@ -1,8 +1,8 @@
 import { describe, expect, test } from "bun:test"
-import { Credential } from "@opencode-ai/core/credential"
-import { Integration } from "@opencode-ai/core/integration"
-import { IntegrationConnection } from "@opencode-ai/core/integration/connection"
-import { IntegrationRotation } from "@opencode-ai/core/integration/rotation"
+import { Credential } from "@allcode/core/credential"
+import { Integration } from "@allcode/core/integration"
+import { IntegrationConnection } from "@allcode/core/integration/connection"
+import { IntegrationRotation } from "@allcode/core/integration/rotation"
 
 // Cooldown state is a module-level (not per-test) Map keyed by credential
 // id, so every test below uses its own unique credential ids — reusing a

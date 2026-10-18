@@ -1,4 +1,4 @@
-import type { Model } from "@opencode-ai/sdk/v2"
+﻿import type { Model } from "@allcode/sdk/v2"
 import { Schema } from "effect"
 
 const reasoningOption = Schema.Struct({
@@ -131,3 +131,4 @@ export async function get(baseURL: string, apiKey: string, existing: Record<stri
 }
 
 export * as ModalModels from "./models"
+

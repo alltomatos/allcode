@@ -1,5 +1,5 @@
-import { Memory } from "@/memory"
-import type { ConfigMemoryV1 } from "@opencode-ai/core/v1/config/memory"
+﻿import { Memory } from "@/memory"
+import type { ConfigMemoryV1 } from "@allcode/core/v1/config/memory"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
@@ -77,3 +77,4 @@ export const memoryHandlers = HttpApiBuilder.group(InstanceHttpApi, "memory", (h
       .handle("backfill", backfill)
   }),
 )
+

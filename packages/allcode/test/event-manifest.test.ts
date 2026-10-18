@@ -1,6 +1,6 @@
-import { describe, expect, test } from "bun:test"
-import { SessionEvent } from "@opencode-ai/core/session/event"
-import { EventManifest as SchemaEventManifest } from "@opencode-ai/schema/event-manifest"
+﻿import { describe, expect, test } from "bun:test"
+import { SessionEvent } from "@allcode/core/session/event"
+import { EventManifest as SchemaEventManifest } from "@allcode/schema/event-manifest"
 import { Todo } from "@/session/todo"
 import { EventManifest } from "@/event-manifest"
 
@@ -22,3 +22,4 @@ describe("public event manifest", () => {
     expect(EventManifest.Durable.get("session.next.step.ended.2")).toBe(SessionEvent.Step.Ended)
   })
 })
+

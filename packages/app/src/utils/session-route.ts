@@ -1,4 +1,4 @@
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { base64Encode } from "@allcode/core/util/encode"
 import { ServerConnection } from "@/context/server"
 import { decode64 } from "@/utils/base64"
 
@@ -47,3 +47,4 @@ export async function rootSession<T extends SessionParent>(session: T, get: (ses
   }
   return current
 }
+

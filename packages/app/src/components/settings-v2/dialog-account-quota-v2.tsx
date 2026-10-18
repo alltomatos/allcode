@@ -1,8 +1,8 @@
-import { Component, For, Show } from "solid-js"
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { Component, For, Show } from "solid-js"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Tag } from "@allcode/ui/v2/badge-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useLanguage } from "@/context/language"
 
 export interface QuotaBucket {
@@ -165,3 +165,4 @@ export const DialogAccountQuotaV2: Component<{
     </Dialog>
   )
 }
+

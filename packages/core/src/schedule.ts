@@ -2,7 +2,7 @@ export * as Schedule from "./schedule"
 
 import { asc, eq } from "drizzle-orm"
 import { Context, Effect, Layer, Schema } from "effect"
-import { Schedule } from "@opencode-ai/schema/schedule"
+import { Schedule } from "@allcode/schema/schedule"
 import { Database } from "./database/database"
 import { makeGlobalNode } from "./effect/app-node"
 import { ScheduleTable } from "./schedule/sql"

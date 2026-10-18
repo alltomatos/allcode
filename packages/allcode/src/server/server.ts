@@ -1,7 +1,7 @@
-import "./init-projectors"
+﻿import "./init-projectors"
 
 import { NodeHttpServer } from "@effect/platform-node"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { ConfigProvider, Context, Effect, Exit, Layer, Scope } from "effect"
 import { HttpRouter, HttpServer } from "effect/unstable/http"
 import { OpenApi } from "effect/unstable/httpapi"
@@ -11,8 +11,8 @@ import { HttpApiApp } from "./routes/instance/httpapi/server"
 import { disposeMiddleware } from "./routes/instance/httpapi/lifecycle"
 import { WebSocketTracker } from "./routes/instance/httpapi/websocket-tracker"
 import { PublicApi } from "./routes/instance/httpapi/public"
-import { Branding } from "@opencode-ai/core/branding"
-import type { CorsOptions } from "@opencode-ai/server/cors"
+import { Branding } from "@allcode/core/branding"
+import type { CorsOptions } from "@allcode/server/cors"
 import { lazy } from "@/util/lazy"
 import { ensureBackgroundTokenRefresh } from "@/provider/antigravity-adapter"
 
@@ -229,3 +229,4 @@ function serverLayer(opts: { port: number; hostname: string }) {
 }
 
 export * as Server from "./server"
+

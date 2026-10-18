@@ -1,4 +1,4 @@
-// Pure state machine for the permission UI.
+﻿// Pure state machine for the permission UI.
 //
 // Lives outside the JSX component so it can be tested independently. The
 // machine has three stages:
@@ -13,7 +13,7 @@
 //
 // permissionInfo() extracts display info (icon, title, lines, diff) from
 // the request, delegating to tool.ts for tool-specific formatting.
-import type { PermissionRequest } from "@opencode-ai/sdk/v2"
+import type { PermissionRequest } from "@allcode/sdk/v2"
 import type { PermissionReply } from "./types"
 import { toolPath, toolPermissionInfo } from "./tool"
 
@@ -254,3 +254,4 @@ export function permissionEscape(state: PermissionBodyState): PermissionBodyStat
     selected: "reject",
   }
 }
+

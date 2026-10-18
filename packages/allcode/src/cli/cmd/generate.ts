@@ -1,4 +1,4 @@
-import type { CommandModule } from "yargs"
+﻿import type { CommandModule } from "yargs"
 
 type Args = {}
 
@@ -18,7 +18,7 @@ export const GenerateCommand = {
           {
             lang: "js",
             source: [
-              `import { createOpencodeClient } from "@opencode-ai/sdk`,
+              `import { createOpencodeClient } from "@allcode/sdk`,
               ``,
               `const client = createOpencodeClient()`,
               `await client.${operation.operationId}({`,
@@ -52,3 +52,4 @@ export const GenerateCommand = {
     })
   },
 } satisfies CommandModule<object, Args>
+

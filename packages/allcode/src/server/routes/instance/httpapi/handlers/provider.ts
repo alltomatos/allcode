@@ -1,13 +1,13 @@
-import * as InstanceState from "@/effect/instance-state"
+﻿import * as InstanceState from "@/effect/instance-state"
 import { ProviderAuth } from "@/provider/auth"
 import { Config } from "@/config/config"
-import { ModelsDev } from "@opencode-ai/core/models-dev"
+import { ModelsDev } from "@allcode/core/models-dev"
 import { Provider } from "@/provider/provider"
 import { Auth } from "@/auth"
 import { fetchUserQuotaDetails } from "@/provider/antigravity-adapter"
-import { IntegrationRotation } from "@opencode-ai/core/integration/rotation"
+import { IntegrationRotation } from "@allcode/core/integration/rotation"
 import { Combo } from "@/combo"
-import { Credential } from "@opencode-ai/core/credential"
+import { Credential } from "@allcode/core/credential"
 
 import { mapValues } from "remeda"
 import { Effect, Layer, Schema } from "effect"
@@ -15,12 +15,12 @@ import { HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
 import { ProviderAuthApiError } from "../groups/provider"
-import { Catalog } from "@opencode-ai/core/catalog"
-import { PluginInternal } from "@opencode-ai/core/plugin/internal"
-import { Location } from "@opencode-ai/core/location"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
-import { AbsolutePath } from "@opencode-ai/core/schema"
-import { ProviderV2 } from "@opencode-ai/core/provider"
+import { Catalog } from "@allcode/core/catalog"
+import { PluginInternal } from "@allcode/core/plugin/internal"
+import { Location } from "@allcode/core/location"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
+import { AbsolutePath } from "@allcode/core/schema"
+import { ProviderV2 } from "@allcode/core/provider"
 
 function mapProviderAuthError<A, R>(self: Effect.Effect<A, ProviderAuth.Error, R>) {
   return self.pipe(
@@ -273,3 +273,4 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       .handle("callback", callback)
   }),
 ).pipe(Layer.provide(locationServiceMapLayer))
+

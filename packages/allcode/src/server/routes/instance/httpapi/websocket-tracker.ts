@@ -1,5 +1,5 @@
-import { Context, Effect, Layer, Option } from "effect"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { Context, Effect, Layer, Option } from "effect"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import * as Socket from "effect/unstable/socket/Socket"
 
 export const SERVER_CLOSING_EVENT = () => new Socket.CloseEvent(1001, "server closing")
@@ -58,3 +58,4 @@ export const register = (close: Close) =>
   })
 
 export * as WebSocketTracker from "./websocket-tracker"
+

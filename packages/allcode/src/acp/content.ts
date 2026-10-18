@@ -1,7 +1,7 @@
-import type { ContentBlock, ContentChunk, ResourceLink, Role } from "@agentclientprotocol/sdk"
+﻿import type { ContentBlock, ContentChunk, ResourceLink, Role } from "@agentclientprotocol/sdk"
 import path from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
+import { SessionV1 } from "@allcode/core/v1/session"
 
 export type PromptPart = SessionV1.TextPartInput | SessionV1.FilePartInput
 
@@ -267,3 +267,4 @@ function filenameFromUri(uri: string | undefined) {
     return path.basename(uri) || undefined
   }
 }
+

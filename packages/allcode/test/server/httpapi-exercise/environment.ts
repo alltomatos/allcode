@@ -1,4 +1,4 @@
-import { Flag } from "@opencode-ai/core/flag/flag"
+﻿import { Flag } from "@allcode/core/flag/flag"
 import { Effect } from "effect"
 import path from "path"
 
@@ -38,3 +38,4 @@ export const cleanupExercisePaths = Effect.promise(async () => {
   if (!preserveExerciseGlobalRoot)
     await fs.rm(exerciseGlobalRoot, { recursive: true, force: true }).catch(() => undefined)
 })
+

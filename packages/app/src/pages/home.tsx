@@ -1,5 +1,5 @@
-import { useNavigate } from "@solidjs/router"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
+﻿import { useNavigate } from "@solidjs/router"
+import { ScrollView } from "@allcode/ui/scroll-view"
 import { createHomeController } from "./home/home-controller"
 import { createHomeProjectsController } from "./home/home-projects-controller"
 import { HomeUtilityNav } from "./home/home-projects-view"
@@ -54,3 +54,4 @@ export function NewHome() {
     </div>
   )
 }
+

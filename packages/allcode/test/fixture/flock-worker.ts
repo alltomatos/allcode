@@ -1,5 +1,5 @@
-import fs from "fs/promises"
-import { Flock } from "@opencode-ai/core/util/flock"
+﻿import fs from "fs/promises"
+import { Flock } from "@allcode/core/util/flock"
 
 type Msg = {
   key: string
@@ -70,3 +70,4 @@ await main().catch((err) => {
   process.stderr.write(text)
   process.exit(1)
 })
+

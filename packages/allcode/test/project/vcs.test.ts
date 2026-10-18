@@ -1,7 +1,7 @@
-import { afterEach, describe, expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+﻿import { afterEach, describe, expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { FSUtil } from "@allcode/core/fs-util"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { parsePatch } from "diff"
 import { Deferred, Effect, Layer } from "effect"
 import fs from "fs/promises"
@@ -14,7 +14,7 @@ import {
   tmpdirScoped,
 } from "../fixture/fixture"
 import { EventV2Bridge } from "../../src/event-v2-bridge"
-import { Watcher } from "@opencode-ai/core/filesystem/watcher"
+import { Watcher } from "@allcode/core/filesystem/watcher"
 import { Git } from "../../src/git"
 import { Vcs } from "@/project/vcs"
 import { testEffect } from "../lib/effect"
@@ -354,3 +354,4 @@ describe("Vcs diff", () => {
     { git: true },
   )
 })
+

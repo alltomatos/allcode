@@ -1,4 +1,4 @@
-import { Server } from "@/server/server"
+﻿import { Server } from "@/server/server"
 import { InstanceRuntime } from "@/project/instance-runtime"
 import { Rpc } from "@/util/rpc"
 import { upgrade } from "@/cli/upgrade"
@@ -11,7 +11,7 @@ import { AppRuntime } from "@/effect/app-runtime"
 import { Effect } from "effect"
 import { disposeAllInstancesAndEmitGlobalDisposed } from "@/server/global-lifecycle"
 import { reportBug, signatureFromStack } from "@/bug-relay/report"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
+import { InstallationVersion } from "@allcode/core/installation/version"
 
 Heap.start()
 
@@ -91,3 +91,4 @@ export const rpc = {
 }
 
 Rpc.listen(rpc)
+

@@ -1,9 +1,9 @@
-export * as ScheduleReminderCaller from "./reminder-caller"
+﻿export * as ScheduleReminderCaller from "./reminder-caller"
 
 import { Effect, Layer } from "effect"
-import { makeGlobalNode } from "@opencode-ai/core/effect/app-node"
-import { ScheduleRunner } from "@opencode-ai/core/schedule/runner"
-import { Schedule } from "@opencode-ai/core/schedule"
+import { makeGlobalNode } from "@allcode/core/effect/app-node"
+import { ScheduleRunner } from "@allcode/core/schedule/runner"
+import { Schedule } from "@allcode/core/schedule"
 import { AgentUI } from "@/agentui"
 import { MCP } from "@/mcp"
 import { buildAdapter } from "@/whatsapp/adapter"
@@ -142,3 +142,4 @@ export const node = makeGlobalNode({
   layer,
   deps: [AgentUI.node, MCP.node],
 })
+

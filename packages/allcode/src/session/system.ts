@@ -1,4 +1,4 @@
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Effect, Layer } from "effect"
 
 import { InstanceState } from "@/effect/instance-state"
@@ -18,12 +18,12 @@ import type { Provider } from "@/provider/provider"
 import type { Agent } from "@/agent/agent"
 import { Permission } from "@/permission"
 import { Skill } from "@/skill"
-import { AbsolutePath } from "@opencode-ai/core/schema"
-import { Location } from "@opencode-ai/core/location"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
-import { Reference } from "@opencode-ai/core/reference"
+import { AbsolutePath } from "@allcode/core/schema"
+import { Location } from "@allcode/core/location"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
+import { Reference } from "@allcode/core/reference"
 import { MCP } from "@/mcp"
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 
 export function provider(model: Provider.Model) {
   if (model.api.id.includes("muse")) {
@@ -152,3 +152,4 @@ export const node = LayerNode.make({
 })
 
 export * as SystemPrompt from "./system"
+

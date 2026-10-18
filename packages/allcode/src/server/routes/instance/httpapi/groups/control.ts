@@ -1,9 +1,9 @@
-import { Auth } from "@/auth"
+﻿import { Auth } from "@/auth"
 
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { described } from "./metadata"
-import { ProviderV2 } from "@opencode-ai/core/provider"
+import { ProviderV2 } from "@allcode/core/provider"
 
 const AuthParams = Schema.Struct({
   providerID: ProviderV2.ID,
@@ -74,3 +74,4 @@ export const ControlApi = HttpApi.make("control").add(
     )
     .annotateMerge(OpenApi.annotations({ title: "control", description: "Control plane routes." })),
 )
+

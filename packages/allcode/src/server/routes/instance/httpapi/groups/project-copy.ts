@@ -1,4 +1,4 @@
-import { ProjectV2 } from "@opencode-ai/core/project"
+﻿import { ProjectV2 } from "@allcode/core/project"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { Authorization } from "../middleware/authorization"
@@ -30,3 +30,4 @@ export const ProjectCopyApi = HttpApi.make("projectCopyName").add(
     .middleware(WorkspaceRoutingMiddleware)
     .middleware(Authorization),
 )
+

@@ -1,8 +1,8 @@
-import { createEffect, createSignal, onCleanup, onMount, Show, type Component } from "solid-js"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { Icon } from "@opencode-ai/ui/icon"
+﻿import { createEffect, createSignal, onCleanup, onMount, Show, type Component } from "solid-js"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { Icon } from "@allcode/ui/icon"
 import { useLanguage } from "@/context/language"
 
 type BrowserPanelBounds = { x: number; y: number; width: number; height: number }
@@ -233,3 +233,4 @@ export const BrowserPanelOverlay: Component<{ stacked?: boolean }> = (props) => 
     </Show>
   )
 }
+

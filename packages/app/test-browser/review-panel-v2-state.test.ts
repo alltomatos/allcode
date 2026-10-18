@@ -1,4 +1,4 @@
-import { beforeAll, expect, mock, test } from "bun:test"
+﻿import { beforeAll, expect, mock, test } from "bun:test"
 import type { AsyncStorage } from "@solid-primitives/storage"
 import { createEffect, createRoot } from "solid-js"
 
@@ -16,7 +16,7 @@ const storage: AsyncStorage = {
 }
 
 beforeAll(async () => {
-  mock.module("@opencode-ai/session-ui/v2/session-review-v2", () => ({
+  mock.module("@allcode/session-ui/v2/session-review-v2", () => ({
     SESSION_REVIEW_V2_SIDEBAR_WIDTH_DEFAULT: 240,
     SESSION_REVIEW_V2_SIDEBAR_WIDTH_MIN: 200,
     SESSION_REVIEW_V2_SIDEBAR_WIDTH_MAX: 480,
@@ -63,3 +63,4 @@ test("enables sidebar motion only after custom width hydration", async () => {
     })
   })
 })
+

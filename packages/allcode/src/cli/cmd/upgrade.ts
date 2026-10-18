@@ -1,8 +1,8 @@
-import type { Argv } from "yargs"
+﻿import type { Argv } from "yargs"
 import { UI } from "../ui"
 import * as prompts from "@clack/prompts"
 import { Installation } from "../../installation"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
+import { InstallationVersion } from "@allcode/core/installation/version"
 
 export const UpgradeCommand = {
   command: "upgrade [target]",
@@ -72,3 +72,4 @@ export const UpgradeCommand = {
     prompts.outro("Done")
   },
 }
+

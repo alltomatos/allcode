@@ -1,5 +1,5 @@
-import { $ } from "bun"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { $ } from "bun"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { describe, expect } from "bun:test"
 import fs from "fs/promises"
 import path from "path"
@@ -177,3 +177,4 @@ describe("Git", () => {
     }),
   )
 })
+

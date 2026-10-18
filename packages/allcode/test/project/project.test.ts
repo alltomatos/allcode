@@ -1,25 +1,25 @@
-import { describe, expect } from "bun:test"
+﻿import { describe, expect } from "bun:test"
 import { Project } from "@/project/project"
 import { $ } from "bun"
 import path from "path"
 import { tmpdirScoped } from "../fixture/fixture"
 import { GlobalBus } from "../../src/bus/global"
-import { Database } from "@opencode-ai/core/database/database"
-import { ProjectTable } from "@opencode-ai/core/project/sql"
-import { SessionTable } from "@opencode-ai/core/session/sql"
-import { WorkspaceTable } from "@opencode-ai/core/control-plane/workspace.sql"
+import { Database } from "@allcode/core/database/database"
+import { ProjectTable } from "@allcode/core/project/sql"
+import { SessionTable } from "@allcode/core/session/sql"
+import { WorkspaceTable } from "@allcode/core/control-plane/workspace.sql"
 import { eq } from "drizzle-orm"
-import { Hash } from "@opencode-ai/core/util/hash"
+import { Hash } from "@allcode/core/util/hash"
 import { SessionID } from "@/session/schema"
-import { WorkspaceV2 } from "@opencode-ai/core/workspace"
+import { WorkspaceV2 } from "@allcode/core/workspace"
 import { Cause, Effect, Exit, Layer, Stream } from "effect"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
-import { ProjectV2 } from "@opencode-ai/core/project"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { ProjectV2 } from "@allcode/core/project"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { testEffect } from "../lib/effect"
 import { RuntimeFlags } from "@/effect/runtime-flags"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 
 const encoder = new TextEncoder()
 
@@ -870,3 +870,4 @@ describe("Project.fromDirectory with bare repos", () => {
     }),
   )
 })
+

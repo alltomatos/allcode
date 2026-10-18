@@ -1,6 +1,6 @@
 import { app, ipcMain } from "electron"
 import type { IpcMainInvokeEvent } from "electron"
-import type { SshServerConfig } from "@opencode-ai/app/ssh-tunnel/types"
+import type { SshServerConfig } from "@allcode/app/ssh-tunnel/types"
 import type { SshServersController } from "./servers"
 
 function requireString(label: string, value: unknown): string {

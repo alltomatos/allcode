@@ -1,5 +1,5 @@
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { AppProcess } from "@opencode-ai/core/process"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { AppProcess } from "@allcode/core/process"
 import { Effect, Layer, Context, Stream } from "effect"
 import { ChildProcess } from "effect/unstable/process"
 
@@ -358,3 +358,4 @@ const layer = Layer.effect(
 export const node = LayerNode.make({ service: Service, layer: layer, deps: [AppProcess.node] })
 
 export * as Git from "."
+

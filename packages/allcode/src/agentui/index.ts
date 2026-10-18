@@ -1,12 +1,12 @@
-export * as AgentUI from "./index"
+﻿export * as AgentUI from "./index"
 
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
-import { ConfigAgentUIV1 } from "@opencode-ai/core/v1/config/agentui"
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
+import { PermissionV1 } from "@allcode/core/v1/permission"
+import { SessionV1 } from "@allcode/core/v1/session"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 import { Config } from "@/config/config"
 import { Combo } from "@/combo"
 import { Session } from "@/session/session"
@@ -20,7 +20,7 @@ import { Context, Effect, Layer, Schema, Cause, Exit } from "effect"
 import { jsonSchema, streamText, tool } from "ai"
 import { type LanguageModelV3 } from "@ai-sdk/provider"
 import { McpCatalog } from "@/mcp/catalog"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { createConnector } from "waconector"
 import { buildAdapter } from "@/whatsapp/adapter"
 import path from "node:path"
@@ -926,3 +926,4 @@ export const node = LayerNode.make({
   layer,
   deps: [Config.node, Combo.node, Session.node, SessionPrompt.node, InstanceStore.node, Provider.node, Storage.node],
 })
+

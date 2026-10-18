@@ -1,11 +1,11 @@
-import { expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Deferred, Effect, Fiber, Layer, Logger } from "effect"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { AppLayer } from "../../src/effect/app-runtime"
 import { EffectBridge } from "@/effect/bridge"
 import { InstanceRef } from "../../src/effect/instance-ref"
-import * as Observability from "@opencode-ai/core/observability"
+import * as Observability from "@allcode/core/observability"
 import { attach } from "../../src/effect/run-service"
 import { TestInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
@@ -99,3 +99,4 @@ it.instance(
     }).pipe(Effect.provide(observabilityLayer)),
   { git: true },
 )
+

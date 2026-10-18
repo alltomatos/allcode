@@ -1,17 +1,17 @@
-import * as path from "path"
+﻿import * as path from "path"
 import { Effect, Schema } from "effect"
 import * as Tool from "./tool"
 import { EventV2Bridge } from "@/event-v2-bridge"
-import { Watcher } from "@opencode-ai/core/filesystem/watcher"
+import { Watcher } from "@allcode/core/filesystem/watcher"
 import { InstanceState } from "@/effect/instance-state"
 import { Patch } from "../patch"
 import { createTwoFilesPatch, diffLines } from "diff"
 import { assertExternalDirectoryEffect } from "./external-directory"
 import { trimDiff } from "./edit"
 import { LSP } from "@/lsp/lsp"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import DESCRIPTION from "./apply_patch.txt"
-import { FileSystem } from "@opencode-ai/core/filesystem"
+import { FileSystem } from "@allcode/core/filesystem"
 import { Format } from "../format"
 import * as Bom from "@/util/bom"
 
@@ -311,3 +311,4 @@ export const ApplyPatchTool = Tool.define(
     }
   }),
 )
+

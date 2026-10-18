@@ -1,9 +1,9 @@
-import { Component, createSignal, createMemo, Show, For } from "solid-js"
+﻿import { Component, createSignal, createMemo, Show, For } from "solid-js"
 import { useNavigate } from "@solidjs/router"
 import { useLanguage } from "@/context/language"
 import { useRoutinesQuery } from "@/pages/routines/routines-cache"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { showToast } from "@/utils/toast"
 
 // Cores e estilos semânticos para cada canal de notificação
@@ -588,3 +588,4 @@ export const AgendaPage: Component = () => {
   )
 }
 export default AgendaPage
+

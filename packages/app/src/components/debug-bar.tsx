@@ -1,9 +1,9 @@
-import { useIsRouting, useLocation } from "@solidjs/router"
+﻿import { useIsRouting, useLocation } from "@solidjs/router"
 import { batch, createEffect, onCleanup, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 import { makeEventListener } from "@solid-primitives/event-listener"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { Tooltip } from "@allcode/ui/tooltip"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
 
@@ -585,3 +585,4 @@ export function DebugBar(props: { inline?: boolean } = {}) {
     </aside>
   )
 }
+

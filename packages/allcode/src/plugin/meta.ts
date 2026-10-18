@@ -1,10 +1,10 @@
-import path from "path"
+﻿import path from "path"
 import { fileURLToPath } from "url"
 
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
+import { Flag } from "@allcode/core/flag/flag"
+import { Global } from "@allcode/core/global"
 import { Filesystem } from "@/util/filesystem"
-import { Flock } from "@opencode-ai/core/util/flock"
+import { Flock } from "@allcode/core/util/flock"
 
 import { parsePluginSpecifier, pluginSource } from "./shared"
 
@@ -186,3 +186,4 @@ export async function list(): Promise<Store> {
 }
 
 export * as PluginMeta from "./meta"
+

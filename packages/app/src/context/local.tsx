@@ -1,5 +1,5 @@
-import { createSimpleContext } from "@opencode-ai/ui/context"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { createSimpleContext } from "@allcode/ui/context"
+import { base64Encode } from "@allcode/core/util/encode"
 import { useParams } from "@solidjs/router"
 import { batch, createEffect, createMemo, startTransition } from "solid-js"
 import { createStore } from "solid-js/store"
@@ -426,3 +426,4 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
 })
 
 export type ModelSelection = ReturnType<typeof useLocal>["model"]
+

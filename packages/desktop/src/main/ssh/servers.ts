@@ -9,7 +9,7 @@ import type {
   SshServersState,
   SshSetupStep,
   SshStepStatus,
-} from "@opencode-ai/app/ssh-tunnel/types"
+} from "@allcode/app/ssh-tunnel/types"
 import { SSH_SERVERS_KEY } from "../store-keys"
 import { getStore } from "../store"
 import { listSshKeys } from "./keys"

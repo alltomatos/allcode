@@ -1,8 +1,8 @@
-import { Schema, Struct } from "effect"
-import { ProjectV2 } from "@opencode-ai/core/project"
+﻿import { Schema, Struct } from "effect"
+import { ProjectV2 } from "@allcode/core/project"
 import type { InstanceContext } from "@/project/instance-context"
-import { WorkspaceV2 } from "@opencode-ai/core/workspace"
-import type { DeepMutable } from "@opencode-ai/core/schema"
+import { WorkspaceV2 } from "@allcode/core/workspace"
+import type { DeepMutable } from "@allcode/core/schema"
 
 export const WorkspaceInfo = Schema.Struct({
   id: WorkspaceV2.ID,
@@ -57,3 +57,4 @@ export type WorkspaceAdapter = {
   remove(info: WorkspaceInfo, context?: WorkspaceAdapterContext): Promise<void>
   target(info: WorkspaceInfo, context?: WorkspaceAdapterContext): Target | Promise<Target>
 }
+

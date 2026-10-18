@@ -1,6 +1,6 @@
-export * as Telegram from "./index"
+﻿export * as Telegram from "./index"
 
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Effect, Fiber, Layer, Schema } from "effect"
 import { InstanceRef } from "@/effect/instance-ref"
 import { InstanceStore } from "@/project/instance-store"
@@ -12,17 +12,17 @@ import { Project } from "../project/project"
 import { Auth } from "../auth"
 import { TelegramChatSessions } from "./chat-sessions"
 import type { ChatState } from "./chat-sessions"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
+import { SessionV1 } from "@allcode/core/v1/session"
 import { SessionID } from "../session/schema"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 import { Permission } from "../permission"
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { Question } from "../question"
-import { QuestionV1 } from "@opencode-ai/schema/question-v1"
+import { QuestionV1 } from "@allcode/schema/question-v1"
 import { EventV2Bridge } from "@/event-v2-bridge"
 import { AgentUI } from "@/agentui"
-import { ConfigAgentUIV1 } from "@opencode-ai/core/v1/config/agentui"
+import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 
 const TELEGRAM_AUTH_KEY = "telegram"
 const API_ROOT = "https://api.telegram.org"
@@ -1173,3 +1173,4 @@ export const node = LayerNode.make({
     AgentUI.node,
   ],
 })
+

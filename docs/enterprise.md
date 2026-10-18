@@ -7,7 +7,7 @@ OpenCode, separada do CLI/app open-source usado no dia a dia. Este documento é 
 ## O que é
 
 `packages/enterprise` é um app **SolidStart** independente que implementa o produto
-**"Teams"**. Reaproveita `@opencode-ai/core`, `@opencode-ai/session-ui` e `@opencode-ai/ui`
+**"Teams"**. Reaproveita `@allcode/core`, `@allcode/session-ui` e `@allcode/ui`
 (por isso compartilha coisas como `custom-elements.d.ts` com o pacote `ui`).
 
 ## Achados no código deste repositório

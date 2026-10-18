@@ -1,4 +1,4 @@
-import { ConfigComboV1 } from "@opencode-ai/core/v1/config/combo"
+﻿import { ConfigComboV1 } from "@allcode/core/v1/config/combo"
 import { ComboExhaustedError, ComboGenerateFailedError, ComboNotFoundError, GeneratedDraft } from "@/combo"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
@@ -97,3 +97,4 @@ export const ComboApi = HttpApi.make("combo")
       description: "Experimental HttpApi surface for selected instance routes.",
     }),
   )
+

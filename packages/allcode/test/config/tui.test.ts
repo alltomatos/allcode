@@ -1,11 +1,11 @@
-import { expect } from "bun:test"
+﻿import { expect } from "bun:test"
 import path from "path"
 import { pathToFileURL } from "url"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer } from "effect"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { Global } from "@opencode-ai/core/global"
+import { FSUtil } from "@allcode/core/fs-util"
+import { Global } from "@allcode/core/global"
 import { Config } from "@/config/config"
 import { ConfigPlugin } from "@/config/plugin"
 import { CurrentWorkingDirectory } from "@/config/tui-cwd"
@@ -892,3 +892,4 @@ it.instance("missing tui.json - silently treated as empty (ENOENT path)", () =>
     }),
   ),
 )
+

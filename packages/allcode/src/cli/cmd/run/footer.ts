@@ -1,4 +1,4 @@
-// RunFooter -- the mutable control surface for direct interactive mode.
+﻿// RunFooter -- the mutable control surface for direct interactive mode.
 //
 // In the split-footer architecture, scrollback is immutable (append-only)
 // and the footer is the only region that can repaint. RunFooter owns both
@@ -29,7 +29,7 @@ import type { Keymap } from "@opentui/keymap"
 import { render } from "@opentui/solid"
 import { createComponent, createSignal, type Accessor, type Setter } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
-import { OpencodeKeymapProvider } from "@opencode-ai/tui/keymap"
+import { OpencodeKeymapProvider } from "@allcode/tui/keymap"
 import { RUN_COMMAND_PANEL_ROWS, RUN_SUBAGENT_PANEL_ROWS } from "./footer.command"
 import { SUBAGENT_INSPECTOR_ROWS } from "./footer.subagent"
 import { PROMPT_MAX_ROWS, TEXTAREA_MIN_ROWS } from "./footer.prompt"
@@ -1127,3 +1127,4 @@ export class RunFooter implements FooterApi {
       })
   }
 }
+

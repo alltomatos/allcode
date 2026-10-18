@@ -1,8 +1,8 @@
-export * as Combo from "./index"
+﻿export * as Combo from "./index"
 
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
-import { ConfigComboV1 } from "@opencode-ai/core/v1/config/combo"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { ConfigComboV1 } from "@allcode/core/v1/config/combo"
 import { Config } from "@/config/config"
 import { Provider } from "../provider/provider"
 import { type LanguageModelV3 } from "@ai-sdk/provider"
@@ -426,3 +426,4 @@ export const node = LayerNode.make({
   layer,
   deps: [Config.node, Provider.node],
 })
+

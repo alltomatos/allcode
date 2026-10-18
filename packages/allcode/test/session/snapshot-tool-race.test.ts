@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Reproducer for snapshot race condition with instant tool execution.
  *
  * When the mock LLM returns a tool call response instantly, the AI SDK
@@ -13,25 +13,25 @@
  */
 import { expect } from "bun:test"
 import { Effect, Layer } from "effect"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import fs from "fs/promises"
 import path from "path"
 import { Session } from "@/session/session"
 import { SessionPrompt } from "../../src/session/prompt"
 import { SessionSummary } from "../../src/session/summary"
 import { MessageV2 } from "../../src/session/message-v2"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
-import { Database } from "@opencode-ai/core/database/database"
-import { SessionProjector } from "@opencode-ai/core/session/projector"
+import { SessionV1 } from "@allcode/core/v1/session"
+import { Database } from "@allcode/core/database/database"
+import { SessionProjector } from "@allcode/core/session/projector"
 import { provideTmpdirServer } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 import { TestLLMServer } from "../lib/llm-server"
 
 import { LSP } from "@/lsp/lsp"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
 import { MCP } from "../../src/mcp"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { InstanceBootstrap } from "@/project/bootstrap-service"
 import { InstanceStore } from "@/project/instance-store"
@@ -199,3 +199,4 @@ it.live("tool execution produces non-empty session diff (snapshot race)", () =>
     { git: true, config: providerCfg },
   ),
 )
+

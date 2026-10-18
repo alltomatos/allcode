@@ -1,9 +1,9 @@
-import type { Hooks, PluginInput } from "@opencode-ai/plugin"
+﻿import type { Hooks, PluginInput } from "@allcode/plugin"
 import { OAUTH_DUMMY_KEY } from "../auth"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
-import { OauthCallbackPage } from "@opencode-ai/core/oauth/page"
+import { InstallationVersion } from "@allcode/core/installation/version"
+import { OauthCallbackPage } from "@allcode/core/oauth/page"
 import { createServer } from "http"
-import { openUrl } from "@opencode-ai/core/open"
+import { openUrl } from "@allcode/core/open"
 
 const OAUTH_CLIENT_ID = "LOCAL_APPLICATION"
 const OAUTH_CALLBACK_HOST = "127.0.0.1"
@@ -505,3 +505,4 @@ export async function SnowflakeCortexAuthPlugin(_input: PluginInput): Promise<Ho
     },
   }
 }
+

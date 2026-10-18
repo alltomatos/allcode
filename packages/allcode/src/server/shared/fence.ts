@@ -1,8 +1,8 @@
-import { Database } from "@opencode-ai/core/database/database"
+﻿import { Database } from "@allcode/core/database/database"
 import { inArray } from "drizzle-orm"
-import { EventSequenceTable } from "@opencode-ai/core/event/sql"
+import { EventSequenceTable } from "@allcode/core/event/sql"
 import { Workspace } from "@/control-plane/workspace"
-import type { WorkspaceV2 } from "@opencode-ai/core/workspace"
+import type { WorkspaceV2 } from "@allcode/core/workspace"
 import { Effect } from "effect"
 
 export const HEADER = "x-opencode-sync"
@@ -58,3 +58,4 @@ export function wait(workspaceID: WorkspaceV2.ID, state: State, signal?: AbortSi
     yield* Effect.logInfo("state fully synced", { workspaceID, state })
   })
 }
+

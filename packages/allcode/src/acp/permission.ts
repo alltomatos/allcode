@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   AgentSideConnection,
   PermissionOption,
   RequestPermissionResponse,
@@ -6,7 +6,7 @@ import type {
   ToolCallLocation,
   ToolCallUpdate,
 } from "@agentclientprotocol/sdk"
-import type { Event, OpencodeClient } from "@opencode-ai/sdk/v2"
+import type { Event, OpencodeClient } from "@allcode/sdk/v2"
 import { applyPatch } from "diff"
 import { exists, readText } from "@/util/filesystem"
 import type { ACPSession } from "./session"
@@ -252,3 +252,4 @@ function fileMetadata(input: ToolInput): PermissionFileMetadata[] {
 }
 
 export * as ACPPermission from "./permission"
+

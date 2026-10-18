@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test"
+﻿import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test"
 import path from "path"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect } from "effect"
 import { LSP } from "@/lsp/lsp"
 import * as LSPServer from "@/lsp/server"
@@ -158,3 +158,4 @@ describe("LSP.Diagnostic", () => {
     expect(result).toBe("ERROR [1:1] Something wrong")
   })
 })
+

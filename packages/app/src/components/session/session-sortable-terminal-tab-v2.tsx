@@ -1,12 +1,12 @@
-import type { JSX } from "solid-js"
+﻿import type { JSX } from "solid-js"
 import { Show, createEffect, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useSortable } from "@dnd-kit/solid/sortable"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { DropdownMenu } from "@opencode-ai/ui/dropdown-menu"
-import { Icon } from "@opencode-ai/ui/icon"
-import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
+import { IconButton } from "@allcode/ui/icon-button"
+import { Tabs } from "@allcode/ui/tabs"
+import { DropdownMenu } from "@allcode/ui/dropdown-menu"
+import { Icon } from "@allcode/ui/icon"
+import { MenuV2 } from "@allcode/ui/v2/menu-v2"
 import { isDefaultTitle as isDefaultTerminalTitle } from "@/context/terminal-title"
 import { useTerminal, type LocalPTY } from "@/context/terminal"
 import { useLanguage } from "@/context/language"
@@ -282,3 +282,4 @@ export function SortableTerminalTabV2(props: {
     </div>
   )
 }
+

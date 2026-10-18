@@ -1,6 +1,6 @@
-import { FileIcon } from "@opencode-ai/ui/file-icon"
-import "@opencode-ai/ui/v2/file-tree-v2.css"
-import { getDirectory, getFilename } from "@opencode-ai/core/util/path"
+﻿import { FileIcon } from "@allcode/ui/file-icon"
+import "@allcode/ui/v2/file-tree-v2.css"
+import { getDirectory, getFilename } from "@allcode/core/util/path"
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js"
 import { kindChange, kindLabel, type Kind } from "@/components/file-tree-v2"
 import { normalizePath } from "@/pages/session/v2/review-diff-kinds"
@@ -164,3 +164,4 @@ export function SessionFileListV2(props: {
     </div>
   )
 }
+

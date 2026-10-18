@@ -1,6 +1,6 @@
-import { Context } from "effect"
+﻿import { Context } from "effect"
 import type { InstanceContext } from "@/project/instance-context"
-import type { WorkspaceV2 } from "@opencode-ai/core/workspace"
+import type { WorkspaceV2 } from "@allcode/core/workspace"
 
 export const InstanceRef = Context.Reference<InstanceContext | undefined>("~opencode/InstanceRef", {
   defaultValue: () => undefined,
@@ -9,3 +9,4 @@ export const InstanceRef = Context.Reference<InstanceContext | undefined>("~open
 export const WorkspaceRef = Context.Reference<WorkspaceV2.ID | undefined>("~opencode/WorkspaceRef", {
   defaultValue: () => undefined,
 })
+

@@ -1,14 +1,14 @@
-import { DialogSelectServer } from "@/components/dialog-select-server"
+﻿import { DialogSelectServer } from "@/components/dialog-select-server"
 import { useDirectoryPicker } from "@/components/directory-picker"
 import { useGlobal } from "@/context/global"
 import { useLanguage } from "@/context/language"
 import { type ServerConnection, useServer } from "@/context/server"
 import { useServerSync } from "@/context/server-sync"
-import { base64Encode } from "@opencode-ai/core/util/encode"
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Logo } from "@opencode-ai/ui/logo"
+import { base64Encode } from "@allcode/core/util/encode"
+import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { Icon } from "@allcode/ui/icon"
+import { Logo } from "@allcode/ui/logo"
 import { useNavigate } from "@solidjs/router"
 import { DateTime } from "luxon"
 import { createMemo, For, Match, Switch } from "solid-js"
@@ -140,3 +140,4 @@ export function LegacyHome() {
     </div>
   )
 }
+

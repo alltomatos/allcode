@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { Message } from "@opencode-ai/sdk/v2/client"
+﻿import { describe, expect, test } from "bun:test"
+import type { Message } from "@allcode/sdk/v2/client"
 import { getSessionContext } from "./session-context-metrics"
 
 const assistant = (
@@ -97,3 +97,4 @@ describe("getSessionContext", () => {
     expect(ctx).toBeUndefined()
   })
 })
+

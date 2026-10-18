@@ -1,11 +1,11 @@
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { DividerV2 } from "@opencode-ai/ui/v2/divider-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { Switch as SwitchV2 } from "@opencode-ai/ui/v2/switch-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { DividerV2 } from "@allcode/ui/v2/divider-v2"
+import { Icon } from "@allcode/ui/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation } from "@tanstack/solid-query"
 import { createResource, createSignal, For, Show, type Component } from "solid-js"
 import { createStore } from "solid-js/store"
@@ -386,3 +386,4 @@ export const DialogMailAccountV2: Component<{ onAdded?: () => void }> = (props) 
     </Dialog>
   )
 }
+

@@ -1,4 +1,4 @@
-import { isScrollKeyTarget, scrollKey, scrollKeyOwner } from "@opencode-ai/ui/scroll-view"
+﻿import { isScrollKeyTarget, scrollKey, scrollKeyOwner } from "@allcode/ui/scroll-view"
 import { setCursorPosition } from "@/components/prompt-input/editor-dom"
 import { promptLength } from "@/components/prompt-input/history"
 import type { usePrompt } from "@/context/prompt"
@@ -73,3 +73,4 @@ export function createGlobalKeydownHandler(deps: {
     }
   }
 }
+

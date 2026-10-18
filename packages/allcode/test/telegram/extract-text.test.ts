@@ -1,6 +1,6 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import { extractText } from "../../src/telegram"
-import type { SessionV1 } from "@opencode-ai/core/v1/session"
+import type { SessionV1 } from "@allcode/core/v1/session"
 
 function withParts(parts: SessionV1.WithParts["parts"]): SessionV1.WithParts {
   return {
@@ -39,3 +39,4 @@ describe("Telegram.extractText", () => {
     expect(extractText(result)).toBe("padded")
   })
 })
+

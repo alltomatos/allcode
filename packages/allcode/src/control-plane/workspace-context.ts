@@ -1,5 +1,5 @@
-import { LocalContext } from "@/util/local-context"
-import type { WorkspaceV2 } from "@opencode-ai/core/workspace"
+﻿import { LocalContext } from "@/util/local-context"
+import type { WorkspaceV2 } from "@allcode/core/workspace"
 
 export interface WorkspaceContext {
   workspaceID: WorkspaceV2.ID | undefined
@@ -24,3 +24,4 @@ export const WorkspaceContext = {
     }
   },
 }
+

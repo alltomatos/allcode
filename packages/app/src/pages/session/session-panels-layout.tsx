@@ -1,8 +1,8 @@
-import { ErrorBoundary, Show, Suspense, type Accessor, type JSX } from "solid-js"
-import { ResizeHandle } from "@opencode-ai/ui/resize-handle"
+﻿import { ErrorBoundary, Show, Suspense, type Accessor, type JSX } from "solid-js"
+import { ResizeHandle } from "@allcode/ui/resize-handle"
 import { BrowserPanelOverlay } from "@/components/browser-panel"
 import { SessionSidePanel } from "@/pages/session/session-side-panel"
-import { SessionReviewV2SidebarToggle } from "@opencode-ai/session-ui/v2/session-review-v2"
+import { SessionReviewV2SidebarToggle } from "@allcode/session-ui/v2/session-review-v2"
 import { SESSION_PANEL_WIDTH_MIN } from "@/pages/session/session-panel-width"
 import { TerminalPanel } from "@/pages/session/terminal-panel"
 import { TerminalPanelV2 } from "@/pages/session/terminal-panel-v2"
@@ -191,3 +191,4 @@ export function SessionPanelsLayout(props: {
     </SessionRouteFrame>
   )
 }
+

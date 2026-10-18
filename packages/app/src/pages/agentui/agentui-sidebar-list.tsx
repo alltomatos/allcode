@@ -1,10 +1,10 @@
-import { createResource, For, Show, type Component } from "solid-js"
+﻿import { createResource, For, Show, type Component } from "solid-js"
 import { useNavigate } from "@solidjs/router"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { Spinner } from "@opencode-ai/ui/spinner"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { ScrollView } from "@allcode/ui/scroll-view"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { Spinner } from "@allcode/ui/spinner"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 
@@ -77,3 +77,4 @@ export const AgentUISidebarList: Component = () => {
     </aside>
   )
 }
+

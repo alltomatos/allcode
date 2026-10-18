@@ -1,5 +1,5 @@
-import { getFilename } from "@opencode-ai/core/util/path"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { getFilename } from "@allcode/core/util/path"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation } from "@tanstack/solid-query"
 import { normalizeProjectInfo } from "@/context/global-sync/utils"
 import { createMemo } from "solid-js"
@@ -131,3 +131,4 @@ export function createEditProjectModel(props: { project: LocalProject; server: S
     },
   }
 }
+

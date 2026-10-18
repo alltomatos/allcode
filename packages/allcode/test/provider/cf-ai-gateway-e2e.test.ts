@@ -1,4 +1,4 @@
-// End-to-end regression tests for opencode#24432 and opencode#32051/#32052.
+﻿// End-to-end regression tests for opencode#24432 and opencode#32051/#32052.
 //
 // Routes through the actual ai-gateway-provider chain that provider.ts builds at
 // runtime, with only the network boundary stubbed:
@@ -17,8 +17,8 @@ import { createOpenAI } from "ai-gateway-provider/providers/openai"
 import { createAnthropic } from "ai-gateway-provider/providers/anthropic"
 import { ProviderTransform } from "@/provider/transform"
 import type * as Provider from "@/provider/provider"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 
 type Captured = { url: string; outerBody: unknown; headers: Record<string, string> }
 type ProviderOptions = Record<string, Record<string, JSONValue>>
@@ -306,3 +306,4 @@ describe("cf-ai-gateway token scoping (regression: #32051/#32052)", () => {
     expect(extractUpstreamHeaders(captured?.outerBody)?.["authorization"]).toBe("Bearer cf-gateway-secret")
   })
 })
+

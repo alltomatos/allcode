@@ -1,8 +1,8 @@
-import { Show, createEffect, createMemo, type JSX } from "solid-js"
+﻿import { Show, createEffect, createMemo, type JSX } from "solid-js"
 import { createMediaQuery } from "@solid-primitives/media"
 
-import type { SnapshotFileDiff, VcsFileDiff } from "@opencode-ai/sdk/v2"
-import type { FileDiffInfo } from "@opencode-ai/client/promise"
+import type { SnapshotFileDiff, VcsFileDiff } from "@allcode/sdk/v2"
+import type { FileDiffInfo } from "@allcode/client/promise"
 
 import { normalizeFileTreeV2Path } from "@/components/file-tree-v2-model"
 import { useFile, type SelectedLineRange } from "@/context/file"
@@ -327,3 +327,4 @@ export function SessionSidePanel(props: {
     </Show>
   )
 }
+

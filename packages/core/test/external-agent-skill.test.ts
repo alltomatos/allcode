@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { mkdtemp, readFile, stat } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { installBatutaCliSkill, removeBatutaCliSkill } from "@opencode-ai/core/external-agent-skill"
+import { installBatutaCliSkill, removeBatutaCliSkill } from "@allcode/core/external-agent-skill"
 
 const agent = { id: "claude", name: "Claude Code", bin: "claude", skillsDir: ".claude/skills" }
 

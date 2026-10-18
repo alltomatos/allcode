@@ -1,7 +1,7 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import path from "path"
 import { pathToFileURL } from "url"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import {
   InvalidRepositoryBranchError,
   InvalidRepositoryReferenceError,
@@ -91,3 +91,4 @@ describe("util.repository", () => {
     expect(() => validateRepositoryBranch("bad branch")).toThrow(InvalidRepositoryBranchError)
   })
 })
+

@@ -1,5 +1,5 @@
-import { expect, test } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { mockOpenCodeServer } from "../utils/mock-server"
 import { expectAppVisible } from "../utils/waits"
 
@@ -48,3 +48,4 @@ test("preserves the draft when a populated command menu triggers a built-in", as
 
   await expect(input).toHaveText("keep me")
 })
+

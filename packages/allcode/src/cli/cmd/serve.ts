@@ -1,8 +1,8 @@
-import { Effect } from "effect"
+﻿import { Effect } from "effect"
 import { effectCmd } from "../effect-cmd"
 import { withNetworkOptions, resolveNetworkOptions } from "../network"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
+import { Flag } from "@allcode/core/flag/flag"
+import { Global } from "@allcode/core/global"
 import { DefaultSkills } from "../../skill/default-skills"
 import { DefaultPython } from "../../provider/agentrouter/default-python"
 
@@ -27,3 +27,4 @@ export const ServeCommand = effectCmd({
     yield* Effect.never
   }),
 })
+

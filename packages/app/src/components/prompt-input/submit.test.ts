@@ -1,4 +1,4 @@
-import { beforeAll, beforeEach, describe, expect, mock, test } from "bun:test"
+﻿import { beforeAll, beforeEach, describe, expect, mock, test } from "bun:test"
 import { createStore } from "solid-js/store"
 import type { Prompt, PromptStore } from "@/context/prompt"
 import type { ModelSelection } from "@/context/local"
@@ -125,26 +125,26 @@ beforeAll(async () => {
     useSearchParams: () => [search, () => undefined],
   }))
 
-  mock.module("@opencode-ai/sdk/v2/client", () => ({
+  mock.module("@allcode/sdk/v2/client", () => ({
     createOpencodeClient: (input: { directory: string }) => {
       createdClients.push(input.directory)
       return clientFor(input.directory)
     },
   }))
 
-  mock.module("@opencode-ai/ui/toast", () => ({
+  mock.module("@allcode/ui/toast", () => ({
     Toast: { Region: () => null },
     showToast: () => 0,
     toaster: { create: () => 0, dismiss: () => undefined },
   }))
 
-  mock.module("@opencode-ai/ui/v2/toast-v2", () => ({
+  mock.module("@allcode/ui/v2/toast-v2", () => ({
     ToastV2: { Region: () => null },
     showToastV2: () => 0,
     toasterV2: { create: () => 0, dismiss: () => undefined },
   }))
 
-  mock.module("@opencode-ai/core/util/encode", () => ({
+  mock.module("@allcode/core/util/encode", () => ({
     base64Encode: (value: string) => value,
   }))
 
@@ -624,3 +624,4 @@ describe("prompt submit worktree selection", () => {
     )
   })
 })
+

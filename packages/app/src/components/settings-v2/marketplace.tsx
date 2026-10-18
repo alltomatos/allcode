@@ -1,9 +1,9 @@
-import { createMemo, createSignal, For, Show, type Component } from "solid-js"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { createMemo, createSignal, For, Show, type Component } from "solid-js"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation } from "@tanstack/solid-query"
 import { useLanguage } from "@/context/language"
 import { useServerSync } from "@/context/server-sync"
@@ -217,3 +217,4 @@ export const SettingsMarketplaceV2: Component<{ onNavigate?: (tab: string) => vo
     </>
   )
 }
+

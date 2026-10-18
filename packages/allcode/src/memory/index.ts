@@ -1,13 +1,13 @@
-export * as Memory from "./index"
+﻿export * as Memory from "./index"
 
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
-import { ConfigMemoryV1 } from "@opencode-ai/core/v1/config/memory"
-import { Global } from "@opencode-ai/core/global"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { ConfigMemoryV1 } from "@allcode/core/v1/config/memory"
+import { Global } from "@allcode/core/global"
 import { Config } from "@/config/config"
 import { InstanceState } from "@/effect/instance-state"
 import { Session } from "@/session/session"
-import type { SessionV1 } from "@opencode-ai/core/v1/session"
+import type { SessionV1 } from "@allcode/core/v1/session"
 import { Combo } from "../combo"
 import { Provider } from "../provider/provider"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
@@ -700,3 +700,4 @@ export const node = LayerNode.make({
   layer,
   deps: [Config.node, Provider.node, Session.node, Combo.node],
 })
+

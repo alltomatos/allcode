@@ -1,5 +1,5 @@
-import { expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Exit } from "effect"
 import { Combo } from "../../src/combo/index"
 import { testEffect } from "../lib/effect"
@@ -141,3 +141,4 @@ it.live(
       expect(Exit.isFailure(exit)).toBe(true)
     }),
 )
+

@@ -1,5 +1,5 @@
-import { MCP } from "@/mcp"
-import { ConfigMCPV1 } from "@opencode-ai/core/v1/config/mcp"
+﻿import { MCP } from "@/mcp"
+import { ConfigMCPV1 } from "@allcode/core/v1/config/mcp"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { McpServerNotFoundError } from "../errors"
@@ -191,3 +191,4 @@ export const McpApi = HttpApi.make("mcp")
       description: "Experimental HttpApi surface for selected instance routes.",
     }),
   )
+

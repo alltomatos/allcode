@@ -1,15 +1,15 @@
-import { createMemo, createResource, createSignal, For, Show } from "solid-js"
-import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Spinner } from "@opencode-ai/ui/spinner"
+﻿import { createMemo, createResource, createSignal, For, Show } from "solid-js"
+import { MenuV2 } from "@allcode/ui/v2/menu-v2"
+import { Icon } from "@allcode/ui/icon"
+import { Spinner } from "@allcode/ui/spinner"
 import { useSync } from "@/context/sync"
 import { useSDK } from "@/context/sdk"
 import { useLanguage } from "@/context/language"
 import { showToast } from "@/utils/toast"
 import { errorMessage } from "@/pages/layout/helpers"
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Button } from "@opencode-ai/ui/button"
+import { Dialog } from "@allcode/ui/dialog"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { Button } from "@allcode/ui/button"
 
 export interface BranchSelectorV2Props {
   readonly branch?: string
@@ -207,3 +207,4 @@ export function BranchSelectorV2(props: BranchSelectorV2Props) {
     </Show>
   )
 }
+

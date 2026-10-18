@@ -1,9 +1,9 @@
-// Smoke test: v1 SDK (the plugin contract) can actually reach core endpoints
+﻿// Smoke test: v1 SDK (the plugin contract) can actually reach core endpoints
 // against the current server. v1 generation has been frozen since #5216
 // (2025-12-07) so types may be stale, but runtime calls should still work
 // for endpoints the v1 SDK was generated against.
 import { afterEach, describe, expect, test } from "bun:test"
-import { createOpencodeClient } from "@opencode-ai/sdk"
+import { createOpencodeClient } from "@allcode/sdk"
 import { Server } from "../../src/server/server"
 import { tmpdir, disposeAllInstances } from "../fixture/fixture"
 import { resetDatabase } from "../fixture/db"
@@ -55,3 +55,4 @@ describe("v1 SDK runtime smoke", () => {
     expect(result.error).toMatchObject({ name: "NotFoundError" })
   })
 })
+

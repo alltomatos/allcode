@@ -1,9 +1,9 @@
-import type { Hooks, PluginInput } from "@opencode-ai/plugin"
-import type { Model } from "@opencode-ai/sdk/v2"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
-import { OauthCallbackPage } from "@opencode-ai/core/oauth/page"
+﻿import type { Hooks, PluginInput } from "@allcode/plugin"
+import type { Model } from "@allcode/sdk/v2"
+import { InstallationVersion } from "@allcode/core/installation/version"
+import { OauthCallbackPage } from "@allcode/core/oauth/page"
 import { createServer } from "http"
-import { openUrl } from "@opencode-ai/core/open"
+import { openUrl } from "@allcode/core/open"
 
 const DO_OAUTH_CLIENT_ID = "b1a6c5158156caac821fd1b30253ca8acb52454a48fa744420e41889cb589f82"
 const DO_AUTHORIZE_URL = "https://cloud.digitalocean.com/v1/oauth/authorize"
@@ -323,3 +323,4 @@ export async function DigitalOceanAuthPlugin(input: PluginInput): Promise<Hooks>
     },
   }
 }
+

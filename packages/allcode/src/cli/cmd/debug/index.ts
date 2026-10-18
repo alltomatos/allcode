@@ -1,6 +1,6 @@
-import { Global } from "@opencode-ai/core/global"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
-import { Flag } from "@opencode-ai/core/flag/flag"
+﻿import { Global } from "@allcode/core/global"
+import { InstallationVersion } from "@allcode/core/installation/version"
+import { Flag } from "@allcode/core/flag/flag"
 import os from "os"
 import { Duration, Effect } from "effect"
 import { effectCmd } from "../../effect-cmd"
@@ -85,3 +85,4 @@ const PathsCommand = cmd({
     }
   },
 })
+

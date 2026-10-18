@@ -1,4 +1,4 @@
-import { For, Show, createEffect, createMemo, on, onCleanup, onMount } from "solid-js"
+﻿import { For, Show, createEffect, createMemo, on, onCleanup, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { createMediaQuery } from "@solid-primitives/media"
@@ -7,12 +7,12 @@ import { isSortable } from "@dnd-kit/solid/sortable"
 import { Accessibility, AutoScroller, Feedback, PointerActivationConstraints } from "@dnd-kit/dom"
 import { RestrictToHorizontalAxis } from "@dnd-kit/abstract/modifiers"
 import { RestrictToElement } from "@dnd-kit/dom/modifiers"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { ResizeHandle } from "@opencode-ai/ui/resize-handle"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { TooltipKeybind } from "@opencode-ai/ui/tooltip"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
-import { KeybindV2 } from "@opencode-ai/ui/v2/keybind-v2"
+import { Tabs } from "@allcode/ui/tabs"
+import { ResizeHandle } from "@allcode/ui/resize-handle"
+import { IconButton } from "@allcode/ui/icon-button"
+import { TooltipKeybind } from "@allcode/ui/tooltip"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
+import { KeybindV2 } from "@allcode/ui/v2/keybind-v2"
 
 import { SortableTerminalTabV2 } from "@/components/session/session-sortable-terminal-tab-v2"
 import { Terminal } from "@/components/terminal"
@@ -350,3 +350,4 @@ export function TerminalPanelV2(props: { stacked?: boolean } = {}) {
     </aside>
   )
 }
+

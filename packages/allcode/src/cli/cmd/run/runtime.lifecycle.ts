@@ -1,4 +1,4 @@
-// Lifecycle management for the split-footer renderer.
+﻿// Lifecycle management for the split-footer renderer.
 //
 // Creates the OpenTUI CliRenderer in split-footer mode, resolves the theme
 // from the terminal palette, writes the entry splash to scrollback, and
@@ -11,9 +11,9 @@
 import path from "path"
 import { CliRenderEvents, createCliRenderer, type CliRenderer, type ScrollbackWriter } from "@opentui/core"
 import { createDefaultOpenTuiKeymap } from "@opentui/keymap/opentui"
-import { Global } from "@opencode-ai/core/global"
-import { openEditor } from "@opencode-ai/tui/editor"
-import { registerOpencodeKeymap } from "@opencode-ai/tui/keymap"
+import { Global } from "@allcode/core/global"
+import { openEditor } from "@allcode/tui/editor"
+import { registerOpencodeKeymap } from "@allcode/tui/keymap"
 import { Session as SessionApi } from "@/session/session"
 import * as Locale from "@/util/locale"
 import { resolveInteractiveStdin } from "./runtime.stdin"
@@ -404,3 +404,4 @@ export async function createRuntimeLifecycle(input: LifecycleInput): Promise<Lif
     throw error
   }
 }
+

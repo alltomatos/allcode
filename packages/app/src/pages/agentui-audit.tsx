@@ -1,10 +1,10 @@
-import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+﻿import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { useNavigate, useParams } from "@solidjs/router"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import type { AgentuiAuditResponses } from "@opencode-ai/sdk/v2/types"
+import { ScrollView } from "@allcode/ui/scroll-view"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import type { AgentuiAuditResponses } from "@allcode/sdk/v2/types"
 
 type AgentUiAuditEntry = Omit<AgentuiAuditResponses[200][number], "timestamp"> & { timestamp: number }
 import { useLanguage } from "@/context/language"
@@ -184,3 +184,4 @@ export const AgentUIAuditPage: Component = () => {
     </div>
   )
 }
+

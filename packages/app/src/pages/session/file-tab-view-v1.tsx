@@ -1,15 +1,15 @@
-import { createEffect, createMemo, Match, on, Switch } from "solid-js"
+﻿import { createEffect, createMemo, Match, on, Switch } from "solid-js"
 import { createStore } from "solid-js/store"
 import { Dynamic } from "solid-js/web"
 import { makeEventListener } from "@solid-primitives/event-listener"
-import type { FileSearchHandle } from "@opencode-ai/session-ui/file"
-import { useFileComponent } from "@opencode-ai/ui/context/file"
-import { cloneSelectedLineRange, previewSelectedLines } from "@opencode-ai/session-ui/pierre/selection-bridge"
-import { createLineCommentController } from "@opencode-ai/session-ui/line-comment-annotations"
-import { sampledChecksum } from "@opencode-ai/core/util/encode"
-import { DropdownMenu } from "@opencode-ai/ui/dropdown-menu"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
+import type { FileSearchHandle } from "@allcode/session-ui/file"
+import { useFileComponent } from "@allcode/ui/context/file"
+import { cloneSelectedLineRange, previewSelectedLines } from "@allcode/session-ui/pierre/selection-bridge"
+import { createLineCommentController } from "@allcode/session-ui/line-comment-annotations"
+import { sampledChecksum } from "@allcode/core/util/encode"
+import { DropdownMenu } from "@allcode/ui/dropdown-menu"
+import { IconButton } from "@allcode/ui/icon-button"
+import { ScrollView } from "@allcode/ui/scroll-view"
 import { showToast } from "@/utils/toast"
 import { selectionFromLines, useFile, type FileSelection, type SelectedLineRange } from "@/context/file"
 import { useComments } from "@/context/comments"
@@ -337,3 +337,4 @@ export function SessionFileViewV1(props: { tab: string }) {
 
   return content()
 }
+

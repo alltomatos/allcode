@@ -1,8 +1,8 @@
-export * as ScheduleAgentUICaller from "./agentui-caller"
+﻿export * as ScheduleAgentUICaller from "./agentui-caller"
 
 import { Effect, Layer } from "effect"
-import { makeGlobalNode } from "@opencode-ai/core/effect/app-node"
-import { ScheduleRunner } from "@opencode-ai/core/schedule/runner"
+import { makeGlobalNode } from "@allcode/core/effect/app-node"
+import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { AgentUI } from "@/agentui"
 
 export const layer = Layer.effect(
@@ -52,3 +52,4 @@ export const node = makeGlobalNode({
   layer,
   deps: [AgentUI.node],
 })
+

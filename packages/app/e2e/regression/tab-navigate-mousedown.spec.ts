@@ -1,5 +1,5 @@
-import { expect, test, type Page, type Route } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test, type Page, type Route } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { currentSession } from "../utils/mock-server"
 
 const server = "http://127.0.0.1:4096"
@@ -157,3 +157,4 @@ function json(route: Route, body: unknown, status = 200) {
 function sse(route: Route) {
   return route.fulfill({ status: 200, contentType: "text/event-stream", body: ": ok\n\n" })
 }
+

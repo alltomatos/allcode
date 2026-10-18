@@ -1,4 +1,5 @@
-export { Config } from "@/config/config"
+﻿export { Config } from "@/config/config"
 export { Server } from "./server/server"
 export { bootstrap } from "./cli/bootstrap"
-export { Database } from "@opencode-ai/core/database/database"
+export { Database } from "@allcode/core/database/database"
+

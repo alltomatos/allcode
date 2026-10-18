@@ -1,4 +1,4 @@
-export function treeEntries(parent: string, nodes: ReadonlyArray<{ name: string; type: "file" | "directory" }>) {
+﻿export function treeEntries(parent: string, nodes: ReadonlyArray<{ name: string; type: "file" | "directory" }>) {
   const prefix = parent.replace(/^\/+|\/+$/g, "")
   return nodes.map((node) => {
     const path = prefix ? `${prefix}/${node.name}` : node.name
@@ -245,7 +245,7 @@ export function nativePickerPath(path: string) {
   if (/^[A-Za-z]:\//.test(value) || value.startsWith("//")) return value.replaceAll("/", "\\")
   return value
 }
-import { getFilename } from "@opencode-ai/core/util/path"
+import { getFilename } from "@allcode/core/util/path"
 import fuzzysort from "fuzzysort"
 import { ServerSDK } from "@/context/server-sdk"
 
@@ -412,3 +412,4 @@ export function createDirectorySearch(args: { sdk: ServerSDK; base: () => string
     return Array.from(new Set([base, ...matches, ...children].filter(Boolean))).slice(0, 50)
   }
 }
+

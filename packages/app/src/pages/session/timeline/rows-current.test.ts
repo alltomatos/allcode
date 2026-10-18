@@ -1,8 +1,8 @@
-import { describe, expect, mock, test } from "bun:test"
-import type { SessionMessageInfo } from "@opencode-ai/client/promise"
+﻿import { describe, expect, mock, test } from "bun:test"
+import type { SessionMessageInfo } from "@allcode/client/promise"
 import { normalizeSessionMessages } from "@/utils/session-message"
 
-mock.module("@opencode-ai/session-ui/message-part", () => ({
+mock.module("@allcode/session-ui/message-part", () => ({
   renderable: () => true,
   groupParts: (refs: Array<{ messageID: string; part: { id: string } }>) =>
     refs.map((ref) => ({
@@ -205,3 +205,4 @@ describe("current session timeline rows", () => {
     expect(result.rows.map((row) => row._tag)).toEqual(["UserMessage", "AssistantPart"])
   })
 })
+

@@ -1,5 +1,5 @@
-import { Project } from "@/project/project"
-import { ProjectV2 } from "@opencode-ai/core/project"
+﻿import { Project } from "@/project/project"
+import { ProjectV2 } from "@allcode/core/project"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { ProjectNotFoundError } from "../errors"
@@ -91,3 +91,4 @@ export const ProjectApi = HttpApi.make("project")
       description: "Experimental HttpApi surface for selected instance routes.",
     }),
   )
+

@@ -1,6 +1,6 @@
-// @ts-nocheck
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿// @ts-nocheck
+import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createSignal, onMount } from "solid-js"
 import { DialogSelectModelUnpaidV2 } from "./dialog-select-model-unpaid-v2"
 
@@ -53,3 +53,4 @@ export default {
 export const WithoutProviders = {
   render: () => <SelectModelWithoutProviders />,
 }
+

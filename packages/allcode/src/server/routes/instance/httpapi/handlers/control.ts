@@ -1,11 +1,11 @@
-import { Auth } from "@/auth"
+﻿import { Auth } from "@/auth"
 import { Provider } from "@/provider/provider"
 
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { RootHttpApi } from "../api"
 import { LogInput } from "../groups/control"
-import { ProviderV2 } from "@opencode-ai/core/provider"
+import { ProviderV2 } from "@allcode/core/provider"
 
 export const controlHandlers = HttpApiBuilder.group(RootHttpApi, "control", (handlers) =>
   Effect.gen(function* () {
@@ -45,3 +45,4 @@ export const controlHandlers = HttpApiBuilder.group(RootHttpApi, "control", (han
     return handlers.handle("authSet", authSet).handle("authRemove", authRemove).handle("log", log)
   }),
 )
+

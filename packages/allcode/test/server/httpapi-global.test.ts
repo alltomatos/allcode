@@ -1,4 +1,4 @@
-import { NodeHttpServer } from "@effect/platform-node"
+﻿import { NodeHttpServer } from "@effect/platform-node"
 import { describe, expect } from "bun:test"
 import { Context, Effect, Layer, Option } from "effect"
 import { HttpBody, HttpClient, HttpClientRequest, HttpRouter } from "effect/unstable/http"
@@ -7,7 +7,7 @@ import { Auth } from "../../src/auth"
 import { Config } from "../../src/config/config"
 import { Installation } from "../../src/installation"
 import { Provider } from "../../src/provider/provider"
-import { MoveSession } from "@opencode-ai/core/control-plane/move-session"
+import { MoveSession } from "@allcode/core/control-plane/move-session"
 import { ServerAuth } from "../../src/server/auth"
 import { RootHttpApi } from "../../src/server/routes/instance/httpapi/api"
 import { GlobalPaths } from "../../src/server/routes/instance/httpapi/groups/global"
@@ -66,3 +66,4 @@ describe("global HttpApi", () => {
     }),
   )
 })
+

@@ -1,6 +1,6 @@
-import { test, expect, describe } from "bun:test"
+﻿import { test, expect, describe } from "bun:test"
 import { resolvePluginProviders } from "../../src/cli/cmd/providers"
-import type { Hooks } from "@opencode-ai/plugin"
+import type { Hooks } from "@allcode/plugin"
 
 function hookWithAuth(provider: string): Hooks {
   return {
@@ -118,3 +118,4 @@ describe("resolvePluginProviders", () => {
     expect(result).toEqual([])
   })
 })
+

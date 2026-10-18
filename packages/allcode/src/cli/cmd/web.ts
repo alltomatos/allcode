@@ -1,12 +1,12 @@
-import { Effect } from "effect"
+﻿import { Effect } from "effect"
 import { UI } from "../ui"
 import { effectCmd } from "../effect-cmd"
 import { withNetworkOptions, resolveNetworkOptions } from "../network"
-import { Flag } from "@opencode-ai/core/flag/flag"
-import { Global } from "@opencode-ai/core/global"
+import { Flag } from "@allcode/core/flag/flag"
+import { Global } from "@allcode/core/global"
 import { DefaultSkills } from "../../skill/default-skills"
 import { DefaultPython } from "../../provider/agentrouter/default-python"
-import { openUrl } from "@opencode-ai/core/open"
+import { openUrl } from "@allcode/core/open"
 import { networkInterfaces } from "os"
 
 function getNetworkIPs() {
@@ -87,3 +87,4 @@ export const WebCommand = effectCmd({
     yield* Effect.never
   }),
 })
+

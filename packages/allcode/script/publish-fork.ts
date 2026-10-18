@@ -1,6 +1,6 @@
-#!/usr/bin/env bun
+﻿#!/usr/bin/env bun
 // Publishes this fork's own CLI to npm under its own scope (default
-// @alltomatos), separate from upstream's `opencode-ai`/`@opencode-ai/*`
+// @alltomatos), separate from upstream's `opencode-ai`/`@allcode/*`
 // packages — those are published only from anomalyco/opencode (see
 // script/publish.ts, guarded in .github/workflows/publish.yml). This is the
 // fork-specific counterpart, driven by dist/ output from
@@ -98,3 +98,4 @@ await Promise.all(tasks)
 await publish(wrapperDir, wrapperName, VERSION)
 
 console.log(`published ${wrapperName}@${VERSION} (tag: ${TAG})`)
+

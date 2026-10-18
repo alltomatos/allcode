@@ -1,7 +1,7 @@
-export * as ServerAuth from "./auth"
+﻿export * as ServerAuth from "./auth"
 
 import { ConfigService } from "@/effect/config-service"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Flag } from "@allcode/core/flag/flag"
 import { Config as EffectConfig, Context, Option, Redacted } from "effect"
 
 export type Credentials = {
@@ -46,3 +46,4 @@ export function headers(credentials?: Credentials) {
   if (!authorization) return undefined
   return { Authorization: authorization }
 }
+

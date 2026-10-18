@@ -1,11 +1,11 @@
-import { Schema } from "effect"
+﻿import { Schema } from "effect"
 import { SessionID } from "./schema"
 
-import { NonNegativeInt } from "@opencode-ai/core/schema"
+import { NonNegativeInt } from "@allcode/core/schema"
 import { MessageError } from "./message-error"
 import { AuthError, OutputLengthError } from "./message-error"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 export { AuthError, OutputLengthError } from "./message-error"
 
 export const ToolCall = Schema.Struct({
@@ -146,3 +146,4 @@ export const Info = Schema.Struct({
 export type Info = Schema.Schema.Type<typeof Info>
 
 export * as Message from "./message"
+

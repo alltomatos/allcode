@@ -1,4 +1,4 @@
-import type { SessionV1 } from "@opencode-ai/core/v1/session"
+﻿import type { SessionV1 } from "@allcode/core/v1/session"
 
 export { parseGitHubRemote } from "@/util/repository"
 
@@ -28,3 +28,4 @@ export function formatPromptTooLargeError(files: { filename: string; content: st
       : ""
   return `PROMPT_TOO_LARGE: The prompt exceeds the model's context limit.${fileDetails}`
 }
+

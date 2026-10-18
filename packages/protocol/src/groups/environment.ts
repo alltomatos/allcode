@@ -1,6 +1,6 @@
-export { Environment } from "@opencode-ai/schema/environment"
+export { Environment } from "@allcode/schema/environment"
 
-import { Environment } from "@opencode-ai/schema/environment"
+import { Environment } from "@allcode/schema/environment"
 import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/unstable/httpapi"
 import { LocationQuery, locationQueryOpenApi } from "./location"

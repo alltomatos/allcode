@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import { NamedError } from "@opencode-ai/core/util/error"
+﻿import { describe, expect, test } from "bun:test"
+import { NamedError } from "@allcode/core/util/error"
 import { MessageError } from "../../src/session/message-error"
 
 describe("util.error", () => {
@@ -14,3 +14,4 @@ describe("util.error", () => {
     expect(new MessageError.OutputLengthError({}).toObject()).toEqual({ name: "MessageOutputLengthError", data: {} })
   })
 })
+

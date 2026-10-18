@@ -1,9 +1,9 @@
-import { describe, expect, beforeAll, afterAll } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+﻿import { describe, expect, beforeAll, afterAll } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { FSUtil } from "@allcode/core/fs-util"
 import { Effect } from "effect"
 import { Discovery } from "../../src/skill/discovery"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { Filesystem } from "@/util/filesystem"
 import { rm } from "fs/promises"
 import path from "path"
@@ -184,3 +184,4 @@ describe("Discovery.pull", () => {
     }),
   )
 })
+

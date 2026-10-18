@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test"
 import { createSshServersController } from "./servers"
-import type { SshServerConfig } from "@opencode-ai/app/ssh-tunnel/types"
+import type { SshServerConfig } from "@allcode/app/ssh-tunnel/types"
 
 function baseConfig(overrides: Partial<Omit<SshServerConfig, "id">> = {}): Omit<SshServerConfig, "id"> {
   return {

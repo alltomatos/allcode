@@ -1,7 +1,7 @@
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createResource, For, Show, type Component } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
@@ -109,3 +109,4 @@ export const SettingsCombosV2: Component<{ directory?: () => string | undefined 
     </>
   )
 }
+

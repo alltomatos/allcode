@@ -1,5 +1,5 @@
-import type { NamedError } from "@opencode-ai/core/util/error"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
+﻿import type { NamedError } from "@allcode/core/util/error"
+import { SessionV1 } from "@allcode/core/v1/session"
 import { Cause, Clock, Duration, Effect, Schedule } from "effect"
 import { MessageV2 } from "./message-v2"
 import { iife } from "@/util/iife"
@@ -207,3 +207,4 @@ export function policy(opts: {
 }
 
 export * as SessionRetry from "./retry"
+

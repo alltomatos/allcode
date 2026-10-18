@@ -1,5 +1,5 @@
-import type { Page } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import type { Page } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { mockOpenCodeServer } from "../../utils/mock-server"
 import { fixture, pageMessages } from "./session-timeline-stress.fixture"
 
@@ -132,3 +132,4 @@ function reviewWords(seed: number, length: number) {
   const words = ["alpha", "bravo", "charlie", "delta", "echo", "foxtrot", "golf", "hotel", "india", "juliet"]
   return Array.from({ length: Math.ceil(length / 7) }, (_, index) => words[(seed + index * 3) % words.length]).join(" ")
 }
+

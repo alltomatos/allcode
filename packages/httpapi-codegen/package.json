@@ -1,6 +1,6 @@
-{
+﻿{
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/httpapi-codegen",
+  "name": "@allcode/httpapi-codegen",
   "private": true,
   "type": "module",
   "exports": {
@@ -20,3 +20,4 @@
     "@typescript/native-preview": "catalog:"
   }
 }
+

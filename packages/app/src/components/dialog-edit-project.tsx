@@ -1,10 +1,10 @@
-import { Button } from "@opencode-ai/ui/button"
-import { Dialog, DialogHeader, DialogTitle, DialogBody, DialogFooter } from "@opencode-ai/ui/v2/dialog-v2"
-import { TextField } from "@opencode-ai/ui/text-field"
-import { Icon } from "@opencode-ai/ui/icon"
+﻿import { Button } from "@allcode/ui/button"
+import { Dialog, DialogHeader, DialogTitle, DialogBody, DialogFooter } from "@allcode/ui/v2/dialog-v2"
+import { TextField } from "@allcode/ui/text-field"
+import { Icon } from "@allcode/ui/icon"
 import { For, Show } from "solid-js"
 import { type LocalProject, getAvatarColors } from "@/context/layout"
-import { Avatar } from "@opencode-ai/ui/avatar"
+import { Avatar } from "@allcode/ui/avatar"
 import { useLanguage } from "@/context/language"
 import { getProjectAvatarSource } from "@/pages/layout/helpers"
 import { ServerConnection } from "@/context/server"
@@ -173,3 +173,4 @@ export function DialogEditProject(props: { project: LocalProject; server: Server
     </Dialog>
   )
 }
+

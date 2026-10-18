@@ -1,10 +1,10 @@
-import * as InstanceState from "@/effect/instance-state"
-import { FileSystem } from "@opencode-ai/core/filesystem"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
-import { Ripgrep } from "@opencode-ai/core/ripgrep"
-import { FSUtil } from "@opencode-ai/core/fs-util"
-import { Location } from "@opencode-ai/core/location"
-import { AbsolutePath, RelativePath } from "@opencode-ai/core/schema"
+﻿import * as InstanceState from "@/effect/instance-state"
+import { FileSystem } from "@allcode/core/filesystem"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
+import { Ripgrep } from "@allcode/core/ripgrep"
+import { FSUtil } from "@allcode/core/fs-util"
+import { Location } from "@allcode/core/location"
+import { AbsolutePath, RelativePath } from "@allcode/core/schema"
 import { Effect, Layer, Option } from "effect"
 import ignore from "ignore"
 import path from "path"
@@ -137,3 +137,4 @@ export const fileHandlers = HttpApiBuilder.group(InstanceHttpApi, "file", (handl
       .handle("status", status)
   }),
 ).pipe(Layer.provide(locationServiceMapLayer))
+

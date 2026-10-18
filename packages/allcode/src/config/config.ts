@@ -1,30 +1,30 @@
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { httpClient } from "@opencode-ai/core/effect/app-node-platform"
-import { serviceUse } from "@opencode-ai/core/effect/service-use"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { httpClient } from "@allcode/core/effect/app-node-platform"
+import { serviceUse } from "@allcode/core/effect/service-use"
 import path from "path"
 import { pathToFileURL } from "url"
 import os from "os"
 import { mergeDeep } from "remeda"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import fsNode from "fs/promises"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Flag } from "@allcode/core/flag/flag"
 import { Auth } from "../auth"
 import { Env } from "../env"
 import { applyEdits, modify } from "jsonc-parser"
 import { existsSync } from "fs"
 import { Account } from "@/account/account"
 import { isRecord } from "@/util/record"
-import type { ConsoleState } from "@opencode-ai/core/v1/config/console-state"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import type { ConsoleState } from "@allcode/core/v1/config/console-state"
+import { FSUtil } from "@allcode/core/fs-util"
 import { InstanceState } from "@/effect/instance-state"
 import { Context, Duration, Effect, Exit, Fiber, Layer, Option, Schema } from "effect"
 import { FetchHttpClient, HttpClient, HttpClientRequest } from "effect/unstable/http"
-import { EffectFlock } from "@opencode-ai/core/util/effect-flock"
+import { EffectFlock } from "@allcode/core/util/effect-flock"
 import { containsPath, type InstanceContext } from "../project/instance-context"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
-import { RemoteAuthError } from "@opencode-ai/core/v1/config/error"
-import { ConfigPermissionV1 } from "@opencode-ai/core/v1/config/permission"
-import { ConfigPluginV1 } from "@opencode-ai/core/v1/config/plugin"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { RemoteAuthError } from "@allcode/core/v1/config/error"
+import { ConfigPermissionV1 } from "@allcode/core/v1/config/permission"
+import { ConfigPluginV1 } from "@allcode/core/v1/config/plugin"
 import { ConfigAgent } from "./agent"
 import { ConfigCommand } from "./command"
 import { ConfigManaged } from "./managed"
@@ -32,7 +32,7 @@ import { ConfigParse } from "./parse"
 import { ConfigPaths } from "./paths"
 import { ConfigPlugin } from "./plugin"
 import { ConfigVariable } from "./variable"
-import { Npm } from "@opencode-ai/core/npm"
+import { Npm } from "@allcode/core/npm"
 import { withTransientReadRetry } from "@/util/effect-http-client"
 
 // Custom merge function that concatenates array fields instead of replacing them
@@ -439,16 +439,16 @@ const layer = Layer.effect(
             .install(dir, {
               add: [
                 {
-                  name: "@opencode-ai/plugin",
+                  name: "@allcode/plugin",
                   // Pinning to the exact running InstallationVersion only works
                   // upstream, where every build (including snapshots) is
                   // actually published to npm under that same tag. This fork's
                   // own build pipeline tags releases as "0.0.0-prod-<timestamp>"
                   // / "0.0.0-dev-<timestamp>" without publishing a matching
-                  // @opencode-ai/plugin version, so pinning to InstallationVersion
+                  // @allcode/plugin version, so pinning to InstallationVersion
                   // here 404s on every single non-local install — silently, since
                   // this whole install is best-effort background — and any custom
-                  // tool/plugin a user writes that imports @opencode-ai/plugin at
+                  // tool/plugin a user writes that imports @allcode/plugin at
                   // runtime (not just for types) then crashes with
                   // ERR_MODULE_NOT_FOUND the moment it's invoked, killing the
                   // whole agent turn. Falling back to latest (same as the local
@@ -695,3 +695,4 @@ export const node = LayerNode.make({
 })
 
 export * as Config from "./config"
+

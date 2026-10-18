@@ -1,11 +1,11 @@
-import { For, Show, createEffect, createMemo } from "solid-js"
+﻿import { For, Show, createEffect, createMemo } from "solid-js"
 import { createStore } from "solid-js/store"
-import { Button } from "@opencode-ai/ui/button"
-import { DockTray } from "@opencode-ai/ui/dock-surface"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
+import { Button } from "@allcode/ui/button"
+import { DockTray } from "@allcode/ui/dock-surface"
+import { IconButton } from "@allcode/ui/icon-button"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
 
@@ -182,3 +182,4 @@ export function SessionRevertDock(props: {
     </Show>
   )
 }
+

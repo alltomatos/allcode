@@ -1,4 +1,4 @@
-import { Effect, Stream } from "effect"
+﻿import { Effect, Stream } from "effect"
 import os from "os"
 import { createWriteStream } from "node:fs"
 import * as Tool from "./tool"
@@ -8,16 +8,16 @@ import { InstanceState } from "@/effect/instance-state"
 import { lazy } from "@/util/lazy"
 import { Language, type Node } from "web-tree-sitter"
 
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import { fileURLToPath } from "url"
 import { Config } from "@/config/config"
 import { RuntimeFlags } from "@/effect/runtime-flags"
-import { Shell } from "@opencode-ai/core/shell"
+import { Shell } from "@allcode/core/shell"
 import { ShellID } from "./shell/id"
 
 import * as Truncate from "./truncate"
 import { Plugin } from "@/plugin"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { DefaultPython } from "../provider/agentrouter/default-python"
 import { ChildProcess } from "effect/unstable/process"
 import { ChildProcessSpawner } from "effect/unstable/process/ChildProcessSpawner"
@@ -659,3 +659,4 @@ export const ShellTool = Tool.define(
       })
   }),
 )
+

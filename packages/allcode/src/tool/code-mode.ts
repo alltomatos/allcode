@@ -1,7 +1,7 @@
-import * as Tool from "./tool"
+﻿import * as Tool from "./tool"
 import { CallToolResultSchema, type CallToolResult } from "@modelcontextprotocol/sdk/types.js"
 import { Cause, Effect, Schema } from "effect"
-import { CodeMode, Tool as SandboxTool, toolError } from "@opencode-ai/codemode"
+import { CodeMode, Tool as SandboxTool, toolError } from "@allcode/codemode"
 import { MCP } from "@/mcp"
 import { McpCatalog } from "@/mcp/catalog"
 import { Agent } from "@/agent/agent"
@@ -308,3 +308,4 @@ export const CodeModeTool = Tool.define(
     return init
   }),
 )
+

@@ -1,7 +1,7 @@
-import { createEffect, createMemo, createResource, createSignal, For, onCleanup, on, Show } from "solid-js"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
+﻿import { createEffect, createMemo, createResource, createSignal, For, onCleanup, on, Show } from "solid-js"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Icon } from "@allcode/ui/icon"
+import { ScrollView } from "@allcode/ui/scroll-view"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { useSDK } from "@/context/sdk"
@@ -604,3 +604,4 @@ export function SessionMemoryTab() {
     </div>
   )
 }
+

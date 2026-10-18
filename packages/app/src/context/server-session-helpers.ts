@@ -1,7 +1,7 @@
-import type { Message, Part } from "@opencode-ai/sdk/v2/client"
-import type { SessionMessageInfo } from "@opencode-ai/client/promise"
+﻿import type { Message, Part } from "@allcode/sdk/v2/client"
+import type { SessionMessageInfo } from "@allcode/client/promise"
 import { compareMessages, messageKey } from "@/utils/session-message"
-import { Binary } from "@opencode-ai/core/util/binary"
+import { Binary } from "@allcode/core/util/binary"
 
 export const cmp = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0)
 export const SKIP_PARTS = new Set(["patch", "step-start", "step-finish"])
@@ -157,3 +157,4 @@ export function reconcileFetched<T extends { id: string }>(
   const items = [...result.values()]
   return options.compare ? items.sort(options.compare) : items
 }
+

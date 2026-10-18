@@ -1,4 +1,4 @@
-import type { FileNode } from "@opencode-ai/sdk/v2"
+﻿import type { FileNode } from "@allcode/sdk/v2"
 
 type WatcherEvent = {
   type: string
@@ -51,3 +51,4 @@ export function invalidateFromWatcher(event: WatcherEvent, ops: WatcherOps) {
 
   ops.refreshDir(parent)
 }
+

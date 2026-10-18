@@ -1,17 +1,17 @@
-import { createMemo, Show } from "solid-js"
-import { Select } from "@opencode-ai/ui/select"
-import { SelectV2 } from "@opencode-ai/ui/v2/select-v2"
-import { Button } from "@opencode-ai/ui/button"
+﻿import { createMemo, Show } from "solid-js"
+import { Select } from "@allcode/ui/select"
+import { SelectV2 } from "@allcode/ui/v2/select-v2"
+import { Button } from "@allcode/ui/button"
 import { type DiffStyle, SessionReviewTab, type SessionReviewTabProps } from "@/pages/session/review-tab"
-import { SessionReviewEmptyChangesV2 } from "@opencode-ai/session-ui/v2/session-review-empty-changes-v2"
-import { SessionReviewEmptyNoGitV2 } from "@opencode-ai/session-ui/v2/session-review-empty-no-git-v2"
+import { SessionReviewEmptyChangesV2 } from "@allcode/session-ui/v2/session-review-empty-changes-v2"
+import { SessionReviewEmptyNoGitV2 } from "@allcode/session-ui/v2/session-review-empty-no-git-v2"
 import { ReviewPanelV2 } from "@/pages/session/v2/review-panel-v2"
 import type { createReviewPanelV2State } from "@/pages/session/v2/review-panel-v2-state"
 import type { ChangeMode, createVcsReview } from "./session-vcs-review"
 import type { createReviewComments } from "./session-review-comments"
 import type { createReviewDiffScroll } from "./session-review-diff-scroll"
 import type { createOpenReviewFile } from "./helpers"
-import type { SessionReviewLineComment } from "@opencode-ai/session-ui/session-review"
+import type { SessionReviewLineComment } from "@allcode/session-ui/session-review"
 import type { useLanguage } from "@/context/language"
 import type { useSettings } from "@/context/settings"
 import type { useLayout } from "@/context/layout"
@@ -252,3 +252,4 @@ export function createReviewPanels(input: {
 
   return { reviewContent, reviewPanel, reviewPanelV2, reviewEmptyText }
 }
+

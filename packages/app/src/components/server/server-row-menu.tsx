@@ -1,7 +1,7 @@
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
+﻿import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { Icon } from "@allcode/ui/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { MenuV2 } from "@allcode/ui/v2/menu-v2"
 import { type Component, Show } from "solid-js"
 import { useServerManagementController } from "@/components/dialog-select-server"
 import { useLanguage } from "@/context/language"
@@ -144,3 +144,4 @@ export const ServerRowMenuView: Component<{
     </MenuV2>
   )
 }
+

@@ -1,11 +1,11 @@
-import { createMemo, Show } from "solid-js"
+﻿import { createMemo, Show } from "solid-js"
 import type { JSX } from "solid-js"
 import { createSortable } from "@thisbeyond/solid-dnd"
-import { FileIcon } from "@opencode-ai/ui/file-icon"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { TooltipKeybind } from "@opencode-ai/ui/tooltip"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { getFilename } from "@opencode-ai/core/util/path"
+import { FileIcon } from "@allcode/ui/file-icon"
+import { IconButton } from "@allcode/ui/icon-button"
+import { TooltipKeybind } from "@allcode/ui/tooltip"
+import { Tabs } from "@allcode/ui/tabs"
+import { getFilename } from "@allcode/core/util/path"
 import { useFile } from "@/context/file"
 import { useLanguage } from "@/context/language"
 import { useCommand } from "@/context/command"
@@ -76,3 +76,4 @@ export function SortableTab(props: {
     </div>
   )
 }
+

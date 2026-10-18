@@ -1,5 +1,5 @@
-import { getFilename } from "@opencode-ai/core/util/path"
-import { type AgentPartInput, type FilePartInput, type Part, type TextPartInput } from "@opencode-ai/sdk/v2/client"
+﻿import { getFilename } from "@allcode/core/util/path"
+import { type AgentPartInput, type FilePartInput, type Part, type TextPartInput } from "@allcode/sdk/v2/client"
 import type { FileSelection } from "@/context/file"
 import { encodeFilePath } from "@/context/file/path"
 import type { AgentPart, FileAttachmentPart, ImageAttachmentPart, Prompt } from "@/context/prompt"
@@ -211,3 +211,4 @@ export function buildRequestParts(input: BuildRequestPartsInput) {
     optimisticParts: requestParts.map((part) => toOptimisticPart(part, input.sessionID, input.messageID)),
   }
 }
+

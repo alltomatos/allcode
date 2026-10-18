@@ -1,4 +1,4 @@
-import type { FileContent } from "@opencode-ai/sdk/v2"
+﻿import type { FileContent } from "@allcode/sdk/v2"
 
 export type FileSelection = {
   startLine: number
@@ -39,3 +39,4 @@ export function selectionFromLines(range: SelectedLineRange): FileSelection {
     endChar: 0,
   }
 }
+

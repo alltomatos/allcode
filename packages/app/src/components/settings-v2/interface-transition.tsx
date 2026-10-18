@@ -1,6 +1,6 @@
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Switch } from "@opencode-ai/ui/v2/switch-v2"
+﻿import { Tag } from "@allcode/ui/v2/badge-v2"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Switch } from "@allcode/ui/v2/switch-v2"
 import { SettingsListV2 } from "./parts/list"
 import { SettingsRowV2 } from "./parts/row"
 
@@ -52,3 +52,4 @@ export function LayoutRetirementNotice(props: {
     </div>
   )
 }
+

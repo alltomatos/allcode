@@ -1,6 +1,6 @@
-{
+﻿{
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/sdk-next",
+  "name": "@allcode/sdk-next",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -12,9 +12,9 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@opencode-ai/client": "workspace:*",
-    "@opencode-ai/core": "workspace:*",
-    "@opencode-ai/server": "workspace:*",
+    "@allcode/client": "workspace:*",
+    "@allcode/core": "workspace:*",
+    "@allcode/server": "workspace:*",
     "effect": "catalog:"
   },
   "devDependencies": {
@@ -23,3 +23,4 @@
     "@typescript/native-preview": "catalog:"
   }
 }
+

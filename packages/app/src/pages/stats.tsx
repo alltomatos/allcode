@@ -1,10 +1,10 @@
-import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+﻿import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { useNavigate } from "@solidjs/router"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
+import { ScrollView } from "@allcode/ui/scroll-view"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { Icon } from "@allcode/ui/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { GlobalLoading } from "@/components/global-loading"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
@@ -532,3 +532,4 @@ function KpiCard(props: {
     </div>
   )
 }
+

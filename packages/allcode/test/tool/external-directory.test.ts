@@ -1,9 +1,9 @@
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { describe, expect } from "bun:test"
 import path from "path"
 import { Effect } from "effect"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import type { Tool } from "@/tool/tool"
 import { assertExternalDirectoryEffect } from "../../src/tool/external-directory"
 import { Filesystem } from "@/util/filesystem"
@@ -154,3 +154,4 @@ describe("tool.assertExternalDirectory", () => {
     )
   }
 })
+

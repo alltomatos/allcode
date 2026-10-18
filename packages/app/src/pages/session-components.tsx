@@ -1,4 +1,4 @@
-import { ParentProps, Show, ErrorBoundary, createEffect, createMemo } from "solid-js";
+﻿import { ParentProps, Show, ErrorBoundary, createEffect, createMemo } from "solid-js";
 import { GlobalLoading } from "@/components/global-loading";
 import { useLanguage } from "@/context/language";
 import { useServer, ServerConnection, serverName } from "@/context/server";
@@ -6,7 +6,7 @@ import { useTabs, tabKey } from "@/context/tabs";
 import { useSettings } from "@/context/settings";
 import { useNotification } from "@/context/notification";
 import { ErrorPage } from "@/pages/error";
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2";
+import { ButtonV2 } from "@allcode/ui/v2/button-v2";
 import { TerminalProvider } from "@/context/terminal";
 import { FileProvider } from "@/context/file";
 import { PromptProvider } from "@/context/prompt";
@@ -213,3 +213,4 @@ export const SessionPanelFrame = (props: ParentProps<{ newLayout: boolean; raise
     </div>
   )
 }
+

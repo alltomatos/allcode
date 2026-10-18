@@ -1,16 +1,16 @@
-import { $ } from "bun"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
+﻿import { $ } from "bun"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
 import * as fs from "fs/promises"
 import os from "os"
 import path from "path"
 import { Effect, Context, Layer } from "effect"
 import type * as PlatformError from "effect/PlatformError"
 import type * as Scope from "effect/Scope"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
 import type { Config } from "@/config/config"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { InstanceRef } from "../../src/effect/instance-ref"
 import { InstanceBootstrap } from "../../src/project/bootstrap-service"
 import type { InstanceContext } from "../../src/project/instance-context"
@@ -226,3 +226,4 @@ export function provideTmpdirServer<A, E, R>(
     })
   })
 }
+

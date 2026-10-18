@@ -1,4 +1,4 @@
-import type { Part as PartType, ToolPart } from "@opencode-ai/sdk/v2"
+import type { Part as PartType, ToolPart } from "@allcode/sdk/v2"
 import { mediaKindFromPath } from "../pierre/media"
 
 function deletionOnly(part: ToolPart) {

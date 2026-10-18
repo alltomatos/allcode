@@ -1,8 +1,8 @@
-#!/usr/bin/env bun
+﻿#!/usr/bin/env bun
 
 import { Config } from "@/config/config"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
-import { TuiConfig } from "@opencode-ai/tui/config"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { TuiConfig } from "@allcode/tui/config"
 import { Schema } from "effect"
 
 type JsonSchema = Record<string, unknown>
@@ -75,3 +75,4 @@ if (tuiFile) {
   console.log(tuiFile)
   await Bun.write(tuiFile, JSON.stringify(generateEffect(TuiConfig.Info), null, 2))
 }
+

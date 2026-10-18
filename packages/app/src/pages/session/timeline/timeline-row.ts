@@ -1,5 +1,5 @@
-import type { SnapshotFileDiff } from "@opencode-ai/sdk/v2"
-import type { PartGroup } from "@opencode-ai/session-ui/message-part"
+﻿import type { SnapshotFileDiff } from "@allcode/sdk/v2"
+import type { PartGroup } from "@allcode/session-ui/message-part"
 import { Data, Equal } from "effect"
 
 export type SummaryDiff = SnapshotFileDiff & { file: string }
@@ -79,3 +79,4 @@ export namespace TimelineRow {
     return Equal.equals(a, b)
   }
 }
+

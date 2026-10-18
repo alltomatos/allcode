@@ -1,7 +1,7 @@
-import { createEffect, onCleanup } from "solid-js"
+﻿import { createEffect, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
-import { createSimpleContext } from "@opencode-ai/ui/context"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { createSimpleContext } from "@allcode/ui/context"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { usePlatform } from "@/context/platform"
 import { useSettings } from "@/context/settings"
 import { persisted } from "@/utils/persist"
@@ -238,3 +238,4 @@ export const { use: useHighlights, provider: HighlightsProvider } = createSimple
     }
   },
 })
+

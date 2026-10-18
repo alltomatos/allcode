@@ -1,17 +1,17 @@
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Spinner } from "@opencode-ai/ui/spinner"
-import { Switch as SwitchV2 } from "@opencode-ai/ui/v2/switch-v2"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { Tag } from "@allcode/ui/v2/badge-v2"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { Icon } from "@allcode/ui/icon"
+import { Spinner } from "@allcode/ui/spinner"
+import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createIntegrationFetchApi } from "@/utils/integration-fetch"
 import { showToast } from "@/utils/toast"
 import { DialogAccountQuotaV2, type AccountQuotaModalData } from "./dialog-account-quota-v2"
-import type { IntegrationInfo } from "@opencode-ai/client/promise"
+import type { IntegrationInfo } from "@allcode/client/promise"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
 import { createEffect, createMemo, createResource, createSignal, type Accessor, type Component, For, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
@@ -910,3 +910,4 @@ export const SettingsProvidersV2: Component<{
     </>
   )
 }
+

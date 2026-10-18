@@ -1,4 +1,4 @@
-import { ConfigAgentUIV1 } from "@opencode-ai/core/v1/config/agentui"
+﻿import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import type { WaAdapter } from "waconector"
 import { waha } from "waconector/waha"
 import { evolution } from "waconector/evolution"
@@ -39,3 +39,4 @@ export function buildAdapter(channel: ConfigAgentUIV1.WhatsAppChannelBinding, si
       })
   }
 }
+

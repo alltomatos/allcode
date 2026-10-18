@@ -1,6 +1,6 @@
-import { expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
+﻿import { expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
 import { Effect, Exit, Layer } from "effect"
 import { AgentUI } from "../../src/agentui/index"
 import { InstanceStore } from "../../src/project/instance-store"
@@ -8,7 +8,7 @@ import { InstanceBootstrap } from "../../src/project/bootstrap-service"
 import { SessionSummary } from "../../src/session/summary"
 import { LSP } from "../../src/lsp/lsp"
 import { MCP } from "../../src/mcp"
-import { Wildcard } from "@opencode-ai/core/util/wildcard"
+import { Wildcard } from "@allcode/core/util/wildcard"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { Storage } from "@/storage/storage"
 import { testEffect } from "../lib/effect"
@@ -351,4 +351,5 @@ it.instance("sessionPermission() allows bash tool when terminalEnabled is true",
     expect(extDirRule?.action).toBe("allow")
   }),
 )
+
 

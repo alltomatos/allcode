@@ -1,11 +1,11 @@
-import { chmod, mkdir, readFile, stat as statFile, writeFile } from "fs/promises"
+﻿import { chmod, mkdir, readFile, stat as statFile, writeFile } from "fs/promises"
 import { createWriteStream, existsSync, statSync } from "fs"
 import { realpathSync } from "fs"
 import { dirname, isAbsolute, join, resolve as pathResolve, win32 } from "path"
 import { Readable } from "stream"
 import { pipeline } from "stream/promises"
-import { Glob } from "@opencode-ai/core/util/glob"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { Glob } from "@allcode/core/util/glob"
+import { FSUtil } from "@allcode/core/fs-util"
 import { fileURLToPath } from "url"
 
 // Fast sync version for metadata checks
@@ -259,3 +259,4 @@ export async function globUp(pattern: string, start: string, stop?: string) {
 }
 
 export * as Filesystem from "./filesystem"
+

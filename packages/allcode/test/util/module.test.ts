@@ -1,6 +1,6 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import path from "path"
-import { Module } from "@opencode-ai/core/util/module"
+import { Module } from "@allcode/core/util/module"
 import { Filesystem } from "@/util/filesystem"
 import { tmpdir } from "../fixture/fixture"
 
@@ -57,3 +57,4 @@ describe("util.module", () => {
     expect(Module.resolve("missing-package", tmp.path)).toBeUndefined()
   })
 })
+

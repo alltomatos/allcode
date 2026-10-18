@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { KNOWN_EXTERNAL_AGENTS } from "@opencode-ai/core/external-agent-registry"
+import { KNOWN_EXTERNAL_AGENTS } from "@allcode/core/external-agent-registry"
 
 describe("KNOWN_EXTERNAL_AGENTS", () => {
   test("has no duplicate id", () => {

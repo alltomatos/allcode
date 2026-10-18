@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { Message, Part } from "@opencode-ai/sdk/v2/client"
+﻿import { describe, expect, test } from "bun:test"
+import type { Message, Part } from "@allcode/sdk/v2/client"
 import { estimateSessionContextBreakdown } from "./session-context-breakdown"
 
 const user = (id: string) => {
@@ -59,3 +59,4 @@ describe("estimateSessionContextBreakdown", () => {
     expect(output.every((segment) => segment.width <= 100)).toBeTrue()
   })
 })
+

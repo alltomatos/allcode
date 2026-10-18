@@ -1,6 +1,6 @@
-import type { OpenCodeEvent } from "@opencode-ai/client/promise"
-import type { Event } from "@opencode-ai/sdk/v2/client"
-import { createSimpleContext } from "@opencode-ai/ui/context"
+﻿import type { OpenCodeEvent } from "@allcode/client/promise"
+import type { Event } from "@allcode/sdk/v2/client"
+import { createSimpleContext } from "@allcode/ui/context"
 import { createGlobalEmitter } from "@solid-primitives/event-bus"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { type Accessor, batch, createMemo, createResource, onCleanup, onMount } from "solid-js"
@@ -462,3 +462,4 @@ function createDirSdkContext(directory: string, serverSDK: ServerSDKBase) {
     },
   }
 }
+

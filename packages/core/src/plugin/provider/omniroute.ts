@@ -1,6 +1,6 @@
 import { Duration, Effect } from "effect"
 import path from "node:path"
-import type { PluginContext } from "@opencode-ai/plugin/v2/effect"
+import type { PluginContext } from "@allcode/plugin/v2/effect"
 import { Config } from "../../config"
 import { FSUtil } from "../../fs-util"
 import { Global } from "../../global"

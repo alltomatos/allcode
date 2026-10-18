@@ -1,8 +1,8 @@
-import { Show, createEffect, createMemo, createSignal, onMount, startTransition } from "solid-js"
+﻿import { Show, createEffect, createMemo, createSignal, onMount, startTransition } from "solid-js"
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router"
-import { TabsV2 } from "@opencode-ai/ui/v2/tabs-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
+import { TabsV2 } from "@allcode/ui/v2/tabs-v2"
+import { Icon } from "@allcode/ui/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
 import { useGlobal } from "@/context/global"
@@ -260,3 +260,4 @@ export function SettingsPage() {
     </div>
   )
 }
+

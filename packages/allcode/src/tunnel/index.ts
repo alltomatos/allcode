@@ -1,6 +1,6 @@
-export * as Tunnel from "./index"
+﻿export * as Tunnel from "./index"
 
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Effect, Layer, Schema } from "effect"
 import * as NodeChildProcess from "node:child_process"
 import type { Readable } from "node:stream"
@@ -354,3 +354,4 @@ const layer = Layer.effect(
 )
 
 export const node = LayerNode.make({ service: Service, layer, deps: [] })
+

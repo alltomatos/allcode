@@ -1,16 +1,16 @@
-import { For, Show, onCleanup, type JSX } from "solid-js"
+﻿import { For, Show, onCleanup, type JSX } from "solid-js"
 import { DragDropProvider as DndKitProvider, PointerSensor } from "@dnd-kit/solid"
 import { isSortable } from "@dnd-kit/solid/sortable"
 import { Accessibility, AutoScroller, Feedback, PointerActivationConstraints } from "@dnd-kit/dom"
 import { RestrictToHorizontalAxis } from "@dnd-kit/abstract/modifiers"
 import { RestrictToElement } from "@dnd-kit/dom/modifiers"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Mark } from "@opencode-ai/ui/logo"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { KeybindV2 } from "@opencode-ai/ui/v2/keybind-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { Tabs } from "@allcode/ui/tabs"
+import { IconButton } from "@allcode/ui/icon-button"
+import { Icon } from "@allcode/ui/icon"
+import { Mark } from "@allcode/ui/logo"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { KeybindV2 } from "@allcode/ui/v2/keybind-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 
 import { SessionContextTab, SessionMemoryTab, SortableTabV2 } from "@/components/session"
 import { OpenInAppV2 } from "@/components/session/open-in-app-v2"
@@ -360,3 +360,4 @@ export function SessionSidePanelTabsV2(props: {
     </DndKitProvider>
   )
 }
+

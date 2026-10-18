@@ -1,4 +1,4 @@
-import {
+﻿import {
   createEffect,
   createSignal,
   For,
@@ -9,10 +9,10 @@ import {
   type ComponentProps,
 } from "solid-js"
 import { createStore } from "solid-js/store"
-import { DropdownMenu } from "@opencode-ai/ui/dropdown-menu"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { ProjectAvatar } from "@opencode-ai/ui/v2/project-avatar-v2"
+import { DropdownMenu } from "@allcode/ui/dropdown-menu"
+import { Icon } from "@allcode/ui/icon"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { ProjectAvatar } from "@allcode/ui/v2/project-avatar-v2"
 import { getProjectAvatarVariant } from "@/context/layout"
 import { useLanguage } from "@/context/language"
 import { displayName, getProjectAvatarSource } from "@/pages/layout/helpers"
@@ -587,3 +587,4 @@ function ServerAction(props: { server: { key: string; name: string }; onSelect: 
     </DropdownMenu.Item>
   )
 }
+

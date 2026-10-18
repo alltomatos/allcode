@@ -1,8 +1,8 @@
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
+import { InstallationVersion } from "@allcode/core/installation/version"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { Api } from "../api"
-import { SystemUpdateError } from "@opencode-ai/protocol/groups/system"
+import { SystemUpdateError } from "@allcode/protocol/groups/system"
 
 export const SystemHandler = HttpApiBuilder.group(Api, "server.system", (handlers) =>
   handlers.handle(
@@ -18,7 +18,7 @@ export const SystemHandler = HttpApiBuilder.group(Api, "server.system", (handler
       setTimeout(() => {
         try {
           const { spawn } = require("node:child_process")
-          const proc = spawn("bun install -g @opencode-ai/cli@latest", {
+          const proc = spawn("bun install -g @allcode/cli@latest", {
             shell: true,
             detached: true,
             stdio: "ignore",

@@ -1,8 +1,8 @@
-import type { Argv } from "yargs"
+﻿import type { Argv } from "yargs"
 import { UI } from "../ui"
 import * as prompts from "@clack/prompts"
 import { Installation } from "../../installation"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import fs from "fs/promises"
 import path from "path"
 import os from "os"
@@ -351,3 +351,4 @@ function shortenPath(p: string): string {
   }
   return p
 }
+

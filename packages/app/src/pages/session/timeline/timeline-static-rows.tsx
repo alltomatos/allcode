@@ -1,15 +1,15 @@
-import { createMemo, For, Show } from "solid-js"
+﻿import { createMemo, For, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { Dynamic } from "solid-js/web"
-import { Accordion } from "@opencode-ai/ui/accordion"
-import { DiffChanges } from "@opencode-ai/ui/diff-changes"
-import { Icon } from "@opencode-ai/ui/icon"
-import { StickyAccordionHeader } from "@opencode-ai/ui/sticky-accordion-header"
-import { TextReveal } from "@opencode-ai/ui/text-reveal"
-import { TextShimmer } from "@opencode-ai/ui/text-shimmer"
-import { getDirectory, getFilename } from "@opencode-ai/core/util/path"
-import { normalize } from "@opencode-ai/session-ui/session-diff"
-import { useFileComponent } from "@opencode-ai/ui/context/file"
+import { Accordion } from "@allcode/ui/accordion"
+import { DiffChanges } from "@allcode/ui/diff-changes"
+import { Icon } from "@allcode/ui/icon"
+import { StickyAccordionHeader } from "@allcode/ui/sticky-accordion-header"
+import { TextReveal } from "@allcode/ui/text-reveal"
+import { TextShimmer } from "@allcode/ui/text-shimmer"
+import { getDirectory, getFilename } from "@allcode/core/util/path"
+import { normalize } from "@allcode/session-ui/session-diff"
+import { useFileComponent } from "@allcode/ui/context/file"
 import { useLanguage } from "@/context/language"
 import type { SummaryDiff } from "./rows"
 
@@ -153,3 +153,4 @@ export function TimelineDiffView(props: { diff: SummaryDiff }) {
     </div>
   )
 }
+

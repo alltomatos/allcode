@@ -1,7 +1,7 @@
-import { usePlatform } from "@/context/platform"
+﻿import { usePlatform } from "@/context/platform"
 import { ServerConnection } from "@/context/server"
 import { authTokenFromCredentials, createSdkForServer } from "./server"
-import { ClientError, OpenCode } from "@opencode-ai/client"
+import { ClientError, OpenCode } from "@allcode/client"
 import { Accessor, createEffect, onCleanup } from "solid-js"
 import { createStore, reconcile } from "solid-js/store"
 
@@ -170,3 +170,4 @@ export const useServerHealth = (servers: Accessor<ServerConnection.Any[]>, enabl
 
   return status
 }
+

@@ -1,4 +1,4 @@
-import type { Session } from "@opencode-ai/sdk/v2/client"
+﻿import type { Session } from "@allcode/sdk/v2/client"
 
 export type StatsDateRange = "today" | "7d" | "30d" | "all"
 
@@ -331,3 +331,4 @@ export function computeStats(sessions: Session[], options: ComputeStatsOptions):
     recentSessions,
   }
 }
+

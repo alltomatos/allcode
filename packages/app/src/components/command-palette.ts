@@ -1,7 +1,7 @@
-import { getFilename } from "@opencode-ai/core/util/path"
-import type { Project } from "@opencode-ai/sdk/v2/client"
-import type { SessionInfo } from "@opencode-ai/client/promise"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { getFilename } from "@allcode/core/util/path"
+import type { Project } from "@allcode/sdk/v2/client"
+import type { SessionInfo } from "@allcode/client/promise"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createMemo, onCleanup } from "solid-js"
 import { commandPaletteOptions, useCommand, type CommandOption } from "@/context/command"
 import { useFile } from "@/context/file"
@@ -282,3 +282,4 @@ export function createServerSessionEntries(props: {
       .catch(() => [] as CommandPaletteEntry[])
   }
 }
+

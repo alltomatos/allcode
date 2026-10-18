@@ -1,8 +1,8 @@
-import { withAlpha } from "@opencode-ai/ui/theme/color"
-import { useTheme } from "@opencode-ai/ui/theme/context"
-import { resolveThemeVariant } from "@opencode-ai/ui/theme/resolve"
-import { resolveThemeVariantV2 } from "@opencode-ai/ui/theme/v2/resolve"
-import type { HexColor, ResolvedV2Theme } from "@opencode-ai/ui/theme/types"
+﻿import { withAlpha } from "@allcode/ui/theme/color"
+import { useTheme } from "@allcode/ui/theme/context"
+import { resolveThemeVariant } from "@allcode/ui/theme/resolve"
+import { resolveThemeVariantV2 } from "@allcode/ui/theme/v2/resolve"
+import type { HexColor, ResolvedV2Theme } from "@allcode/ui/theme/types"
 import { showToast } from "@/utils/toast"
 import type { FitAddon, Ghostty, Terminal as Term } from "ghostty-web"
 import { type ComponentProps, createEffect, createMemo, onCleanup, onMount, splitProps } from "solid-js"
@@ -755,3 +755,4 @@ export const Terminal = (props: TerminalProps) => {
     />
   )
 }
+

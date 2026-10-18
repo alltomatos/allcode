@@ -1,5 +1,5 @@
-{
-  "name": "@opencode-ai/mcpm365",
+﻿{
+  "name": "@allcode/mcpm365",
   "version": "0.1.0",
   "description": "Servidor MCP de integração com Microsoft 365 (Outlook, Calendário, OneDrive/SharePoint e Teams).",
   "type": "module",
@@ -25,3 +25,4 @@
     "vitest": "3.2.7"
   }
 }
+

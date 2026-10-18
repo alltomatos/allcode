@@ -1,15 +1,15 @@
-import { describe, expect } from "bun:test"
+﻿import { describe, expect } from "bun:test"
 import { $ } from "bun"
 import path from "path"
 import { eq } from "drizzle-orm"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { Effect } from "effect"
-import { Hash } from "@opencode-ai/core/util/hash"
-import { AbsolutePath } from "@opencode-ai/core/schema"
-import { Database } from "@opencode-ai/core/database/database"
-import { ProjectDirectoryTable, ProjectTable } from "@opencode-ai/core/project/sql"
-import { ProjectV2 } from "@opencode-ai/core/project"
+import { Hash } from "@allcode/core/util/hash"
+import { AbsolutePath } from "@allcode/core/schema"
+import { Database } from "@allcode/core/database/database"
+import { ProjectDirectoryTable, ProjectTable } from "@allcode/core/project/sql"
+import { ProjectV2 } from "@allcode/core/project"
 import { Project } from "@/project/project"
 import { tmpdirScoped } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
@@ -200,3 +200,4 @@ describe("Project directory persistence", () => {
     }),
   )
 })
+

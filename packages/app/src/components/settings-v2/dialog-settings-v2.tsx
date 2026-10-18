@@ -1,7 +1,7 @@
-import { Component, Show, createMemo, createSignal, startTransition } from "solid-js"
-import { Dialog } from "@opencode-ai/ui/v2/dialog-v2"
-import { TabsV2 } from "@opencode-ai/ui/v2/tabs-v2"
-import { Icon } from "@opencode-ai/ui/icon"
+﻿import { Component, Show, createMemo, createSignal, startTransition } from "solid-js"
+import { Dialog } from "@allcode/ui/v2/dialog-v2"
+import { TabsV2 } from "@allcode/ui/v2/tabs-v2"
+import { Icon } from "@allcode/ui/icon"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
 import { SettingsGeneralV2 } from "./general"
@@ -17,7 +17,7 @@ import { SettingsExternalAgentsV2 } from "./external-agents"
 import { SettingsMcpV2 } from "./mcp"
 import { SettingsIntegrationsV2 } from "./integrations"
 import { useMaintenance } from "@/context/maintenance"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useLayout } from "@/context/layout"
 import { useTabs } from "@/context/tabs"
 import { useServerSync } from "@/context/server-sync"
@@ -179,3 +179,4 @@ export const DialogSettings: Component<{
     </Dialog>
   )
 }
+

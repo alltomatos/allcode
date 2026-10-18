@@ -1,4 +1,4 @@
-import type { Model } from "@opencode-ai/sdk/v2"
+﻿import type { Model } from "@allcode/sdk/v2"
 import { Option, Schema } from "effect"
 
 const item = Schema.Struct({
@@ -259,3 +259,4 @@ export async function get(
 }
 
 export * as CopilotModels from "./models"
+

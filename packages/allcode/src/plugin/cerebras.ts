@@ -1,4 +1,4 @@
-import type { Hooks, PluginInput } from "@opencode-ai/plugin"
+﻿import type { Hooks, PluginInput } from "@allcode/plugin"
 
 export async function CerebrasPlugin(_input: PluginInput): Promise<Hooks> {
   return {
@@ -9,3 +9,4 @@ export async function CerebrasPlugin(_input: PluginInput): Promise<Hooks> {
     },
   }
 }
+

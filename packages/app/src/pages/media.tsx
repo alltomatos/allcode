@@ -1,8 +1,8 @@
-import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+﻿import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { createStore } from "solid-js/store"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
+import { ScrollView } from "@allcode/ui/scroll-view"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { ServerConnection, useServer } from "@/context/server"
@@ -628,3 +628,4 @@ export const MediaPage: Component = () => {
     </div>
   )
 }
+

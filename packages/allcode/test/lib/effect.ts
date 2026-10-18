@@ -1,10 +1,10 @@
-import { test, type TestOptions } from "bun:test"
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
+﻿import { test, type TestOptions } from "bun:test"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { Cause, Duration, Effect, Exit, Layer } from "effect"
 import * as Scope from "effect/Scope"
 import * as TestClock from "effect/testing/TestClock"
 import * as TestConsole from "effect/testing/TestConsole"
-import { memoMap } from "@opencode-ai/core/effect/memo-map"
+import { memoMap } from "@allcode/core/effect/memo-map"
 import type { Config } from "@/config/config"
 import { TestInstance, withTmpdirInstance } from "../fixture/fixture"
 import { InstanceStore } from "@/project/instance-store"
@@ -175,3 +175,4 @@ export const pollWithTimeout = <A, E, R>(
       orElse: () => Effect.fail(new Error(message)),
     }),
   )
+

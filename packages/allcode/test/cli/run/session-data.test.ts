@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { Event } from "@opencode-ai/sdk/v2"
+﻿import { describe, expect, test } from "bun:test"
+import type { Event } from "@allcode/sdk/v2"
 import { createSessionData, flushInterrupted, reduceSessionData } from "@/cli/cmd/run/session-data"
 import type { StreamCommit } from "@/cli/cmd/run/types"
 
@@ -591,3 +591,4 @@ describe("run session data", () => {
     ])
   })
 })
+

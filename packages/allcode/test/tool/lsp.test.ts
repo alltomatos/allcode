@@ -1,11 +1,11 @@
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+﻿import { PermissionV1 } from "@allcode/core/v1/permission"
 import { afterEach, describe, expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer } from "effect"
 import path from "path"
 import { Agent } from "../../src/agent/agent"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
+import { FSUtil } from "@allcode/core/fs-util"
 import { LSP } from "@/lsp/lsp"
 import { Permission } from "../../src/permission"
 import { MessageID, SessionID } from "../../src/session/schema"
@@ -182,3 +182,4 @@ describe("tool.lsp", () => {
     )
   })
 })
+

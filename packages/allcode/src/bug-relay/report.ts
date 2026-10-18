@@ -1,4 +1,4 @@
-// Client for the bug-relay service (bugrepcode.alltomatos.com.br), which
+﻿// Client for the bug-relay service (bugrepcode.alltomatos.com.br), which
 // turns bug reports — manual (user-triggered) or auto (uncaught error) —
 // into deduped GitHub issues on alltomatos/opencode. The relay holds the
 // only GitHub credential in this flow; this module never touches GitHub
@@ -6,7 +6,7 @@
 // `gh` installed or is authenticated.
 import fs from "fs/promises"
 import path from "path"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 
 const RELAY_URL = process.env["OPENCODE_BUG_RELAY_URL"] ?? "https://bugrepcode.alltomatos.com.br/report"
 const RELAY_KEY = process.env["OPENCODE_BUG_RELAY_KEY"]
@@ -132,3 +132,4 @@ export function signatureFromStack(stack: string): string {
   }
   return Math.abs(hash).toString(16)
 }
+

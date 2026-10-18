@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, mock, test } from "bun:test"
-import { Flag } from "@opencode-ai/core/flag/flag"
+﻿import { afterEach, describe, expect, mock, test } from "bun:test"
+import { Flag } from "@allcode/core/flag/flag"
 import { withTimeout } from "../../src/util/timeout"
 import { resetDatabase } from "../fixture/db"
 import { disposeAllInstances } from "../fixture/fixture"
@@ -77,3 +77,4 @@ describe("HttpApi Server.listen mDNS", () => {
     expect(events.some((e) => e.kind === "unpublishAll")).toBe(true)
   })
 })
+

@@ -1,9 +1,9 @@
-import { EOL } from "os"
+﻿import { EOL } from "os"
 import { Effect } from "effect"
-import { FileSystem } from "@opencode-ai/core/filesystem"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
-import { Location } from "@opencode-ai/core/location"
-import { AbsolutePath, RelativePath } from "@opencode-ai/core/schema"
+import { FileSystem } from "@allcode/core/filesystem"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
+import { Location } from "@allcode/core/location"
+import { AbsolutePath, RelativePath } from "@allcode/core/schema"
 import { effectCmd } from "../../effect-cmd"
 import { cmd } from "../cmd"
 
@@ -71,3 +71,4 @@ export const FileCommand = cmd({
     yargs.command(FileReadCommand).command(FileListCommand).command(FileSearchCommand).demandCommand(),
   async handler() {},
 })
+

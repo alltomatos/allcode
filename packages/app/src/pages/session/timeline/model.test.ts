@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { AssistantMessage, Message, UserMessage } from "@opencode-ai/sdk/v2"
+﻿import { describe, expect, test } from "bun:test"
+import type { AssistantMessage, Message, UserMessage } from "@allcode/sdk/v2"
 import { isTimelineReady, loadOlderTimeline, selectUserMessages, selectVisibleUserMessages } from "./model"
 
 const user = (id: string) => ({ id, role: "user" }) as UserMessage
@@ -93,3 +93,4 @@ describe("timeline model", () => {
     expect(restore).toBe(1)
   })
 })
+

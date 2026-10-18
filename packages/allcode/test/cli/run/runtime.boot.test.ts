@@ -1,6 +1,6 @@
-import { afterEach, describe, expect, mock, spyOn, test } from "bun:test"
-import { OpencodeClient, type Provider } from "@opencode-ai/sdk/v2"
-import type { Resolved } from "@opencode-ai/tui/config"
+﻿import { afterEach, describe, expect, mock, spyOn, test } from "bun:test"
+import { OpencodeClient, type Provider } from "@allcode/sdk/v2"
+import type { Resolved } from "@allcode/tui/config"
 import { TuiConfig } from "@/config/tui"
 import { resolveDiffStyle, resolveModelInfo, resolveRunTuiConfig } from "@/cli/cmd/run/runtime.boot"
 import { createTuiResolvedConfig } from "../../fixture/tui-runtime"
@@ -281,3 +281,4 @@ describe("run runtime boot", () => {
     })
   })
 })
+

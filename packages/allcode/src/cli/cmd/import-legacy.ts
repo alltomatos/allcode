@@ -1,11 +1,11 @@
-import { Database } from "@opencode-ai/core/database/database"
-import { SessionTable, MessageTable, PartTable } from "@opencode-ai/core/session/sql"
+﻿import { Database } from "@allcode/core/database/database"
+import { SessionTable, MessageTable, PartTable } from "@allcode/core/session/sql"
 import { Effect } from "effect"
 import path from "path"
 import fs from "fs/promises"
 import { existsSync } from "fs"
 import { xdgData, xdgConfig } from "xdg-basedir"
-import { Branding } from "@opencode-ai/core/branding"
+import { Branding } from "@allcode/core/branding"
 import type { InstanceContext } from "@/project/instance-context"
 
 export interface MigrationSummary {
@@ -170,3 +170,4 @@ export const importFromLegacyOpenCode = Effect.fn("LegacyMigrator.import")(funct
 
   return result
 })
+

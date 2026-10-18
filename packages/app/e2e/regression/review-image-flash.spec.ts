@@ -1,5 +1,5 @@
-import { expect, test, type Page } from "@playwright/test"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { expect, test, type Page } from "@playwright/test"
+import { base64Encode } from "@allcode/core/util/encode"
 import { mockOpenCodeServer } from "../utils/mock-server"
 import { expectAppVisible, expectSessionTitle } from "../utils/waits"
 
@@ -200,3 +200,4 @@ async function collectReviewFlashProbe(page: Page) {
     samples: Array<{ observedAtMs: number; blank: boolean; blackCenter: boolean; text: string; background: string }>
   }>
 }
+

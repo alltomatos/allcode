@@ -1,5 +1,5 @@
-import { describe, expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { describe, expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect } from "effect"
 import { ExternalAgent } from "@/external-agent"
 import { testEffect } from "../lib/effect"
@@ -37,3 +37,4 @@ describe("ExternalAgent.Service", () => {
     }),
   )
 })
+

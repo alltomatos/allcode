@@ -1,4 +1,4 @@
-import type { AssistantMessage, Message } from "@opencode-ai/sdk/v2/client"
+﻿import type { AssistantMessage, Message } from "@allcode/sdk/v2/client"
 
 type Provider = {
   id: string
@@ -63,3 +63,4 @@ const build = (messages: Message[] = [], providers: Provider[] = []): Context | 
 export function getSessionContext(messages: Message[] = [], providers: Provider[] = []) {
   return build(messages, providers)
 }
+

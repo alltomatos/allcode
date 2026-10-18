@@ -1,4 +1,4 @@
-import path from "path"
+﻿import path from "path"
 import {
   type ParseError as JsoncParseError,
   applyEdits,
@@ -8,9 +8,9 @@ import {
 } from "jsonc-parser"
 
 import * as ConfigPaths from "@/config/paths"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { Filesystem } from "@/util/filesystem"
-import { Flock } from "@opencode-ai/core/util/flock"
+import { Flock } from "@allcode/core/util/flock"
 import { isRecord } from "@/util/record"
 
 import { parsePluginSpecifier, readPackageThemes, readPluginPackage, resolvePluginTarget } from "./shared"
@@ -437,3 +437,4 @@ export async function patchPluginConfig(input: PatchInput, dep: PatchDeps = defa
     items,
   }
 }
+

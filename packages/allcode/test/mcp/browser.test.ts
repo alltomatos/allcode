@@ -1,10 +1,10 @@
-import { expect, mock, test } from "bun:test"
+﻿import { expect, mock, test } from "bun:test"
 import { spawn } from "node:child_process"
 import { once } from "node:events"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect } from "effect"
 
-await mock.module("@opencode-ai/core/open", () => ({
+await mock.module("@allcode/core/open", () => ({
   openUrl: async (url: string) => {
     const code = new URL(url).pathname === "/successful" ? 0 : 23
     const subprocess = spawn(process.execPath, ["-e", `process.exit(${code})`], { stdio: "ignore" })
@@ -34,3 +34,4 @@ test("accepts a browser launcher that exited successfully before openUrl returne
     }).pipe(Effect.provide(LayerNode.compile(McpBrowser.node))),
   )
 })
+

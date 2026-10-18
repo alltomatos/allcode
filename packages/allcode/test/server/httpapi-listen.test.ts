@@ -1,8 +1,8 @@
-import { afterEach, describe, expect, test } from "bun:test"
+﻿import { afterEach, describe, expect, test } from "bun:test"
 import net from "node:net"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
-import { Flag } from "@opencode-ai/core/flag/flag"
+import { Flag } from "@allcode/core/flag/flag"
 import { Server } from "../../src/server/server"
 import { PtyPaths } from "../../src/server/routes/instance/httpapi/groups/pty"
 import { withTimeout } from "../../src/util/timeout"
@@ -463,3 +463,4 @@ function occupyPort(port: number) {
     server.listen(port, "127.0.0.1", () => resolve(server))
   })
 }
+

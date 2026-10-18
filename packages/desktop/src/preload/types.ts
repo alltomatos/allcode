@@ -1,8 +1,8 @@
-import type { DesktopMenuAction } from "@opencode-ai/app/desktop-menu"
-import type { WslServersPlatform } from "@opencode-ai/app/wsl/types"
-import type { SshServersPlatform } from "@opencode-ai/app/ssh-tunnel/types"
-import type { UpdaterState } from "@opencode-ai/app/updater"
-import type { DesktopNativeBundle } from "@opencode-ai/app/i18n/desktop-native"
+import type { DesktopMenuAction } from "@allcode/app/desktop-menu"
+import type { WslServersPlatform } from "@allcode/app/wsl/types"
+import type { SshServersPlatform } from "@allcode/app/ssh-tunnel/types"
+import type { UpdaterState } from "@allcode/app/updater"
+import type { DesktopNativeBundle } from "@allcode/app/i18n/desktop-native"
 export type {
   WslDistroProbe,
   WslInstalledDistro,
@@ -15,7 +15,7 @@ export type {
   WslServerRuntime,
   WslServersEvent,
   WslServersState,
-} from "@opencode-ai/app/wsl/types"
+} from "@allcode/app/wsl/types"
 
 export type ServerReadyData = {
   url: string

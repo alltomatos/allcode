@@ -1,4 +1,4 @@
-import type { NormalizedProviderListResponse } from "@opencode-ai/session-ui/context"
+﻿import type { NormalizedProviderListResponse } from "@allcode/session-ui/context"
 
 const emptyProviderCatalog: NormalizedProviderListResponse = { all: new Map(), connected: [], default: {} }
 
@@ -35,3 +35,4 @@ export function resolveDefaultModel(
   const [providerID, modelID] = legacy.split("/")
   return { providerID, modelID }
 }
+

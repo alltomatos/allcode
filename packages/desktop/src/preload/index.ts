@@ -1,7 +1,7 @@
 import { contextBridge, ipcRenderer, webUtils } from "electron"
 import type { BrowserPanelBounds, BrowserPanelState, ElectronAPI, WslServersEvent } from "./types"
-import type { SshServersEvent } from "@opencode-ai/app/ssh-tunnel/types"
-import type { UpdaterState } from "@opencode-ai/app/updater"
+import type { SshServersEvent } from "@allcode/app/ssh-tunnel/types"
+import type { UpdaterState } from "@allcode/app/updater"
 
 const updaterCallbacks = new Set<(state: UpdaterState) => void>()
 let updaterState: UpdaterState | undefined

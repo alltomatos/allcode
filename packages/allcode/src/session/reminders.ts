@@ -1,8 +1,8 @@
-import path from "path"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
+﻿import path from "path"
+import { SessionV1 } from "@allcode/core/v1/session"
 import { Effect } from "effect"
 import { Agent } from "@/agent/agent"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import { InstanceState } from "@/effect/instance-state"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { PartID } from "./schema"
@@ -90,3 +90,4 @@ export const apply = Effect.fn("SessionReminders.apply")(function* (input: {
 })
 
 export * as SessionReminders from "./reminders"
+

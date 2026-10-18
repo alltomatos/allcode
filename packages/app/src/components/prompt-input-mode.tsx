@@ -1,9 +1,9 @@
-import { createMemo, For, Show } from "solid-js"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Icon } from "@opencode-ai/ui/v2/icon"
-import { Icon as IconLegacy } from "@opencode-ai/ui/icon"
-import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+﻿import { createMemo, For, Show } from "solid-js"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Icon } from "@allcode/ui/v2/icon"
+import { Icon as IconLegacy } from "@allcode/ui/icon"
+import { MenuV2 } from "@allcode/ui/v2/menu-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { useLanguage } from "@/context/language"
 import type { usePermission } from "@/context/permission"
 import type { PromptInputControls } from "@/components/prompt-input/contracts"
@@ -135,3 +135,4 @@ export function PromptInputV2ModeControl(props: {
     </Show>
   )
 }
+

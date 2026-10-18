@@ -1,11 +1,11 @@
-import { cmd } from "./cmd"
+﻿import { cmd } from "./cmd"
 import { Duration, Effect, Match, Option } from "effect"
 import { UI } from "../ui"
 import { Account } from "@/account/account"
 import { AccountID, OrgID, PollExpired, type PollResult, type AccountError } from "@/account/schema"
 import { effectCmd } from "../effect-cmd"
 import * as Prompt from "../effect/prompt"
-import { openUrl } from "@opencode-ai/core/open"
+import { openUrl } from "@allcode/core/open"
 
 const openBrowser = (url: string) => Effect.promise(() => openUrl(url).catch(() => undefined))
 
@@ -262,3 +262,4 @@ export const ConsoleCommand = cmd({
       .demandCommand(),
   async handler() {},
 })
+

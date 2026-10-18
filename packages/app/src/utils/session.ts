@@ -1,5 +1,5 @@
-import type { SessionApi, SessionInfo, SessionListInput } from "@opencode-ai/client/promise"
-import type { Session } from "@opencode-ai/sdk/v2/client"
+﻿import type { SessionApi, SessionInfo, SessionListInput } from "@allcode/client/promise"
+import type { Session } from "@allcode/sdk/v2/client"
 import { withTimestampedFallback } from "./session-title"
 
 export function normalizeSessionInfo(input: SessionInfo | Session): Session {
@@ -36,3 +36,4 @@ export async function listAllSessions(api: Pick<SessionApi, "list">, input: Omit
   }
   return load()
 }
+

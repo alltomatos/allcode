@@ -1,5 +1,5 @@
-import { createStore, produce, reconcile } from "solid-js/store"
-import type { FileNode } from "@opencode-ai/sdk/v2"
+﻿import { createStore, produce, reconcile } from "solid-js/store"
+import type { FileNode } from "@allcode/sdk/v2"
 
 type DirectoryState = {
   expanded: boolean
@@ -172,3 +172,4 @@ export function createFileTreeStore(options: TreeStoreOptions) {
     reset,
   }
 }
+

@@ -1,9 +1,9 @@
-import { Effect } from "effect"
+﻿import { Effect } from "effect"
 import { effectCmd } from "../effect-cmd"
 import { Session } from "@/session/session"
 import { NotFoundError } from "@/storage/storage"
-import { Database } from "@opencode-ai/core/database/database"
-import { SessionTable } from "@opencode-ai/core/session/sql"
+import { Database } from "@allcode/core/database/database"
+import { SessionTable } from "@allcode/core/session/sql"
 import { Project } from "@/project/project"
 import { InstanceRef } from "@/effect/instance-ref"
 
@@ -391,3 +391,4 @@ function formatNumber(num: number): string {
   }
   return num.toString()
 }
+

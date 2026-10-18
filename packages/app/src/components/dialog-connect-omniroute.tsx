@@ -1,10 +1,10 @@
-import { Show, createSignal } from "solid-js"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
+﻿import { Show, createSignal } from "solid-js"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { useMutation } from "@tanstack/solid-query"
-import { Field } from "@opencode-ai/ui/v2/field-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
+import { Field } from "@allcode/ui/v2/field-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { showToast } from "@/utils/toast"
 import { createStore } from "solid-js/store"
 import { useServerSDK } from "@/context/server-sdk"
@@ -194,3 +194,4 @@ export function DialogConnectOmniroute(props: { autofocus?: boolean } = {}) {
     </div>
   )
 }
+

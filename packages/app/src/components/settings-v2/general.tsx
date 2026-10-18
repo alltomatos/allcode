@@ -1,11 +1,11 @@
-import { Component, Show, createMemo, createResource, createSignal, onCleanup, onMount } from "solid-js"
+﻿import { Component, Show, createMemo, createResource, createSignal, onCleanup, onMount } from "solid-js"
 import { createMediaQuery } from "@solid-primitives/media"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Icon } from "@opencode-ai/ui/icon"
-import { SelectV2 } from "@opencode-ai/ui/v2/select-v2"
-import { Switch } from "@opencode-ai/ui/v2/switch-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Icon } from "@allcode/ui/icon"
+import { SelectV2 } from "@allcode/ui/v2/select-v2"
+import { Switch } from "@allcode/ui/v2/switch-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
 import { useUpdaterAction } from "../updater-action"
@@ -17,7 +17,7 @@ import { SettingsRowV2 } from "./parts/row"
 import { LayoutRetirementNotice, LayoutTransitionToggle } from "./interface-transition"
 import { useMaintenance } from "@/context/maintenance"
 import { showToast } from "@/utils/toast"
-import { Tag } from "@opencode-ai/ui/tag"
+import { Tag } from "@allcode/ui/tag"
 import {
   createAppearanceSettingsController,
   createPermissionScopeController,
@@ -995,3 +995,4 @@ export const SettingsGeneralV2: Component<{
     </>
   )
 }
+

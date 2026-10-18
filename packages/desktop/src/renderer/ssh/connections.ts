@@ -1,4 +1,4 @@
-import type { SshServersState } from "@opencode-ai/app/ssh-tunnel/types"
+import type { SshServersState } from "@allcode/app/ssh-tunnel/types"
 
 export function readySshConnections(state?: SshServersState) {
   return (state?.servers ?? []).flatMap((item) => {

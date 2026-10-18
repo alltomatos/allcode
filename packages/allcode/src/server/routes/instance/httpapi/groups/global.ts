@@ -1,8 +1,8 @@
-import { ConfigV1 } from "@opencode-ai/core/v1/config/config"
-import { EventV2 } from "@opencode-ai/core/event"
+﻿import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { EventV2 } from "@allcode/core/event"
 import { EventManifest } from "@/event-manifest"
 import { InstanceDisposed } from "@/server/event"
-import "@opencode-ai/core/account"
+import "@allcode/core/account"
 import "@/server/event"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/unstable/httpapi"
@@ -158,3 +158,4 @@ export const GlobalApi = HttpApi.make("global").add(
     )
     .annotateMerge(OpenApi.annotations({ title: "global", description: "Global server routes." })),
 )
+

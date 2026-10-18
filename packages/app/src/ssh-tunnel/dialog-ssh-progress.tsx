@@ -1,9 +1,9 @@
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { DividerV2 } from "@opencode-ai/ui/v2/divider-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { LoaderV2 } from "@opencode-ai/ui/v2/loader-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { DividerV2 } from "@allcode/ui/v2/divider-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { LoaderV2 } from "@allcode/ui/v2/loader-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createEffect, createMemo, For, onCleanup, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
@@ -201,3 +201,4 @@ export function DialogSshConnectionProgress(props: { serverId?: string; host?: s
     </Dialog>
   )
 }
+

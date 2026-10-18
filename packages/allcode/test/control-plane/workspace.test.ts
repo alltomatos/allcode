@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test"
+﻿import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test"
 import { $ } from "bun"
 import fs from "node:fs/promises"
 import Http from "node:http"
@@ -9,29 +9,29 @@ import { HttpServer, HttpServerRequest, HttpServerResponse } from "effect/unstab
 import { eq } from "drizzle-orm"
 import { GlobalBus, type GlobalEvent } from "@/bus/global"
 import { Project } from "@/project/project"
-import { Database } from "@opencode-ai/core/database/database"
-import { ProjectV2 } from "@opencode-ai/core/project"
-import { ProjectTable } from "@opencode-ai/core/project/sql"
-import { AbsolutePath } from "@opencode-ai/core/schema"
+import { Database } from "@allcode/core/database/database"
+import { ProjectV2 } from "@allcode/core/project"
+import { ProjectTable } from "@allcode/core/project/sql"
+import { AbsolutePath } from "@allcode/core/schema"
 import { Session as SessionNs } from "@/session/session"
 import { SessionID } from "@/session/schema"
-import { SessionTable } from "@opencode-ai/core/session/sql"
-import { SessionProjector } from "@opencode-ai/core/session/projector"
-import { EventSequenceTable } from "@opencode-ai/core/event/sql"
+import { SessionTable } from "@allcode/core/session/sql"
+import { SessionProjector } from "@allcode/core/session/projector"
+import { EventSequenceTable } from "@allcode/core/event/sql"
 import { resetDatabase } from "../fixture/db"
 import { disposeAllInstances, provideTmpdirInstance, requireInstance, TestInstance } from "../fixture/fixture"
 import { testEffect } from "../lib/effect"
 import { registerAdapter } from "../../src/control-plane/adapters"
-import { WorkspaceV2 } from "@opencode-ai/core/workspace"
-import { WorkspaceTable } from "@opencode-ai/core/control-plane/workspace.sql"
+import { WorkspaceV2 } from "@allcode/core/workspace"
+import { WorkspaceTable } from "@allcode/core/control-plane/workspace.sql"
 import type { Target, WorkspaceAdapter, WorkspaceInfo } from "../../src/control-plane/types"
 import * as Workspace from "../../src/control-plane/workspace"
 import { InstanceStore } from "@/project/instance-store"
 import { InstanceBootstrap } from "@/project/bootstrap"
 import { RuntimeFlags } from "@/effect/runtime-flags"
-import { Ripgrep } from "@opencode-ai/core/ripgrep"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { Ripgrep } from "@allcode/core/ripgrep"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 
 const originalEnv = {
   OPENCODE_AUTH_CONTENT: process.env.OPENCODE_AUTH_CONTENT,
@@ -1715,3 +1715,4 @@ describe("workspace waitForSync", () => {
     7000,
   )
 })
+

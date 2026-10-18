@@ -1,16 +1,16 @@
-export * as ScheduleSkillCaller from "./skill-caller"
+﻿export * as ScheduleSkillCaller from "./skill-caller"
 
 import { Effect, Layer } from "effect"
-import { makeGlobalNode } from "@opencode-ai/core/effect/app-node"
-import { ScheduleRunner } from "@opencode-ai/core/schedule/runner"
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
+import { makeGlobalNode } from "@allcode/core/effect/app-node"
+import { ScheduleRunner } from "@allcode/core/schedule/runner"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { InstanceRef } from "@/effect/instance-ref"
 import { InstanceStore } from "@/project/instance-store"
 import { Session } from "@/session/session"
 import { SessionPrompt } from "@/session/prompt"
 import { McpCatalog } from "@/mcp/catalog"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 import { SessionID } from "@/session/schema"
 
 import { Combo } from "@/combo"
@@ -183,3 +183,4 @@ export const node = makeGlobalNode({
   layer,
   deps: [InstanceStore.node, Session.node, SessionPrompt.node, Combo.node],
 })
+

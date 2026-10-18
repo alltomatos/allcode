@@ -1,10 +1,10 @@
-import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@opencode-ai/ui/v2/dialog-v2"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { DividerV2 } from "@opencode-ai/ui/v2/divider-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
-import { Icon } from "@opencode-ai/ui/icon"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { DividerV2 } from "@allcode/ui/v2/divider-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { ScrollView } from "@allcode/ui/scroll-view"
+import { Icon } from "@allcode/ui/icon"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
@@ -359,3 +359,4 @@ export const DialogIzapiaGroupParticipants: Component<{
     </Dialog>
   )
 }
+

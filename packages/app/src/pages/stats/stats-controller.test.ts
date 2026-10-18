@@ -1,6 +1,6 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import { computeStats, formatDuration, formatMinutes, getCutoffTime, type StatsDateRange } from "./stats-controller"
-import type { Session } from "@opencode-ai/sdk/v2/client"
+import type { Session } from "@allcode/sdk/v2/client"
 
 const mockSession = (overrides: Partial<Session> = {}): Session => ({
   id: "ses_1",
@@ -73,3 +73,4 @@ describe("computeStats", () => {
     expect(res.longestDurationMs).toBe(0)
   })
 })
+

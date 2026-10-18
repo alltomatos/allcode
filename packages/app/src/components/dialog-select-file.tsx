@@ -1,9 +1,9 @@
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { FileIcon } from "@opencode-ai/ui/file-icon"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Keybind } from "@opencode-ai/ui/keybind"
-import { List } from "@opencode-ai/ui/list"
-import { getDirectory, getFilename } from "@opencode-ai/core/util/path"
+﻿import { Dialog } from "@allcode/ui/dialog"
+import { FileIcon } from "@allcode/ui/file-icon"
+import { Icon } from "@allcode/ui/icon"
+import { Keybind } from "@allcode/ui/keybind"
+import { List } from "@allcode/ui/list"
+import { getDirectory, getFilename } from "@allcode/core/util/path"
 import { createMemo, createSignal, lazy, Match, Show, Switch } from "solid-js"
 import { formatKeybind } from "@/context/command"
 import { useServerSDK } from "@/context/server-sdk"
@@ -187,3 +187,4 @@ function DialogSelectFileLegacy(props: { filesOnly: () => boolean; onOpenFile?: 
     </Dialog>
   )
 }
+

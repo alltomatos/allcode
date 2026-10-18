@@ -1,5 +1,5 @@
-import { MoveSession } from "@opencode-ai/core/control-plane/move-session"
-import { SessionV2 } from "@opencode-ai/core/session"
+﻿import { MoveSession } from "@allcode/core/control-plane/move-session"
+import { SessionV2 } from "@allcode/core/session"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { RootHttpApi } from "../api"
@@ -35,3 +35,4 @@ function message(error: MoveSession.Error) {
     return `Unable to apply your changes in the destination directory. The files may conflict with existing changes.`
   return error.message
 }
+

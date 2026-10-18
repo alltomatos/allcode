@@ -1,16 +1,16 @@
-import * as InstanceState from "@/effect/instance-state"
+﻿import * as InstanceState from "@/effect/instance-state"
 import { registerDisposer } from "@/effect/instance-registry"
 import { InstanceRef, WorkspaceRef } from "@/effect/instance-ref"
 import { Plugin } from "@/plugin"
-import { Pty } from "@opencode-ai/core/pty"
-import { PtyProtocol } from "@opencode-ai/core/pty/protocol"
-import { PtyID } from "@opencode-ai/core/pty/schema"
-import { PtyTicket } from "@opencode-ai/core/pty/ticket"
-import { LocationServiceMap, locationServiceMapLayer } from "@opencode-ai/core/location-services"
-import { Location } from "@opencode-ai/core/location"
-import { AbsolutePath } from "@opencode-ai/core/schema"
-import { Shell } from "@opencode-ai/core/shell"
-import { CorsConfig, isAllowedRequestOrigin, type CorsOptions } from "@opencode-ai/server/cors"
+import { Pty } from "@allcode/core/pty"
+import { PtyProtocol } from "@allcode/core/pty/protocol"
+import { PtyID } from "@allcode/core/pty/schema"
+import { PtyTicket } from "@allcode/core/pty/ticket"
+import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
+import { Location } from "@allcode/core/location"
+import { AbsolutePath } from "@allcode/core/schema"
+import { Shell } from "@allcode/core/shell"
+import { CorsConfig, isAllowedRequestOrigin, type CorsOptions } from "@allcode/server/cors"
 import {
   PTY_CONNECT_TICKET_QUERY,
   PTY_CONNECT_TOKEN_HEADER,
@@ -271,3 +271,4 @@ export const ptyConnectHandlers = HttpApiBuilder.group(PtyConnectApi, "pty-conne
     )
   }),
 ).pipe(Layer.provide(locationServiceMapLayer))
+

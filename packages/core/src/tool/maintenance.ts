@@ -1,6 +1,6 @@
 export * as MaintenanceTool from "./maintenance"
 
-import { ToolFailure } from "@opencode-ai/llm"
+import { ToolFailure } from "@allcode/llm"
 import { sql } from "drizzle-orm"
 import { Effect, Layer, Schema } from "effect"
 import { stat } from "node:fs/promises"

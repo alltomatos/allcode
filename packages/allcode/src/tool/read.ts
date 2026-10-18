@@ -1,8 +1,8 @@
-import { Effect, Option, Schema, Scope, Stream } from "effect"
-import { NonNegativeInt } from "@opencode-ai/core/schema"
+﻿import { Effect, Option, Schema, Scope, Stream } from "effect"
+import { NonNegativeInt } from "@allcode/core/schema"
 import * as path from "path"
 import * as Tool from "./tool"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import { LSP } from "@/lsp/lsp"
 import DESCRIPTION from "./read.txt"
 import { InstanceState } from "@/effect/instance-state"
@@ -384,3 +384,4 @@ export const ReadTool = Tool.define<
     }
   }),
 )
+

@@ -1,4 +1,4 @@
-// Question UI body for the direct-mode footer.
+﻿// Question UI body for the direct-mode footer.
 //
 // Renders inside the footer when the reducer pushes a FooterView of type
 // "question". Supports single-question and multi-question flows:
@@ -16,7 +16,7 @@
 import type { TextareaRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { For, Show, createEffect, createMemo, createSignal } from "solid-js"
-import type { QuestionRequest } from "@opencode-ai/sdk/v2"
+import type { QuestionRequest } from "@allcode/sdk/v2"
 import {
   createQuestionBodyState,
   questionConfirm,
@@ -571,3 +571,4 @@ export function RunQuestionBody(props: {
     </box>
   )
 }
+

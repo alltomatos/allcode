@@ -1,5 +1,5 @@
-import type { Session } from "@opencode-ai/sdk/v2/client"
-import { createSimpleContext } from "@opencode-ai/ui/context"
+﻿import type { Session } from "@allcode/sdk/v2/client"
+import { createSimpleContext } from "@allcode/ui/context"
 import { createStore, produce } from "solid-js/store"
 import { Persist, persisted, removePersisted, draftPersistedKeys } from "@/utils/persist"
 import { ServerConnection, useServer } from "./server"
@@ -387,3 +387,4 @@ export const { use: useTabs, provider: TabsProvider } = createSimpleContext({
     return { ...actions, store, info, ready, recentReady }
   },
 })
+

@@ -1,6 +1,6 @@
-import { Filesystem } from "@/util/filesystem"
-import { FrontmatterError } from "@opencode-ai/core/v1/config/error"
-import { ConfigMarkdown as ConfigMarkdownCore } from "@opencode-ai/core/config/markdown"
+﻿import { Filesystem } from "@/util/filesystem"
+import { FrontmatterError } from "@allcode/core/v1/config/error"
+import { ConfigMarkdown as ConfigMarkdownCore } from "@allcode/core/config/markdown"
 
 export const FILE_REGEX = /(?<![\w`])@(\.?[^\s`,.]*(?:\.[^\s`,.]+)*)/g
 export const SHELL_REGEX = /!`([^`]+)`/g
@@ -34,3 +34,4 @@ export async function parse(filePath: string) {
 }
 
 export * as ConfigMarkdown from "./markdown"
+

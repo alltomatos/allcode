@@ -1,18 +1,18 @@
-import type { Argv } from "yargs"
+﻿import type { Argv } from "yargs"
 import { Auth } from "../../auth"
 import { cmd } from "./cmd"
 import { CliError, effectCmd, fail } from "../effect-cmd"
 import { UI } from "../ui"
 import * as Prompt from "../effect/prompt"
-import { ModelsDev } from "@opencode-ai/core/models-dev"
+import { ModelsDev } from "@allcode/core/models-dev"
 
 import { map, pipe, sortBy, values } from "remeda"
 import path from "path"
 import os from "os"
 import { Config } from "@/config/config"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { Plugin } from "../../plugin"
-import type { Hooks } from "@opencode-ai/plugin"
+import type { Hooks } from "@allcode/plugin"
 import { Process } from "@/util/process"
 import { errorMessage } from "@/util/error"
 import { text } from "node:stream/consumers"
@@ -532,3 +532,4 @@ export const ProvidersLogoutCommand = effectCmd({
     yield* Prompt.outro("Logout successful")
   }),
 })
+

@@ -1,7 +1,7 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 
-import { OpenCode } from "@opencode-ai/core"
-import { ReadTool } from "@opencode-ai/core/tools"
+import { OpenCode } from "@allcode/core"
+import { ReadTool } from "@allcode/core/tools"
 
 const opencode = OpenCode.make({})
 
@@ -65,3 +65,4 @@ await opencode.session.prompt({
 await opencode.session.wait()
 
 console.log(await opencode.session.messages(sessionID))
+

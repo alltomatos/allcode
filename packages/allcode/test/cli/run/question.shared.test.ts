@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { QuestionRequest } from "@opencode-ai/sdk/v2"
+﻿import { describe, expect, test } from "bun:test"
+import type { QuestionRequest } from "@allcode/sdk/v2"
 import {
   createQuestionBodyState,
   questionConfirm,
@@ -113,3 +113,4 @@ describe("run question shared", () => {
     })
   })
 })
+

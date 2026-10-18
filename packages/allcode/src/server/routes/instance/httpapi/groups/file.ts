@@ -1,5 +1,5 @@
-import { FileSystem } from "@opencode-ai/core/filesystem"
-import { NonNegativeInt } from "@opencode-ai/core/schema"
+﻿import { FileSystem } from "@allcode/core/filesystem"
+import { NonNegativeInt } from "@allcode/core/schema"
 import { LSP } from "@/lsp/lsp"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
@@ -183,3 +183,4 @@ export const FileApi = HttpApi.make("file")
       description: "Experimental HttpApi surface for selected instance routes.",
     }),
   )
+

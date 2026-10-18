@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, mock, test } from "bun:test"
+﻿import { beforeAll, describe, expect, mock, test } from "bun:test"
 import { createRoot } from "solid-js"
 import type { LineComment } from "./comments"
 
@@ -11,7 +11,7 @@ beforeAll(async () => {
     useLocation: () => ({}),
     useSearchParams: () => [{}, () => undefined],
   }))
-  mock.module("@opencode-ai/ui/context", () => ({
+  mock.module("@allcode/ui/context", () => ({
     createSimpleContext: () => ({
       use: () => undefined,
       provider: () => undefined,
@@ -186,3 +186,4 @@ describe("comments session indexing", () => {
     })
   })
 })
+

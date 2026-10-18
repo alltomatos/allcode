@@ -1,11 +1,11 @@
-import { getDirectory, getFilename } from "@opencode-ai/core/util/path"
-import { FileIcon } from "@opencode-ai/ui/file-icon"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
-import { Dialog, DialogBody } from "@opencode-ai/ui/v2/dialog-v2"
-import { Icon } from "@opencode-ai/ui/v2/icon"
-import { KeybindV2 } from "@opencode-ai/ui/v2/keybind-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { getDirectory, getFilename } from "@allcode/core/util/path"
+import { FileIcon } from "@allcode/ui/file-icon"
+import { ScrollView } from "@allcode/ui/scroll-view"
+import { Dialog, DialogBody } from "@allcode/ui/v2/dialog-v2"
+import { Icon } from "@allcode/ui/v2/icon"
+import { KeybindV2 } from "@allcode/ui/v2/keybind-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { createEffect, createMemo, createResource, createSignal, For, Match, onCleanup, Show, Switch } from "solid-js"
 import { commandPaletteOptions, formatKeybindParts, useCommand } from "@/context/command"
 import { useGlobal } from "@/context/global"
@@ -340,3 +340,4 @@ function PaletteRow(props: {
     </button>
   )
 }
+

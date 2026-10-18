@@ -1,5 +1,5 @@
-import type { WorkspaceV2 } from "@opencode-ai/core/workspace"
-import { Flag } from "@opencode-ai/core/flag/flag"
+﻿import type { WorkspaceV2 } from "@allcode/core/workspace"
+import { Flag } from "@allcode/core/flag/flag"
 import { Effect, Scope } from "effect"
 
 /**
@@ -18,3 +18,4 @@ export function withFixedWorkspaceID(id: WorkspaceV2.ID): Effect.Effect<void, ne
     )
   })
 }
+

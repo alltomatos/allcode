@@ -1,5 +1,5 @@
-import { createResizeObserver } from "@solid-primitives/resize-observer"
-import { useSpring } from "@opencode-ai/ui/motion-spring"
+﻿import { createResizeObserver } from "@solid-primitives/resize-observer"
+import { useSpring } from "@allcode/ui/motion-spring"
 import { type Accessor, createEffect, createMemo, createResource, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"
 import type { PromptInputState } from "@/components/prompt-input"
@@ -143,3 +143,4 @@ export function createSessionComposerRegionController(input: {
 }
 
 export type SessionComposerRegionController = ReturnType<typeof createSessionComposerRegionController>
+

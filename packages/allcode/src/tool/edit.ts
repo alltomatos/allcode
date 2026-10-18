@@ -1,4 +1,4 @@
-// the approaches in this edit tool are sourced from
+﻿// the approaches in this edit tool are sourced from
 // https://github.com/cline/cline/blob/main/evals/diff-edits/diff-apply/diff-06-23-25.ts
 // https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/utils/editCorrector.ts
 // https://github.com/cline/cline/blob/main/evals/diff-edits/diff-apply/diff-06-26-25.ts
@@ -9,14 +9,14 @@ import * as Tool from "./tool"
 import { LSP } from "@/lsp/lsp"
 import { createTwoFilesPatch, diffLines } from "diff"
 import DESCRIPTION from "./edit.txt"
-import { FileSystem } from "@opencode-ai/core/filesystem"
-import { Watcher } from "@opencode-ai/core/filesystem/watcher"
+import { FileSystem } from "@allcode/core/filesystem"
+import { Watcher } from "@allcode/core/filesystem/watcher"
 import { EventV2Bridge } from "@/event-v2-bridge"
 import { Format } from "../format"
 import { InstanceState } from "@/effect/instance-state"
 import { Snapshot } from "@/snapshot"
 import { assertExternalDirectoryEffect } from "./external-directory"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import * as Bom from "@/util/bom"
 
 function normalizeLineEndings(text: string): string {
@@ -735,3 +735,4 @@ function isDisproportionateMatch(search: string, oldString: string) {
   if (oldLines === 1) return false
   return search.trim().length > Math.max(oldString.trim().length + 500, oldString.trim().length * 4)
 }
+

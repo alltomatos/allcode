@@ -1,4 +1,4 @@
-import type { UserMessage } from "@opencode-ai/sdk/v2"
+﻿import type { UserMessage } from "@allcode/sdk/v2"
 
 type Local = {
   session: {
@@ -61,3 +61,4 @@ export const restorePromptModel = (local: ModelSelection, prompt: PromptState) =
   local.model.variant.set(model.variant ?? undefined)
   return true
 }
+

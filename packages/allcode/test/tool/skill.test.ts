@@ -1,7 +1,7 @@
-import { PermissionV1 } from "@opencode-ai/core/v1/permission"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { Ripgrep } from "@opencode-ai/core/ripgrep"
+﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { Ripgrep } from "@allcode/core/ripgrep"
 import { Cause, Effect, Exit, Layer } from "effect"
 import { afterEach, describe, expect } from "bun:test"
 import path from "path"
@@ -140,3 +140,4 @@ Use this skill.
     }),
   )
 })
+

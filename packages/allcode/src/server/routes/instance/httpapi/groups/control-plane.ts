@@ -1,4 +1,4 @@
-import { MoveSession } from "@opencode-ai/core/control-plane/move-session"
+﻿import { MoveSession } from "@allcode/core/control-plane/move-session"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/unstable/httpapi"
 import { described } from "./metadata"
@@ -33,3 +33,4 @@ export const ControlPlaneApi = HttpApi.make("controlPlane").add(
     )
     .annotateMerge(OpenApi.annotations({ title: "controlPlane", description: "Control-plane orchestration routes." })),
 )
+

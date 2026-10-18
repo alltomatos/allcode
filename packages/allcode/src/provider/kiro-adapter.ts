@@ -1,4 +1,4 @@
-// Real inference adapter for Kiro (AWS CodeWhisperer / Amazon Q Developer).
+﻿// Real inference adapter for Kiro (AWS CodeWhisperer / Amazon Q Developer).
 //
 // Kiro's wire protocol (`generateAssistantResponse`) is a proprietary AWS
 // envelope with binary AWS-EventStream streaming responses — nothing like
@@ -19,9 +19,9 @@
 // (D:\dev\OmniRoute\open-sse\{executors,translator}\kiro*, read-only reference,
 // not imported) which was itself reverse-engineered against live CodeWhisperer
 // traffic.
-import { Database as CoreDatabase } from "@opencode-ai/core/database/database"
-import { IntegrationRotation } from "@opencode-ai/core/integration/rotation"
-import { Integration } from "@opencode-ai/core/integration"
+import { Database as CoreDatabase } from "@allcode/core/database/database"
+import { IntegrationRotation } from "@allcode/core/integration/rotation"
+import { Integration } from "@allcode/core/integration"
 import { ByteQueue, parseEventFrame, TEXT_ENCODER } from "./kiro-eventstream"
 
 const INTEGRATION_ID = "kiro"
@@ -602,3 +602,4 @@ export function createKiroFetch(getOptions?: () => Record<string, any>) {
     return transformKiroStream(upstream, model)
   }
 }
+

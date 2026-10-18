@@ -1,6 +1,6 @@
-{
+﻿{
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/stats-core",
+  "name": "@allcode/stats-core",
   "version": "1.18.21",
   "private": true,
   "type": "module",
@@ -45,3 +45,4 @@
     "node": ">=22"
   }
 }
+

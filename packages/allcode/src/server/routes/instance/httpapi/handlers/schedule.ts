@@ -1,9 +1,9 @@
-import { Effect } from "effect"
+﻿import { Effect } from "effect"
 import { HttpApiBuilder, HttpApiSchema } from "effect/unstable/httpapi"
-import { Api } from "@opencode-ai/server/api"
-import { Schedule } from "@opencode-ai/core/schedule"
-import { ScheduleRunner } from "@opencode-ai/core/schedule/runner"
-import { ScheduleValidationError } from "@opencode-ai/protocol/groups/schedule"
+import { Api } from "@allcode/server/api"
+import { Schedule } from "@allcode/core/schedule"
+import { ScheduleRunner } from "@allcode/core/schedule/runner"
+import { ScheduleValidationError } from "@allcode/protocol/groups/schedule"
 
 export const scheduleHandlers = HttpApiBuilder.group(Api, "server.schedule", (handlers) =>
   Effect.gen(function* () {
@@ -107,3 +107,4 @@ export const scheduleHandlers = HttpApiBuilder.group(Api, "server.schedule", (ha
       )
   }),
 )
+

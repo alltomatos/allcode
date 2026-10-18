@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test"
 import { Effect, Layer } from "effect"
-import { Database } from "@opencode-ai/core/database/database"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { Schedule } from "@opencode-ai/core/schedule"
-import { ScheduleRunner } from "@opencode-ai/core/schedule/runner"
+import { Database } from "@allcode/core/database/database"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { Schedule } from "@allcode/core/schedule"
+import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { testEffect } from "./lib/effect"
 
 const mockMcpCaller = (handler: ScheduleRunner.McpCallerInterface["callTool"]) =>

@@ -1,4 +1,4 @@
-import { Npm } from "@opencode-ai/core/npm"
+﻿import { Npm } from "@allcode/core/npm"
 import { Effect, Layer } from "effect"
 
 export const noop = Layer.mock(Npm.Service)({
@@ -6,3 +6,4 @@ export const noop = Layer.mock(Npm.Service)({
 })
 
 export * as NpmTest from "./npm"
+

@@ -1,6 +1,6 @@
-import { afterAll, expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { Global } from "@opencode-ai/core/global"
+﻿import { afterAll, expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { Global } from "@allcode/core/global"
 import { Effect } from "effect"
 import { readFile, rm } from "node:fs/promises"
 import path from "node:path"
@@ -153,3 +153,4 @@ it.instance("loadProject() and loadGlobal() return separate contents", () =>
     yield* memory.forgetProject(directory)
   }),
 )
+

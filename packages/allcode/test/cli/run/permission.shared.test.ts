@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { PermissionRequest } from "@opencode-ai/sdk/v2"
+﻿import { describe, expect, test } from "bun:test"
+import type { PermissionRequest } from "@allcode/sdk/v2"
 import {
   createPermissionBodyState,
   permissionAlwaysLines,
@@ -142,3 +142,4 @@ describe("run permission shared", () => {
     ])
   })
 })
+

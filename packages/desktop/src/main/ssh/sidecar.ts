@@ -1,6 +1,6 @@
 import { spawn } from "node:child_process"
 import { createServer } from "node:net"
-import type { SshServerConfig, SshSetupStep, SshStepStatus } from "@opencode-ai/app/ssh-tunnel/types"
+import type { SshServerConfig, SshSetupStep, SshStepStatus } from "@allcode/app/ssh-tunnel/types"
 import { pollWslHealth } from "../wsl/startup"
 
 export type SshTunnel = {

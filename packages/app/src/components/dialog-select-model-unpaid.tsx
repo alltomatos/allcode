@@ -1,10 +1,10 @@
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { List, type ListRef } from "@opencode-ai/ui/list"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
-import { Tag } from "@opencode-ai/ui/tag"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
+﻿import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { Dialog } from "@allcode/ui/dialog"
+import { List, type ListRef } from "@allcode/ui/list"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { Tag } from "@allcode/ui/tag"
+import { Tooltip } from "@allcode/ui/tooltip"
 import { type Component, Show } from "solid-js"
 import { useLocal } from "@/context/local"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
@@ -145,3 +145,4 @@ export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props
     </Dialog>
   )
 }
+

@@ -1,4 +1,4 @@
-import { test, expect } from "bun:test"
+﻿import { test, expect } from "bun:test"
 import {
   formatImportFileError,
   parseShareUrl,
@@ -6,7 +6,7 @@ import {
   transformShareData,
   type ShareData,
 } from "../../src/cli/cmd/import"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import { PlatformError } from "effect"
 
 test("formats import file errors", () => {
@@ -88,3 +88,4 @@ test("returns null for invalid share data", () => {
   expect(transformShareData([{ type: "message", data: {} as any }])).toBeNull()
   expect(transformShareData([{ type: "session", data: { id: "s" } as any }])).toBeNull() // no messages
 })
+

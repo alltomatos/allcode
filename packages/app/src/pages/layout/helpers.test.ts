@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import {
   collectNewSessionDeepLinks,
   collectOpenProjectDeepLinks,
@@ -6,7 +6,7 @@ import {
   parseDeepLink,
   parseNewSessionDeepLink,
 } from "./deep-links"
-import { type Session } from "@opencode-ai/sdk/v2/client"
+import { type Session } from "@allcode/sdk/v2/client"
 import {
   childSessionOnPath,
   closeHomeProject,
@@ -345,3 +345,4 @@ describe("layout workspace helpers", () => {
     expect(errorMessage("unknown", "fallback")).toBe("fallback")
   })
 })
+

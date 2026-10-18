@@ -1,4 +1,4 @@
-import { ServerAuth } from "@/server/auth"
+﻿import { ServerAuth } from "@/server/auth"
 import { Effect, Encoding, Layer, Redacted } from "effect"
 import { HttpEffect, HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
 import { HttpApiError, HttpApiMiddleware } from "effect/unstable/httpapi"
@@ -7,7 +7,7 @@ import { isPublicUIPath } from "@/server/shared/public-ui"
 export {
   Authorization as ServerAuthorization,
   authorizationLayer as serverAuthorizationLayer,
-} from "@opencode-ai/server/middleware/authorization"
+} from "@allcode/server/middleware/authorization"
 
 const AUTH_TOKEN_QUERY = "auth_token"
 const UNAUTHORIZED = 401
@@ -148,3 +148,4 @@ export const ptyConnectAuthorizationLayer = Layer.effect(
     )
   }),
 )
+

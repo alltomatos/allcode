@@ -1,4 +1,4 @@
-import type { Message, Part } from "@opencode-ai/sdk/v2/client"
+﻿import type { Message, Part } from "@allcode/sdk/v2/client"
 import { produce, type SetStoreFunction } from "solid-js/store"
 import { cmp, merge, SKIP_PARTS, type MessageLoadState, type OptimisticItem } from "@/context/server-session-helpers"
 import { compareMessages } from "@/utils/session-message"
@@ -142,3 +142,4 @@ export function createOptimisticUpdates(input: {
 
   return { clearOptimistic, clearOptimisticPart, confirmOptimisticPart, confirmOptimistic, add, remove }
 }
+

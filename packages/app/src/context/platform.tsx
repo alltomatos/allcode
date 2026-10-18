@@ -1,4 +1,4 @@
-import { createSimpleContext } from "@opencode-ai/ui/context"
+﻿import { createSimpleContext } from "@allcode/ui/context"
 import type { AsyncStorage, SyncStorage } from "@solid-primitives/storage"
 import type { Accessor } from "solid-js"
 import type { DesktopMenuAction } from "../desktop-menu"
@@ -226,3 +226,4 @@ export const { use: usePlatform, provider: PlatformProvider } = createSimpleCont
     return props.value
   },
 })
+

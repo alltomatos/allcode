@@ -1,6 +1,6 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { ProjectV2 } from "@opencode-ai/core/project"
+import { ProjectV2 } from "@allcode/core/project"
 import { MessageID, SessionID } from "../../src/session/schema"
 import { Session } from "../../src/session/session"
 
@@ -76,3 +76,4 @@ describe("Session schema", () => {
     }
   })
 })
+

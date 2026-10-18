@@ -1,8 +1,8 @@
-import { listAdapters } from "@/control-plane/adapters"
+﻿import { listAdapters } from "@/control-plane/adapters"
 import { Workspace } from "@/control-plane/workspace"
 import * as InstanceState from "@/effect/instance-state"
 import { Vcs } from "@/project/vcs"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { Cause, Effect, Stream } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { ChildProcess, ChildProcessSpawner } from "effect/unstable/process"
@@ -220,3 +220,4 @@ export const workspaceHandlers = HttpApiBuilder.group(InstanceHttpApi, "workspac
       .handle("warp", warp)
   }),
 )
+

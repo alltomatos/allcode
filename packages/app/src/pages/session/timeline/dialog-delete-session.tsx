@@ -1,9 +1,9 @@
-import { createMemo } from "solid-js"
-import { Button } from "@opencode-ai/ui/button"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { DialogFooter, DialogHeader, DialogTitleGroup, DialogV2 } from "@opencode-ai/ui/v2/dialog-v2"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { createMemo } from "solid-js"
+import { Button } from "@allcode/ui/button"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Dialog } from "@allcode/ui/dialog"
+import { DialogFooter, DialogHeader, DialogTitleGroup, DialogV2 } from "@allcode/ui/v2/dialog-v2"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useLanguage } from "@/context/language"
 import { useServerSync } from "@/context/server-sync"
 import { useSettings } from "@/context/settings"
@@ -62,3 +62,4 @@ export function DialogDeleteSession(props: { sessionID: string; onDelete: (sessi
     </Dialog>
   )
 }
+

@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   Agent,
   Config,
   LspStatus,
@@ -12,10 +12,10 @@ import type {
   SessionStatus,
   Todo,
   VcsInfo,
-} from "@opencode-ai/sdk/v2/client"
-import type { FileDiffInfo } from "@opencode-ai/client/promise"
-import { NormalizedProviderListResponse } from "@opencode-ai/session-ui/context"
-import type { CommandInfo, McpResource, McpServer, SessionMessageInfo } from "@opencode-ai/client/promise"
+} from "@allcode/sdk/v2/client"
+import type { FileDiffInfo } from "@allcode/client/promise"
+import { NormalizedProviderListResponse } from "@allcode/session-ui/context"
+import type { CommandInfo, McpResource, McpServer, SessionMessageInfo } from "@allcode/client/promise"
 import type { Accessor } from "solid-js"
 import type { SetStoreFunction, Store } from "solid-js/store"
 
@@ -133,3 +133,4 @@ export const MAX_DIR_STORES = 30
 export const DIR_IDLE_TTL_MS = 20 * 60 * 1000
 export const SESSION_RECENT_WINDOW = 4 * 60 * 60 * 1000
 export const SESSION_RECENT_LIMIT = 50
+

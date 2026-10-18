@@ -1,4 +1,4 @@
-import { createSimpleContext } from "@opencode-ai/ui/context"
+﻿import { createSimpleContext } from "@allcode/ui/context"
 import { type Accessor, batch, createMemo } from "solid-js"
 import { createStore, type SetStoreFunction, type Store } from "solid-js/store"
 import { Persist, persisted } from "@/utils/persist"
@@ -395,3 +395,4 @@ export const { use: useServer, provider: ServerProvider } = createSimpleContext(
     }
   },
 })
+

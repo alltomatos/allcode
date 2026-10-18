@@ -25,7 +25,7 @@ Garantir que a versão **Web** do OpenCode possua **100% de paridade funcional e
 
 ### Decisão 3: File & Directory Navigation na Web
 - **Problema:** Usuários web não podiam abrir projetos navegando em diretórios locais de maneira ergonômica quando conectados a servidores remotos ou locais.
-- **Solução:** Na Web, o `useDirectoryPicker` delega para o `DialogSelectDirectoryV2` integrado à API de FileSystem do servidor (`@opencode-ai/server`), oferecendo experiência idêntica ao picker nativo.
+- **Solução:** Na Web, o `useDirectoryPicker` delega para o `DialogSelectDirectoryV2` integrado à API de FileSystem do servidor (`@allcode/server`), oferecendo experiência idêntica ao picker nativo.
 
 ### Decisão 4: Browser Panel Universal (Sandboxed Iframe & Proxy)
 - **Problema:** O `BrowserPanel` dependia exclusivamente de chamadas `window.api.browserPanel.*` do Electron.

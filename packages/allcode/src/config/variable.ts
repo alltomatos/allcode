@@ -1,9 +1,9 @@
-export * as ConfigVariable from "./variable"
+﻿export * as ConfigVariable from "./variable"
 
 import path from "path"
 import os from "os"
 import { Filesystem } from "@/util/filesystem"
-import { InvalidError } from "@opencode-ai/core/v1/config/error"
+import { InvalidError } from "@allcode/core/v1/config/error"
 
 type ParseSource =
   | {
@@ -89,3 +89,4 @@ export async function substitute(input: SubstituteInput) {
   out += text.slice(cursor)
   return out
 }
+

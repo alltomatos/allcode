@@ -1,8 +1,8 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import { Schema } from "effect"
-import { ConfigProviderV1 } from "@opencode-ai/core/v1/config/provider"
+import { ConfigProviderV1 } from "@allcode/core/v1/config/provider"
 import { CatalogModelStatus, ModelStatus } from "@/provider/model-status"
-import { ModelsDev } from "@opencode-ai/core/models-dev"
+import { ModelsDev } from "@allcode/core/models-dev"
 import { Provider } from "@/provider/provider"
 
 describe("provider model status schemas", () => {
@@ -59,3 +59,4 @@ describe("provider model status schemas", () => {
     ).toBe("active")
   })
 })
+

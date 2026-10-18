@@ -1,10 +1,10 @@
-import { expect } from "bun:test"
+﻿import { expect } from "bun:test"
 import { Server } from "@modelcontextprotocol/sdk/server/index.js"
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js"
 import { ListResourcesRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { CrossSpawnSpawner } from "@opencode-ai/core/cross-spawn-spawner"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
+import { FSUtil } from "@allcode/core/fs-util"
 import { Effect } from "effect"
 import { Config } from "../../src/config/config"
 import { EventV2Bridge } from "../../src/event-v2-bridge"
@@ -298,3 +298,4 @@ mcpTest.instance("authenticate() connects a resource-only server without listing
     expect(Object.keys(yield* mcp.resources())).toEqual([`${name}:docs://readme`])
   }),
 )
+

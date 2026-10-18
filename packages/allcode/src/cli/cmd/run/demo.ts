@@ -1,4 +1,4 @@
-// Demo mode for testing direct interactive mode without a real SDK.
+﻿// Demo mode for testing direct interactive mode without a real SDK.
 //
 // Enabled with `--demo`. Intercepts prompt submissions and generates synthetic
 // SDK events that feed through the real reducer and footer pipeline. This
@@ -15,7 +15,7 @@
 // Demo mode also handles permission and question replies locally, completing
 // or failing the synthetic tool parts as appropriate.
 import path from "path"
-import type { Event, ToolPart } from "@opencode-ai/sdk/v2"
+import type { Event, ToolPart } from "@allcode/sdk/v2"
 import { createSessionData, reduceSessionData, type SessionData } from "./session-data"
 import { writeSessionOutput } from "./stream"
 import type { FooterApi, PermissionReply, QuestionReject, QuestionReply, RunPrompt, StreamCommit } from "./types"
@@ -1272,3 +1272,4 @@ export function createRunDemo(input: Input) {
     questionReject,
   }
 }
+

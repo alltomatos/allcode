@@ -1,4 +1,4 @@
-import { Tooltip } from "@opencode-ai/ui/tooltip"
+﻿import { Tooltip } from "@allcode/ui/tooltip"
 import { createResizeObserver } from "@solid-primitives/resize-observer"
 import {
   children,
@@ -125,3 +125,4 @@ export function ServerHealthIndicator(props: { health?: ServerHealth }) {
     />
   )
 }
+

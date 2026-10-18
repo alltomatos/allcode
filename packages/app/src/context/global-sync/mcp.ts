@@ -1,4 +1,4 @@
-import type { McpServer } from "@opencode-ai/client/promise"
+﻿import type { McpServer } from "@allcode/client/promise"
 
 export async function toggleMcp(input: {
   status: McpServer["status"]["status"]
@@ -17,3 +17,4 @@ export async function toggleMcp(input: {
   }[input.status]()
   await input.refresh()
 }
+

@@ -1,4 +1,4 @@
-import { base64Encode } from "@opencode-ai/core/util/encode"
+﻿import { base64Encode } from "@allcode/core/util/encode"
 
 export type AutoAcceptLevel = boolean | "edits"
 
@@ -82,3 +82,4 @@ export function sessionAutoAccept(
   if (level === undefined) return undefined
   return matchesAutoAcceptLevel(level, permission)
 }
+

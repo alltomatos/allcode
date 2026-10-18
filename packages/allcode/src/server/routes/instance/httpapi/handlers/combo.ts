@@ -1,5 +1,5 @@
-import { Combo } from "@/combo"
-import type { ConfigComboV1 } from "@opencode-ai/core/v1/config/combo"
+﻿import { Combo } from "@/combo"
+import type { ConfigComboV1 } from "@allcode/core/v1/config/combo"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
@@ -42,3 +42,4 @@ export const comboHandlers = HttpApiBuilder.group(InstanceHttpApi, "combo", (han
       .handle("generate", generate)
   }),
 )
+

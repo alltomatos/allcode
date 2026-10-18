@@ -1,6 +1,6 @@
-import type { FilePart, Project, UserMessage, VcsFileDiff } from "@opencode-ai/sdk/v2"
-import { getFilename } from "@opencode-ai/core/util/path"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import type { FilePart, Project, UserMessage, VcsFileDiff } from "@allcode/sdk/v2"
+import { getFilename } from "@allcode/core/util/path"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation, useQueryClient } from "@tanstack/solid-query"
 import {
   onCleanup,
@@ -21,11 +21,11 @@ import { createResizeObserver } from "@solid-primitives/resize-observer"
 import { useLocal } from "@/context/local"
 import { FileProvider, useFile } from "@/context/file"
 import { createStore } from "solid-js/store"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { createAutoScroll } from "@opencode-ai/ui/hooks"
+import { Tabs } from "@allcode/ui/tabs"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { createAutoScroll } from "@allcode/ui/hooks"
 import { showToast } from "@/utils/toast"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+import { base64Encode } from "@allcode/core/util/encode"
 import { useLocation, useNavigate, useParams, useSearchParams } from "@solidjs/router"
 import { NewSessionView } from "@/components/session"
 import { ErrorPage } from "@/pages/error"
@@ -1433,3 +1433,4 @@ export default function Page() {
     />
   )
 }
+

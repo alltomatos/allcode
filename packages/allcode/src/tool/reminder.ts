@@ -1,7 +1,7 @@
-import { Effect, Schema } from "effect"
+﻿import { Effect, Schema } from "effect"
 import * as Tool from "./tool"
 import DESCRIPTION from "./reminder.txt"
-import { Schedule } from "@opencode-ai/core/schedule"
+import { Schedule } from "@allcode/core/schedule"
 
 export const Parameters = Schema.Struct({
   action: Schema.Literals(["create", "list", "cancel", "get"]),
@@ -246,3 +246,4 @@ export const ReminderTool = Tool.define(
     }
   }),
 )
+

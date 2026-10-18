@@ -1,6 +1,6 @@
-#!/usr/bin/env bun
+﻿#!/usr/bin/env bun
 
-import { Script } from "@opencode-ai/script"
+import { Script } from "@allcode/script"
 import path from "path"
 import { fileURLToPath } from "url"
 
@@ -38,3 +38,4 @@ await Bun.build({
 })
 
 console.log("Build complete")
+

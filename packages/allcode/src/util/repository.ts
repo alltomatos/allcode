@@ -1,7 +1,7 @@
-import path from "path"
+﻿import path from "path"
 import { fileURLToPath } from "url"
 import { Schema } from "effect"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 
 type BaseReference = {
   host: string
@@ -230,3 +230,4 @@ export function repositoryCacheIdentity(input: Reference) {
 export function sameRepositoryReference(left: Reference, right: Reference) {
   return repositoryCacheIdentity(left) === repositoryCacheIdentity(right)
 }
+

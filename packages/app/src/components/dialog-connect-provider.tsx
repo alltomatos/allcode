@@ -1,17 +1,17 @@
-import type { IntegrationMethod, IntegrationOauthConnectOutput } from "@opencode-ai/client/promise"
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { List, type ListRef } from "@opencode-ai/ui/list"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
-import { Spinner } from "@opencode-ai/ui/spinner"
-import { Tag } from "@opencode-ai/ui/tag"
-import { TextField } from "@opencode-ai/ui/text-field"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@opencode-ai/ui/v2/dialog-v2"
-import { TextInputV2 } from "@opencode-ai/ui/v2/text-input-v2"
+﻿import type { IntegrationMethod, IntegrationOauthConnectOutput } from "@allcode/client/promise"
+import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { Dialog } from "@allcode/ui/dialog"
+import { Icon } from "@allcode/ui/icon"
+import { IconButton } from "@allcode/ui/icon-button"
+import { List, type ListRef } from "@allcode/ui/list"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { Spinner } from "@allcode/ui/spinner"
+import { Tag } from "@allcode/ui/tag"
+import { TextField } from "@allcode/ui/text-field"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@allcode/ui/v2/dialog-v2"
+import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { extractOAuthCode } from "@/utils/oauth"
 import { showToast } from "@/utils/toast"
 import {
@@ -1451,3 +1451,4 @@ function ProviderConnection(props: {
     </div>
   )
 }
+

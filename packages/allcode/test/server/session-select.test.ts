@@ -1,5 +1,5 @@
-import { describe, expect } from "bun:test"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { describe, expect } from "bun:test"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer } from "effect"
 import { Session } from "@/session/session"
 import { TestInstance } from "../fixture/fixture"
@@ -65,3 +65,4 @@ describe("tui.selectSession endpoint", () => {
     { git: true },
   )
 })
+

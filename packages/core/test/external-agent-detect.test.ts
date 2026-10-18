@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test"
 import { mkdir, mkdtemp, writeFile } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
-import { detectExternalAgents } from "@opencode-ai/core/external-agent-detect"
+import { detectExternalAgents } from "@allcode/core/external-agent-detect"
 
 const agents = [
   { id: "claude", name: "Claude Code", bin: "claude", skillsDir: ".claude/skills" },

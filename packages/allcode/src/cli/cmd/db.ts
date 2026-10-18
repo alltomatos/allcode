@@ -1,6 +1,6 @@
-import type { Argv } from "yargs"
+﻿import type { Argv } from "yargs"
 import { spawn } from "child_process"
-import { Database } from "@opencode-ai/core/database/database"
+import { Database } from "@allcode/core/database/database"
 import { Effect } from "effect"
 import { sql } from "drizzle-orm"
 import { effectCmd } from "../effect-cmd"
@@ -60,3 +60,4 @@ export const DbCommand = effectCmd({
   },
   handler: Effect.fn("Cli.db")(function* () {}),
 })
+

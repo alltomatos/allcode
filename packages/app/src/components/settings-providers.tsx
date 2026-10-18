@@ -1,8 +1,8 @@
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { ProviderIcon } from "@opencode-ai/ui/provider-icon"
-import { Spinner } from "@opencode-ai/ui/spinner"
-import { Tag } from "@opencode-ai/ui/tag"
+﻿import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { Spinner } from "@allcode/ui/spinner"
+import { Tag } from "@allcode/ui/tag"
 import { showToast } from "@/utils/toast"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
 import { createMemo, createSignal, type Component, For, Show } from "solid-js"
@@ -285,3 +285,4 @@ const SettingsProvidersContent: Component<{ onBack?: () => void }> = (props) => 
     </div>
   )
 }
+

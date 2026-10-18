@@ -1,4 +1,4 @@
-import { createSimpleContext } from "@opencode-ai/ui/context"
+﻿import { createSimpleContext } from "@allcode/ui/context"
 import { queryOptions, useQuery, useQueryClient } from "@tanstack/solid-query"
 import { createEffect, onCleanup } from "solid-js"
 import type { SshServersState } from "./types"
@@ -34,3 +34,4 @@ export const { use: useSshServers, provider: SshServersProvider } = createSimple
     return query as typeof query & { readonly data: SshServersState | undefined }
   },
 })
+

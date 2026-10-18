@@ -1,6 +1,6 @@
-import fs from "fs/promises"
+﻿import fs from "fs/promises"
 import path from "path"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { Process } from "@/util/process"
 import { resolvePortablePython } from "./python"
 import { RELAY_PY_SOURCE } from "./relay-source"
@@ -123,3 +123,4 @@ async function start(apiKey: string, port: number): Promise<RelayHandle> {
   await Process.stop(child)
   throw new AgentRouterRelayError(`AgentRouter relay did not become healthy in time:\n${stderr.trim()}`)
 }
+

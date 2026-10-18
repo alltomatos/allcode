@@ -1,4 +1,4 @@
-import type { OpenCodeEvent, SessionMessageInfo, SessionPendingMessage } from "@opencode-ai/client/promise"
+﻿import type { OpenCodeEvent, SessionMessageInfo, SessionPendingMessage } from "@allcode/client/promise"
 
 type Assistant = Extract<SessionMessageInfo, { type: "assistant" }>
 type Compaction = Extract<SessionMessageInfo, { type: "compaction" }>
@@ -507,3 +507,4 @@ function insertOrdinal<T extends Assistant["content"][number]["type"]>(
   if (matches[ordinal]) return source
   return [...source, item]
 }
+

@@ -1,7 +1,7 @@
-import { detectExternalAgents } from "@opencode-ai/core/external-agent-detect"
-import { KNOWN_EXTERNAL_AGENTS } from "@opencode-ai/core/external-agent-registry"
-import { installBatutaCliSkill, removeBatutaCliSkill } from "@opencode-ai/core/external-agent-skill"
-import { Global } from "@opencode-ai/core/global"
+﻿import { detectExternalAgents } from "@allcode/core/external-agent-detect"
+import { KNOWN_EXTERNAL_AGENTS } from "@allcode/core/external-agent-registry"
+import { installBatutaCliSkill, removeBatutaCliSkill } from "@allcode/core/external-agent-skill"
+import { Global } from "@allcode/core/global"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
@@ -29,3 +29,4 @@ export const externalAgentHandlers = HttpApiBuilder.group(InstanceHttpApi, "exte
     return handlers.handle("detect", detect).handle("setSkill", setSkill)
   }),
 )
+

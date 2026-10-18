@@ -1,4 +1,4 @@
-import {
+﻿import {
   checkPluginCompatibility,
   createPluginEntry,
   isDeprecatedPlugin,
@@ -9,8 +9,8 @@ import {
   type PluginSource,
 } from "./shared"
 import { ConfigPlugin } from "@/config/plugin"
-import { ConfigPluginV1 } from "@opencode-ai/core/v1/config/plugin"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
+import { ConfigPluginV1 } from "@allcode/core/v1/config/plugin"
+import { InstallationVersion } from "@allcode/core/installation/version"
 
 export namespace PluginLoader {
   // A normalized plugin declaration derived from config before any filesystem or npm work happens.
@@ -235,3 +235,4 @@ export namespace PluginLoader {
     return ready
   }
 }
+

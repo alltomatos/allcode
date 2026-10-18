@@ -1,4 +1,4 @@
-import type { Event, PermissionRequest, QuestionRequest } from "@opencode-ai/sdk/v2"
+﻿import type { Event, PermissionRequest, QuestionRequest } from "@allcode/sdk/v2"
 import { bootstrapSessionData, createSessionData, reduceSessionData, type SessionData } from "./session-data"
 import { messagePrompt, type SessionMessages } from "./session.shared"
 import { messageTurnSummaryCommit } from "./turn-summary"
@@ -372,3 +372,4 @@ export function replayActiveText(data: SessionData, current: SessionData): Strea
     ] satisfies StreamCommit[]
   })
 }
+

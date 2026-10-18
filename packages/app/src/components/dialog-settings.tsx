@@ -1,10 +1,10 @@
-import { Component, createSignal, startTransition } from "solid-js"
-import { Dialog } from "@opencode-ai/ui/dialog"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { Icon } from "@opencode-ai/ui/icon"
+﻿import { Component, createSignal, startTransition } from "solid-js"
+import { Dialog } from "@allcode/ui/dialog"
+import { Tabs } from "@allcode/ui/tabs"
+import { Icon } from "@allcode/ui/icon"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { SettingsGeneral } from "./settings-general"
 import { SettingsKeybinds } from "./settings-keybinds"
 import { SettingsProviders } from "./settings-providers"
@@ -92,3 +92,4 @@ export const DialogSettings: Component<{ defaultValue?: string }> = (props) => {
     </Dialog>
   )
 }
+

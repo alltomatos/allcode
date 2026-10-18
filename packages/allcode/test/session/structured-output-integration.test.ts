@@ -1,8 +1,8 @@
-import { describe, expect, test } from "bun:test"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
-import { Ripgrep } from "@opencode-ai/core/ripgrep"
+﻿import { describe, expect, test } from "bun:test"
+import { SessionV1 } from "@allcode/core/v1/session"
+import { Ripgrep } from "@allcode/core/ripgrep"
 import { Effect } from "effect"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { AppNodeBuilderV1 } from "@/effect/app-node-builder-v1"
 import { Session } from "@/session/session"
 import { SessionPrompt } from "../../src/session/prompt"
@@ -233,3 +233,4 @@ describe("StructuredOutput Integration", () => {
     expect(obj.data.retries).toBe(3)
   })
 })
+

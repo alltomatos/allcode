@@ -1,12 +1,12 @@
-import type { Session } from "@opencode-ai/sdk/v2/client"
+﻿import type { Session } from "@allcode/sdk/v2/client"
 import { type Accessor, createMemo, For, Show, Suspense } from "solid-js"
-import { Spinner } from "@opencode-ai/ui/spinner"
-import { ScrollView } from "@opencode-ai/ui/scroll-view"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
+import { Spinner } from "@allcode/ui/spinner"
+import { ScrollView } from "@allcode/ui/scroll-view"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { Icon } from "@allcode/ui/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { useLanguage } from "@/context/language"
 import { ServerConnection } from "@/context/server"
 import { SessionTabAvatarView } from "@/pages/layout/session-tab-avatar"
@@ -742,3 +742,4 @@ function HomeSessionSkeleton(props: { label: string }) {
     </div>
   )
 }
+

@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
+﻿import { describe, expect, test } from "bun:test"
+import { SessionV1 } from "@allcode/core/v1/session"
 import { Exit, Schema } from "effect"
 import { MessageV2 } from "../../src/session/message-v2"
 import { SessionPrompt } from "../../src/session/prompt"
@@ -385,3 +385,4 @@ describe("structured-output.createStructuredOutputTool", () => {
   // The tool simply calls onSuccess when execute() is called with valid args
   // See prompt.ts loop() for actual retry logic
 })
+

@@ -39,5 +39,5 @@ Adicionalmente, os desenvolvedores necessitam utilizar simultaneamente o OpenCod
 - Identidade visual e de marca proprietária alinhada ao ecossistema Alltomatos.
 
 ### Negativas / Mitigações
-- Necessidade de atualizar referências de pacotes e scripts de build (`@opencode-ai/*` para namespaces equivalentes).
+- Necessidade de atualizar referências de pacotes e scripts de build (`@allcode/*` para namespaces equivalentes).
 - *Mitigação:* Realização de refatoração por camadas atômicas com verificação rigorosa de testes e `bun typecheck`.

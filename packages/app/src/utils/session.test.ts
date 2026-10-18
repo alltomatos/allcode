@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { SessionApi, SessionInfo, SessionListInput } from "@opencode-ai/client/promise"
+﻿import { describe, expect, test } from "bun:test"
+import type { SessionApi, SessionInfo, SessionListInput } from "@allcode/client/promise"
 import { listAllSessions, normalizeSessionInfo } from "./session"
 
 describe("normalizeSessionInfo", () => {
@@ -112,3 +112,4 @@ function currentSession(id: string, parentID?: string) {
     location: { directory: "/repo" },
   } as SessionInfo
 }
+

@@ -1,5 +1,5 @@
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { openUrl } from "@opencode-ai/core/open"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { openUrl } from "@allcode/core/open"
 import { Context, Effect, Layer } from "effect"
 
 export interface Interface {
@@ -38,3 +38,4 @@ const layer = Layer.succeed(
 export const node = LayerNode.make({ service: Service, layer, deps: [] })
 
 export * as McpBrowser from "./browser"
+

@@ -1,11 +1,11 @@
-import type { Session } from "@opencode-ai/sdk/v2/client"
-import { Avatar } from "@opencode-ai/ui/avatar"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Spinner } from "@opencode-ai/ui/spinner"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { getFilename } from "@opencode-ai/core/util/path"
+﻿import type { Session } from "@allcode/sdk/v2/client"
+import { Avatar } from "@allcode/ui/avatar"
+import { Icon } from "@allcode/ui/icon"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { IconButton } from "@allcode/ui/icon-button"
+import { Spinner } from "@allcode/ui/spinner"
+import { Tooltip } from "@allcode/ui/tooltip"
+import { getFilename } from "@allcode/core/util/path"
 import { A, useParams } from "@solidjs/router"
 import { type Accessor, createMemo, For, type JSX, Match, Show, Switch } from "solid-js"
 import { useServerSync } from "@/context/server-sync"
@@ -333,3 +333,4 @@ export const SessionSkeleton = (props: { count?: number }): JSX.Element => {
     </div>
   )
 }
+

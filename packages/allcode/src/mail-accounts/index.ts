@@ -1,11 +1,11 @@
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
 import path from "path"
 import fs from "fs"
 import { fileURLToPath } from "url"
 import { Effect, Layer, Schema, Context } from "effect"
-import { PositiveInt } from "@opencode-ai/core/schema"
-import { Global } from "@opencode-ai/core/global"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { PositiveInt } from "@allcode/core/schema"
+import { Global } from "@allcode/core/global"
+import { FSUtil } from "@allcode/core/fs-util"
 import { MCP } from "@/mcp"
 
 const file = path.join(Global.Path.data, "mcpmail-accounts.json")
@@ -296,3 +296,4 @@ const layer = Layer.effect(
 export const node = LayerNode.make({ service: Service, layer: layer, deps: [FSUtil.node, MCP.node] })
 
 export * as MailAccounts from "."
+

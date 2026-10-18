@@ -1,6 +1,6 @@
-import fs from "fs/promises"
+﻿import fs from "fs/promises"
 import path from "path"
-import { Global } from "@opencode-ai/core/global"
+import { Global } from "@allcode/core/global"
 import { Filesystem } from "@/util/filesystem"
 import { Process } from "@/util/process"
 
@@ -93,3 +93,4 @@ async function install(): Promise<string> {
 
   return python
 }
+

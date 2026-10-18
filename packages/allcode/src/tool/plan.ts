@@ -1,5 +1,5 @@
-import path from "path"
-import { SessionV1 } from "@opencode-ai/core/v1/session"
+﻿import path from "path"
+import { SessionV1 } from "@allcode/core/v1/session"
 import { Effect, Schema } from "effect"
 import * as Tool from "./tool"
 import { Question } from "../question"
@@ -77,3 +77,4 @@ export const PlanExitTool = Tool.define(
     }
   }),
 )
+

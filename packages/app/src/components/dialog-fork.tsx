@@ -1,15 +1,15 @@
-import { Component, createMemo } from "solid-js"
+﻿import { Component, createMemo } from "solid-js"
 import { useNavigate, useParams } from "@solidjs/router"
 import { useSync } from "@/context/sync"
 import { useSDK } from "@/context/sdk"
 import { usePrompt } from "@/context/prompt"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Dialog, DialogHeader, DialogTitle, DialogBody } from "@opencode-ai/ui/v2/dialog-v2"
-import { List } from "@opencode-ai/ui/list"
+import { useDialog } from "@allcode/ui/context/dialog"
+import { Dialog, DialogHeader, DialogTitle, DialogBody } from "@allcode/ui/v2/dialog-v2"
+import { List } from "@allcode/ui/list"
 import { showToast } from "@/utils/toast"
 import { extractPromptFromParts } from "@/utils/prompt"
-import type { TextPart as SDKTextPart } from "@opencode-ai/sdk/v2/client"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+import type { TextPart as SDKTextPart } from "@allcode/sdk/v2/client"
+import { base64Encode } from "@allcode/core/util/encode"
 import { useLanguage } from "@/context/language"
 
 interface ForkableMessage {
@@ -107,3 +107,4 @@ export const DialogFork: Component = () => {
     </Dialog>
   )
 }
+

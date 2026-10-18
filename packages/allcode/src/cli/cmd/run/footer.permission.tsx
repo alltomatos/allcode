@@ -1,4 +1,4 @@
-// Permission UI body for the direct-mode footer.
+﻿// Permission UI body for the direct-mode footer.
 //
 // Renders inside the footer when the reducer pushes a FooterView of type
 // "permission". Uses a three-stage state machine (permission.shared.ts):
@@ -14,7 +14,7 @@
 import type { TextareaRenderable } from "@opentui/core"
 import { useKeyboard, useTerminalDimensions } from "@opentui/solid"
 import { For, Match, Show, Switch, createEffect, createMemo, createSignal } from "solid-js"
-import type { PermissionRequest } from "@opencode-ai/sdk/v2"
+import type { PermissionRequest } from "@allcode/sdk/v2"
 import {
   createPermissionBodyState,
   permissionAlwaysLines,
@@ -470,3 +470,4 @@ export function RunPermissionBody(props: {
     </box>
   )
 }
+

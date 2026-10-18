@@ -1,4 +1,4 @@
-import {
+﻿import {
   type AgentSideConnection,
   type AuthenticateRequest,
   type AuthenticateResponse,
@@ -29,10 +29,10 @@ import {
   type SetSessionModeRequest,
   type SetSessionModeResponse,
 } from "@agentclientprotocol/sdk"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
-import { AppNodeBuilder } from "@opencode-ai/core/effect/app-node-builder"
+import { InstallationVersion } from "@allcode/core/installation/version"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { AppNodeBuilderV1 } from "@/effect/app-node-builder-v1"
-import type { AssistantMessage, Message, OpencodeClient, SessionMessageResponse } from "@opencode-ai/sdk/v2"
+import type { AssistantMessage, Message, OpencodeClient, SessionMessageResponse } from "@allcode/sdk/v2"
 import { Context, Effect, Layer, ManagedRuntime } from "effect"
 import * as ACPError from "./error"
 import { buildConfigOptions, parseModelSelection } from "./config-option"
@@ -42,8 +42,8 @@ import { ACPEvent } from "./event"
 import { ACPSession } from "./session"
 import { UsageService } from "./usage"
 import { ACPProfile } from "./profile"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 import { Provider } from "@/provider/provider"
 import type { Command } from "@/command"
 
@@ -1104,3 +1104,4 @@ function findProviderID(value: unknown): string | undefined {
   if ("data" in value) return findProviderID(value.data)
   if ("error" in value) return findProviderID(value.error)
 }
+

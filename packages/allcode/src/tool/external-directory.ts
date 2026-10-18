@@ -1,9 +1,9 @@
-import path from "path"
+﻿import path from "path"
 import { Effect } from "effect"
 import { InstanceState } from "@/effect/instance-state"
 import type * as Tool from "./tool"
 import { containsPath } from "../project/instance-context"
-import { FSUtil } from "@opencode-ai/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 
 type Kind = "file" | "directory"
 
@@ -47,3 +47,4 @@ export const assertExternalDirectoryEffect = Effect.fn("Tool.assertExternalDirec
 export async function assertExternalDirectory(ctx: Tool.Context, target?: string, options?: Options) {
   return Effect.runPromise(assertExternalDirectoryEffect(ctx, target, options))
 }
+

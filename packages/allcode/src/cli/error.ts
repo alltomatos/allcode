@@ -1,4 +1,4 @@
-import { NamedError } from "@opencode-ai/core/util/error"
+﻿import { NamedError } from "@allcode/core/util/error"
 import { errorFormat } from "@/util/error"
 import { isRecord } from "@/util/record"
 
@@ -128,3 +128,4 @@ export function FormatError(input: unknown): string | undefined {
 export function FormatUnknownError(input: unknown): string {
   return errorFormat(input)
 }
+

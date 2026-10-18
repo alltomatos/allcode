@@ -1,13 +1,13 @@
-import { Component, Show, createMemo, createResource, onMount, type JSX } from "solid-js"
-import { Button } from "@opencode-ai/ui/button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Select } from "@opencode-ai/ui/select"
-import { Switch } from "@opencode-ai/ui/switch"
-import { TextField } from "@opencode-ai/ui/text-field"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { useTheme, type ColorScheme } from "@opencode-ai/ui/theme/context"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿import { Component, Show, createMemo, createResource, onMount, type JSX } from "solid-js"
+import { Button } from "@allcode/ui/button"
+import { Icon } from "@allcode/ui/icon"
+import { Select } from "@allcode/ui/select"
+import { Switch } from "@allcode/ui/switch"
+import { TextField } from "@allcode/ui/text-field"
+import { Tooltip } from "@allcode/ui/tooltip"
+import { Tag } from "@allcode/ui/v2/badge-v2"
+import { useTheme, type ColorScheme } from "@allcode/ui/theme/context"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { useParams } from "@solidjs/router"
 import { useLanguage } from "@/context/language"
 import { usePermission } from "@/context/permission"
@@ -880,3 +880,4 @@ const SettingsRow: Component<SettingsRowProps> = (props) => {
     </div>
   )
 }
+

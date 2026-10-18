@@ -1,6 +1,6 @@
-import type { SessionApi } from "@opencode-ai/client/promise"
+﻿import type { SessionApi } from "@allcode/client/promise"
 import { normalizeSessionInfo } from "@/utils/session"
-import type { OpencodeClient } from "@opencode-ai/sdk/v2/client"
+import type { OpencodeClient } from "@allcode/sdk/v2/client"
 
 export async function loadRootSessions(input: { api: Pick<SessionApi, "list">; directory: string; limit: number }) {
   const result = await input.api.list({
@@ -31,3 +31,4 @@ export function estimateRootSessionTotal(input: { count: number; limit: number; 
   if (input.count < input.limit) return input.count
   return input.count + 1
 }
+

@@ -1,4 +1,4 @@
-import { For, Show, onCleanup, type JSX } from "solid-js"
+﻿import { For, Show, onCleanup, type JSX } from "solid-js"
 import { createStore } from "solid-js/store"
 import {
   DragDropProvider,
@@ -8,12 +8,12 @@ import {
   closestCenter,
   type DragEvent,
 } from "@thisbeyond/solid-dnd"
-import { Tabs } from "@opencode-ai/ui/tabs"
-import { IconButton } from "@opencode-ai/ui/icon-button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { TooltipKeybind } from "@opencode-ai/ui/tooltip"
-import { Mark } from "@opencode-ai/ui/logo"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { Tabs } from "@allcode/ui/tabs"
+import { IconButton } from "@allcode/ui/icon-button"
+import { Icon } from "@allcode/ui/icon"
+import { TooltipKeybind } from "@allcode/ui/tooltip"
+import { Mark } from "@allcode/ui/logo"
+import { useDialog } from "@allcode/ui/context/dialog"
 
 import { ConstrainDragYAxis, getDraggableId } from "@/utils/solid-dnd"
 import { SessionContextTab, SessionMemoryTab, SortableTab, FileVisual } from "@/components/session"
@@ -298,3 +298,4 @@ export function SessionSidePanelTabsLegacy(props: {
     </DragDropProvider>
   )
 }
+

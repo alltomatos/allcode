@@ -1,6 +1,6 @@
-import type { Hooks, PluginInput } from "@opencode-ai/plugin"
-import type { Model } from "@opencode-ai/sdk/v2"
-import { InstallationVersion } from "@opencode-ai/core/installation/version"
+﻿import type { Hooks, PluginInput } from "@allcode/plugin"
+import type { Model } from "@allcode/sdk/v2"
+import { InstallationVersion } from "@allcode/core/installation/version"
 import { iife } from "@/util/iife"
 import { setTimeout as sleep } from "node:timers/promises"
 import { CopilotModels } from "./models"
@@ -412,3 +412,4 @@ export async function CopilotAuthPlugin(input: PluginInput): Promise<Hooks> {
     },
   }
 }
+

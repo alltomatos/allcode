@@ -1,8 +1,8 @@
-import { createMemo, createSignal, createUniqueId, Show } from "solid-js"
+﻿import { createMemo, createSignal, createUniqueId, Show } from "solid-js"
 import { createQuery, keepPreviousData } from "@tanstack/solid-query"
-import { Icon } from "@opencode-ai/ui/icon"
-import { SessionFilePanelV2, SessionFilePanelV2Empty } from "@opencode-ai/session-ui/v2/session-file-panel-v2"
-import { SessionReviewV2Sidebar } from "@opencode-ai/session-ui/v2/session-review-v2"
+import { Icon } from "@allcode/ui/icon"
+import { SessionFilePanelV2, SessionFilePanelV2Empty } from "@allcode/session-ui/v2/session-file-panel-v2"
+import { SessionReviewV2Sidebar } from "@allcode/session-ui/v2/session-review-v2"
 import FileTreeV2, { type Kind } from "@/components/file-tree-v2"
 import { useFile } from "@/context/file"
 import { useLanguage } from "@/context/language"
@@ -180,3 +180,4 @@ export function SessionFileBrowserTab(props: {
     </SessionFilePanelV2>
   )
 }
+

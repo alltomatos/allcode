@@ -1,8 +1,8 @@
-import { describe, expect, test } from "bun:test"
+﻿import { describe, expect, test } from "bun:test"
 import type { SessionNotification } from "@agentclientprotocol/sdk"
-import { LayerNode } from "@opencode-ai/core/effect/layer-node"
-import { ProviderV2 } from "@opencode-ai/core/provider"
-import { ModelV2 } from "@opencode-ai/core/model"
+import { LayerNode } from "@allcode/core/effect/layer-node"
+import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 import { UsageService } from "@/acp/usage"
 import { Provider } from "@/provider/provider"
 import { InstanceBootstrap } from "@/project/bootstrap"
@@ -319,3 +319,4 @@ describe("acp usage", () => {
     )
   })
 })
+

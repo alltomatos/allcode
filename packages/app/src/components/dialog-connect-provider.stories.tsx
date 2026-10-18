@@ -1,6 +1,6 @@
-// @ts-nocheck
-import { Button } from "@opencode-ai/ui/button"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+﻿// @ts-nocheck
+import { Button } from "@allcode/ui/button"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import { mockProviderAuth } from "@/context/server-sync"
 import { onCleanup, onMount } from "solid-js"
@@ -71,3 +71,4 @@ export const LoginMethods = {
     { type: "api", label: "API key" },
   ]),
 }
+

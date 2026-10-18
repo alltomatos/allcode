@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { SessionV2Info } from "@opencode-ai/sdk/v2/client"
+﻿import { describe, expect, test } from "bun:test"
+import type { SessionV2Info } from "@allcode/sdk/v2/client"
 import {
   applyHomeSessionEvent,
   appendHomeSessionEvent,
@@ -152,3 +152,4 @@ describe("Home V2 session index", () => {
     expect(homeSessionIndexRefresh("session.next.moved", true).refetch).toBe(true)
   })
 })
+

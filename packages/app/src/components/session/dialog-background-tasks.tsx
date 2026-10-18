@@ -1,8 +1,8 @@
-import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@opencode-ai/ui/v2/dialog-v2"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { TooltipV2 } from "@opencode-ai/ui/v2/tooltip-v2"
-import { TextShimmer } from "@opencode-ai/ui/text-shimmer"
+﻿import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@allcode/ui/v2/dialog-v2"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
+import { TextShimmer } from "@allcode/ui/text-shimmer"
 import { For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useSDK } from "@/context/sdk"
@@ -142,3 +142,4 @@ export function DialogBackgroundTasks() {
     </DialogV2>
   )
 }
+

@@ -1,5 +1,5 @@
-import { describe, expect, test } from "bun:test"
-import type { Message, Part, PermissionRequest, Project, QuestionRequest, Session } from "@opencode-ai/sdk/v2/client"
+﻿import { describe, expect, test } from "bun:test"
+import type { Message, Part, PermissionRequest, Project, QuestionRequest, Session } from "@allcode/sdk/v2/client"
 import { createStore } from "solid-js/store"
 import type { State } from "./types"
 import { applyDirectoryEvent, applyGlobalEvent, cleanupDroppedSessionCaches } from "./event-reducer"
@@ -614,3 +614,4 @@ describe("applyDirectoryEvent", () => {
     expect(lspLoads).toBe(1)
   })
 })
+

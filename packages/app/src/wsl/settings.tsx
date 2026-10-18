@@ -1,10 +1,10 @@
-import { useDialog } from "@opencode-ai/ui/context/dialog"
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { ButtonV2 } from "@opencode-ai/ui/v2/button-v2"
-import { Icon as IconV2 } from "@opencode-ai/ui/v2/icon"
-import { Icon } from "@opencode-ai/ui/icon"
-import { IconButtonV2 } from "@opencode-ai/ui/v2/icon-button-v2"
-import { MenuV2 } from "@opencode-ai/ui/v2/menu-v2"
+﻿import { useDialog } from "@allcode/ui/context/dialog"
+import { Tag } from "@allcode/ui/v2/badge-v2"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { Icon as IconV2 } from "@allcode/ui/v2/icon"
+import { Icon } from "@allcode/ui/icon"
+import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
+import { MenuV2 } from "@allcode/ui/v2/menu-v2"
 import { useMutation } from "@tanstack/solid-query"
 import fuzzysort from "fuzzysort"
 import { type Accessor, For, Show, createMemo } from "solid-js"
@@ -200,3 +200,4 @@ export function WslServerSettings(props: {
     </Show>
   )
 }
+

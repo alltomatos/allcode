@@ -1,6 +1,6 @@
-{
+﻿{
   "$schema": "https://json.schemastore.org/package.json",
-  "name": "@opencode-ai/schema",
+  "name": "@allcode/schema",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -20,3 +20,4 @@
     "@typescript/native-preview": "catalog:"
   }
 }
+
