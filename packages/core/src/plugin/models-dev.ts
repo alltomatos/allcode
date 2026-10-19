@@ -127,7 +127,7 @@ export const ModelsDevPlugin = define({
         for (const item of Object.values(data)) {
           if (item.env.length === 0) continue
           const integrationID = item.id
-          integrations.update(integrationID, (integration) => (integration.name = item.id === "opencode" ? "AllCode" : item.name))
+          integrations.update(integrationID, (integration) => (integration.name = item.name))
           integrations.method.update({
             integrationID,
             method: { type: "key" },
@@ -145,7 +145,7 @@ export const ModelsDevPlugin = define({
         for (const item of Object.values(data)) {
           const providerID = ProviderV2.ID.make(item.id)
           catalog.provider.update(providerID, (provider) => {
-            provider.name = item.id === "opencode" ? "AllCode" : item.name
+            provider.name = item.name
             provider.api = item.npm
               ? {
                   type: "aisdk",
