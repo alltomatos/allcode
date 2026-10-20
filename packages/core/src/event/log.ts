@@ -1,10 +1,10 @@
 export * as EventLog from "./log"
 
 import { Context, Effect, Layer, Option, PubSub, Schema, Stream } from "effect"
-import { Event } from "@opencode-ai/schema/event"
-import type { Data, Definition, Payload } from "@opencode-ai/schema/event"
+import { Event } from "@allcode/schema/event"
+import type { Data, Definition, Payload } from "@allcode/schema/event"
 import { and, asc, eq, gt, inArray } from "drizzle-orm"
-import { Durable } from "@opencode-ai/schema/durable-event-manifest"
+import { Durable } from "@allcode/schema/durable-event-manifest"
 import { isDeepStrictEqual } from "node:util"
 import { Database } from "../database/database"
 import { EventLogBackfill } from "../database/event-log-backfill"
