@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { OpencodeClient } from "@allcode/sdk/v2/client"
 import type {
   McpListInput,

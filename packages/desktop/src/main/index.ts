@@ -476,8 +476,8 @@ const main = Effect.gen(function* () {
     // fails this effect, which forwardInitializationFailure below routes
     // into the same error-surfacing path as any other startup failure.
     yield* Effect.promise(() => health.wait).pipe(
-      Effect.timeout("30 seconds"),
-      Effect.catch((e) => Effect.fail(new Error(`Sidecar failed to become healthy within 30s: ${String(e)}`))),
+      Effect.timeout("60 seconds"),
+      Effect.catch((e) => Effect.fail(new Error(`Sidecar failed to become healthy within 60s: ${String(e)}`))),
     )
 
     yield* Deferred.succeed(serverReady, {

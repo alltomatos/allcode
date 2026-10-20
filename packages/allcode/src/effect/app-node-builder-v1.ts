@@ -1,4 +1,4 @@
-﻿import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { InstanceBootstrap } from "@/project/bootstrap"
 import { InstanceStore } from "@/project/instance-store"

@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { Effect } from "effect"
 import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { Npm } from "@allcode/core/npm"

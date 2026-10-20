@@ -1,4 +1,4 @@
-﻿import { afterEach, expect } from "bun:test"
+import { afterEach, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { FSUtil } from "@allcode/core/fs-util"
 import { Effect } from "effect"

@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { Hooks, PluginInput } from "@allcode/plugin"
 import { CerebrasPlugin } from "../../src/plugin/cerebras"
 

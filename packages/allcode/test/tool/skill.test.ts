@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Ripgrep } from "@allcode/core/ripgrep"

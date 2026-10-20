@@ -1,4 +1,4 @@
-﻿import { test, type TestOptions } from "bun:test"
+import { test, type TestOptions } from "bun:test"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { Cause, Duration, Effect, Exit, Layer } from "effect"
 import * as Scope from "effect/Scope"

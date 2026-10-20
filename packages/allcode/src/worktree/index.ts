@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { path } from "@allcode/core/effect/app-node-platform"
 import { Global } from "@allcode/core/global"
 import { InstanceStore } from "@/project/instance-store"

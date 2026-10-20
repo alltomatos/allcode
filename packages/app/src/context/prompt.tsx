@@ -1,4 +1,4 @@
-﻿import { base64Encode } from "@allcode/core/util/encode"
+import { base64Encode } from "@allcode/core/util/encode"
 import { createSimpleContext } from "@allcode/ui/context"
 import { useParams, useSearchParams } from "@solidjs/router"
 import { createMemo, createResource, createRoot, getOwner, onCleanup } from "solid-js"

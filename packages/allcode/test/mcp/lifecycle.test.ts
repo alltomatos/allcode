@@ -1,4 +1,4 @@
-﻿import path from "node:path"
+import path from "node:path"
 import { pathToFileURL } from "node:url"
 import { expect } from "bun:test"
 import { Server } from "@modelcontextprotocol/sdk/server/index.js"

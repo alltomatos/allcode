@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { and, eq, sql } from "drizzle-orm"
 import { Database } from "@allcode/core/database/database"
 import { ProjectDirectoryTable, ProjectTable } from "@allcode/core/project/sql"

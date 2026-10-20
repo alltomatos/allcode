@@ -1,4 +1,4 @@
-﻿import { Show, type JSX } from "solid-js"
+import { Show, type JSX } from "solid-js"
 import { DropdownMenu } from "@allcode/ui/dropdown-menu"
 import { Icon } from "@allcode/ui/icon"
 import { IconButton } from "@allcode/ui/icon-button"

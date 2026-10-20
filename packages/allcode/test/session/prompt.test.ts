@@ -1,4 +1,4 @@
-﻿import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { Database } from "@allcode/core/database/database"
 import { LayerNode } from "@allcode/core/effect/layer-node"

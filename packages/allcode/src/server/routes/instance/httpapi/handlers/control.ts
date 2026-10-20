@@ -1,4 +1,4 @@
-﻿import { Auth } from "@/auth"
+import { Auth } from "@/auth"
 import { Provider } from "@/provider/provider"
 
 import { Effect } from "effect"

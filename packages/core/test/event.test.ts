@@ -3,6 +3,8 @@ import { Cause, DateTime, Deferred, Effect, Exit, Fiber, Layer, Option, Schema, 
 import { EventV2 } from "@allcode/core/event"
 import { Event } from "@allcode/schema/event"
 import { Session } from "@allcode/schema/session"
+import { Model } from "@allcode/schema/model"
+import { Provider } from "@allcode/schema/provider"
 import { SessionEvent } from "@allcode/schema/session-event"
 import { SessionV1 } from "@allcode/schema/session-v1"
 import { Database } from "@allcode/core/database/database"
@@ -465,7 +467,7 @@ describe("EventV2", () => {
           pause
             ? Deferred.succeed(readStarted, undefined).pipe(Effect.andThen(Deferred.await(continueRead)))
             : Effect.void,
-      }).pipe(Layer.provide(LayerNode.compile(Database.node)))
+      }).pipe(Layer.provide(LayerNode.compile(LayerNode.group([Database.node, EventV2.Bus.node]))))
 
       yield* Effect.gen(function* () {
         const events = yield* EventV2.Service
@@ -480,7 +482,7 @@ describe("EventV2", () => {
         expect(Array.from(yield* Fiber.join(fiber)).map((event) => [event.durable?.seq, event.data])).toEqual([
           [0, durableData(aggregateID, "during handoff")],
         ])
-      }).pipe(Effect.provide(Layer.merge(LayerNode.compile(Database.node), eventLayer)))
+      }).pipe(Effect.provide(Layer.merge(LayerNode.compile(LayerNode.group([Database.node, EventV2.Bus.node])), eventLayer)))
     }),
   )
 
@@ -1119,6 +1121,56 @@ describe("EventV2", () => {
       })
 
       expect(received[0]?.data).toEqual(durableData(aggregateID, "replayed"))
+    }),
+  )
+
+  it.effect("transient durable events store a tombstone row, advance seq, and allow idempotent replay", () =>
+    Effect.gen(function* () {
+      const events = yield* EventV2.Service
+      const { db } = yield* Database.Service
+      const aggregateID = Session.ID.create()
+
+      const info: SessionV1.Info = {
+        id: SessionV1.MessageID.ascending("msg_test"),
+        sessionID: aggregateID,
+        role: "user",
+        agent: "build",
+        model: {
+          modelID: Model.ID.make("test-model"),
+          providerID: Provider.ID.make("test-provider"),
+        },
+        time: { created: Date.now() },
+      }
+
+      // 1. Publicar evento durável transiente (SessionV1.Event.MessageUpdated)
+      const published = yield* events.publish(SessionV1.Event.MessageUpdated, {
+        sessionID: aggregateID,
+        info,
+      })
+
+      expect(published.durable?.seq).toBe(0)
+
+      // 2. Verificar que o tombstone foi gravado em EventTable com data vazio/tombstone
+      const rows = yield* db
+        .select()
+        .from(EventTable)
+        .where(eq(EventTable.aggregate_id, aggregateID))
+        .all()
+        .pipe(Effect.orDie)
+
+      expect(rows).toHaveLength(1)
+      expect(rows[0]?.seq).toBe(0)
+      expect(rows[0]?.type).toBe("message.updated.1")
+      expect(rows[0]?.data).toEqual({})
+
+      // 3. Replay idempotente do mesmo evento não deve falhar com "Replay diverged"
+      yield* events.replay({
+        id: published.id,
+        type: EventV2.versionedType(SessionV1.Event.MessageUpdated.type, 1),
+        seq: 0,
+        aggregateID,
+        data: { sessionID: aggregateID, info },
+      })
     }),
   )
 })

@@ -1,4 +1,4 @@
-﻿import { createMemo } from "solid-js"
+import { createMemo } from "solid-js"
 import { Button } from "@allcode/ui/button"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Dialog } from "@allcode/ui/dialog"

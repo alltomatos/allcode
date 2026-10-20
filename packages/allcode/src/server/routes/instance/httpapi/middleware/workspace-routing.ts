@@ -1,4 +1,4 @@
-﻿import { WorkspaceV2 } from "@allcode/core/workspace"
+import { WorkspaceV2 } from "@allcode/core/workspace"
 import type { Target } from "@/control-plane/types"
 import { Workspace } from "@/control-plane/workspace"
 import { WorkspaceAdapterRuntime } from "@/control-plane/workspace-adapter-runtime"

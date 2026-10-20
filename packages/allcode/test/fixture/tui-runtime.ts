@@ -1,4 +1,4 @@
-﻿import { spyOn } from "bun:test"
+import { spyOn } from "bun:test"
 import path from "path"
 import { resolve, type Info, type Resolved } from "@allcode/tui/config"
 import { TuiConfig } from "../../src/config/tui"

@@ -1,4 +1,4 @@
-﻿import { Show, createEffect, createMemo, type JSX } from "solid-js"
+import { Show, createEffect, createMemo, type JSX } from "solid-js"
 import { createMediaQuery } from "@solid-primitives/media"
 
 import type { SnapshotFileDiff, VcsFileDiff } from "@allcode/sdk/v2"

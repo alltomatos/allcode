@@ -1,4 +1,4 @@
-﻿import { NodeHttpServer, NodeServices } from "@effect/platform-node"
+import { NodeHttpServer, NodeServices } from "@effect/platform-node"
 import { NamedError } from "@allcode/core/util/error"
 import { describe, expect } from "bun:test"
 import { ConfigErrorV1 } from "@allcode/core/v1/config/error"

@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import path from "path"
 import { Effect, Layer, Record, Result, Schema, Context } from "effect"
 import { NonNegativeInt } from "@allcode/core/schema"

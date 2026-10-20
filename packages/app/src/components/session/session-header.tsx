@@ -1,4 +1,4 @@
-﻿import { AppIcon } from "@allcode/ui/app-icon"
+import { AppIcon } from "@allcode/ui/app-icon"
 import { Button } from "@allcode/ui/button"
 import { DropdownMenu } from "@allcode/ui/dropdown-menu"
 import { Icon } from "@allcode/ui/icon"

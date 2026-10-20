@@ -1,4 +1,4 @@
-﻿import { base64Encode } from "@allcode/core/util/encode"
+import { base64Encode } from "@allcode/core/util/encode"
 import { expect, test, type Page, type Route } from "@playwright/test"
 import { installSseTransport } from "../utils/sse-transport"
 import { currentSession } from "../utils/mock-server"

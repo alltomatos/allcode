@@ -1,4 +1,4 @@
-﻿import { getDirectory, getFilename } from "@allcode/core/util/path"
+import { getDirectory, getFilename } from "@allcode/core/util/path"
 import { FileIcon } from "@allcode/ui/file-icon"
 import { ScrollView } from "@allcode/ui/scroll-view"
 import { Dialog, DialogBody } from "@allcode/ui/v2/dialog-v2"

@@ -1,4 +1,4 @@
-﻿import path from "path"
+import path from "path"
 import { Effect, Schema } from "effect"
 import { InstanceState } from "@/effect/instance-state"
 import { FSUtil } from "@allcode/core/fs-util"

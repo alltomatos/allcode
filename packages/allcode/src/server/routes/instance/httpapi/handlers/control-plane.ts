@@ -1,4 +1,4 @@
-﻿import { MoveSession } from "@allcode/core/control-plane/move-session"
+import { MoveSession } from "@allcode/core/control-plane/move-session"
 import { SessionV2 } from "@allcode/core/session"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"

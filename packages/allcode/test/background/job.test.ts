@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Deferred, Effect } from "effect"
 import { BackgroundJob } from "@/background/job"

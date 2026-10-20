@@ -1,4 +1,4 @@
-﻿import { SessionID, MessageID } from "./schema"
+import { SessionID, MessageID } from "./schema"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { ProviderV2 } from "@allcode/core/provider"
 import {

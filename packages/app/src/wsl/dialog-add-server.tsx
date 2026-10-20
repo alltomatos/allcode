@@ -1,4 +1,4 @@
-﻿import { useDialog } from "@allcode/ui/context/dialog"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { showToast } from "@allcode/ui/toast"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"

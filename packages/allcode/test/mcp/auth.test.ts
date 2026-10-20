@@ -1,4 +1,4 @@
-﻿import { expect, test } from "bun:test"
+import { expect, test } from "bun:test"
 import { setTimeout as sleep } from "node:timers/promises"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { Effect, Layer } from "effect"

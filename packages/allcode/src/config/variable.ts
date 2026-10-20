@@ -1,4 +1,4 @@
-﻿export * as ConfigVariable from "./variable"
+export * as ConfigVariable from "./variable"
 
 import path from "path"
 import os from "os"

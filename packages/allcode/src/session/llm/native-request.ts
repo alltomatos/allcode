@@ -1,4 +1,4 @@
-﻿import type { JsonSchema, LLMRequest, ProviderMetadata } from "@allcode/llm"
+import type { JsonSchema, LLMRequest, ProviderMetadata } from "@allcode/llm"
 import { LLM, Message, SystemPart, ToolCallPart, ToolDefinition, ToolResultPart } from "@allcode/llm"
 import {
   AmazonBedrock,

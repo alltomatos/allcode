@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { httpClient } from "@allcode/core/effect/app-node-platform"
 import path from "path"
 import { SessionV1 } from "@allcode/core/v1/session"

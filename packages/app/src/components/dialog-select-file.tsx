@@ -1,4 +1,4 @@
-﻿import { Dialog } from "@allcode/ui/dialog"
+import { Dialog } from "@allcode/ui/dialog"
 import { FileIcon } from "@allcode/ui/file-icon"
 import { Icon } from "@allcode/ui/icon"
 import { Keybind } from "@allcode/ui/keybind"

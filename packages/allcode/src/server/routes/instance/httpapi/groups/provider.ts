@@ -1,4 +1,4 @@
-﻿import { ProviderAuth } from "@/provider/auth"
+import { ProviderAuth } from "@/provider/auth"
 import { Provider } from "@/provider/provider"
 
 import { Schema } from "effect"

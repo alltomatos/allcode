@@ -1,4 +1,4 @@
-﻿import { createMemo, For, Show, type Accessor, type JSX } from "solid-js"
+import { createMemo, For, Show, type Accessor, type JSX } from "solid-js"
 import { createStore } from "solid-js/store"
 import { base64Encode } from "@allcode/core/util/encode"
 import { Button } from "@allcode/ui/button"

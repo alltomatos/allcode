@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import path from "path"
 import * as fs from "fs/promises"
 import { LayerNode } from "@allcode/core/effect/layer-node"

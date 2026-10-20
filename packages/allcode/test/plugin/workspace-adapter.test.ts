@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect } from "bun:test"
+import { afterEach, describe, expect } from "bun:test"
 import { Effect, Layer } from "effect"
 import { Npm } from "@allcode/core/npm"
 import { Ripgrep } from "@allcode/core/ripgrep"

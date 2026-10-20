@@ -1,4 +1,4 @@
-﻿import { Filesystem } from "@/util/filesystem"
+import { Filesystem } from "@/util/filesystem"
 import { FrontmatterError } from "@allcode/core/v1/config/error"
 import { ConfigMarkdown as ConfigMarkdownCore } from "@allcode/core/config/markdown"
 

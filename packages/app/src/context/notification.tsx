@@ -1,4 +1,4 @@
-﻿import { createStore, reconcile } from "solid-js/store"
+import { createStore, reconcile } from "solid-js/store"
 import { type Accessor, batch, createEffect, createMemo, createRoot, getOwner, onCleanup } from "solid-js"
 import { useNavigate, useParams, useSearchParams } from "@solidjs/router"
 import { createSimpleContext } from "@allcode/ui/context"

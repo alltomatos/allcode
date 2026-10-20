@@ -1,4 +1,4 @@
-﻿import { batch, createEffect, createMemo, onCleanup } from "solid-js"
+import { batch, createEffect, createMemo, onCleanup } from "solid-js"
 import { createStore, produce, reconcile } from "solid-js/store"
 import { createSimpleContext } from "@allcode/ui/context"
 import { showToast } from "@/utils/toast"

@@ -1,4 +1,4 @@
-﻿import { batch, createMemo, createRoot, onCleanup } from "solid-js"
+import { batch, createMemo, createRoot, onCleanup } from "solid-js"
 import { createStore, reconcile, type SetStoreFunction, type Store } from "solid-js/store"
 import { createSimpleContext } from "@allcode/ui/context"
 import { useParams } from "@solidjs/router"

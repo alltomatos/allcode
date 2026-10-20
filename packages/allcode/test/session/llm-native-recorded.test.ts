@@ -1,4 +1,4 @@
-﻿import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { ModelsDev } from "@allcode/core/models-dev"
 import { HttpRecorder } from "@allcode/http-recorder"

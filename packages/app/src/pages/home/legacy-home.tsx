@@ -1,4 +1,4 @@
-﻿import { DialogSelectServer } from "@/components/dialog-select-server"
+import { DialogSelectServer } from "@/components/dialog-select-server"
 import { useDirectoryPicker } from "@/components/directory-picker"
 import { useGlobal } from "@/context/global"
 import { useLanguage } from "@/context/language"

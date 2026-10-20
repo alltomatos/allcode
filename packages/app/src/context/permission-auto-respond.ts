@@ -1,4 +1,4 @@
-﻿import { base64Encode } from "@allcode/core/util/encode"
+import { base64Encode } from "@allcode/core/util/encode"
 
 export type AutoAcceptLevel = boolean | "edits"
 

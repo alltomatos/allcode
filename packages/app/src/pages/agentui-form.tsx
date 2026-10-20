@@ -1,4 +1,4 @@
-﻿import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js"
 import { useNavigate, useParams } from "@solidjs/router"
 import { createStore } from "solid-js/store"
 import { ScrollView } from "@allcode/ui/scroll-view"

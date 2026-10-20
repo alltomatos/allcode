@@ -271,21 +271,32 @@ export async function checkHealth(url: string, password?: string | null): Promis
     return false
   }
 
-  const headers = new Headers()
-  if (password) {
-    const auth = Buffer.from(`opencode:${password}`).toString("base64")
-    headers.set("authorization", `Basic ${auth}`)
-  }
+  const userTokens = ["allcode", "opencode"]
 
   for (const healthUrl of healthUrls) {
-    try {
-      const res = await fetch(healthUrl, {
-        method: "GET",
-        headers,
-        signal: AbortSignal.timeout(3000),
-      })
-      if (res.ok) return true
-    } catch {}
+    if (!password) {
+      try {
+        const res = await fetch(healthUrl, { method: "GET", signal: AbortSignal.timeout(3000) })
+        if (res.ok) return true
+      } catch {}
+      continue
+    }
+
+    for (const user of userTokens) {
+      const headers = new Headers()
+      const auth = Buffer.from(`${user}:${password}`).toString("base64")
+      headers.set("authorization", `Basic ${auth}`)
+      try {
+        const res = await fetch(healthUrl, {
+          method: "GET",
+          headers,
+          signal: AbortSignal.timeout(3000),
+        })
+        if (res.ok) return true
+      } catch (err) {
+        // Ignora erros de conexão transitórios durante o boot
+      }
+    }
   }
   return false
 }

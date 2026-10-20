@@ -1,4 +1,4 @@
-﻿import { createEffect } from "solid-js"
+import { createEffect } from "solid-js"
 import { checksum } from "@allcode/core/util/encode"
 import type { useSessionLayout } from "@/pages/session/session-layout"
 

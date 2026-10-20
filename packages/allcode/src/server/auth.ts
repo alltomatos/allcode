@@ -1,4 +1,4 @@
-﻿export * as ServerAuth from "./auth"
+export * as ServerAuth from "./auth"
 
 import { ConfigService } from "@/effect/config-service"
 import { Flag } from "@allcode/core/flag/flag"

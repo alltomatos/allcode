@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { Message, Part, PermissionRequest, QuestionRequest, SessionStatus, Todo } from "@allcode/sdk/v2/client"
 import type { FileDiffInfo } from "@allcode/client/promise"
 import { dropSessionCaches, pickSessionCacheEvictions } from "./session-cache"

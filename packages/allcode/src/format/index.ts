@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer, Context, Schema } from "effect"
 import { serviceUse } from "@allcode/core/effect/service-use"
 import { ChildProcess } from "effect/unstable/process"

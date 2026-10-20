@@ -1,4 +1,4 @@
-﻿import { TuiConfig } from "@allcode/tui/config"
+import { TuiConfig } from "@allcode/tui/config"
 import { isRecord } from "@allcode/tui/util/record"
 import { Filesystem } from "@/util/filesystem"
 import { Schema } from "effect"

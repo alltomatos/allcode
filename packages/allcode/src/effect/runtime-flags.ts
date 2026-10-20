@@ -1,4 +1,4 @@
-﻿import { Config, ConfigProvider, Context, Effect, Layer, Option } from "effect"
+import { Config, ConfigProvider, Context, Effect, Layer, Option } from "effect"
 import { ConfigService } from "@/effect/config-service"
 
 const bool = (name: string) => Config.boolean(name).pipe(Config.withDefault(false))

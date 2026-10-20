@@ -1,4 +1,4 @@
-﻿import type { SessionApi, SessionInfo, SessionListInput } from "@allcode/client/promise"
+import type { SessionApi, SessionInfo, SessionListInput } from "@allcode/client/promise"
 import type { Session } from "@allcode/sdk/v2/client"
 import { withTimestampedFallback } from "./session-title"
 

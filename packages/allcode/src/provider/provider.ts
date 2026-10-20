@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import os from "os"
 import type { Credential } from "@allcode/core/credential"
 import { createAntigravityFetch } from "./antigravity-adapter"

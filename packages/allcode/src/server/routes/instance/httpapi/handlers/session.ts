@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { Agent } from "@/agent/agent"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { EventV2Bridge } from "@/event-v2-bridge"

@@ -1,4 +1,4 @@
-﻿import { createSimpleContext } from "@allcode/ui/context"
+import { createSimpleContext } from "@allcode/ui/context"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { type Accessor, createEffect, createMemo, onCleanup, onMount } from "solid-js"
 import { createStore } from "solid-js/store"

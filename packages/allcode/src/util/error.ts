@@ -1,2 +1,2 @@
-﻿export * from "@allcode/tui/util/error"
+export * from "@allcode/tui/util/error"
 

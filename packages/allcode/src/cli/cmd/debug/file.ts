@@ -1,4 +1,4 @@
-﻿import { EOL } from "os"
+import { EOL } from "os"
 import { Effect } from "effect"
 import { FileSystem } from "@allcode/core/filesystem"
 import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"

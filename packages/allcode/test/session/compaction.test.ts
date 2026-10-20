@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect, mock, test } from "bun:test"
+import { afterEach, describe, expect, mock, test } from "bun:test"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { Database } from "@allcode/core/database/database"

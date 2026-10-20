@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { httpClient } from "@allcode/core/effect/app-node-platform"
 import { Ripgrep } from "@allcode/core/ripgrep"
 import { Schedule } from "@allcode/core/schedule"

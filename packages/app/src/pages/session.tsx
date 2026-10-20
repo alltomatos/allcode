@@ -1,4 +1,4 @@
-﻿import type { FilePart, Project, UserMessage, VcsFileDiff } from "@allcode/sdk/v2"
+import type { FilePart, Project, UserMessage, VcsFileDiff } from "@allcode/sdk/v2"
 import { getFilename } from "@allcode/core/util/path"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation, useQueryClient } from "@tanstack/solid-query"

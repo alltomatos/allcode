@@ -1,4 +1,4 @@
-﻿import { ConfigV1 } from "@allcode/core/v1/config/config"
+import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { EventV2 } from "@allcode/core/event"
 import { EventManifest } from "@/event-manifest"
 import { InstanceDisposed } from "@/server/event"

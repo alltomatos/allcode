@@ -1,4 +1,4 @@
-﻿import type { WorkspaceV2 } from "@allcode/core/workspace"
+import type { WorkspaceV2 } from "@allcode/core/workspace"
 import { Flag } from "@allcode/core/flag/flag"
 import { Effect, Scope } from "effect"
 

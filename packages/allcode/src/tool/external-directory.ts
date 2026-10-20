@@ -1,4 +1,4 @@
-﻿import path from "path"
+import path from "path"
 import { Effect } from "effect"
 import { InstanceState } from "@/effect/instance-state"
 import type * as Tool from "./tool"

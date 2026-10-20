@@ -1,4 +1,4 @@
-﻿import { getFilename } from "@allcode/core/util/path"
+import { getFilename } from "@allcode/core/util/path"
 import type { Project } from "@allcode/sdk/v2/client"
 import type { SessionInfo } from "@allcode/client/promise"
 import { useDialog } from "@allcode/ui/context/dialog"

@@ -1,4 +1,4 @@
-﻿import path from "path"
+import path from "path"
 import { Effect, Schema } from "effect"
 import { Ripgrep } from "@allcode/core/ripgrep"
 import { Skill } from "../skill"

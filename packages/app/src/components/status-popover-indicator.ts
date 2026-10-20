@@ -1,4 +1,4 @@
-﻿import type { LspStatus } from "@allcode/sdk/v2/client"
+import type { LspStatus } from "@allcode/sdk/v2/client"
 import type { McpServer } from "@allcode/client/promise"
 
 export function hasServiceNeedingAttention(input: { mcp: Array<McpServer["status"]["status"]> }) {

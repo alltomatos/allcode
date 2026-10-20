@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect, mock } from "bun:test"
+import { afterEach, describe, expect, mock } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Effect, Layer } from "effect"
 import { Flag } from "@allcode/core/flag/flag"

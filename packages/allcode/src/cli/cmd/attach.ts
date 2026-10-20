@@ -1,4 +1,4 @@
-﻿import { cmd } from "./cmd"
+import { cmd } from "./cmd"
 import { UI } from "@/cli/ui"
 import { errorMessage } from "@allcode/tui/util/error"
 import { validateSession } from "../tui/validate-session"

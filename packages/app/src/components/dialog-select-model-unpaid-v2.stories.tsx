@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { Button } from "@allcode/ui/button"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { createSignal, onMount } from "solid-js"

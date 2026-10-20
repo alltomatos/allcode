@@ -1,4 +1,4 @@
-﻿import { expect } from "bun:test"
+import { expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect } from "effect"
 import { Config } from "@/config/config"

@@ -1,4 +1,4 @@
-﻿import { createBuiltinPlugins, type BuiltinTuiPlugin } from "@allcode/tui/builtins"
+import { createBuiltinPlugins, type BuiltinTuiPlugin } from "@allcode/tui/builtins"
 import type { RuntimeFlags } from "@/effect/runtime-flags"
 
 export type InternalTuiPlugin = BuiltinTuiPlugin

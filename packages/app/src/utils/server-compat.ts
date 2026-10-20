@@ -1,4 +1,4 @@
-﻿import type { ServerApi } from "./server"
+import type { ServerApi } from "./server"
 import type { ServerProtocol } from "./server-protocol"
 import type { AgentPartInput, FilePartInput, OpencodeClient, Session, TextPartInput } from "@allcode/sdk/v2/client"
 import type {

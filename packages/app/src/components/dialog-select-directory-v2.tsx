@@ -1,4 +1,4 @@
-﻿import "@pierre/trees/web-components"
+import "@pierre/trees/web-components"
 import { FileTree } from "@pierre/trees"
 import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"

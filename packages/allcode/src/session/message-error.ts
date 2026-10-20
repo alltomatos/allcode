@@ -1,4 +1,4 @@
-﻿import { Schema } from "effect"
+import { Schema } from "effect"
 import { NamedError } from "@allcode/core/util/error"
 
 export const OutputLengthError = NamedError.create("MessageOutputLengthError", {})

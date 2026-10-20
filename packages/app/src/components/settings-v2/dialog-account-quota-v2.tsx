@@ -1,4 +1,4 @@
-﻿import { Component, For, Show } from "solid-js"
+import { Component, For, Show } from "solid-js"
 import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Tag } from "@allcode/ui/v2/badge-v2"

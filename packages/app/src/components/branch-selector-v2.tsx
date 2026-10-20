@@ -1,4 +1,4 @@
-﻿import { createMemo, createResource, createSignal, For, Show } from "solid-js"
+import { createMemo, createResource, createSignal, For, Show } from "solid-js"
 import { MenuV2 } from "@allcode/ui/v2/menu-v2"
 import { Icon } from "@allcode/ui/icon"
 import { Spinner } from "@allcode/ui/spinner"

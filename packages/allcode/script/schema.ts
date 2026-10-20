@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bun
+#!/usr/bin/env bun
 
 import { Config } from "@/config/config"
 import { ConfigV1 } from "@allcode/core/v1/config/config"

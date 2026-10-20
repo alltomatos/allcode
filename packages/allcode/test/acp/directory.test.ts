@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { Directory } from "@/acp/directory"
 import { Command } from "@/command"
 import { LayerNode } from "@allcode/core/effect/layer-node"

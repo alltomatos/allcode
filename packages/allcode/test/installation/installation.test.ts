@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { makeGlobalNode } from "@allcode/core/effect/app-node"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { httpClient } from "@allcode/core/effect/app-node-platform"

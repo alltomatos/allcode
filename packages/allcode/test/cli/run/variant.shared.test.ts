@@ -1,4 +1,4 @@
-﻿import path from "path"
+import path from "path"
 import { NodeFileSystem } from "@effect/platform-node"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { FSUtil } from "@allcode/core/fs-util"

@@ -1,4 +1,4 @@
-﻿import { ConfigMemoryV1 } from "@allcode/core/v1/config/memory"
+import { ConfigMemoryV1 } from "@allcode/core/v1/config/memory"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 import { Authorization } from "../middleware/authorization"

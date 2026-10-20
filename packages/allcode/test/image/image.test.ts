@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Cause, Effect, Exit } from "effect"
 import { Image } from "@/image/image"

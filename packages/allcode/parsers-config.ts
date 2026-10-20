@@ -1,2 +1,2 @@
-﻿export { default } from "@allcode/tui/parsers-config"
+export { default } from "@allcode/tui/parsers-config"
 

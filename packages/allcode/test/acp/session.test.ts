@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import type { McpServer } from "@agentclientprotocol/sdk"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect } from "effect"

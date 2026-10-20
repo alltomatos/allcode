@@ -1,4 +1,4 @@
-﻿import { expect } from "bun:test"
+import { expect } from "bun:test"
 import { Npm } from "@allcode/core/npm"
 import { Effect } from "effect"
 import path from "path"

@@ -1,4 +1,4 @@
-﻿import { Button } from "@allcode/ui/button"
+import { Button } from "@allcode/ui/button"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { Dialog } from "@allcode/ui/dialog"
 import { List, type ListRef } from "@allcode/ui/list"

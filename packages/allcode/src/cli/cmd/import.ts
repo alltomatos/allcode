@@ -1,4 +1,4 @@
-﻿import type { Session as SDKSession, Message, Part } from "@allcode/sdk/v2"
+import type { Session as SDKSession, Message, Part } from "@allcode/sdk/v2"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { Session } from "@/session/session"
 import { MessageV2 } from "../../session/message-v2"

@@ -1,4 +1,4 @@
-﻿import { run as runTui, type TuiInput } from "@allcode/tui"
+import { run as runTui, type TuiInput } from "@allcode/tui"
 import { Global } from "@allcode/core/global"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { Effect } from "effect"

@@ -1,4 +1,4 @@
-﻿import type { Argv } from "yargs"
+import type { Argv } from "yargs"
 import { Auth } from "../../auth"
 import { cmd } from "./cmd"
 import { CliError, effectCmd, fail } from "../effect-cmd"

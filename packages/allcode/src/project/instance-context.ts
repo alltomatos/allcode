@@ -1,4 +1,4 @@
-﻿import { LocalContext } from "@/util/local-context"
+import { LocalContext } from "@/util/local-context"
 import { FSUtil } from "@allcode/core/fs-util"
 import type * as Project from "./project"
 

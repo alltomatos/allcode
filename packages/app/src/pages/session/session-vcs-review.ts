@@ -1,4 +1,4 @@
-﻿import { createMemo } from "solid-js"
+import { createMemo } from "solid-js"
 import { createQuery, skipToken, type QueryClient } from "@tanstack/solid-query"
 import { debounce } from "@solid-primitives/scheduled"
 import type { UserMessage, VcsFileDiff } from "@allcode/sdk/v2"

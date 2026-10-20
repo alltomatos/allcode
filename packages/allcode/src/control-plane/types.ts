@@ -1,4 +1,4 @@
-﻿import { Schema, Struct } from "effect"
+import { Schema, Struct } from "effect"
 import { ProjectV2 } from "@allcode/core/project"
 import type { InstanceContext } from "@/project/instance-context"
 import { WorkspaceV2 } from "@allcode/core/workspace"

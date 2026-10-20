@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { getAdapter, registerAdapter } from "../../src/control-plane/adapters"
 import { ProjectV2 } from "@allcode/core/project"
 import type { WorkspaceInfo } from "../../src/control-plane/types"

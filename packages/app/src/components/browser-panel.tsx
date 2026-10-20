@@ -1,4 +1,4 @@
-﻿import { createEffect, createSignal, onCleanup, onMount, Show, type Component } from "solid-js"
+import { createEffect, createSignal, onCleanup, onMount, Show, type Component } from "solid-js"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"

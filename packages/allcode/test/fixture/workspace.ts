@@ -1,4 +1,4 @@
-﻿import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Database } from "@allcode/core/database/database"
 import { FSUtil } from "@allcode/core/fs-util"

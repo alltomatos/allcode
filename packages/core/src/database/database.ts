@@ -9,7 +9,8 @@ import { isAbsolute, join } from "path"
 import { Branding } from "../platform/branding"
 import { DatabaseMigration } from "./migration"
 import { InstallationChannel } from "../installation/version"
-import { makeGlobalNode } from "../effect/app-node"
+import { makeGlobalNode, makeLocationNode } from "../effect/app-node"
+import { WorkspaceMigration } from "./workspace-migration"
 
 const makeDatabase = EffectDrizzleSqlite.makeWithDefaults()
 type DatabaseShape = Effect.Success<typeof makeDatabase>
@@ -19,6 +20,8 @@ export interface Interface {
 }
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/v2/storage/Database") {}
+
+export class GlobalService extends Context.Service<GlobalService, Interface>()("@opencode/v2/storage/GlobalDatabase") {}
 
 const layer = Layer.effect(
   Service,
@@ -37,8 +40,25 @@ const layer = Layer.effect(
   }).pipe(Effect.orDie),
 )
 
+export const globalLayer = Layer.effect(
+  GlobalService,
+  Effect.gen(function* () {
+    const service = yield* Service
+    return GlobalService.of(service)
+  }),
+).pipe(Layer.provide(layerFromPath(path())))
+
+export const globalNode = makeGlobalNode({ service: GlobalService, layer: globalLayer, deps: [] })
+
 export function layerFromPath(filename: string) {
   return layer.pipe(Layer.provide(sqliteLayer({ filename })))
+}
+
+export function makeFromPath(filename: string) {
+  return Effect.gen(function* () {
+    const layer = layerFromPath(filename)
+    return yield* Service.pipe(Effect.provide(layer))
+  })
 }
 
 export function path() {
@@ -56,3 +76,12 @@ export function path() {
 }
 
 export const node = makeGlobalNode({ service: Service, layer: layerFromPath(path()), deps: [] })
+// Location-scoped override of the global `Database.Service`. Tagged `location`
+// so `hoist` keeps it inside the location graph (the workspace `project.db`)
+// instead of hoisting it next to the global database.
+export const locationNode = (workspaceHash: string) =>
+  makeLocationNode({
+    service: Service,
+    layer: WorkspaceMigration.workspaceDatabaseLayer(workspaceHash),
+    deps: [] as const,
+  })

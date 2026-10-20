@@ -1,4 +1,4 @@
-﻿export * as WhatsApp from "./index"
+export * as WhatsApp from "./index"
 
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"

@@ -1,4 +1,4 @@
-﻿import { parseCommentNote, readCommentMetadata } from "@/utils/comment-note"
+import { parseCommentNote, readCommentMetadata } from "@/utils/comment-note"
 import type { SessionMessageInfo } from "@allcode/client/promise"
 import { AssistantMessage, Part, SessionStatus, UserMessage } from "@allcode/sdk/v2"
 import { groupParts, renderable, type PartGroup } from "@allcode/session-ui/message-part"

@@ -1,4 +1,4 @@
-﻿import { type Accessor, createMemo, For, type JSX, onCleanup, Show, splitProps } from "solid-js"
+import { type Accessor, createMemo, For, type JSX, onCleanup, Show, splitProps } from "solid-js"
 import { createStore } from "solid-js/store"
 import { DragDropProvider, PointerSensor } from "@dnd-kit/solid"
 import { isSortable, useSortable } from "@dnd-kit/solid/sortable"

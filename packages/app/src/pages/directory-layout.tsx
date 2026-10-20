@@ -1,4 +1,4 @@
-﻿import { DataProvider } from "@allcode/session-ui/context"
+import { DataProvider } from "@allcode/session-ui/context"
 import { showToast } from "@/utils/toast"
 import { base64Encode } from "@allcode/core/util/encode"
 import { useLocation, useNavigate, useParams } from "@solidjs/router"

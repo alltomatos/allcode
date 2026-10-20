@@ -1,4 +1,4 @@
-﻿import { For, Show } from "solid-js"
+import { For, Show } from "solid-js"
 import { MenuV2 } from "@allcode/ui/v2/menu-v2"
 import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { Icon } from "@allcode/ui/icon"

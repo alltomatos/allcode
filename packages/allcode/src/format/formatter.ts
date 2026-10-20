@@ -1,4 +1,4 @@
-﻿import { Npm } from "@allcode/core/npm"
+import { Npm } from "@allcode/core/npm"
 import type { InstanceContext } from "../project/instance-context"
 import { Filesystem } from "@/util/filesystem"
 import { Process } from "@/util/process"

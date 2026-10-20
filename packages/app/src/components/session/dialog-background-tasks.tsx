@@ -1,4 +1,4 @@
-﻿import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@allcode/ui/v2/dialog-v2"
+import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@allcode/ui/v2/dialog-v2"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"

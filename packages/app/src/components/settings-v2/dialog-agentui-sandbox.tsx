@@ -1,4 +1,4 @@
-﻿import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
+import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
 import { DividerV2 } from "@allcode/ui/v2/divider-v2"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"

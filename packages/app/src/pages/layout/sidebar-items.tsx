@@ -1,4 +1,4 @@
-﻿import type { Session } from "@allcode/sdk/v2/client"
+import type { Session } from "@allcode/sdk/v2/client"
 import { Avatar } from "@allcode/ui/avatar"
 import { Icon } from "@allcode/ui/icon"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"

@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect } from "bun:test"
+import { afterEach, describe, expect } from "bun:test"
 import { Effect } from "effect"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { LayerNode } from "@allcode/core/effect/layer-node"

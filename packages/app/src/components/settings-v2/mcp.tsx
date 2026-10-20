@@ -1,4 +1,4 @@
-﻿import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
 import { Icon } from "@allcode/ui/icon"

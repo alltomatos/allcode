@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Config } from "@/config/config"
 import { SessionV1 } from "@allcode/core/v1/session"
 import type { MessageV2 } from "@/session/message-v2"

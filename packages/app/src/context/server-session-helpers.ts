@@ -1,4 +1,4 @@
-﻿import type { Message, Part } from "@allcode/sdk/v2/client"
+import type { Message, Part } from "@allcode/sdk/v2/client"
 import type { SessionMessageInfo } from "@allcode/client/promise"
 import { compareMessages, messageKey } from "@/utils/session-message"
 import { Binary } from "@allcode/core/util/binary"

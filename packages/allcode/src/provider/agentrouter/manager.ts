@@ -1,4 +1,4 @@
-﻿import fs from "fs/promises"
+import fs from "fs/promises"
 import path from "path"
 import { Global } from "@allcode/core/global"
 import { Process } from "@/util/process"

@@ -1,4 +1,4 @@
-﻿import { Global } from "@allcode/core/global"
+import { Global } from "@allcode/core/global"
 import { InstallationVersion } from "@allcode/core/installation/version"
 import { Flag } from "@allcode/core/flag/flag"
 import os from "os"

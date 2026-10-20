@@ -1,4 +1,4 @@
-﻿import { createEffect, createMemo, createRoot, getOwner, onCleanup } from "solid-js"
+import { createEffect, createMemo, createRoot, getOwner, onCleanup } from "solid-js"
 import { createStore, produce } from "solid-js/store"
 import { createSimpleContext } from "@allcode/ui/context"
 import type { PermissionRequest } from "@allcode/sdk/v2/client"

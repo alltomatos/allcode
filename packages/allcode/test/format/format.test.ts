@@ -1,4 +1,4 @@
-﻿import { NodeFileSystem } from "@effect/platform-node"
+import { NodeFileSystem } from "@effect/platform-node"
 import { describe, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer } from "effect"

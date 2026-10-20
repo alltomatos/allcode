@@ -1,4 +1,4 @@
-﻿import { createStore, reconcile } from "solid-js/store"
+import { createStore, reconcile } from "solid-js/store"
 import { batch, createEffect, createMemo, createSignal, onCleanup } from "solid-js"
 import { createSimpleContext } from "@allcode/ui/context"
 import { persisted } from "@/utils/persist"

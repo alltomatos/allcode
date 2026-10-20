@@ -1,4 +1,4 @@
-﻿import { createMemo, Show, type JSX } from "solid-js"
+import { createMemo, Show, type JSX } from "solid-js"
 import { Spinner } from "@allcode/ui/spinner"
 import { useLanguage } from "@/context/language"
 

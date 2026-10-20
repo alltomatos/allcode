@@ -1,4 +1,4 @@
-﻿import { createOpencodeClient } from "@allcode/sdk/v2"
+import { createOpencodeClient } from "@allcode/sdk/v2"
 import { RGBA, type CliRenderer } from "@opentui/core"
 import type { HostPluginApi } from "@allcode/tui/plugin/slots"
 import { createTuiResolvedConfig } from "./tui-runtime"

@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect, spyOn } from "bun:test"
+import { afterEach, describe, expect, spyOn } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer } from "effect"
 import fs from "fs/promises"

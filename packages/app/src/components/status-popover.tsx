@@ -1,4 +1,4 @@
-﻿import { Button } from "@allcode/ui/button"
+import { Button } from "@allcode/ui/button"
 import { Icon } from "@allcode/ui/icon"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"

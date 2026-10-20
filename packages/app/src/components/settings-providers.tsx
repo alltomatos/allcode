@@ -1,4 +1,4 @@
-﻿import { Button } from "@allcode/ui/button"
+import { Button } from "@allcode/ui/button"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { Spinner } from "@allcode/ui/spinner"

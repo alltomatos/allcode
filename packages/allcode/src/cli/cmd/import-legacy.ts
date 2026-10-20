@@ -1,4 +1,4 @@
-﻿import { Database } from "@allcode/core/database/database"
+import { Database } from "@allcode/core/database/database"
 import { SessionTable, MessageTable, PartTable } from "@allcode/core/session/sql"
 import { Effect } from "effect"
 import path from "path"

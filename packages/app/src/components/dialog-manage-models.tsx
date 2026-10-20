@@ -1,4 +1,4 @@
-﻿import { Dialog } from "@allcode/ui/dialog"
+import { Dialog } from "@allcode/ui/dialog"
 import { List } from "@allcode/ui/list"
 import { Switch } from "@allcode/ui/switch"
 import { Tooltip } from "@allcode/ui/tooltip"

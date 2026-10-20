@@ -1,4 +1,4 @@
-﻿import { Tag } from "@allcode/ui/v2/badge-v2"
+import { Tag } from "@allcode/ui/v2/badge-v2"
 import { Icon } from "@allcode/ui/icon"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"

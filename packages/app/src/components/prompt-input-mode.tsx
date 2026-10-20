@@ -1,4 +1,4 @@
-﻿import { createMemo, For, Show } from "solid-js"
+import { createMemo, For, Show } from "solid-js"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Icon } from "@allcode/ui/v2/icon"
 import { Icon as IconLegacy } from "@allcode/ui/icon"

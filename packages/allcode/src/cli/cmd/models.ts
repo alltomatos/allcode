@@ -1,4 +1,4 @@
-﻿import { EOL } from "os"
+import { EOL } from "os"
 import { Effect } from "effect"
 import { ModelsDev } from "@allcode/core/models-dev"
 import { effectCmd, fail } from "../effect-cmd"

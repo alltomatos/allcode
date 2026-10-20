@@ -1,4 +1,4 @@
-﻿import type { Message, Part, PermissionRequest, QuestionRequest, SessionStatus, Todo } from "@allcode/sdk/v2/client"
+import type { Message, Part, PermissionRequest, QuestionRequest, SessionStatus, Todo } from "@allcode/sdk/v2/client"
 import type { FileDiffInfo } from "@allcode/client/promise"
 import type { SessionMessageInfo } from "@allcode/client/promise"
 

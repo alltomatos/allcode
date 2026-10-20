@@ -1,4 +1,4 @@
-﻿import { cmd } from "./cmd"
+import { cmd } from "./cmd"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { effectCmd } from "../effect-cmd"
 import { Cause } from "effect"

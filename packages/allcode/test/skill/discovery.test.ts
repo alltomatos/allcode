@@ -1,4 +1,4 @@
-﻿import { describe, expect, beforeAll, afterAll } from "bun:test"
+import { describe, expect, beforeAll, afterAll } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { FSUtil } from "@allcode/core/fs-util"
 import { Effect } from "effect"

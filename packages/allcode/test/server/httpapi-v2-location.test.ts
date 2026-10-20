@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect, test } from "bun:test"
+import { afterEach, describe, expect, test } from "bun:test"
 import { EventV2 } from "@allcode/core/event"
 import { Location } from "@allcode/core/location"
 import { Context, Schema } from "effect"

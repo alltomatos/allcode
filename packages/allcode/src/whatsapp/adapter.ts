@@ -1,4 +1,4 @@
-﻿import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
+import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import type { WaAdapter } from "waconector"
 import { waha } from "waconector/waha"
 import { evolution } from "waconector/evolution"

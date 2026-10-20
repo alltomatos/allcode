@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { fetchSessionExport, sessionExportFilename } from "./session-export"
 import type { Message, Part, Session } from "@allcode/sdk/v2/client"
 

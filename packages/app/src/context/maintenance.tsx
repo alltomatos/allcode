@@ -1,4 +1,4 @@
-﻿import { createSimpleContext } from "@allcode/ui/context"
+import { createSimpleContext } from "@allcode/ui/context"
 import { createSignal, onCleanup, onMount } from "solid-js"
 import { usePlatform } from "./platform"
 

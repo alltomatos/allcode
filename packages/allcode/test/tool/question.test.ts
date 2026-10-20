@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Fiber, Queue } from "effect"
 import { QuestionTool } from "../../src/tool/question"

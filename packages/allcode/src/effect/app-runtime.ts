@@ -1,4 +1,4 @@
-﻿import { Layer, ManagedRuntime } from "effect"
+import { Layer, ManagedRuntime } from "effect"
 import { attach } from "./run-service"
 import * as Observability from "@allcode/core/observability"
 

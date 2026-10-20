@@ -1,2 +1,2 @@
-﻿export * from "@allcode/tui/util/record"
+export * from "@allcode/tui/util/record"
 

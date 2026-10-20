@@ -1,4 +1,4 @@
-﻿import { Database } from "@allcode/core/database/database"
+import { Database } from "@allcode/core/database/database"
 import { inArray } from "drizzle-orm"
 import { EventSequenceTable } from "@allcode/core/event/sql"
 import { Workspace } from "@/control-plane/workspace"

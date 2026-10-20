@@ -1,4 +1,4 @@
-﻿import "./init-projectors"
+import "./init-projectors"
 
 import { NodeHttpServer } from "@effect/platform-node"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"

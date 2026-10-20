@@ -1,4 +1,4 @@
-﻿import { afterEach, expect } from "bun:test"
+import { afterEach, expect } from "bun:test"
 import { createServer, type Server } from "node:http"
 import { streamText } from "ai"
 import { LayerNode } from "@allcode/core/effect/layer-node"

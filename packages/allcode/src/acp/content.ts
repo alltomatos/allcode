@@ -1,4 +1,4 @@
-﻿import type { ContentBlock, ContentChunk, ResourceLink, Role } from "@agentclientprotocol/sdk"
+import type { ContentBlock, ContentChunk, ResourceLink, Role } from "@agentclientprotocol/sdk"
 import path from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import { SessionV1 } from "@allcode/core/v1/session"

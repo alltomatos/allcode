@@ -1,4 +1,4 @@
-﻿import crypto from "node:crypto"
+import crypto from "node:crypto"
 import { Database as CoreDatabase } from "@allcode/core/database/database"
 import { IntegrationRotation } from "@allcode/core/integration/rotation"
 import { Integration } from "@allcode/core/integration"

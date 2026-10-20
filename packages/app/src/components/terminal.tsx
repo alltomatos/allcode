@@ -1,4 +1,4 @@
-﻿import { withAlpha } from "@allcode/ui/theme/color"
+import { withAlpha } from "@allcode/ui/theme/color"
 import { useTheme } from "@allcode/ui/theme/context"
 import { resolveThemeVariant } from "@allcode/ui/theme/resolve"
 import { resolveThemeVariantV2 } from "@allcode/ui/theme/v2/resolve"

@@ -1,4 +1,4 @@
-﻿import fs from "fs/promises"
+import fs from "fs/promises"
 import { Flock } from "@allcode/core/util/flock"
 
 type Msg = {

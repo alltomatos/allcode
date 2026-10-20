@@ -1,4 +1,4 @@
-﻿import { createConnection } from "net"
+import { createConnection } from "net"
 import { createServer } from "http"
 import { OauthCallbackPage } from "@allcode/core/oauth/page"
 import { OAUTH_CALLBACK_PORT, OAUTH_CALLBACK_PATH, parseRedirectUri } from "./oauth-provider"

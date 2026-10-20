@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { llmClient } from "@allcode/core/effect/app-node-platform"
 import { PermissionV1 } from "@allcode/core/v1/permission"
 import { Provider } from "@/provider/provider"

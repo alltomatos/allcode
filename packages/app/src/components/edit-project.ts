@@ -1,4 +1,4 @@
-﻿import { getFilename } from "@allcode/core/util/path"
+import { getFilename } from "@allcode/core/util/path"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation } from "@tanstack/solid-query"
 import { normalizeProjectInfo } from "@/context/global-sync/utils"

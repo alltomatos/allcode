@@ -1,4 +1,4 @@
-﻿import * as InstanceState from "@/effect/instance-state"
+import * as InstanceState from "@/effect/instance-state"
 import { FileSystem } from "@allcode/core/filesystem"
 import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
 import { Ripgrep } from "@allcode/core/ripgrep"

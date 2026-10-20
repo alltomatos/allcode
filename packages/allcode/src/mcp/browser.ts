@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { openUrl } from "@allcode/core/open"
 import { Context, Effect, Layer } from "effect"
 

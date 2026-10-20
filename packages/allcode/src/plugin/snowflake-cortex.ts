@@ -1,4 +1,4 @@
-﻿import type { Hooks, PluginInput } from "@allcode/plugin"
+import type { Hooks, PluginInput } from "@allcode/plugin"
 import { OAUTH_DUMMY_KEY } from "../auth"
 import { InstallationVersion } from "@allcode/core/installation/version"
 import { OauthCallbackPage } from "@allcode/core/oauth/page"

@@ -1,4 +1,4 @@
-﻿import type { SessionV1 } from "@allcode/core/v1/session"
+import type { SessionV1 } from "@allcode/core/v1/session"
 
 export { parseGitHubRemote } from "@/util/repository"
 

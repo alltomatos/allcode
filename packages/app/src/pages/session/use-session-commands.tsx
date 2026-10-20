@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "@solidjs/router"
+import { useNavigate } from "@solidjs/router"
 import { useCommand, type CommandOption } from "@/context/command"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { previewSelectedLines } from "@allcode/session-ui/pierre/selection-bridge"

@@ -1,4 +1,4 @@
-﻿import type { Duration, Effect } from "effect"
+import type { Duration, Effect } from "effect"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { SessionV1 } from "@allcode/core/v1/session"
 import type { Config } from "../../../src/config/config"

@@ -1,4 +1,4 @@
-﻿import { batch, createMemo } from "solid-js"
+import { batch, createMemo } from "solid-js"
 import { useMutation } from "@tanstack/solid-query"
 import type { UserMessage } from "@allcode/sdk/v2"
 import type { useSDK } from "@/context/sdk"

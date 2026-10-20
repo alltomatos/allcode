@@ -1,2 +1,2 @@
-﻿export { TuiEvent } from "@allcode/schema/tui-event"
+export { TuiEvent } from "@allcode/schema/tui-event"
 

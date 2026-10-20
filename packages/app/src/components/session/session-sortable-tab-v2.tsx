@@ -1,4 +1,4 @@
-﻿import { createMemo, Show } from "solid-js"
+import { createMemo, Show } from "solid-js"
 import type { JSX } from "solid-js"
 import { useSortable } from "@dnd-kit/solid/sortable"
 import { IconButton } from "@allcode/ui/icon-button"

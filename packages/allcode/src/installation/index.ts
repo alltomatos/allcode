@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { httpClient } from "@allcode/core/effect/app-node-platform"
 import { Effect, Layer, Schema, Context, Stream } from "effect"

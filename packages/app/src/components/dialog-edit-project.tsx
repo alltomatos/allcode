@@ -1,4 +1,4 @@
-﻿import { Button } from "@allcode/ui/button"
+import { Button } from "@allcode/ui/button"
 import { Dialog, DialogHeader, DialogTitle, DialogBody, DialogFooter } from "@allcode/ui/v2/dialog-v2"
 import { TextField } from "@allcode/ui/text-field"
 import { Icon } from "@allcode/ui/icon"

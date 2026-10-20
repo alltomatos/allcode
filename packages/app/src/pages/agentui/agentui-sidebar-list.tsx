@@ -1,4 +1,4 @@
-﻿import { createResource, For, Show, type Component } from "solid-js"
+import { createResource, For, Show, type Component } from "solid-js"
 import { useNavigate } from "@solidjs/router"
 import { ScrollView } from "@allcode/ui/scroll-view"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"

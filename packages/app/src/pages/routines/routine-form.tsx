@@ -1,4 +1,4 @@
-﻿import { createEffect, createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { useNavigate, useParams } from "@solidjs/router"
 import { useMutation, useQueryClient } from "@tanstack/solid-query"
 import { ScrollView } from "@allcode/ui/scroll-view"

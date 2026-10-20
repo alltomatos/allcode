@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { httpClient } from "@allcode/core/effect/app-node-platform"
 import type * as SDK from "@allcode/sdk/v2"
 import { serviceUse } from "@allcode/core/effect/service-use"

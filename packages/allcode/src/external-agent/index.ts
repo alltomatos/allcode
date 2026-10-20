@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 // This must resolve conditionally: the "bun" variant statically imports "bun-pty", which
 // itself imports "bun:ffi". Under Node (e.g. this file's dist/node build, loaded by
 // Electron's Node-based main/utility process) an eager `bun:`-scheme import crashes with

@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import path from "path"
 import { Global } from "@allcode/core/global"
 import { FSUtil } from "@allcode/core/fs-util"

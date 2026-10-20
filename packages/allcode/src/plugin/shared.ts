@@ -1,4 +1,4 @@
-﻿import path from "path"
+import path from "path"
 import { fileURLToPath, pathToFileURL } from "url"
 import npa from "npm-package-arg"
 import semver from "semver"

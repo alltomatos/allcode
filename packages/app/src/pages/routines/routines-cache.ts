@@ -1,4 +1,4 @@
-﻿import { createQuery, useQueryClient } from "@tanstack/solid-query"
+import { createQuery, useQueryClient } from "@tanstack/solid-query"
 import type { ScheduleInfo } from "@allcode/sdk/v2"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServer } from "@/context/server"

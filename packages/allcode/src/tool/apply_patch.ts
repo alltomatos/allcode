@@ -1,4 +1,4 @@
-﻿import * as path from "path"
+import * as path from "path"
 import { Effect, Schema } from "effect"
 import * as Tool from "./tool"
 import { EventV2Bridge } from "@/event-v2-bridge"

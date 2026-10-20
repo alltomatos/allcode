@@ -1,4 +1,4 @@
-﻿import type { GlobalEvent } from "@allcode/sdk/v2"
+import type { GlobalEvent } from "@allcode/sdk/v2"
 import type { EventSource } from "@allcode/tui/context/sdk"
 
 export const worktree = "/tmp/opencode"

@@ -1,4 +1,4 @@
-﻿import { createMemo, createResource, onMount, type Accessor } from "solid-js"
+import { createMemo, createResource, onMount, type Accessor } from "solid-js"
 import type { ColorScheme } from "@allcode/ui/theme/context"
 import { useTheme } from "@allcode/ui/theme/context"
 import { usePermission } from "@/context/permission"

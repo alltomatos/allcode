@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { Permission } from "@/permission"
 import { SessionV1 } from "@allcode/core/v1/session"
 

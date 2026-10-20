@@ -1,4 +1,4 @@
-﻿import { Binary } from "@allcode/core/util/binary"
+import { Binary } from "@allcode/core/util/binary"
 import type { Message, Part, Session } from "@allcode/sdk/v2/client"
 import { createMemo } from "solid-js"
 import { produce, reconcile, type SetStoreFunction } from "solid-js/store"

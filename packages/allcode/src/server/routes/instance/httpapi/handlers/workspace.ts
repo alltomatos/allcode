@@ -1,4 +1,4 @@
-﻿import { listAdapters } from "@/control-plane/adapters"
+import { listAdapters } from "@/control-plane/adapters"
 import { Workspace } from "@/control-plane/workspace"
 import * as InstanceState from "@/effect/instance-state"
 import { Vcs } from "@/project/vcs"

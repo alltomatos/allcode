@@ -1,4 +1,4 @@
-﻿import { ErrorBoundary, Show, Suspense, type Accessor, type JSX } from "solid-js"
+import { ErrorBoundary, Show, Suspense, type Accessor, type JSX } from "solid-js"
 import { ResizeHandle } from "@allcode/ui/resize-handle"
 import { BrowserPanelOverlay } from "@/components/browser-panel"
 import { SessionSidePanel } from "@/pages/session/session-side-panel"

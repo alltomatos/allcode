@@ -1,4 +1,4 @@
-﻿import type { Hooks, PluginInput } from "@allcode/plugin"
+import type { Hooks, PluginInput } from "@allcode/plugin"
 import type { Model } from "@allcode/sdk/v2"
 import { InstallationVersion } from "@allcode/core/installation/version"
 import { iife } from "@/util/iife"

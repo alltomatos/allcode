@@ -1,4 +1,4 @@
-﻿import { Effect } from "effect"
+import { Effect } from "effect"
 import { FSUtil } from "@allcode/core/fs-util"
 
 const BOM_CODE = 0xfeff

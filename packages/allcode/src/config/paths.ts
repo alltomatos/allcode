@@ -1,4 +1,4 @@
-﻿export * as ConfigPaths from "./paths"
+export * as ConfigPaths from "./paths"
 
 import path from "path"
 import { Flag } from "@allcode/core/flag/flag"

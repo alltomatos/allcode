@@ -1,4 +1,4 @@
-﻿import { expect } from "bun:test"
+import { expect } from "bun:test"
 import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { $ } from "bun"

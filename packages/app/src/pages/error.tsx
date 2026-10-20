@@ -1,4 +1,4 @@
-﻿import { TextField } from "@allcode/ui/text-field"
+import { TextField } from "@allcode/ui/text-field"
 import * as Sentry from "@sentry/solid"
 import { Logo } from "@allcode/ui/logo"
 import { Button } from "@allcode/ui/button"

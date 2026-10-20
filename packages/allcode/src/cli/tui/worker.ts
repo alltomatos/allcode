@@ -1,4 +1,4 @@
-﻿import { Server } from "@/server/server"
+import { Server } from "@/server/server"
 import { InstanceRuntime } from "@/project/instance-runtime"
 import { Rpc } from "@/util/rpc"
 import { upgrade } from "@/cli/upgrade"

@@ -1,4 +1,4 @@
-﻿import { FSUtil } from "@allcode/core/fs-util"
+import { FSUtil } from "@allcode/core/fs-util"
 import { Effect, Stream } from "effect"
 import { HttpBody, HttpClient, HttpClientRequest, HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
 import { createHash } from "node:crypto"

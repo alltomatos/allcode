@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { PartGroup } from "@allcode/session-ui/message-part"
 import { reuseTimelineRows } from "./row-reconciliation"
 import { TimelineRow } from "./timeline-row"

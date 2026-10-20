@@ -1,4 +1,4 @@
-﻿import { makeGlobalNode } from "@allcode/core/effect/app-node"
+import { makeGlobalNode } from "@allcode/core/effect/app-node"
 import { Plugin } from "../plugin"
 import { Format } from "../format"
 import { LSP } from "@/lsp/lsp"

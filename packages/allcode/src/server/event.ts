@@ -1,4 +1,4 @@
-﻿import { Schema } from "effect"
+import { Schema } from "effect"
 import { ServerEvent } from "@allcode/schema/server-event"
 
 export const Event = ServerEvent

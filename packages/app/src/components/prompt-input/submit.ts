@@ -1,4 +1,4 @@
-﻿import type { Message, Session } from "@allcode/sdk/v2/client"
+import type { Message, Session } from "@allcode/sdk/v2/client"
 import { showToast } from "@/utils/toast"
 import { base64Encode } from "@allcode/core/util/encode"
 import { Binary } from "@allcode/core/util/binary"

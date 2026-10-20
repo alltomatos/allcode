@@ -1,4 +1,4 @@
-﻿import {
+import {
   createEffect,
   createMemo,
   createResource,

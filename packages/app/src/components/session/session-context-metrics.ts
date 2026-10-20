@@ -1,4 +1,4 @@
-﻿import type { AssistantMessage, Message } from "@allcode/sdk/v2/client"
+import type { AssistantMessage, Message } from "@allcode/sdk/v2/client"
 
 type Provider = {
   id: string

@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import path from "path"
 import { serviceUse } from "@allcode/core/effect/service-use"
 import { Global } from "@allcode/core/global"

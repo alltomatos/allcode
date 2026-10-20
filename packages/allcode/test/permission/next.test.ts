@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { test, expect } from "bun:test"
 import os from "os"
 import { Cause, Deferred, Effect, Exit, Fiber, Layer } from "effect"

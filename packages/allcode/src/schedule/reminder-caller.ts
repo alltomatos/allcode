@@ -1,4 +1,4 @@
-﻿export * as ScheduleReminderCaller from "./reminder-caller"
+export * as ScheduleReminderCaller from "./reminder-caller"
 
 import { Effect, Layer } from "effect"
 import { makeGlobalNode } from "@allcode/core/effect/app-node"

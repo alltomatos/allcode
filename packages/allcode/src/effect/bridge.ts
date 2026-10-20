@@ -1,4 +1,4 @@
-﻿import { Context, Effect, Exit, Fiber } from "effect"
+import { Context, Effect, Exit, Fiber } from "effect"
 import { WorkspaceContext } from "@/control-plane/workspace-context"
 import type { WorkspaceV2 } from "@allcode/core/workspace"
 import { InstanceRef, WorkspaceRef } from "./instance-ref"

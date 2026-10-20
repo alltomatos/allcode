@@ -1,4 +1,4 @@
-﻿import { describe, expect, mock, test } from "bun:test"
+import { describe, expect, mock, test } from "bun:test"
 import type { SessionMessageInfo } from "@allcode/client/promise"
 import { normalizeSessionMessages } from "@/utils/session-message"
 

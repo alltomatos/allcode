@@ -1,4 +1,4 @@
-﻿import { Binary } from "@allcode/core/util/binary"
+import { Binary } from "@allcode/core/util/binary"
 import { retry } from "@allcode/core/util/retry"
 import type { SessionApi, SessionMessageInfo } from "@allcode/client/promise"
 import type {

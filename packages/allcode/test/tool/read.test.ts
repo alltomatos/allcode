@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { afterEach, describe, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Cause, Effect, Exit, Layer, Stream } from "effect"

@@ -1,4 +1,4 @@
-﻿import type { McpServer } from "@allcode/client/promise"
+import type { McpServer } from "@allcode/client/promise"
 
 export async function toggleMcp(input: {
   status: McpServer["status"]["status"]

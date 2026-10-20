@@ -1,4 +1,4 @@
-﻿import { createEffect, createMemo, Match, on, Switch } from "solid-js"
+import { createEffect, createMemo, Match, on, Switch } from "solid-js"
 import { createStore } from "solid-js/store"
 import { Dynamic } from "solid-js/web"
 import { makeEventListener } from "@solid-primitives/event-listener"

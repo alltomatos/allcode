@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { SessionProjector } from "@allcode/core/session/projector"

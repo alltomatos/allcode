@@ -1,4 +1,4 @@
-﻿import { checksum } from "@allcode/core/util/encode"
+import { checksum } from "@allcode/core/util/encode"
 import type { FilePartSource } from "@allcode/sdk/v2/client"
 import { batch, createMemo, type Accessor } from "solid-js"
 import { createStore, type SetStoreFunction } from "solid-js/store"

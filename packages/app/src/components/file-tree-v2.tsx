@@ -1,4 +1,4 @@
-﻿import { useFile } from "@/context/file"
+import { useFile } from "@/context/file"
 import { FileIcon } from "@allcode/ui/file-icon"
 import "@allcode/ui/v2/file-tree-v2.css"
 import {

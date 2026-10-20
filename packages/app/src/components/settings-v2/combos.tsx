@@ -1,4 +1,4 @@
-﻿import { ButtonV2 } from "@allcode/ui/v2/button-v2"
+import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { useDialog } from "@allcode/ui/context/dialog"

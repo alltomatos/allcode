@@ -1,4 +1,4 @@
-﻿import { Config } from "@/config/config"
+import { Config } from "@/config/config"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { Provider } from "@/provider/provider"
 import { Schema } from "effect"

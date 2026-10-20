@@ -1,4 +1,4 @@
-﻿import type { IntegrationMethod, IntegrationOauthConnectOutput } from "@allcode/client/promise"
+import type { IntegrationMethod, IntegrationOauthConnectOutput } from "@allcode/client/promise"
 import { Button } from "@allcode/ui/button"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { Dialog } from "@allcode/ui/dialog"

@@ -1,4 +1,4 @@
-﻿import { Effect, Schema } from "effect"
+import { Effect, Schema } from "effect"
 import * as path from "path"
 import { FSUtil } from "@allcode/core/fs-util"
 import * as Bom from "../util/bom"

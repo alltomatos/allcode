@@ -1,4 +1,4 @@
-﻿import { describe, expect, it } from "bun:test"
+import { describe, expect, it } from "bun:test"
 import type { AgentSideConnection } from "@agentclientprotocol/sdk"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import type { Event, Message, OpencodeClient, Part, SessionMessageResponse, ToolPart } from "@allcode/sdk/v2"

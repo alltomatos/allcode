@@ -1,4 +1,4 @@
-﻿import { Session } from "@/session/session"
+import { Session } from "@/session/session"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { MessageV2 } from "../../session/message-v2"
 import { SessionID } from "../../session/schema"

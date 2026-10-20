@@ -2,12 +2,14 @@ import { Database } from "@allcode/core/database/database"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { httpClient } from "@allcode/core/effect/app-node-platform"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
+import { EventBus } from "@allcode/core/event/bus"
 import { EventV2 } from "@allcode/core/event"
 import { Credential } from "@allcode/core/credential"
 import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { PermissionSaved } from "@allcode/core/permission/saved"
 import { PtyTicket } from "@allcode/core/pty/ticket"
 import { SessionV2 } from "@allcode/core/session"
+import { SessionProjector } from "@allcode/core/session/projector"
 import { SessionExecution } from "@allcode/core/session/execution"
 import { LocationServiceMap } from "@allcode/core/location-service-map"
 import { SessionExecutionLocal } from "@allcode/core/session/execution/local"
@@ -26,10 +28,12 @@ import { sessionLocationLayer } from "./middleware/session-location"
 
 const applicationServices = LayerNode.group([
   Database.node,
+  EventBus.node,
   EventV2.node,
   httpClient,
   ToolOutputStore.cleanupNode,
   SessionV2.node,
+  SessionProjector.node,
   PermissionSaved.node,
   PtyTicket.node,
   Credential.node,

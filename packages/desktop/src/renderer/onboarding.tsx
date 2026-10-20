@@ -41,10 +41,10 @@ export function DesktopFirstLaunchOnboarding(props: { initialUrl: string; onLoad
       const directory = await window.api.finishFirstLaunchOnboarding(shouldTrigger)
       if (!shouldTrigger || !directory) return
 
-      console.info("[desktop-onboarding] starting first launch draft", { directory })
+      console.info("[desktop-onboarding] completed first launch onboarding on dashboard", { directory })
       server.projects.open(directory)
       server.projects.touch(directory)
-      tabs.select(await tabs.newDraft({ server: server.key, directory }))
+      // Mantém na tela inicial (Dashboard / com Guia de Boas-vindas ativo)
     } catch (error) {
       console.error("[desktop-onboarding] first launch onboarding failed", error)
     }

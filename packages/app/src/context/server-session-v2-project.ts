@@ -1,4 +1,4 @@
-﻿import type { OpenCodeEvent, SessionApi, SessionMessageInfo } from "@allcode/client/promise"
+import type { OpenCodeEvent, SessionApi, SessionMessageInfo } from "@allcode/client/promise"
 import type { Part, Session } from "@allcode/sdk/v2/client"
 import { batch } from "solid-js"
 import { reconcile, type SetStoreFunction } from "solid-js/store"

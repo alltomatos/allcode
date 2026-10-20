@@ -1,4 +1,4 @@
-﻿import * as InstanceState from "@/effect/instance-state"
+import * as InstanceState from "@/effect/instance-state"
 import { ProviderAuth } from "@/provider/auth"
 import { Config } from "@/config/config"
 import { ModelsDev } from "@allcode/core/models-dev"

@@ -1,4 +1,4 @@
-﻿import { FileSystem } from "@allcode/core/filesystem"
+import { FileSystem } from "@allcode/core/filesystem"
 import { NonNegativeInt } from "@allcode/core/schema"
 import { LSP } from "@/lsp/lsp"
 import { Schema } from "effect"

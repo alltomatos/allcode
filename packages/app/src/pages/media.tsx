@@ -1,4 +1,4 @@
-﻿import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { createStore } from "solid-js/store"
 import { ScrollView } from "@allcode/ui/scroll-view"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"

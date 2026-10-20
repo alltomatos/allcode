@@ -1,4 +1,4 @@
-﻿import { FileIcon } from "@allcode/ui/file-icon"
+import { FileIcon } from "@allcode/ui/file-icon"
 import "@allcode/ui/v2/file-tree-v2.css"
 import { getDirectory, getFilename } from "@allcode/core/util/path"
 import { createEffect, createMemo, createSignal, For, Show } from "solid-js"

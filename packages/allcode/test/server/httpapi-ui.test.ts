@@ -1,4 +1,4 @@
-﻿import { createHash } from "node:crypto"
+import { createHash } from "node:crypto"
 import { describe, expect } from "bun:test"
 import { Flag } from "@allcode/core/flag/flag"
 import { ConfigProvider, Effect, Layer, Option } from "effect"

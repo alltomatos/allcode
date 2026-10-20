@@ -1,4 +1,4 @@
-﻿import type { Hooks } from "@allcode/plugin"
+import type { Hooks } from "@allcode/plugin"
 import { ModalModels } from "./models"
 
 export async function ModalPlugin(): Promise<Hooks> {

@@ -1,4 +1,4 @@
-﻿import type { SnapshotFileDiff } from "@allcode/sdk/v2"
+import type { SnapshotFileDiff } from "@allcode/sdk/v2"
 import type { PartGroup } from "@allcode/session-ui/message-part"
 import { Data, Equal } from "effect"
 

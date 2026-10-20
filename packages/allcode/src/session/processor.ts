@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { PermissionV1 } from "@allcode/core/v1/permission"
 import { Image } from "@/image/image"
 import { SessionV1 } from "@allcode/core/v1/session"

@@ -1,4 +1,4 @@
-﻿import type { OpenCodeEvent } from "@allcode/client/promise"
+import type { OpenCodeEvent } from "@allcode/client/promise"
 import type { Event } from "@allcode/sdk/v2/client"
 import { createSimpleContext } from "@allcode/ui/context"
 import { createGlobalEmitter } from "@solid-primitives/event-bus"

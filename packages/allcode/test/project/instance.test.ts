@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { Deferred, Effect, Fiber, Layer } from "effect"

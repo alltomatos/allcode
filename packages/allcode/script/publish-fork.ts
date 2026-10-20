@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env bun
+#!/usr/bin/env bun
 // Publishes this fork's own CLI to npm under its own scope (default
 // @alltomatos), separate from upstream's `opencode-ai`/`@allcode/*`
 // packages — those are published only from anomalyco/opencode (see

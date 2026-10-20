@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { describe, expect } from "bun:test"
 import path from "path"
 import { LayerNode } from "@allcode/core/effect/layer-node"

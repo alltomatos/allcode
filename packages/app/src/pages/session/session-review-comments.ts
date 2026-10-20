@@ -1,4 +1,4 @@
-﻿import { createMemo } from "solid-js"
+import { createMemo } from "solid-js"
 import { selectionFromLines, type FileSelection, type SelectedLineRange } from "@/context/file"
 import { previewSelectedLines } from "@allcode/session-ui/pierre/selection-bridge"
 import type { useFile } from "@/context/file"

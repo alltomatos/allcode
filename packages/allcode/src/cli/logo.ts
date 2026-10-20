@@ -1,2 +1,2 @@
-﻿export * from "@allcode/tui/logo"
+export * from "@allcode/tui/logo"
 

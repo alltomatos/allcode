@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import type { AuthOAuthResult, Hooks } from "@allcode/plugin"
 import { serviceUse } from "@allcode/core/effect/service-use"
 import { Auth } from "@/auth"

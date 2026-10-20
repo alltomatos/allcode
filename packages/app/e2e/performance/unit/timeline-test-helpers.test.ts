@@ -1,4 +1,4 @@
-﻿import { expect, test } from "bun:test"
+import { expect, test } from "bun:test"
 import { base64Encode } from "@allcode/core/util/encode"
 import { fixture } from "../timeline/session-timeline-stress.fixture"
 import { stressSessionHref } from "../timeline/timeline-test-helpers"

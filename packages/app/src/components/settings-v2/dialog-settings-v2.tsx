@@ -1,4 +1,4 @@
-﻿import { Component, Show, createMemo, createSignal, startTransition } from "solid-js"
+import { Component, Show, createMemo, createSignal, startTransition } from "solid-js"
 import { Dialog } from "@allcode/ui/v2/dialog-v2"
 import { TabsV2 } from "@allcode/ui/v2/tabs-v2"
 import { Icon } from "@allcode/ui/icon"
@@ -127,18 +127,6 @@ export const DialogSettings: Component<{
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="settings-v2-nav-footer">
-              <span>{language.t("app.name.desktop")}</span>
-              <span>v{platform.version}</span>
-              <a
-                href="https://github.com/alltomatos/opencode"
-                target="_blank"
-                rel="noreferrer"
-                class="settings-v2-nav-footer-credit"
-              >
-                {language.t("settings.footer.credit")}
-              </a>
             </div>
           </div>
         </TabsV2.List>

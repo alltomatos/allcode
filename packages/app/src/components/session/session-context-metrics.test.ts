@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { Message } from "@allcode/sdk/v2/client"
 import { getSessionContext } from "./session-context-metrics"
 

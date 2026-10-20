@@ -1,4 +1,4 @@
-﻿import { Component, For, Show } from "solid-js"
+import { Component, For, Show } from "solid-js"
 import { Icon } from "@allcode/ui/icon"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { Tooltip } from "@allcode/ui/tooltip"

@@ -1,4 +1,4 @@
-﻿import { createMemo, createResource, createSignal, Show, type JSX } from "solid-js"
+import { createMemo, createResource, createSignal, Show, type JSX } from "solid-js"
 import type { SnapshotFileDiff, VcsFileDiff } from "@allcode/sdk/v2"
 import type { FileDiffInfo } from "@allcode/client/promise"
 import {

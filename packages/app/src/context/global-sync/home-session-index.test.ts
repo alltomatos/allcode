@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { SessionV2Info } from "@allcode/sdk/v2/client"
 import {
   applyHomeSessionEvent,

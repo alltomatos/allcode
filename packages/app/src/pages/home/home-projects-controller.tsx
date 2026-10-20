@@ -1,4 +1,4 @@
-﻿import { useDirectoryPicker } from "@/components/directory-picker"
+import { useDirectoryPicker } from "@/components/directory-picker"
 import { useServerManagementController } from "@/components/dialog-select-server"
 import { useSettingsCommand } from "@/components/settings-dialog"
 import { DialogServerV2 } from "@/components/settings-v2/dialog-server-v2"

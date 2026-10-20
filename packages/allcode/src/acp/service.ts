@@ -1,4 +1,4 @@
-﻿import {
+import {
   type AgentSideConnection,
   type AuthenticateRequest,
   type AuthenticateResponse,

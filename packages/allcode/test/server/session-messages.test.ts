@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect } from "bun:test"
+import { afterEach, describe, expect } from "bun:test"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Effect, Layer } from "effect"

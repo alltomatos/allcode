@@ -1,4 +1,4 @@
-﻿import { Binary } from "@allcode/core/util/binary"
+import { Binary } from "@allcode/core/util/binary"
 import type { Message, Part, PermissionRequest, QuestionRequest, Session, SessionStatus, Todo } from "@allcode/sdk/v2/client"
 import type { SessionMessageInfo } from "@allcode/client/promise"
 import { produce, reconcile } from "solid-js/store"

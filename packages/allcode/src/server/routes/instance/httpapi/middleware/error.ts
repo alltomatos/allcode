@@ -1,4 +1,4 @@
-﻿import { NamedError } from "@allcode/core/util/error"
+import { NamedError } from "@allcode/core/util/error"
 import { ConfigErrorV1 } from "@allcode/core/v1/config/error"
 import { Cause, Effect } from "effect"
 import { HttpRouter, HttpServerError, HttpServerRespondable, HttpServerResponse } from "effect/unstable/http"

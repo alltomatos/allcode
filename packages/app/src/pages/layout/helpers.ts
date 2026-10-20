@@ -1,4 +1,4 @@
-﻿import { getFilename } from "@allcode/core/util/path"
+import { getFilename } from "@allcode/core/util/path"
 import { type Session } from "@allcode/sdk/v2/client"
 import { pathKey } from "@/utils/path-key"
 import type { ServerConnection } from "@/context/server"

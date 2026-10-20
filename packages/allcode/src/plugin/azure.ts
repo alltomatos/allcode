@@ -1,4 +1,4 @@
-﻿import type { Hooks, PluginInput } from "@allcode/plugin"
+import type { Hooks, PluginInput } from "@allcode/plugin"
 
 export async function AzureAuthPlugin(_input: PluginInput): Promise<Hooks> {
   const prompts = []

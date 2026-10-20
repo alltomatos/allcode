@@ -1,4 +1,4 @@
-﻿export * as PluginPtyEnvironment from "./pty-environment"
+export * as PluginPtyEnvironment from "./pty-environment"
 
 import { PtyEnvironment } from "@allcode/server/pty-environment"
 import { Effect, Layer } from "effect"

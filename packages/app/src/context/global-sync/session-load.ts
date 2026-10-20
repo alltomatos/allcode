@@ -1,4 +1,4 @@
-﻿import type { SessionApi } from "@allcode/client/promise"
+import type { SessionApi } from "@allcode/client/promise"
 import { normalizeSessionInfo } from "@/utils/session"
 import type { OpencodeClient } from "@allcode/sdk/v2/client"
 

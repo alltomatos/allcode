@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { EOL } from "os"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { basename } from "path"

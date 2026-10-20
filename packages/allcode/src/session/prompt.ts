@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Catalog } from "@allcode/core/catalog"
 import { Integration } from "@allcode/core/integration"
 import { IntegrationRotation } from "@allcode/core/integration/rotation"

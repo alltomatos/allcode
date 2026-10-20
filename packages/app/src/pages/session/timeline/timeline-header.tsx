@@ -1,4 +1,4 @@
-﻿import { Show } from "solid-js"
+import { Show } from "solid-js"
 import { Button } from "@allcode/ui/button"
 import { Icon } from "@allcode/ui/icon"
 import { IconButton } from "@allcode/ui/icon-button"

@@ -1,4 +1,4 @@
-﻿import { expect } from "bun:test"
+import { expect } from "bun:test"
 import path from "path"
 import { pathToFileURL } from "url"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"

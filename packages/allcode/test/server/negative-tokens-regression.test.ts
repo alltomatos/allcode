@@ -1,4 +1,4 @@
-﻿// Regression: a stored step-finish part with a negative token count made the
+// Regression: a stored step-finish part with a negative token count made the
 // messages endpoint 400. Some providers reported `outputTokens` excluding
 // reasoning while also reporting `reasoningTokens` separately, so the
 // `outputTokens - reasoningTokens` math in Session.getUsage underflowed to

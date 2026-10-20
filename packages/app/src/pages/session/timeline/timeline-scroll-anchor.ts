@@ -1,4 +1,4 @@
-﻿import { isScrollKeyTarget, scrollKey, scrollKeyOwner } from "@allcode/ui/scroll-view"
+import { isScrollKeyTarget, scrollKey, scrollKeyOwner } from "@allcode/ui/scroll-view"
 import { shouldMarkBoundaryGesture, normalizeWheelDelta } from "@/pages/session/message-gesture"
 
 const boundaryTarget = (root: HTMLElement, target: EventTarget | null) => {

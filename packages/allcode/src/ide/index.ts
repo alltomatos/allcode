@@ -1,4 +1,4 @@
-﻿import { Schema } from "effect"
+import { Schema } from "effect"
 import { NamedError } from "@allcode/core/util/error"
 import { Process } from "@/util/process"
 import { IdeEvent } from "@allcode/schema/ide-event"

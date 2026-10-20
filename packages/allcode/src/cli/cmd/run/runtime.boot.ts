@@ -1,4 +1,4 @@
-﻿// Boot-time resolution for direct interactive mode.
+// Boot-time resolution for direct interactive mode.
 //
 // These functions run concurrently at startup to gather everything the runtime
 // needs before the first frame: TUI keymap config, diff display style,

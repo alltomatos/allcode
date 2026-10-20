@@ -1,4 +1,4 @@
-﻿import type { Todo } from "@allcode/sdk/v2"
+import type { Todo } from "@allcode/sdk/v2"
 import { AnimatedNumber } from "@allcode/ui/animated-number"
 import { Checkbox } from "@allcode/ui/checkbox"
 import { DockTray } from "@allcode/ui/dock-surface"

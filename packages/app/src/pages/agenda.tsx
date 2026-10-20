@@ -1,4 +1,4 @@
-﻿import { Component, createSignal, createMemo, Show, For } from "solid-js"
+import { Component, createSignal, createMemo, Show, For } from "solid-js"
 import { useNavigate } from "@solidjs/router"
 import { useLanguage } from "@/context/language"
 import { useRoutinesQuery } from "@/pages/routines/routines-cache"

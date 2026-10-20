@@ -1,4 +1,4 @@
-﻿import type { McpServer } from "@agentclientprotocol/sdk"
+import type { McpServer } from "@agentclientprotocol/sdk"
 import type { Message, Part } from "@allcode/sdk/v2"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { ProviderV2 } from "@allcode/core/provider"

@@ -1,4 +1,4 @@
-﻿import "@/index.css"
+import "@/index.css"
 import * as Sentry from "@sentry/solid"
 import { I18nProvider } from "@allcode/ui/context"
 import { DialogProvider } from "@allcode/ui/context/dialog"
@@ -70,6 +70,7 @@ import { createSessionLineage } from "@/pages/session/session-lineage"
 
 import { SessionPage, SessionRouteErrorBoundary, TargetSessionRouteContent } from "@/pages/session"
 import { NewHome } from "@/pages/home"
+import { DashboardPage } from "@/pages/dashboard"
 import { RoutinesPage } from "@/pages/routines"
 import { RoutineFormPage } from "@/pages/routines/routine-form"
 import { AgentUIPage } from "@/pages/agentui"
@@ -694,7 +695,8 @@ function Routes(props: { serverScoped?: JSX.Element }) {
         </Route>
       </Route>
       <Show when={settings.general.newLayoutDesigns()}>
-        <Route path="/" component={NewHome} />
+        <Route path="/" component={DashboardPage} />
+        <Route path="/sessions" component={NewHome} />
         <Route path="/rotinas" component={RoutinesPage} />
         <Route path="/rotinas/new" component={RoutineFormPage} />
         <Route path="/rotinas/:id/edit" component={RoutineFormPage} />

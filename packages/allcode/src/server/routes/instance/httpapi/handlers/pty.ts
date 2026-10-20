@@ -1,4 +1,4 @@
-﻿import * as InstanceState from "@/effect/instance-state"
+import * as InstanceState from "@/effect/instance-state"
 import { registerDisposer } from "@/effect/instance-registry"
 import { InstanceRef, WorkspaceRef } from "@/effect/instance-ref"
 import { Plugin } from "@/plugin"

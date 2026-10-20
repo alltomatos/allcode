@@ -1,4 +1,4 @@
-﻿import { Context, Effect, Layer, Option } from "effect"
+import { Context, Effect, Layer, Option } from "effect"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import * as Socket from "effect/unstable/socket/Socket"
 

@@ -1,4 +1,4 @@
-﻿export * as Telegram from "./index"
+export * as Telegram from "./index"
 
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Effect, Fiber, Layer, Schema } from "effect"

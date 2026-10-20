@@ -1,4 +1,4 @@
-﻿import type { Model } from "@allcode/sdk/v2"
+import type { Model } from "@allcode/sdk/v2"
 import { Schema } from "effect"
 
 const reasoningOption = Schema.Struct({

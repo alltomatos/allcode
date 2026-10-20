@@ -1,4 +1,4 @@
-﻿import { EOL } from "os"
+import { EOL } from "os"
 import { Effect } from "effect"
 import { Ripgrep } from "@allcode/core/ripgrep"
 import { effectCmd } from "../../effect-cmd"

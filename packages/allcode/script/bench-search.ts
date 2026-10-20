@@ -1,4 +1,4 @@
-﻿import { Effect } from "effect"
+import { Effect } from "effect"
 import { Fff } from "@allcode/core/filesystem/fff.bun"
 import { AppRuntime } from "@/effect/app-runtime"
 import { FileSystem } from "@allcode/core/filesystem"

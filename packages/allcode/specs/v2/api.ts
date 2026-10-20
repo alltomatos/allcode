@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 
 import { OpenCode } from "@allcode/core"
 import { ReadTool } from "@allcode/core/tools"

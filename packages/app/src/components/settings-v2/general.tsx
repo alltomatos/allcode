@@ -1,4 +1,4 @@
-﻿import { Component, Show, createMemo, createResource, createSignal, onCleanup, onMount } from "solid-js"
+import { Component, Show, createMemo, createResource, createSignal, onCleanup, onMount } from "solid-js"
 import { createMediaQuery } from "@solid-primitives/media"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Icon } from "@allcode/ui/icon"

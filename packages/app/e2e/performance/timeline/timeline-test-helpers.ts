@@ -1,4 +1,4 @@
-﻿import type { Page } from "@playwright/test"
+import type { Page } from "@playwright/test"
 import { base64Encode } from "@allcode/core/util/encode"
 import { mockOpenCodeServer } from "../../utils/mock-server"
 import { fixture, pageMessages } from "./session-timeline-stress.fixture"

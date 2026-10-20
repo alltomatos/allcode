@@ -1,4 +1,4 @@
-﻿import { For } from "solid-js"
+import { For } from "solid-js"
 import { createStore } from "solid-js/store"
 import { DockShell } from "@allcode/ui/dock-surface"
 import { SessionRevertDock } from "@/pages/session/composer/session-revert-dock"

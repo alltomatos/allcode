@@ -1,4 +1,4 @@
-﻿import { expect, mock, test } from "bun:test"
+import { expect, mock, test } from "bun:test"
 import { spawn } from "node:child_process"
 import { once } from "node:events"
 import { LayerNode } from "@allcode/core/effect/layer-node"

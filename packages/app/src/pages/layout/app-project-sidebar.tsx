@@ -1,4 +1,4 @@
-﻿import { Show, createEffect, type Component, type JSX } from "solid-js"
+import { Show, createEffect, type Component, type JSX } from "solid-js"
 import { useLocation, useNavigate } from "@solidjs/router"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { Icon } from "@allcode/ui/icon"
@@ -30,7 +30,7 @@ export const AppProjectSidebar: Component = () => {
 
   const selectProject = (conn: ServerConnection.Any, directory: string) => {
     home.project.select(conn, directory)
-    if (location.pathname !== "/") navigate("/")
+    if (location.pathname !== "/sessions") navigate("/sessions")
   }
 
   const selectTab = (tab: ProjectSidebarTab) => {
@@ -41,7 +41,7 @@ export const AppProjectSidebar: Component = () => {
       tab === "code" &&
       (location.pathname.startsWith("/agentui") || location.pathname.startsWith("/rotinas"))
     )
-      navigate("/")
+      navigate("/sessions")
   }
 
   const routinesLabel = () => (language.locale() === "br" ? "Rotinas" : "Routines")
@@ -67,6 +67,13 @@ export const AppProjectSidebar: Component = () => {
               />
             </TooltipV2>
             <div class="my-0.5 h-px w-6 bg-v2-border-border-base" />
+            <ProjectRailTabButton
+              active={false}
+              label={language.t("sidebar.tab.dashboard")}
+              onClick={() => navigate("/")}
+            >
+              <Icon name="code" size="small" />
+            </ProjectRailTabButton>
             <ProjectRailTabButton
               active={layout.projectSidebar.tab() === "code"}
               label={language.t("sidebar.tab.code")}

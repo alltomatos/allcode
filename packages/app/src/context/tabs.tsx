@@ -1,4 +1,4 @@
-﻿import type { Session } from "@allcode/sdk/v2/client"
+import type { Session } from "@allcode/sdk/v2/client"
 import { createSimpleContext } from "@allcode/ui/context"
 import { createStore, produce } from "solid-js/store"
 import { Persist, persisted, removePersisted, draftPersistedKeys } from "@/utils/persist"

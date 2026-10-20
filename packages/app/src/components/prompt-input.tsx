@@ -1,4 +1,4 @@
-﻿import { useFilteredList } from "@allcode/ui/hooks"
+import { useFilteredList } from "@allcode/ui/hooks"
 import { useSpring } from "@allcode/ui/motion-spring"
 import {
   createEffect,

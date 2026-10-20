@@ -1,4 +1,4 @@
-﻿import { Icon, type IconProps } from "@allcode/ui/icon"
+import { Icon, type IconProps } from "@allcode/ui/icon"
 import {
   Toast,
   showToast as showLegacyToast,

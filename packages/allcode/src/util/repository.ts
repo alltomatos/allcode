@@ -1,4 +1,4 @@
-﻿import path from "path"
+import path from "path"
 import { fileURLToPath } from "url"
 import { Schema } from "effect"
 import { Global } from "@allcode/core/global"

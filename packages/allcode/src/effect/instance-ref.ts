@@ -1,4 +1,4 @@
-﻿import { Context } from "effect"
+import { Context } from "effect"
 import type { InstanceContext } from "@/project/instance-context"
 import type { WorkspaceV2 } from "@allcode/core/workspace"
 

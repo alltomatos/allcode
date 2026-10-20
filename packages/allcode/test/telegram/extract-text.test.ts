@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { extractText } from "../../src/telegram"
 import type { SessionV1 } from "@allcode/core/v1/session"
 

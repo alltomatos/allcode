@@ -1,4 +1,4 @@
-﻿import { Auth } from "@/auth"
+import { Auth } from "@/auth"
 
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"

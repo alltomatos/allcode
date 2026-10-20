@@ -1,4 +1,4 @@
-﻿import { useNavigate } from "@solidjs/router"
+import { useNavigate } from "@solidjs/router"
 import { ScrollView } from "@allcode/ui/scroll-view"
 import { createHomeController } from "./home/home-controller"
 import { createHomeProjectsController } from "./home/home-projects-controller"

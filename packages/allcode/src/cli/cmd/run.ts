@@ -1,4 +1,4 @@
-﻿import type { PermissionV1 } from "@allcode/core/v1/permission"
+import type { PermissionV1 } from "@allcode/core/v1/permission"
 import { FSUtil } from "@allcode/core/fs-util"
 // CLI entry point for `opencode run` and `opencode --mini`.
 //

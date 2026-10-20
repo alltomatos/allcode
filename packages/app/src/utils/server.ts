@@ -1,4 +1,4 @@
-﻿import { createOpencodeClient } from "@allcode/sdk/v2/client"
+import { createOpencodeClient } from "@allcode/sdk/v2/client"
 import { OpenCode, type OpenCodeClient } from "@allcode/client/promise"
 import type { ServerConnection } from "@/context/server"
 import { decode64 } from "@/utils/base64"

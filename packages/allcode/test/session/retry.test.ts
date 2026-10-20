@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { SessionV1 } from "@allcode/core/v1/session"
 import type { NamedError } from "@allcode/core/util/error"

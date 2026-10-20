@@ -1,4 +1,4 @@
-﻿import { base64Encode } from "@allcode/core/util/encode"
+import { base64Encode } from "@allcode/core/util/encode"
 import { Event } from "@allcode/schema/event"
 import { SessionStatusEvent } from "@allcode/schema/session-status-event"
 import { SessionV1 } from "@allcode/schema/session-v1"

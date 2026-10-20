@@ -1,4 +1,4 @@
-﻿import type { CommandModule } from "yargs"
+import type { CommandModule } from "yargs"
 
 type Args = {}
 

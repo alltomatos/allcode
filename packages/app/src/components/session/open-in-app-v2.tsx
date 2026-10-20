@@ -1,4 +1,4 @@
-﻿import { For, Show } from "solid-js"
+import { For, Show } from "solid-js"
 import { AppIcon } from "@allcode/ui/app-icon"
 import { Icon } from "@allcode/ui/icon"
 import { Spinner } from "@allcode/ui/spinner"

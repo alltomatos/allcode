@@ -1,4 +1,4 @@
-﻿import { MailAccounts } from "@/mail-accounts"
+import { MailAccounts } from "@/mail-accounts"
 import { PositiveInt } from "@allcode/core/schema"
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"

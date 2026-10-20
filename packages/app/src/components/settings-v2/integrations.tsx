@@ -1,4 +1,4 @@
-﻿import { createResource, createSignal, Show, type Component } from "solid-js"
+import { createResource, createSignal, Show, type Component } from "solid-js"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Icon } from "@allcode/ui/icon"
 import { Tag } from "@allcode/ui/v2/badge-v2"

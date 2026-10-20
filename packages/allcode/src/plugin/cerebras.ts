@@ -1,4 +1,4 @@
-﻿import type { Hooks, PluginInput } from "@allcode/plugin"
+import type { Hooks, PluginInput } from "@allcode/plugin"
 
 export async function CerebrasPlugin(_input: PluginInput): Promise<Hooks> {
   return {

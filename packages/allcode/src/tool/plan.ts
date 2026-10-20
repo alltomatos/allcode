@@ -1,4 +1,4 @@
-﻿import path from "path"
+import path from "path"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { Effect, Schema } from "effect"
 import * as Tool from "./tool"

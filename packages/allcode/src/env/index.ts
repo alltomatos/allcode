@@ -1,4 +1,4 @@
-﻿import { LayerNode } from "@allcode/core/effect/layer-node"
+import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Context, Effect, Layer } from "effect"
 import { serviceUse } from "@allcode/core/effect/service-use"
 import { InstanceState } from "@/effect/instance-state"

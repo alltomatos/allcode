@@ -1,4 +1,4 @@
-﻿import { expect, test } from "bun:test"
+import { expect, test } from "bun:test"
 import type { NormalizedProviderListResponse } from "@allcode/session-ui/context"
 import { resolveDefaultModel, selectProviderCatalog } from "./provider-catalog"
 

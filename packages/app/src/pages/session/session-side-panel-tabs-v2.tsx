@@ -1,4 +1,4 @@
-﻿import { For, Show, onCleanup, type JSX } from "solid-js"
+import { For, Show, onCleanup, type JSX } from "solid-js"
 import { DragDropProvider as DndKitProvider, PointerSensor } from "@dnd-kit/solid"
 import { isSortable } from "@dnd-kit/solid/sortable"
 import { Accessibility, AutoScroller, Feedback, PointerActivationConstraints } from "@dnd-kit/dom"

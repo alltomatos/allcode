@@ -1,4 +1,4 @@
-﻿import { Flag } from "@allcode/core/flag/flag"
+import { Flag } from "@allcode/core/flag/flag"
 import { Database } from "@allcode/core/database/database"
 import { Effect } from "effect"
 import { HttpRouter, HttpServerRequest, HttpServerResponse } from "effect/unstable/http"

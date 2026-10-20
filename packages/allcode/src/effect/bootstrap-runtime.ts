@@ -1,4 +1,4 @@
-﻿import { Layer, ManagedRuntime } from "effect"
+import { Layer, ManagedRuntime } from "effect"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 

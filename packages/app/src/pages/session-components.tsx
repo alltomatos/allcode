@@ -1,4 +1,4 @@
-﻿import { ParentProps, Show, ErrorBoundary, createEffect, createMemo } from "solid-js";
+import { ParentProps, Show, ErrorBoundary, createEffect, createMemo } from "solid-js";
 import { GlobalLoading } from "@/components/global-loading";
 import { useLanguage } from "@/context/language";
 import { useServer, ServerConnection, serverName } from "@/context/server";

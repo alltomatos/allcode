@@ -1,4 +1,4 @@
-﻿import { createResizeObserver } from "@solid-primitives/resize-observer"
+import { createResizeObserver } from "@solid-primitives/resize-observer"
 import { useSpring } from "@allcode/ui/motion-spring"
 import { type Accessor, createEffect, createMemo, createResource, onCleanup } from "solid-js"
 import { createStore } from "solid-js/store"

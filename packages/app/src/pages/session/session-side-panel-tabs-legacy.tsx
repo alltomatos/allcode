@@ -1,4 +1,4 @@
-﻿import { For, Show, onCleanup, type JSX } from "solid-js"
+import { For, Show, onCleanup, type JSX } from "solid-js"
 import { createStore } from "solid-js/store"
 import {
   DragDropProvider,

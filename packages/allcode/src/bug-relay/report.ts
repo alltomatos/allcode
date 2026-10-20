@@ -1,4 +1,4 @@
-﻿// Client for the bug-relay service (bugrepcode.alltomatos.com.br), which
+// Client for the bug-relay service (bugrepcode.alltomatos.com.br), which
 // turns bug reports — manual (user-triggered) or auto (uncaught error) —
 // into deduped GitHub issues on alltomatos/opencode. The relay holds the
 // only GitHub credential in this flow; this module never touches GitHub

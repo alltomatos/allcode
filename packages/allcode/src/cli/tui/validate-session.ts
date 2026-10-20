@@ -1,4 +1,4 @@
-﻿import { createOpencodeClient } from "@allcode/sdk/v2"
+import { createOpencodeClient } from "@allcode/sdk/v2"
 import { SessionID } from "@/session/schema"
 import { Schema } from "effect"
 

@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/package.json",
   "version": "1.18.21",
   "name": "@allcode/llm",

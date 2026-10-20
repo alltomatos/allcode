@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { computeStats, formatDuration, formatMinutes, getCutoffTime, type StatsDateRange } from "./stats-controller"
 import type { Session } from "@allcode/sdk/v2/client"
 

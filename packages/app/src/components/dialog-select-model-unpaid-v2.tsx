@@ -1,4 +1,4 @@
-﻿import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@allcode/ui/v2/dialog-v2"
+import { DialogBody, DialogHeader, DialogTitle, DialogV2 } from "@allcode/ui/v2/dialog-v2"
 import { Icon } from "@allcode/ui/v2/icon"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { Tag } from "@allcode/ui/v2/badge-v2"

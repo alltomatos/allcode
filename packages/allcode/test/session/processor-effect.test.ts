@@ -1,4 +1,4 @@
-﻿import { SessionV1 } from "@allcode/core/v1/session"
+import { SessionV1 } from "@allcode/core/v1/session"
 import { Database } from "@allcode/core/database/database"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { EventV2Bridge } from "@/event-v2-bridge"

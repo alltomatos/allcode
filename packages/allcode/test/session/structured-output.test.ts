@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { Exit, Schema } from "effect"
 import { MessageV2 } from "../../src/session/message-v2"

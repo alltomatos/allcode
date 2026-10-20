@@ -1,4 +1,4 @@
-﻿// @ts-nocheck
+// @ts-nocheck
 import { createStore } from "solid-js/store"
 import type { Todo } from "@allcode/sdk/v2"
 import { createPromptState } from "@/context/prompt"

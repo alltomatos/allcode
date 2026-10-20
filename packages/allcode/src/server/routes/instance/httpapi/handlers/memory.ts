@@ -1,4 +1,4 @@
-﻿import { Memory } from "@/memory"
+import { Memory } from "@/memory"
 import type { ConfigMemoryV1 } from "@allcode/core/v1/config/memory"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"

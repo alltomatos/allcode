@@ -1,4 +1,4 @@
-﻿import { usePlatform } from "@/context/platform"
+import { usePlatform } from "@/context/platform"
 import { ServerConnection } from "@/context/server"
 import { authTokenFromCredentials, createSdkForServer } from "./server"
 import { ClientError, OpenCode } from "@allcode/client"

@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { PermissionRequest, Session } from "@allcode/sdk/v2/client"
 import { base64Encode } from "@allcode/core/util/encode"
 import { autoRespondsPermission, isDirectoryAutoAccepting, sessionAutoAccept } from "./permission-auto-respond"

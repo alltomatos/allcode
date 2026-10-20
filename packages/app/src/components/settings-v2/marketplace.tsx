@@ -1,4 +1,4 @@
-﻿import { createMemo, createSignal, For, Show, type Component } from "solid-js"
+import { createMemo, createSignal, For, Show, type Component } from "solid-js"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"

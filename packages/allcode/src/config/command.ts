@@ -1,4 +1,4 @@
-﻿export * as ConfigCommand from "./command"
+export * as ConfigCommand from "./command"
 
 import path from "path"
 import { Cause, Exit, Schema } from "effect"

@@ -1,4 +1,4 @@
-﻿import { test, expect, describe, afterEach, beforeEach, spyOn } from "bun:test"
+import { test, expect, describe, afterEach, beforeEach, spyOn } from "bun:test"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { httpClient } from "@allcode/core/effect/app-node-platform"

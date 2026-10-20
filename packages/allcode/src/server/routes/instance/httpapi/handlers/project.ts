@@ -1,4 +1,4 @@
-﻿import * as InstanceState from "@/effect/instance-state"
+import * as InstanceState from "@/effect/instance-state"
 import { Project } from "@/project/project"
 import { ProjectV2 } from "@allcode/core/project"
 import { Effect } from "effect"

@@ -1,4 +1,4 @@
-﻿import type { LocalProject } from "@/context/layout"
+import type { LocalProject } from "@/context/layout"
 import { getProjectAvatarVariant } from "@/context/layout"
 import type { ServerConnection } from "@/context/server"
 import { displayName, getProjectAvatarSource } from "@/pages/layout/helpers"

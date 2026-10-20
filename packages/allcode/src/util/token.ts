@@ -1,2 +1,2 @@
-﻿export { Token, estimate } from "@allcode/core/util/token"
+export { Token, estimate } from "@allcode/core/util/token"
 

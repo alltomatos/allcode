@@ -1,4 +1,4 @@
-﻿import { beforeEach, describe, expect } from "bun:test"
+import { beforeEach, describe, expect } from "bun:test"
 import { Effect, Exit, Layer, Option } from "effect"
 import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/unstable/http"
 import { LayerNode } from "@allcode/core/effect/layer-node"

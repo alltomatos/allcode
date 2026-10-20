@@ -3,8 +3,10 @@ import { Context, Effect, Layer, LayerMap, Option } from "effect"
 import { Node } from "@allcode/core/effect/app-node"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { LayerNode } from "@allcode/core/effect/layer-node"
+import { Database } from "@allcode/core/database/database"
 import { Location } from "@allcode/core/location"
 import { LocationServiceMap } from "@allcode/core/location-service-map"
+import { LocationsResolver } from "@allcode/core/location-resolver"
 import type { LocationError, LocationServices } from "@allcode/core/location-services"
 import { Project } from "@allcode/core/project"
 import { AbsolutePath } from "@allcode/core/schema"
@@ -96,6 +98,33 @@ describe("node build", () => {
 
     expect((await Effect.runPromise(program)).directory).toBe(ref.directory)
     expect(acquisitions).toBe(1)
+  })
+
+  test("LocationsResolver returns the same Database as the location service map", async () => {
+    await using tmp = await tmpdir()
+    const projectLayer = Layer.effect(
+      Project.Service,
+      Effect.sync(() =>
+        Project.Service.of({
+          directories: () => Effect.succeed([]),
+          resolve: (directory) => Effect.succeed({ id: Project.ID.global, directory }),
+          commit: () => Effect.void,
+        }),
+      ),
+    )
+    const ref = Location.Ref.make({ directory: AbsolutePath.make(tmp.path) })
+    const layer = AppNodeBuilder.build(LayerNode.group([LocationsResolver.node, LocationServiceMap.node]), [
+      [Project.node, projectLayer],
+    ])
+    const program = Effect.gen(function* () {
+      const locations = yield* LocationServiceMap.Service
+      const resolver = yield* LocationsResolver.Service
+      const viaMap = Context.getUnsafe(yield* Effect.scoped(locations.contextEffect(ref)), Database.Service)
+      const viaResolver = yield* resolver.get(ref)
+      return viaMap === viaResolver
+    }).pipe(Effect.provide(layer))
+
+    expect(await Effect.runPromise(program)).toBe(true)
   })
 
   test("returns a composed application layer", async () => {

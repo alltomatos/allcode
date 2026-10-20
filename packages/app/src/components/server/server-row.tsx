@@ -1,4 +1,4 @@
-﻿import { Tooltip } from "@allcode/ui/tooltip"
+import { Tooltip } from "@allcode/ui/tooltip"
 import { createResizeObserver } from "@solid-primitives/resize-observer"
 import {
   children,

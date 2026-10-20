@@ -1,4 +1,4 @@
-﻿import { createSignal, For, Show } from "solid-js"
+import { createSignal, For, Show } from "solid-js"
 import { Dialog, DialogHeader, DialogTitle, DialogBody, DialogFooter } from "@allcode/ui/v2/dialog-v2"
 import { Button } from "@allcode/ui/button"
 import { Icon } from "@allcode/ui/icon"

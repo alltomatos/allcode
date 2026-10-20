@@ -1,4 +1,4 @@
-﻿import { For, Show } from "solid-js"
+import { For, Show } from "solid-js"
 import type { PermissionRequest } from "@allcode/sdk/v2"
 import { Button } from "@allcode/ui/button"
 import { DockPrompt } from "@allcode/session-ui/dock-prompt"

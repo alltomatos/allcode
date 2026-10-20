@@ -1,4 +1,4 @@
-﻿import { createMemo, createResource, For, Show, type Accessor, type Component } from "solid-js"
+import { createMemo, createResource, For, Show, type Accessor, type Component } from "solid-js"
 import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
 import { Icon } from "@allcode/ui/icon"
 import { useMutation } from "@tanstack/solid-query"

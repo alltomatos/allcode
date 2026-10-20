@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { SessionNotification } from "@agentclientprotocol/sdk"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { ProviderV2 } from "@allcode/core/provider"

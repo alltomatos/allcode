@@ -1,4 +1,4 @@
-﻿import { beforeAll, describe, expect, mock, test } from "bun:test"
+import { beforeAll, describe, expect, mock, test } from "bun:test"
 import { ServerScope } from "@/utils/server-scope"
 
 let getWorkspaceTerminalCacheKey: typeof import("./terminal").getWorkspaceTerminalCacheKey

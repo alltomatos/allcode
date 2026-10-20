@@ -1,4 +1,4 @@
-﻿import { Flag } from "@allcode/core/flag/flag"
+import { Flag } from "@allcode/core/flag/flag"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { Cause, Duration, Effect, Layer, Scope } from "effect"

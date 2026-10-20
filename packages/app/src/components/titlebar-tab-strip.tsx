@@ -1,4 +1,4 @@
-﻿import { createEffect, createMemo, createResource, createRoot, For, onCleanup, onMount, Show } from "solid-js"
+import { createEffect, createMemo, createResource, createRoot, For, onCleanup, onMount, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { createResizeObserver } from "@solid-primitives/resize-observer"
 import { DragDropProvider, PointerSensor } from "@dnd-kit/solid"

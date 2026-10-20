@@ -1,4 +1,4 @@
-﻿import type { Config } from "@/config/config"
+import type { Config } from "@/config/config"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { SessionV1 } from "@allcode/core/v1/session"
 import type { Provider } from "@/provider/provider"

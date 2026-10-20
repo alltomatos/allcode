@@ -1,4 +1,4 @@
-﻿export * as TelegramChatSessions from "./chat-sessions"
+export * as TelegramChatSessions from "./chat-sessions"
 
 import path from "node:path"
 import { LayerNode } from "@allcode/core/effect/layer-node"

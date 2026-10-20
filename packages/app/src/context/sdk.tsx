@@ -1,4 +1,4 @@
-﻿import { createSimpleContext } from "@allcode/ui/context"
+import { createSimpleContext } from "@allcode/ui/context"
 import { type Accessor, createMemo } from "solid-js"
 import { type ServerSDK, useServerSDK } from "./server-sdk"
 

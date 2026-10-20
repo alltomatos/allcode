@@ -1,4 +1,4 @@
-﻿import type { Argv } from "yargs"
+import type { Argv } from "yargs"
 import { spawn } from "child_process"
 import { Database } from "@allcode/core/database/database"
 import { Effect } from "effect"

@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { retry } from "@allcode/core/util/retry"
 import type { OpenCodeEvent, SessionApi } from "@allcode/client/promise"
 import type { Message, OpencodeClient, Part, Session } from "@allcode/sdk/v2/client"

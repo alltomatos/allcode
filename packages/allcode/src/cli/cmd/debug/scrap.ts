@@ -1,4 +1,4 @@
-﻿import { EOL } from "os"
+import { EOL } from "os"
 import { cmd } from "../cmd"
 
 export const ScrapCommand = cmd({

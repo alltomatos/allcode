@@ -1,4 +1,4 @@
-﻿import { createStore, produce } from "solid-js/store"
+import { createStore, produce } from "solid-js/store"
 import { createSimpleContext } from "@allcode/ui/context"
 import { batch, createEffect, createMemo, createRoot, on, onCleanup } from "solid-js"
 import { useParams } from "@solidjs/router"

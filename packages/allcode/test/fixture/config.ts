@@ -1,4 +1,4 @@
-﻿import { Config } from "@/config/config"
+import { Config } from "@/config/config"
 import { emptyConsoleState } from "@allcode/core/v1/config/console-state"
 import { Effect, Layer } from "effect"
 

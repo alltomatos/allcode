@@ -1,4 +1,4 @@
-﻿import { createEffect, createMemo, createResource, createSignal, For, onCleanup, on, Show } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, For, onCleanup, on, Show } from "solid-js"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Icon } from "@allcode/ui/icon"
 import { ScrollView } from "@allcode/ui/scroll-view"

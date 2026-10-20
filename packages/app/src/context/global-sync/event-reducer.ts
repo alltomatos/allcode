@@ -1,4 +1,4 @@
-﻿import { Binary } from "@allcode/core/util/binary"
+import { Binary } from "@allcode/core/util/binary"
 import { produce, reconcile, type SetStoreFunction, type Store } from "solid-js/store"
 import type {
   Message,

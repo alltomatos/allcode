@@ -1,4 +1,4 @@
-﻿export * as AgentUI from "./index"
+export * as AgentUI from "./index"
 
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { ConfigV1 } from "@allcode/core/v1/config/config"

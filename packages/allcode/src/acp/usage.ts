@@ -1,4 +1,4 @@
-﻿import type { AgentSideConnection, Usage } from "@agentclientprotocol/sdk"
+import type { AgentSideConnection, Usage } from "@agentclientprotocol/sdk"
 import type { AssistantMessage as OpenCodeAssistantMessage, Message } from "@allcode/sdk/v2"
 import { InstanceRef } from "@/effect/instance-ref"
 import { InstanceBootstrap } from "@/project/bootstrap"

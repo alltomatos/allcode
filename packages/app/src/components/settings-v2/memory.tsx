@@ -1,4 +1,4 @@
-﻿import { createEffect, createMemo, createResource, Show, type Accessor, type Component } from "solid-js"
+import { createEffect, createMemo, createResource, Show, type Accessor, type Component } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useMutation } from "@tanstack/solid-query"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"

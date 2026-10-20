@@ -1,4 +1,4 @@
-﻿import { createSimpleContext } from "@allcode/ui/context"
+import { createSimpleContext } from "@allcode/ui/context"
 import type { AsyncStorage, SyncStorage } from "@solid-primitives/storage"
 import type { Accessor } from "solid-js"
 import type { DesktopMenuAction } from "../desktop-menu"
@@ -106,6 +106,26 @@ type PlatformBase = {
     freedBytes: number
     purgedEvents: number
     durationMs: number
+  }>
+  detectLegacyInstallations?: () => Promise<Array<{
+    id: string
+    name: string
+    dbPath: string
+    sessionCount: number
+    dbSizeBytes: number
+  }>>
+  listLegacySessions?: (sourceDbPath: string, targetDirectory?: string) => Promise<Array<{
+    id: string
+    title: string
+    directory: string
+    timeUpdated: number
+    messageCount: number
+  }>>
+  importLegacySessions?: (sourceDbPath: string, sessionIDs: string[], targetDirectory: string) => Promise<{
+    migratedSessions: number
+    migratedMessages: number
+    migratedParts: number
+    migratedEvents: number
   }>
 
   /** Get the preferred display backend (desktop only) */

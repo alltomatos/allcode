@@ -1,4 +1,4 @@
-﻿import { useDialog } from "@allcode/ui/context/dialog"
+import { useDialog } from "@allcode/ui/context/dialog"
 import { Tooltip } from "@allcode/ui/tooltip"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"

@@ -1,4 +1,4 @@
-﻿import { useFilteredList } from "@allcode/ui/hooks"
+import { useFilteredList } from "@allcode/ui/hooks"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { Switch } from "@allcode/ui/switch"
 import { Icon } from "@allcode/ui/icon"

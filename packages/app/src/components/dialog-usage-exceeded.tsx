@@ -1,4 +1,4 @@
-﻿import { usePlatform } from "@/context/platform"
+import { usePlatform } from "@/context/platform"
 import { useLanguage } from "@/context/language"
 import { Button } from "@allcode/ui/button"
 import { useDialog } from "@allcode/ui/context/dialog"

@@ -1,4 +1,4 @@
-﻿export * as ScheduleSkillCaller from "./skill-caller"
+export * as ScheduleSkillCaller from "./skill-caller"
 
 import { Effect, Layer } from "effect"
 import { makeGlobalNode } from "@allcode/core/effect/app-node"

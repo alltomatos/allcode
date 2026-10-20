@@ -1,4 +1,4 @@
-﻿import { Button } from "@allcode/ui/button"
+import { Button } from "@allcode/ui/button"
 import { DropdownMenu } from "@allcode/ui/dropdown-menu"
 import { Icon } from "@allcode/ui/icon"
 import { QueryClientProvider } from "@tanstack/solid-query"

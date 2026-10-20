@@ -1,4 +1,4 @@
-﻿import { describe, expect } from "bun:test"
+import { describe, expect } from "bun:test"
 import { ConfigProvider, Effect, Layer } from "effect"
 import { AppNodeBuilder } from "@allcode/core/effect/app-node-builder"
 import { RuntimeFlags } from "../../src/effect/runtime-flags"

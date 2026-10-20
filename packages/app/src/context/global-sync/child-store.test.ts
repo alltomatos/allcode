@@ -1,4 +1,4 @@
-﻿import { beforeAll, describe, expect, mock, test } from "bun:test"
+import { beforeAll, describe, expect, mock, test } from "bun:test"
 import { createRoot, getOwner, type Owner } from "solid-js"
 import { createStore } from "solid-js/store"
 import type { NormalizedProviderListResponse } from "@allcode/session-ui/context"

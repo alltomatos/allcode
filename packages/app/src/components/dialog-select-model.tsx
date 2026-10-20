@@ -1,4 +1,4 @@
-﻿import { Popover as Kobalte } from "@kobalte/core/popover"
+import { Popover as Kobalte } from "@kobalte/core/popover"
 import { Component, ComponentProps, createEffect, createMemo, createResource, For, JSX, Show } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useLocal } from "@/context/local"

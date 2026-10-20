@@ -1,4 +1,4 @@
-﻿import { useParams } from "@solidjs/router"
+import { useParams } from "@solidjs/router"
 import { createMemo } from "solid-js"
 import { useLayout } from "@/context/layout"
 import { SessionRouteKey, SessionStateKey } from "@/utils/server-scope"

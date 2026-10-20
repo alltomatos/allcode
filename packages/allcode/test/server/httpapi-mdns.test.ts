@@ -1,4 +1,4 @@
-﻿import { afterEach, describe, expect, mock, test } from "bun:test"
+import { afterEach, describe, expect, mock, test } from "bun:test"
 import { Flag } from "@allcode/core/flag/flag"
 import { withTimeout } from "../../src/util/timeout"
 import { resetDatabase } from "../fixture/db"

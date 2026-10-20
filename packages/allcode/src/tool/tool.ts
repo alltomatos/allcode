@@ -1,4 +1,4 @@
-﻿import { PermissionV1 } from "@allcode/core/v1/permission"
+import { PermissionV1 } from "@allcode/core/v1/permission"
 import { Effect, Schema } from "effect"
 import { SessionV1 } from "@allcode/core/v1/session"
 import type { JSONSchema7 } from "@ai-sdk/provider"

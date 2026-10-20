@@ -1,4 +1,4 @@
-﻿import { Pty } from "@allcode/core/pty"
+import { Pty } from "@allcode/core/pty"
 import { PtyTicket } from "@allcode/core/pty/ticket"
 import { PtyID } from "@allcode/core/pty/schema"
 import { PTY_CONNECT_TICKET_QUERY } from "@/server/shared/pty-ticket"

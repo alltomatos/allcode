@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { SessionEvent } from "@allcode/core/session/event"
 import { EventManifest as SchemaEventManifest } from "@allcode/schema/event-manifest"
 import { Todo } from "@/session/todo"

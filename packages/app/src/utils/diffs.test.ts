@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { SnapshotFileDiff } from "@allcode/sdk/v2"
 import type { FileDiffInfo } from "@allcode/client/promise"
 import type { Message } from "@allcode/sdk/v2/client"

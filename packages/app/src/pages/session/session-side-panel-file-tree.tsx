@@ -1,4 +1,4 @@
-﻿import { Match, Show, Switch } from "solid-js"
+import { Match, Show, Switch } from "solid-js"
 import { Tabs } from "@allcode/ui/tabs"
 import { ResizeHandle } from "@allcode/ui/resize-handle"
 

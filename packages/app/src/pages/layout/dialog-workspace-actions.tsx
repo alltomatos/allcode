@@ -1,4 +1,4 @@
-﻿import { createMemo, onMount } from "solid-js"
+import { createMemo, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 import type { Session } from "@allcode/sdk/v2/client"
 import { Button } from "@allcode/ui/button"

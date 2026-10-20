@@ -1,4 +1,4 @@
-﻿import { LocalContext } from "@/util/local-context"
+import { LocalContext } from "@/util/local-context"
 import type { WorkspaceV2 } from "@allcode/core/workspace"
 
 export interface WorkspaceContext {

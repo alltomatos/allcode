@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { LLMEvent, ToolFailure } from "@allcode/llm"
 import { LLMClient, RequestExecutor, WebSocketExecutor, type LLMClientShape } from "@allcode/llm/route"
 import { jsonSchema, tool, type ModelMessage, type Tool } from "ai"

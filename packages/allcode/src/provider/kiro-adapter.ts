@@ -1,4 +1,4 @@
-﻿// Real inference adapter for Kiro (AWS CodeWhisperer / Amazon Q Developer).
+// Real inference adapter for Kiro (AWS CodeWhisperer / Amazon Q Developer).
 //
 // Kiro's wire protocol (`generateAssistantResponse`) is a proprietary AWS
 // envelope with binary AWS-EventStream streaming responses — nothing like

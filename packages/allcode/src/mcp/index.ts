@@ -1,4 +1,4 @@
-﻿import path from "node:path"
+import path from "node:path"
 import fs from "node:fs"
 import { pathToFileURL } from "node:url"
 import { LayerNode } from "@allcode/core/effect/layer-node"

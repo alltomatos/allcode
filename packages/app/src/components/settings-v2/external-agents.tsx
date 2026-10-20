@@ -1,4 +1,4 @@
-﻿import { createResource, For, Show, type Component } from "solid-js"
+import { createResource, For, Show, type Component } from "solid-js"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
 import { useMutation } from "@tanstack/solid-query"

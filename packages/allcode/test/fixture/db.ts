@@ -1,4 +1,4 @@
-﻿import { rm } from "fs/promises"
+import { rm } from "fs/promises"
 import { Database } from "@allcode/core/database/database"
 import { disposeAllInstances } from "./fixture"
 

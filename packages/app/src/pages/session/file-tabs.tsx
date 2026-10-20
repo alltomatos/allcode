@@ -1,4 +1,4 @@
-﻿import { Show } from "solid-js"
+import { Show } from "solid-js"
 import { Tabs } from "@allcode/ui/tabs"
 import { useSettings } from "@/context/settings"
 import { SessionFileViewV1 } from "./file-tab-view-v1"

@@ -1,4 +1,4 @@
-﻿import { For, Show, type Component } from "solid-js"
+import { For, Show, type Component } from "solid-js"
 import { useNavigate } from "@solidjs/router"
 import { ScrollView } from "@allcode/ui/scroll-view"
 import { Icon } from "@allcode/ui/icon"

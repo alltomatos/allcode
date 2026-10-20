@@ -1,4 +1,4 @@
-﻿import { describe, test, expect } from "bun:test"
+import { describe, test, expect } from "bun:test"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { filesystem } from "@allcode/core/effect/app-node-platform"

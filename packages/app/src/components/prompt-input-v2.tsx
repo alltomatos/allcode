@@ -1,4 +1,4 @@
-﻿import { ImagePreview } from "@allcode/ui/image-preview"
+import { ImagePreview } from "@allcode/ui/image-preview"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"

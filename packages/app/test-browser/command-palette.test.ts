@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { Project } from "@allcode/sdk/v2/client"
 import type { SessionInfo } from "@allcode/client/promise"
 import { createRoot } from "solid-js"

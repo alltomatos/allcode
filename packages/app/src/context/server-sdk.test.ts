@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { adaptServerEvent, coalesceServerEvents, enqueueServerEvent, resumeStreamAfterPageShow } from "./server-sdk"
 import type { OpenCodeEvent } from "@allcode/client/promise"
 import type { Event } from "@allcode/sdk/v2/client"

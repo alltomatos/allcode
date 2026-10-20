@@ -1,4 +1,4 @@
-﻿import { detectExternalAgents } from "@allcode/core/external-agent-detect"
+import { detectExternalAgents } from "@allcode/core/external-agent-detect"
 import { KNOWN_EXTERNAL_AGENTS } from "@allcode/core/external-agent-registry"
 import { installBatutaCliSkill, removeBatutaCliSkill } from "@allcode/core/external-agent-skill"
 import { Global } from "@allcode/core/global"

@@ -1,2 +1,2 @@
-﻿export * from "@allcode/tui/prompt/display"
+export * from "@allcode/tui/prompt/display"
 

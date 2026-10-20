@@ -1,4 +1,4 @@
-﻿import { describe, expect, spyOn } from "bun:test"
+import { describe, expect, spyOn } from "bun:test"
 import path from "path"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Deferred, Effect, Layer } from "effect"

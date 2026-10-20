@@ -1,4 +1,4 @@
-﻿import { EOL } from "os"
+import { EOL } from "os"
 import { Effect } from "effect"
 import { Catalog } from "@allcode/core/catalog"
 import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"

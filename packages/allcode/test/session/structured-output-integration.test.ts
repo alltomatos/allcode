@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { Ripgrep } from "@allcode/core/ripgrep"
 import { Effect } from "effect"

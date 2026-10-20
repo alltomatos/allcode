@@ -1,4 +1,4 @@
-﻿import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
+import { createMemo, createResource, createSignal, For, Show, type Component } from "solid-js"
 import { useNavigate, useParams } from "@solidjs/router"
 import { ScrollView } from "@allcode/ui/scroll-view"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"

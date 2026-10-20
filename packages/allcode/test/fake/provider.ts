@@ -1,4 +1,4 @@
-﻿import { Effect, Layer } from "effect"
+import { Effect, Layer } from "effect"
 import { Provider } from "@/provider/provider"
 import { ProviderV2 } from "@allcode/core/provider"
 import { ModelV2 } from "@allcode/core/model"

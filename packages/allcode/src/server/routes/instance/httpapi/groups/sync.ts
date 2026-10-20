@@ -1,4 +1,4 @@
-﻿import { NonNegativeInt } from "@allcode/core/schema"
+import { NonNegativeInt } from "@allcode/core/schema"
 import { EventV2 } from "@allcode/core/event"
 import { SessionID } from "@/session/schema"
 import { Schema } from "effect"

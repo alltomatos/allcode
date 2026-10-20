@@ -1,4 +1,4 @@
-﻿import { describe, expect, test } from "bun:test"
+import { describe, expect, test } from "bun:test"
 import type { OpenCodeEvent, SessionMessageInfo } from "@allcode/client/promise"
 import { createV2SessionReducer } from "./server-session-v2-reducer"
 

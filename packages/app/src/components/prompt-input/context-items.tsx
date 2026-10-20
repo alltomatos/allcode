@@ -1,4 +1,4 @@
-﻿import { Component, For, Show } from "solid-js"
+import { Component, For, Show } from "solid-js"
 import { Dynamic } from "solid-js/web"
 import { FileIcon } from "@allcode/ui/file-icon"
 import { IconButton } from "@allcode/ui/icon-button"

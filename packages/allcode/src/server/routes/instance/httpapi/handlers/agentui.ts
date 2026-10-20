@@ -1,4 +1,4 @@
-﻿import { AgentUI } from "@/agentui"
+import { AgentUI } from "@/agentui"
 import type { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"

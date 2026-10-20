@@ -1,4 +1,4 @@
-﻿// Footer layout
+// Footer layout
 //
 // Renders the footer region as a compact vertical stack:
 //   1. Single-line composer or active footer body

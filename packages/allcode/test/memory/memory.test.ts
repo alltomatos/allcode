@@ -1,4 +1,4 @@
-﻿import { afterAll, expect } from "bun:test"
+import { afterAll, expect } from "bun:test"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Global } from "@allcode/core/global"
 import { Effect } from "effect"
