@@ -11,7 +11,7 @@ GitHub (alltomatos/opencode, branch default `dev`) é a fonte persistente de ras
 | [**[E03] Melhorias de MCP**](https://github.com/alltomatos/opencode/issues/21) | Melhorias de MCP | done (#21–#24 fechadas) | [#21](https://github.com/alltomatos/opencode/issues/21) |
 | [**[E04] Batuta**](https://github.com/alltomatos/opencode/issues/26) | Orquestração de subagentes | in_progress — V1+V2 fases 1-2 concluídas; fases 3 (painel/DAG) em backlog | [#110](https://github.com/alltomatos/opencode/issues/110) |
 | [**[E05] Descontinuar layout legado**](https://github.com/alltomatos/opencode/issues/25) | Descontinuar o layout legado | todo | [#25](https://github.com/alltomatos/opencode/issues/25) |
-| [**[E06] Build multi-plataforma**](https://github.com/alltomatos/opencode/issues/39) | Build multi-plataforma na promoção `dev` → `prod` | done (release-desktop.yml) | — |
+| [**[E06] Build multi-plataforma**](https://github.com/alltomatos/opencode/issues/39) | Build multi-plataforma na promoção `dev` → `prod` | done (release-prod.yml) | — |
 | [**[E07] Design system**](https://github.com/alltomatos/opencode/issues/178) | Design system / passes de consistência | in_progress (#178 aberta; #164–#177 fechadas) | [#178](https://github.com/alltomatos/opencode/issues/178) |
 | [**[E08] Mobile/VPS API**](https://github.com/alltomatos/opencode/issues/59) | Mobile/VPS API (mobile-vps-api) | todo (#59–#65 abertas) | [#59](https://github.com/alltomatos/opencode/issues/59) |
 | [**[E09] Server remoto**](https://github.com/alltomatos/opencode/issues/78) | Server remoto (credenciais, workspaces, automações) | todo (#78–#84 abertas) | [#81](https://github.com/alltomatos/opencode/issues/81) |
@@ -69,10 +69,10 @@ A partir de agora, mudanças de UI/UX se acumulam em `dev` e são publicadas em 
 1. Trabalhar e validar na `dev` (o app roda em modo dev com `OPENCODE_CHANNEL=dev`, sem afetar usuários).
 2. Antes de promover, bumpar a versão em `packages/desktop/package.json` (e `packages/app/package.json`) e commitar na `dev`.
 3. Quando o conjunto de mudanças estiver maduro e testado, promover: `git checkout prod && git merge dev` (fast-forward, já que `prod` nunca diverge por conta própria) `&& git push origin prod`.
-4. **O push pra `prod` dispara sozinho** o workflow [`release-desktop.yml`](./.github/workflows/release-desktop.yml), que builda Windows/macOS/Linux em paralelo e publica os três num único release do GitHub — não precisa mais buildar nada manualmente.
+4. **O push pra `prod` dispara sozinho** o workflow [`release-prod.yml`](./.github/workflows/release-prod.yml), que builda Windows/macOS/Linux em paralelo e publica os três num único release do GitHub — não precisa mais buildar nada manualmente.
 5. Isso garante que ninguém recebe update com trabalho pela metade — o auto-updater do app aponta pros releases do GitHub, que só devem ser criados depois da promoção.
 
-Nota: o workflow de CI em `.github/workflows/publish.yml` é herdado do projeto original e só roda quando `github.repository == 'anomalyco/opencode'` — no nosso fork ele nunca dispara (é diferente do nosso `release-desktop.yml`, que é próprio deste fork e não tem esse gate).
+Nota: o workflow de CI em `.github/workflows/publish.yml` é herdado do projeto original e só roda quando `github.repository == 'anomalyco/opencode'` — no nosso fork ele nunca dispara (é diferente do nosso `release-prod.yml`, que é próprio deste fork e não tem esse gate).
 
 ### Rastreamento
 
@@ -217,7 +217,7 @@ Ver [issue #25](https://github.com/alltomatos/opencode/issues/25) pra lista comp
 
 **Status:** Concluído em 2026-08-19.
 
-`electron-builder.config.ts` já builda `.dmg`/`.zip` (mac) e `AppImage`/`.deb`/`.rpm` (linux), além do `.exe` (win) — só faltava disparar automaticamente. Implementado como `.github/workflows/release-desktop.yml`: dispara em todo push na branch `prod`, builda as três plataformas em paralelo (`windows-latest`/`macos-latest`/`ubuntu-latest`) e publica tudo no mesmo release do GitHub, usando a versão de `packages/desktop/package.json` commitada no momento do push. Builds mac/linux saem sem assinatura/notarização (sem credenciais Apple/Azure configuradas neste fork) — funcionam, mas o Gatekeeper avisa na primeira abertura no mac.
+`electron-builder.config.ts` já builda `.dmg`/`.zip` (mac) e `AppImage`/`.deb`/`.rpm` (linux), além do `.exe` (win) — só faltava disparar automaticamente. Implementado como `.github/workflows/release-prod.yml`: dispara em todo push na branch `prod`, builda as três plataformas em paralelo (`windows-latest`/`macos-latest`/`ubuntu-latest`), publica tudo no mesmo release do GitHub e também publica o CLI no npm (`@alltomatosbr/allcode`). A versão é o próximo patch de `packages/desktop/package.json` e é commitada de volta em `prod` ao final de um release bem-sucedido. Builds mac/linux saem sem assinatura/notarização (sem credenciais Apple/Azure configuradas neste fork) — funcionam, mas o Gatekeeper avisa na primeira abertura no mac.
 
 ## Epics posteriores (não detalhadas acima)
 

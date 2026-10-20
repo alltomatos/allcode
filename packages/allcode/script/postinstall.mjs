@@ -24,14 +24,13 @@ const archMap = {
 
 const platform = platformMap[os.platform()] ?? os.platform()
 const arch = archMap[os.arch()] ?? os.arch()
-// Per-platform binary packages carry the same npm scope as this wrapper
-// package (e.g. `@alltomatos/opencode` -> `@alltomatos/opencode-linux-x64`).
-// Unscoped installs (upstream's own `opencode-ai`) have no scope, so this is
-// a no-op there.
+// Per-platform binary packages carry the same npm scope and name as this
+// wrapper package (e.g. `@alltomatosbr/allcode` -> `@alltomatosbr/allcode-linux-x64`).
 const [, scope] = /^(@[^/]+\/)/.exec(packageJson.name) ?? []
-const base = `${scope ?? ""}opencode-${platform}-${arch}`
-const sourceBinary = platform === "windows" ? "opencode.exe" : "opencode"
-const targetBinary = path.join(__dirname, "bin", "opencode.exe")
+const cliName = packageJson.name.replace(/^@[^/]+\//, "")
+const base = `${scope ?? ""}${cliName}-${platform}-${arch}`
+const sourceBinary = platform === "windows" ? `${cliName}.exe` : cliName
+const targetBinary = path.join(__dirname, "bin", `${cliName}.exe`)
 
 function supportsAvx2() {
   if (arch !== "x64") return false
@@ -132,7 +131,7 @@ function installPackage(name) {
   const version = packageJson.optionalDependencies?.[name]
   if (!version) return
 
-  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "opencode-install-"))
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), "allcode-install-"))
   try {
     const result = childProcess.spawnSync(
       "npm",
@@ -180,7 +179,7 @@ function main() {
   }
 
   throw new Error(
-    `It seems your package manager failed to install the right opencode CLI package. Try manually installing ${packageNames()
+    `It seems your package manager failed to install the right allcode CLI package. Try manually installing ${packageNames()
       .map((name) => JSON.stringify(name))
       .join(" or ")}.`,
   )

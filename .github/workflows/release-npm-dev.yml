@@ -1,0 +1,62 @@
+name: release-npm-dev
+
+# Publishes the fork's CLI to npm under its own scope (@alltomatosbr) on every
+# push to dev, as a semver prerelease:
+#   npm install -g @alltomatosbr/allcode@dev
+#
+# Production publishes are handled by release-prod.yml, which also builds the
+# desktop installers and bumps the version.
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch: {}
+
+# A superseded dev-channel publish is never worth finishing — the newer push
+# publishes its own version anyway.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    if: github.repository == 'alltomatos/allcode'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - uses: ./.github/actions/setup-bun
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Compute version
+        id: version
+        shell: bash
+        run: |
+          base=$(node -p "require('./packages/desktop/package.json').version")
+          echo "version=${base}-dev.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build CLI binaries (cross-compiled, single runner)
+        working-directory: packages/allcode
+        shell: bash
+        run: bun ./script/build.ts --skip-embed-web-ui
+        env:
+          OPENCODE_CHANNEL: dev
+          OPENCODE_VERSION: ${{ steps.version.outputs.version }}
+
+      - name: Publish to npm
+        working-directory: packages/allcode
+        shell: bash
+        run: bun ./script/publish-fork.ts
+        env:
+          OPENCODE_CHANNEL: dev
+          OPENCODE_VERSION: ${{ steps.version.outputs.version }}
+          NPM_TAG: dev
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

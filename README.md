@@ -1,159 +1,129 @@
-<p align="center">
-  <a href="https://github.com/alltomatos/opencode">
-    <picture>
-      <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
-      <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
-      <img src="packages/console/app/src/asset/logo-ornate-light.svg" alt="OpenCode logo">
-    </picture>
-  </a>
-</p>
-<p align="center">OpenCode by Alltomatos — a fork of the open source AI coding agent.</p>
-<p align="center">Grupo de Apoio: https://chat.whatsapp.com/DOLzfQ4aPZ12R7ZRbLabNh</p>
+# AllCode
 
 <p align="center">
-  <a href="https://github.com/alltomatos/opencode/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/alltomatos/opencode?style=flat-square" /></a>
-  <a href="https://github.com/alltomatos/opencode/actions"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alltomatos/opencode/publish.yml?style=flat-square&branch=dev" /></a>
+  <strong>Autonomous platform for building business solutions and corporate automations with AI agents</strong>
 </p>
 
-[![OpenCode Desktop](packages/web/src/assets/lander/screenshot-splash.png)](https://github.com/alltomatos/opencode)
-
----
-
-### Screenshots
+<p align="center">
+  <a href="https://github.com/alltomatos/allcode/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/alltomatos/allcode?style=flat-square" /></a>
+  <a href="https://github.com/alltomatos/allcode/actions"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alltomatos/allcode/release-prod.yml?style=flat-square&branch=prod" /></a>
+  <a href="https://chat.whatsapp.com/DOLzfQ4aPZ12R7ZRbLabNh"><img alt="WhatsApp community" src="https://img.shields.io/badge/Community-WhatsApp-25D366?style=flat-square&logo=whatsapp" /></a>
+</p>
 
 <p align="center">
-  <img src="packages/web/src/assets/lander/t2.png" alt="Modos de permissão (Automático, Manual, Aceitar edições, Planejar)" width="49%">
-  <img src="packages/web/src/assets/lander/config.png" alt="Tela de Configurações, com suporte a português" width="49%">
+  <a href="README.md">English</a> | <a href="README.pt-BR.md">Português (BR)</a>
 </p>
 
 ---
 
-Este é um fork pessoal do [OpenCode](https://github.com/anomalyco/opencode), mantido por [Alltomatos](https://github.com/alltomatos), com o foco no app desktop para Windows e ajustes de UI/UX específicos deste fork (sidebar de projetos, terminal e browser embutidos no cabeçalho da sessão, seed de skills padrão, entre outros — veja o [changelog](./changelog.json) e as [releases](https://github.com/alltomatos/opencode/releases) para o histórico completo).
+AllCode is an open source platform for **business solution development, complex integrations, and intelligent corporate automations**. Instead of focusing only on editing code, it works as an orchestration hub: scripts, ETL pipelines, queue workers, scheduled routines, specialized chat agents, and system integrations in one place.
 
-### Branches
+AllCode is a fork of [OpenCode](https://github.com/anomalyco/opencode), maintained by [Alltomatos](https://github.com/alltomatos), extended with a corporate desktop app, side-by-side isolation, agent builder, schedules, messaging integrations, and memory.
 
-Este fork trabalha com duas branches:
+## Highlights
 
-- **`prod`** — branch de produção. Só ela gera releases publicados (o app instalado e o auto-updater apontam pra cá). É pra onde `dev` é promovida quando um lote de mudanças está maduro.
-- **`dev`** — branch de desenvolvimento. Todo o trabalho novo (features, correções, UI/UX) acontece aqui primeiro, roda em modo dev localmente pra validar, e só depois é promovida pra `prod`.
+- **End-to-end automations** — scripts, ETL pipelines, queue orchestrators, and scheduled corporate routines.
+- **AgentUI** — visual builder for specialized agents (system prompt, model, skills) with a built-in sandbox chat.
+- **System integration** — MCP servers, REST APIs, webhooks, Telegram/WhatsApp bots, and browser automation.
+- **Desktop app** — Windows, macOS, and Linux, with full parity with the web client.
+- **Side-by-side isolation** — runs alongside other tools without conflicts:
+  - dedicated port `1953` (upstream uses `4096`);
+  - dedicated SQLite database (`allcode.db`);
+  - per-project `.allcode/` directory with `allcode.json` / `allcode.jsonc`;
+  - `allcode://` protocol and `ai.allcode.desktop` app id.
+- **Non-destructive migration** — `allcode import --opencode` reads the legacy database and copies sessions, messages, and tools with idempotency.
+- **Persistent memory** — global (`~/.local/share/allcode/memory/global`) and per-project (`~/.local/share/allcode/memory/projects/<project>`) rules and decisions, queried on demand via `memory_search` and written via `memory_save`.
 
-### App Desktop (produção)
+## Desktop app
 
-Baixe o instalador direto na [página de releases](https://github.com/alltomatos/opencode/releases/latest) — sempre gerado a partir da branch `prod`.
+The desktop app is the primary experience:
 
-| Plataforma       | Download                                  |
-| ---------------- | ------------------------------------------ |
-| Windows          | `opencode-desktop-win-x64.exe` (instalador NSIS) |
-| macOS (Intel/ARM) | `opencode-desktop-mac-x64.dmg` / `opencode-desktop-mac-arm64.dmg` |
-| Linux (Debian/Ubuntu) | `opencode-desktop-linux-x64.deb`      |
-| Linux (Fedora/RHEL)   | `opencode-desktop-linux-x64.rpm`      |
-| Linux (universal)     | `opencode-desktop-linux-x64.AppImage` |
+- **Code** — solution engineering with file tree, context monitor, and version control.
+- **AgentUI** — create, edit, and test autonomous agents in an isolated chat.
+- **Schedules** — cron-like routines, triggers, and desktop notifications.
+- **Metrics** — token usage, cost per provider/model, and media attachments.
+- **Execution panels** — multiplexed PTY terminal, embedded Chromium browser, diff review (split/inline with line comments), and explicit permission gates for critical commands.
+- **Settings v2** — appearance, language, autostart, tray/background, shortcuts, database diagnostics, local/remote servers (SSH, WSL, QR pairing), provider catalog, failover combos, skills, MCP servers, messaging, and external agents.
 
-No Windows, baixe e rode o `opencode-desktop-win-x64.exe` (instalador NSIS) — sem necessidade de script. No macOS e Linux, baixe o instalador correspondente e instale manualmente (`.dmg`, `dpkg -i *.deb`, `rpm -i *.rpm`, ou dê permissão de execução no `.AppImage`).
+## Web and headless servers
 
-> **Nota (macOS):** os builds de Mac não são assinados/notarizados por este fork (não temos uma conta Apple Developer configurada). Na primeira abertura o Gatekeeper vai avisar que o app "não pode ser verificado" — clique com o botão direito no app → **Abrir** para liberar manualmente.
-
-O app verifica atualizações automaticamente contra este repositório (`alltomatos/opencode`), não contra o projeto original.
-
-### Rodando em desenvolvimento
-
-Pra validar mudanças antes de promover `dev` pra `prod`, rode o app desktop localmente a partir da branch `dev`:
+The web UI matches the desktop experience. To keep automations running 24/7 on a server or VPS:
 
 ```bash
-git clone https://github.com/alltomatos/opencode.git
-cd opencode
-git checkout dev
+export ALLCODE_SERVER_PASSWORD="a-strong-password"
+
+allcode web --hostname 0.0.0.0 --port 1953    # full web UI
+# or
+allcode serve --hostname 0.0.0.0 --port 1953  # API only (desktop/TUI clients)
+```
+
+Then open `http://server-ip:1953` or add it as a remote server in the desktop app.
+
+## Installation
+
+### Desktop
+
+Download the installer from the [releases page](https://github.com/alltomatos/allcode/releases/latest):
+
+| Platform | Artifact |
+| --- | --- |
+| Windows | `allcode-desktop-win-x64.exe` (NSIS) |
+| macOS | `allcode-desktop-mac-universal.dmg` / `.zip` (Apple Silicon + Intel) |
+| Linux (Debian/Ubuntu) | `allcode-desktop-linux-x64.deb` |
+| Linux (Fedora/RHEL) | `allcode-desktop-linux-x64.rpm` |
+| Linux (universal) | `allcode-desktop-linux-x64.AppImage` |
+
+macOS builds are not signed or notarized by this fork (no Apple Developer account is configured). On first launch, right-click the app → **Open** to bypass Gatekeeper.
+
+### CLI and server via npm
+
+```bash
+npm install -g @alltomatosbr/allcode@latest  # latest stable (published from prod)
+npm install -g @alltomatosbr/allcode@dev     # rolling dev (published from dev)
+```
+
+### Terminal UI
+
+```bash
+allcode
+```
+
+## Development
+
+```bash
+git clone -b dev https://github.com/alltomatos/allcode.git
+cd allcode
 bun install
-cd packages/desktop
-bun run dev
+
+bun dev              # run the TUI in development
+bun dev:desktop      # run the Electron desktop app in development
+bun turbo typecheck  # typecheck the monorepo
 ```
 
-Isso abre o Electron em modo desenvolvimento (canal `dev`, auto-update desativado, ícone de dev). Pra buildar um instalador local sem publicar:
+## Releases
+
+- [`release-prod.yml`](./.github/workflows/release-prod.yml) runs on every push to `prod`: it publishes the CLI to npm (`@alltomatosbr/allcode@latest`), builds Windows/macOS/Linux installers in parallel, publishes a single GitHub Release, and commits the next patch version back to `prod`.
+- [`release-npm-dev.yml`](./.github/workflows/release-npm-dev.yml) publishes `@alltomatosbr/allcode@dev` on every push to `dev`.
+
+To rebuild an existing version manually (for example, retrying a platform that failed):
 
 ```bash
-cd packages/desktop
-OPENCODE_CHANNEL=prod bun run build
-bun run package:win     # Windows (feito manualmente nesta máquina)
-bun run package:mac     # macOS — precisa rodar num Mac
-bun run package:linux   # Linux — precisa de dpkg/rpm/fpm disponíveis
+gh workflow run release-prod.yml -f version=<version>
 ```
 
-O instalador gerado fica em `packages/desktop/dist/`.
+## Branches
 
-**Publicação real é automática**: assim que a branch `prod` recebe um push (a promoção `dev` → `prod`), o workflow [`release-desktop.yml`](./.github/workflows/release-desktop.yml) dispara sozinho e builda Windows/macOS/Linux em paralelo (`windows-latest`/`macos-latest`/`ubuntu-latest`), publicando os três num único release do GitHub com a versão que estiver em `packages/desktop/package.json` no momento do push. Não precisa mais buildar nada manualmente nesta máquina — só bumpar a versão, commitar, e promover. Pra reexecutar manualmente (ex: retry de uma plataforma que falhou), use `gh workflow run release-desktop.yml`.
+- **`prod`** — production. Only this branch produces published releases and feeds the auto-updater.
+- **`dev`** — development. All new work lands here first.
 
-### CLI via npm (canais dev/prod)
+## Credits and license
 
-Além do app desktop, o CLI deste fork é publicado direto no npm sob o escopo `@alltomatos`, separado dos pacotes `opencode-ai`/`@opencode-ai/*` do projeto original — instala com canal via a sintaxe `@tag` do próprio npm:
+AllCode is built on the work of the **[OpenCode](https://github.com/anomalyco/opencode)** team (`anomalyco`): the coding agent, TUI, protocol, and SDK come from the original project, while this fork adds the corporate desktop layer, branding, and integrations.
 
-```bash
-npm install -g @alltomatos/opencode@dev     # última publicada a cada push em dev
-npm install -g @alltomatos/opencode@latest  # última publicada a cada push em prod
-```
+- Original project: [github.com/anomalyco/opencode](https://github.com/anomalyco/opencode)
+- Documentation: [opencode.ai/docs](https://opencode.ai/docs)
+- License: see [LICENSE](./LICENSE)
 
-Publicação é automática pelo workflow [`release-npm-fork.yml`](./.github/workflows/release-npm-fork.yml): builda os binários (cross-compilados num único runner) e publica com a tag correspondente à branch. Útil pra testar mudanças de `dev` via CLI/servidor sem precisar instalar o app desktop.
+If you are not specifically looking for this fork, use the [original project](https://github.com/anomalyco/opencode).
 
-### Memória entre sessões
-
-Este fork adiciona um sistema de memória cross-sessão (global e por projeto), habilitado por padrão. O modelo tem acesso a duas tools sob demanda — `memory_search` (consulta memórias relevantes) e `memory_save` (registra algo pra lembrar depois) — chamadas quando o próprio modelo decide que é relevante, sem injetar tudo automaticamente em todo prompt.
-
-- **Ativar/desativar e escolher modelo**: Configurações → Memória (mesmo padrão de toggle instantâneo do resto do app).
-- **Memória global** (`~/.local/share/opencode/memory/global/`) fica disponível como skill carregada automaticamente em qualquer sessão/projeto, além de consultável via `memory_search`.
-- **Memória por projeto** (`~/.local/share/opencode/memory/projects/<projeto>/`) fica isolada por diretório.
-
-### Rodando numa VPS (servidor remoto)
-
-O OpenCode também roda como servidor puro, sem o app desktop — útil pra manter sessões ativas 24/7 e acessar de qualquer lugar.
-
-```bash
-export OPENCODE_SERVER_PASSWORD="uma-senha-forte-aqui"
-opencode web --hostname 0.0.0.0 --port 4096      # UI web embutida, acessível pelo navegador
-# ou
-opencode serve --hostname 0.0.0.0 --port 4096    # só a API, pra conectar via app desktop ou TUI
-```
-
-Depois é só adicionar esse endereço como servidor remoto em **Configurações → Servidores** no app desktop, ou abrir a URL direto no navegador. Guia completo (systemd, proxy reverso/TLS, segurança) em [`docs/vps-hosting.md`](./docs/vps-hosting.md).
-
-**Bot do Telegram**: conecte em Configurações → Integrações → Telegram (token do @BotFather). Cada pedido roda em segundo plano; se um turno ficar travado (ex.: uma pergunta sem resposta) ele cancela sozinho depois de 10 minutos e avisa no chat — ou use `/cancel` pra cancelar na hora, sem precisar reiniciar o servidor. `/new` começa uma sessão nova a qualquer momento.
-
-### Abas do app: Code e AgentUI
-
-O app desktop organiza o trabalho em abas na barra lateral:
-
-- **Code** — a aba padrão: sessões de codificação normais, com o agente OpenCode operando no seu projeto (terminal e browser embutidos, permissões, etc).
-- **AgentUI** — construtor de agentes de chat próprios: configure um agente com system prompt, modelo e skills selecionadas, teste num sandbox de chat embutido, e habilite/desabilite por sessão. Editor baseado em páginas, direto na sidebar.
-
-### Agents
-
-OpenCode includes two built-in agents you can switch between with the `Tab` key.
-
-- **build** - Default, full-access agent for development work
-- **plan** - Read-only agent for analysis and code exploration
-  - Denies file edits by default
-  - Asks permission before running bash commands
-  - Ideal for exploring unfamiliar codebases or planning changes
-
-Also included is a **general** subagent for complex searches and multistep tasks.
-This is used internally and can be invoked using `@general` in messages.
-
-Learn more about [agents](https://opencode.ai/docs/agents) in the original project's docs.
-
-### Documentation
-
-A documentação de configuração geral segue a do projeto original: [opencode.ai/docs](https://opencode.ai/docs). Diferenças específicas deste fork (sidebar de projetos, seed de skills, canal de atualização, etc.) não estão documentadas lá — consulte o [changelog](./changelog.json) deste repositório.
-
----
-
-## Créditos
-
-Este fork existe graças ao trabalho da equipe original do **[OpenCode](https://github.com/anomalyco/opencode)** (anomalyco). Todo o núcleo do produto — o agente de codificação, a TUI, o protocolo, o SDK — vem do projeto original; este fork adiciona e ajusta principalmente a camada do app desktop.
-
-- Projeto original: [github.com/anomalyco/opencode](https://github.com/anomalyco/opencode)
-- Site oficial: [opencode.ai](https://opencode.ai)
-- Discord oficial: [opencode.ai/discord](https://opencode.ai/discord)
-
-Se você não está procurando especificamente por este fork, use o [projeto original](https://github.com/anomalyco/opencode)
-
-### Building on OpenCode
-
-If you are working on a project that's related to OpenCode and is using "opencode" as part of its name, for example "opencode-dashboard" or "opencode-mobile", please add a note to your README to clarify that it is not built by the OpenCode team and is not affiliated with them in any way.
+> Other `README.<lang>.md` files come from the upstream project and may still describe OpenCode instead of AllCode. The English and Portuguese (BR) files are the source of truth.

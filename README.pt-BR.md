@@ -107,16 +107,16 @@ A partir daí, operadores e analistas podem acessar a interface diretamente via 
 ### Aplicativo Desktop (Ambiente Principal)
 Baixe o instalador oficial na [Página de Releases](https://github.com/alltomatos/allcode/releases/latest):
 * **Windows:** `allcode-desktop-win-x64.exe` (Instalador NSIS corporativo com suporte à bandeja).
-* **macOS:** `allcode-desktop-mac-arm64.dmg` (Apple Silicon) / `allcode-desktop-mac-x64.dmg` (Intel).
+* **macOS:** `allcode-desktop-mac-universal.dmg` (Apple Silicon + Intel) / `allcode-desktop-mac-universal.zip`.
 * **Linux:** `allcode-desktop-linux-x64.deb` (Debian/Ubuntu), `.rpm` (Red Hat/Fedora) ou `.AppImage`.
 
 ### CLI & Servidor via npm
 ```bash
 # Versão estável
-npm install -g @alltomatos/allcode@latest
+npm install -g @alltomatosbr/allcode@latest
 
 # Versão de desenvolvimento contínuo
-npm install -g @alltomatos/allcode@dev
+npm install -g @alltomatosbr/allcode@dev
 ```
 
 ### Interface de Terminal (TUI)
