@@ -8,7 +8,7 @@ export const dict = {
   "desktop.menu.help": "Yordam",
   "desktop.menu.checkForUpdates": "Yangilanishlarni tekshiring...",
   "desktop.menu.settings": "Sozlamalar",
-  "desktop.menu.reloadWebview": "Veb ko?rinishini qayta yuklash",
+  "desktop.menu.reloadWebview": "Veb koʻrinishini qayta yuklash",
   "desktop.menu.restart": "Qayta ishga tushirish",
   "desktop.menu.exportLogs": "Jurnallarni eksport qilish...",
   "desktop.menu.newSession": "Yangi sessiya",
@@ -20,7 +20,7 @@ export const dict = {
   "desktop.menu.cut": "Kesish",
   "desktop.menu.copy": "Nusxalash",
   "desktop.menu.paste": "joylashtirish",
-  "desktop.menu.delete": "O?chirish",
+  "desktop.menu.delete": "Oʻchirish",
   "desktop.menu.selectAll": "Hammasini tanlang",
   "desktop.menu.toggleSidebar": "Yon panelni almashtirish",
   "desktop.menu.toggleTerminal": "Terminalni almashtirish",
@@ -30,7 +30,7 @@ export const dict = {
   "desktop.menu.actualSize": "Haqiqiy o'lcham",
   "desktop.menu.zoomIn": "Kattalashtirish",
   "desktop.menu.zoomOut": "Kichraytirish",
-  "desktop.menu.toggleFullScreen": "To?liq ekran rejimiga o?tish",
+  "desktop.menu.toggleFullScreen": "Toʻliq ekran rejimiga oʻtish",
   "desktop.menu.back": "Orqaga",
   "desktop.menu.forward": "Oldinga",
   "desktop.menu.previousSession": "Oldingi sessiya",
@@ -47,7 +47,7 @@ export const dict = {
   "desktop.updater.dialog.checkFailed.message": "Yangilanish tekshiruvi amalga oshmadi.",
   "desktop.updater.dialog.checkFailed.title": "Yangilash xatosi",
   "desktop.updater.dialog.upToDate.message": "Siz yangilangansiz.",
-  "desktop.updater.dialog.upToDate.title": "Yangilanishlar yo?q",
+  "desktop.updater.dialog.upToDate.title": "Yangilanishlar yoʻq",
   "desktop.updater.dialog.ready.message": "{{version}} yangilanishi yuklab olindi. Hozir qayta ishga tushirilsinmi?",
   "desktop.updater.dialog.ready.title": "Yangilanish tayyor",
   "desktop.updater.dialog.restart": "Qayta ishga tushirish",
@@ -71,12 +71,12 @@ export const dict = {
   "desktop.server.local": "Mahalliy server",
   "desktop.wsl.error.windowsOnly": "WSL faqat Windows da mavjud",
   "desktop.wsl.error.unavailable": "WSL mavjud emas",
-  "desktop.wsl.error.listInstalled": "O?rnatilgan WSL distrolarini ro?yxatga kiritib bo?lmadi",
-  "desktop.wsl.error.listOnline": "Onlayn WSL distrolarini ro?yxatga kiritib bo?lmadi",
+  "desktop.wsl.error.listInstalled": "Oʻrnatilgan WSL distrolarini roʻyxatga kiritib boʻlmadi",
+  "desktop.wsl.error.listOnline": "Onlayn WSL distrolarini roʻyxatga kiritib boʻlmadi",
   "desktop.wsl.error.executeDistro": "Distroda buyruqlarni bajarib bo'lmaydi",
-  "desktop.wsl.error.installWsl": "WSL o?rnatilmadi",
-  "desktop.wsl.error.installDistro": "Distroni o?rnatib bo?lmadi: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode o?rnatilmadi",
+  "desktop.wsl.error.installWsl": "WSL oʻrnatilmadi",
+  "desktop.wsl.error.installDistro": "Distroni oʻrnatib boʻlmadi: {{distro}}",
+  "desktop.wsl.error.installOpencode": "OpenCode oʻrnatilmadi",
   "desktop.wsl.error.alreadyAdded": "{{distro}} allaqachon qo'shilgan",
   "desktop.wsl.error.opencodeMissing": "Opencode ushbu tarqatishda o'rnatilmagan",
   "desktop.wsl.error.opencodeCannotRun": "opencode o'rnatilgan, lekin ishga tushirilmadi",
@@ -124,8 +124,8 @@ export const dict = {
   "command.settings.open": "Sozlamalarni oching",
   "command.session.previous": "Oldingi sessiya",
   "command.session.next": "Keyingi sessiya",
-  "command.session.previous.unseen": "Oldingi o?qilmagan seans",
-  "command.session.next.unseen": "Keyingi o?qilmagan seans",
+  "command.session.previous.unseen": "Oldingi oʻqilmagan seans",
+  "command.session.next.unseen": "Keyingi oʻqilmagan seans",
   "command.session.archive": "Arxiv seansi",
   "command.palette": "Buyruqlar palitrasi",
   "command.theme.cycle": "Keyingi mavzu",
@@ -143,7 +143,7 @@ export const dict = {
   "command.input.focus": "Fokus kiritish",
   "command.terminal.toggle": "Terminalni almashtirish",
   "command.fileTree.toggle": "Fayl daraxtini almashtirish",
-  "command.review.toggle": "Ko?rib chiqish",
+  "command.review.toggle": "Koʻrib chiqish",
   "command.terminal.new": "Yangi terminal",
   "command.terminal.new.description": "Yangi terminal yorlig'ini yarating",
   "command.steps.toggle": "Qadamlarni almashtirish",
@@ -181,7 +181,7 @@ export const dict = {
   "command.session.unshare": "Seansni ulashishni bekor qilish",
   "command.session.unshare.description": "Ushbu seansni baham ko'rishni to'xtating",
   "command.session.export": "Eksport seansi",
-  "command.session.export.description": "To?liq seans transkriptini JSON sifatida eksport qiling",
+  "command.session.export.description": "Toʻliq seans transkriptini JSON sifatida eksport qiling",
   "palette.search.placeholder": "Fayllar, buyruqlar va seanslarni qidiring",
   "palette.search.placeholder.home": "Qidiruv buyruqlar va seanslar",
   "palette.empty": "Hech qanday natija topilmadi",
@@ -210,7 +210,7 @@ export const dict = {
   "dialog.model.manage.provider.toggle": "Barcha {{provider}} modellarini almashtiring",
   "dialog.model.unpaid.freeModels.title": "OpenCode tomonidan taqdim etilgan bepul modellar",
   "dialog.model.unpaid.addMore.title": "Mashhur provayderlarning ko'proq modellarini qo'shing",
-  "dialog.model.unpaid.viewMoreProviders": "Yana 70 dan ortiq provayderlarni ko?ring",
+  "dialog.model.unpaid.viewMoreProviders": "Yana 70 dan ortiq provayderlarni koʻring",
   "dialog.provider.viewAll": "Ko'proq provayderlarni ko'rsatish",
   "provider.connect.title": "{{provider}} ni ulang",
   "provider.connect.title.anthropicProMax": "Claude Pro/Maks bilan tizimga kiring",
@@ -222,7 +222,7 @@ export const dict = {
   "provider.connect.status.waiting": "Avtorizatsiya kutilmoqda...",
   "provider.connect.status.failed": "Avtorizatsiya amalga oshmadi: {{error}}",
   "provider.connect.apiKey.description":
-    "Hisobingizni ulash va OpenCode�da {{provider}} modellaridan foydalanish uchun {{provider}} API kalitini kiriting.",
+    "Hisobingizni ulash va OpenCode’da {{provider}} modellaridan foydalanish uchun {{provider}} API kalitini kiriting.",
   "provider.connect.apiKey.label": "{{provider}} API kaliti",
   "provider.connect.apiKey.placeholder": "API kaliti",
   "provider.connect.apiKey.required": "API kaliti talab qilinadi",
@@ -263,7 +263,7 @@ export const dict = {
   "provider.custom.field.apiKey.label": "API kaliti",
   "provider.custom.field.apiKey.placeholder": "API kaliti",
   "provider.custom.field.apiKey.description":
-    "Ixtiyoriy. Agar autentifikatsiyani sarlavhalar orqali boshqarsangiz, bo?sh qoldiring.",
+    "Ixtiyoriy. Agar autentifikatsiyani sarlavhalar orqali boshqarsangiz, boʻsh qoldiring.",
   "provider.custom.models.label": "Modellar",
   "provider.custom.models.id.label": "ID",
   "provider.custom.models.id.placeholder": "model identifikatori",
@@ -328,8 +328,8 @@ export const dict = {
   "prompt.placeholder.shell": "Shell buyrug'ini kiriting... {{example}}",
   "prompt.placeholder.normal": 'Har qanday narsani so\'rang... "{{example}}"',
   "prompt.placeholder.simple": "Har qanday narsani so'rang ...",
-  "prompt.placeholder.summarizeComments": "Fikrlarni umumlashtiring�",
-  "prompt.placeholder.summarizeComment": "Fikrni umumlashtiring�",
+  "prompt.placeholder.summarizeComments": "Fikrlarni umumlashtiring…",
+  "prompt.placeholder.summarizeComment": "Fikrni umumlashtiring…",
   "prompt.mode.shell": "Shell",
   "prompt.mode.normal": "Tezkor",
   "prompt.mode.shell.exit": "chiqish uchun esc",
@@ -380,17 +380,17 @@ export const dict = {
   "prompt.attachment.remove": "Qo'shimchani olib tashlang",
   "prompt.action.send": "Yuborish",
   "prompt.action.stop": "To'xtang",
-  "prompt.toast.pasteUnsupported.title": "Qo?llab-quvvatlanmaydigan biriktirma",
+  "prompt.toast.pasteUnsupported.title": "Qoʻllab-quvvatlanmaydigan biriktirma",
   "prompt.toast.pasteUnsupported.description": "Bu yerda faqat rasmlar, PDF yoki matnli fayllar biriktirilishi mumkin.",
   "prompt.toast.attachmentDuplicate.title": "Bu fayl allaqachon yuklangan",
   "prompt.toast.modelAgentRequired.title": "Agent va modelni tanlang",
   "prompt.toast.modelAgentRequired.description": "So'rov yuborishdan oldin agent va modelni tanlang.",
-  "prompt.toast.worktreeCreateFailed.title": "Ish daraxtini yaratib bo?lmadi",
-  "prompt.toast.sessionCreateFailed.title": "Seans yaratib bo?lmadi",
+  "prompt.toast.worktreeCreateFailed.title": "Ish daraxtini yaratib boʻlmadi",
+  "prompt.toast.sessionCreateFailed.title": "Seans yaratib boʻlmadi",
   "prompt.toast.shellSendFailed.title": "Shell buyrug'ini yuborib bo'lmadi",
   "prompt.toast.commandSendFailed.title": "Buyruq yuborilmadi",
-  "prompt.toast.promptSendFailed.title": "So?rov yuborilmadi",
-  "prompt.toast.promptSendFailed.description": "Seansni olib bo?lmadi",
+  "prompt.toast.promptSendFailed.title": "Soʻrov yuborilmadi",
+  "prompt.toast.promptSendFailed.description": "Seansni olib boʻlmadi",
   "dialog.mcp.title": "MCPlar",
   "dialog.mcp.description": "{{enabled}}, {{total}} yoqilgan",
   "dialog.mcp.empty": "Hech qanday MCP sozlanmagan",
@@ -408,18 +408,18 @@ export const dict = {
   "dialog.directory.action.selectFolder": "Jildni tanlang",
   "dialog.directory.root": "Ildiz",
   "dialog.directory.parent": "Ota-ona",
-  "dialog.directory.readError": "Bu jildni o?qib bo?lmadi",
-  "app.server.unreachable": "{{server}} ga etib bo?lmadi",
+  "dialog.directory.readError": "Bu jildni oʻqib boʻlmadi",
+  "app.server.unreachable": "{{server}} ga etib boʻlmadi",
   "app.server.retrying": "Avtomatik qayta urinish...",
   "app.server.otherServers": "Boshqa serverlar",
   "dialog.server.title": "Serverlar",
   "dialog.server.description": "Ushbu ilova qaysi OpenCode serveriga ulanishini almashtiring.",
   "dialog.server.search.placeholder": "Serverlarni qidirish",
-  "dialog.server.empty": "Hozircha serverlar yo?q",
+  "dialog.server.empty": "Hozircha serverlar yoʻq",
   "dialog.server.add.title": "Server qo'shish",
   "dialog.server.add.url": "Server manzili",
   "dialog.server.add.placeholder": "http://localhost:4096",
-  "dialog.server.add.error": "Serverga ulanib bo?lmadi",
+  "dialog.server.add.error": "Serverga ulanib boʻlmadi",
   "dialog.server.add.checking": "Tekshirilmoqda...",
   "dialog.server.add.button": "Server qo'shish",
   "dialog.server.add.name": "Server nomi (ixtiyoriy)",
@@ -431,7 +431,7 @@ export const dict = {
   "dialog.server.edit.title": "Serverni tahrirlash",
   "dialog.server.default.title": "Standart server",
   "dialog.server.default.description":
-    "Mahalliy serverni ishga tushirish o?rniga ilova ishga tushganda ushbu serverga ulaning. Qayta ishga tushirishni talab qiladi.",
+    "Mahalliy serverni ishga tushirish oʻrniga ilova ishga tushganda ushbu serverga ulaning. Qayta ishga tushirishni talab qiladi.",
   "dialog.server.default.none": "Hech qanday server tanlanmagan",
   "dialog.server.default.set": "Joriy serverni standart sifatida o'rnating",
   "dialog.server.default.clear": "Tozalash",
@@ -442,7 +442,7 @@ export const dict = {
   "dialog.server.rename.placeholder": "Server name", // TODO: translate (auto-filled from en)
   "dialog.server.menu.default": "Standart sifatida o'rnating",
   "dialog.server.menu.defaultRemove": "Standartni olib tashlang",
-  "dialog.server.menu.delete": "O?chirish",
+  "dialog.server.menu.delete": "Oʻchirish",
   "dialog.server.current": "Joriy server",
   "dialog.server.status.default": "Standart",
   "wsl.server.add": "WSL serverini qo'shing",
@@ -454,16 +454,16 @@ export const dict = {
   "wsl.onboarding.step.distro": "Distroni tanlang",
   "wsl.onboarding.step.opencode": "OpenCode",
   "wsl.onboarding.checkingRuntime": "WSL tekshirilmoqda...",
-  "wsl.onboarding.restartRequired": "WSL o?rnatilishini tugatish uchun Windows qayta ishga tushirilishi kerak.",
+  "wsl.onboarding.restartRequired": "WSL oʻrnatilishini tugatish uchun Windows qayta ishga tushirilishi kerak.",
   "wsl.onboarding.ready": "WSL tayyor.",
   "wsl.onboarding.required": "Davom etish uchun WSL talab qilinadi.",
   "wsl.onboarding.checkingDistros": "Tarqatishlar tekshirilmoqda...",
   "wsl.onboarding.installingDistro": "{{distro}} o'rnatilmoqda...",
   "wsl.onboarding.checkingDistro": "{{distro}} tekshirilmoqda...",
-  "wsl.onboarding.listingDistros": "Tarqatishlar ro?yxati...",
+  "wsl.onboarding.listingDistros": "Tarqatishlar roʻyxati...",
   "wsl.onboarding.distroReady": "{{distro}} tayyor.",
   "wsl.onboarding.distroNotInstalled": "{{distro}} hali o'rnatilmagan.",
-  "wsl.onboarding.openDistroOnce": "O?rnatishni tugatish uchun {{distro}} ni bir marta oching.",
+  "wsl.onboarding.openDistroOnce": "Oʻrnatishni tugatish uchun {{distro}} ni bir marta oching.",
   "wsl.onboarding.finishingDistro": "{{distro}} uchun sozlash tugallanmoqda.",
   "wsl.onboarding.pickDistro": "Distroni tanlang yoki quyida o'rnating.",
   "wsl.onboarding.checkingOpencode": "OpenCode tekshirilmoqda...",
@@ -477,7 +477,7 @@ export const dict = {
   "wsl.onboarding.installOpencodeIn": "OpenCode-ni {{distro}}-ga o'rnating.",
   "wsl.onboarding.installOpencode": "OpenCode-ni o'rnating",
   "wsl.onboarding.chooseDistroFirst": "Avval distroni tanlang.",
-  "wsl.onboarding.loadFailed": "WSL holatini yuklab bo?lmadi.",
+  "wsl.onboarding.loadFailed": "WSL holatini yuklab boʻlmadi.",
   "wsl.onboarding.loading": "Yuklanmoqda...",
   "wsl.onboarding.installedDistros": "O'rnatilgan distroslar",
   "wsl.onboarding.checkAgain": "Yana tekshiring",
@@ -485,12 +485,12 @@ export const dict = {
   "wsl.onboarding.distroStatus.checking": "Tekshirilmoqda...",
   "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode o'rnatilmagan",
   "wsl.onboarding.distroStatus.missingTools": "Bash, curl etishmayapti",
-  "wsl.onboarding.distroStatus.unsupported": "Qo'llab-quvvatlanmaydi � WSL 2 dan foydalaning",
+  "wsl.onboarding.distroStatus.unsupported": "Qo'llab-quvvatlanmaydi · WSL 2 dan foydalaning",
   "wsl.onboarding.needAnotherDistro": "Boshqa tarqatish kerakmi?",
   "wsl.onboarding.needAnotherDistroHint": "WSL katalogidan Linux distributivini o'rnating",
   "wsl.onboarding.wslNotInstalled.title": "WSL o'rnatilmagan",
   "wsl.onboarding.wslNotInstalled.description":
-    "OpenCode WSL serverini qo?shishdan oldin WSL (Linux uchun Windows quyi tizimi) talab qilinadi.",
+    "OpenCode WSL serverini qoʻshishdan oldin WSL (Linux uchun Windows quyi tizimi) talab qilinadi.",
   "wsl.onboarding.wslUnavailable.title": "WSL mavjud emas",
   "wsl.onboarding.wslUnavailable.description": "OpenCode WSL ni ushbu mashinada tasdiqlay olmadi.",
   "wsl.onboarding.installWsl": "WSL-ni o'rnating",
@@ -501,7 +501,7 @@ export const dict = {
   "wsl.onboarding.allDistrosAdded": "Barcha o'rnatilgan tarqatishlar allaqachon qo'shilgan.",
   "wsl.onboarding.noDistros": "Hali hech qanday tarqatish aniqlanmadi.",
   "wsl.onboarding.install": "O'rnatish",
-  "wsl.onboarding.installing": "O?rnatilmoqda...",
+  "wsl.onboarding.installing": "Oʻrnatilmoqda...",
   "wsl.onboarding.installDistro": "Distroni o'rnating",
   "wsl.onboarding.searchDistros": "Distroslarni qidirish",
   "wsl.onboarding.wsl2Required": "WSL 2 talab qilinadi.",
@@ -512,7 +512,7 @@ export const dict = {
   "wsl.onboarding.version": "Versiya: {{version}}",
   "wsl.onboarding.unknown": "noma'lum",
   "wsl.onboarding.desktopVersion": "ish stoli {{version}}",
-  "wsl.onboarding.versionMismatch": "O?rnatilgan versiya ish stoli ilovasi versiyasiga mos kelmaydi.",
+  "wsl.onboarding.versionMismatch": "Oʻrnatilgan versiya ish stoli ilovasi versiyasiga mos kelmaydi.",
   "wsl.onboarding.adding": "Qo'shilmoqda...",
   "help.tabs.toast.ariaLabel": "Tablar bilan tanishtirish. Yorliqlar bilan ish va faol seanslaringizni tashkil qiling",
   "help.tabs.toast.dismiss": "Yorliqlar ma'lumotlarini o'chirish",
@@ -528,7 +528,7 @@ export const dict = {
     "Siz barcha seanslaringiz va loyihalaringizni yangi Home ekranida topasiz. Seansni tanlash uni yorliqda ochadi.",
   "help.tabs.persistence": "Ilovani qayta ochganingizda, yorliqlaringiz hali ham ochiq.",
   "help.tabs.worktrees":
-    "Yangi dizayn hali Git Worktrees-ni qo'llab-quvvatlamaydi, u tez orada chiqadi. Shunday qilib, agar siz avvalgi tartibdan foydalanishni davom ettirmoqchi bo?lsangiz, Sozlamalar orqali tartiblar o?rtasida almashishingiz mumkin. Shuni yodda tutingki, yangi tartib bir necha hafta ichida doimiy bo'ladi.",
+    "Yangi dizayn hali Git Worktrees-ni qo'llab-quvvatlamaydi, u tez orada chiqadi. Shunday qilib, agar siz avvalgi tartibdan foydalanishni davom ettirmoqchi boʻlsangiz, Sozlamalar orqali tartiblar oʻrtasida almashishingiz mumkin. Shuni yodda tutingki, yangi tartib bir necha hafta ichida doimiy bo'ladi.",
   "server.row.noUsername": "foydalanuvchi nomi yo'q",
   "dialog.project.edit.title": "Loyihani tahrirlash",
   "dialog.project.edit.name": "Ism",
@@ -578,22 +578,22 @@ export const dict = {
   "context.usage.clickToView": "Kontekstni ko'rish uchun bosing",
   "context.usage.view": "Kontekstdan foydalanishni ko'rish",
   "language.en": "Ingliz",
-  "language.zh": "shingishin",
-  "language.zht": "l�n�n�n�",
+  "language.zh": "shīngīshīn",
+  "language.zht": "línìnìnì",
   "language.ko": "|",
   "language.de": "nemis",
   "language.es": "ispan",
   "language.fr": "Fransiya",
   "language.da": "Dansk",
-  "language.ja": "???",
+  "language.ja": "日本語",
   "language.pl": "Polski",
   "language.ru": "Russkiy",
-  "language.ar": "?l?rby?",
+  "language.ar": "ạlʿrbyẗ",
   "language.no": "Norsk",
-  "language.br": "Portugu�s (Braziliya)",
+  "language.br": "Português (Braziliya)",
   "language.bs": "Bosanski",
-  "language.uk": "Ukra�nska",
-  "language.th": "???",
+  "language.uk": "Ukraínska",
+  "language.th": "ไทย",
   "language.tr": "o'zbekcha",
   "toast.language.title": "Til",
   "toast.language.description": "{{language}} ga almashtirildi",
@@ -601,35 +601,35 @@ export const dict = {
   "toast.scheme.title": "Rang sxemasi",
   "toast.workspace.enabled.title": "Ish joylari yoqilgan",
   "toast.workspace.enabled.description": "Endi yon panelda bir nechta ishchi daraxtlar ko'rsatilgan",
-  "toast.workspace.disabled.title": "Ish joylari o?chirilgan",
+  "toast.workspace.disabled.title": "Ish joylari oʻchirilgan",
   "toast.workspace.disabled.description": "Yon panelda faqat asosiy ishchi daraxt ko'rsatilgan",
   "toast.permissions.autoaccept.on.title": "Ruxsatlarni avtomatik qabul qilish",
   "toast.permissions.autoaccept.on.description": "Ruxsat so'rovlari avtomatik ravishda tasdiqlanadi",
-  "toast.permissions.autoaccept.off.title": "Ruxsatlarni avtomatik qabul qilish to?xtatildi",
+  "toast.permissions.autoaccept.off.title": "Ruxsatlarni avtomatik qabul qilish toʻxtatildi",
   "toast.permissions.autoaccept.off.description": "Ruxsat so'rovlari tasdiqlashni talab qiladi",
   "toast.model.none.title": "Hech qanday model tanlanmagan",
   "toast.model.none.description": "Ushbu seansni yakunlash uchun provayderni ulang",
-  "toast.file.loadFailed.title": "Faylni yuklab bo?lmadi",
-  "toast.file.listFailed.title": "Fayllarni ro?yxatga kiritib bo?lmadi",
+  "toast.file.loadFailed.title": "Faylni yuklab boʻlmadi",
+  "toast.file.listFailed.title": "Fayllarni roʻyxatga kiritib boʻlmadi",
   "toast.context.noLineSelection.title": "Qator tanlovi yo'q",
   "toast.context.noLineSelection.description": "Avval fayl yorlig'ida qator oralig'ini tanlang.",
-  "toast.session.share.copyFailed.title": "URLni vaqtinchalik xotiraga nusxalab bo?lmadi",
+  "toast.session.share.copyFailed.title": "URLni vaqtinchalik xotiraga nusxalab boʻlmadi",
   "toast.session.share.success.title": "Seans ulashildi",
   "toast.session.share.success.description": "Buferga nusxalangan URL bilan baham ko'ring!",
-  "toast.session.share.failed.title": "Seansni ulashib bo?lmadi",
+  "toast.session.share.failed.title": "Seansni ulashib boʻlmadi",
   "toast.session.share.failed.description": "Seansni ulashishda xatolik yuz berdi",
   "toast.session.unshare.success.title": "Seans ulashilmadi",
   "toast.session.unshare.success.description": "Seans muvaffaqiyatli bekor qilindi!",
-  "toast.session.unshare.failed.title": "Seansni taqsimlab bo?lmadi",
+  "toast.session.unshare.failed.title": "Seansni taqsimlab boʻlmadi",
   "toast.session.unshare.failed.description": "Seansni taqsimlashda xatolik yuz berdi",
   "toast.session.export.success.title": "Seans eksport qilindi",
   "toast.session.export.success.description": "Seans {{filename}}ga saqlandi",
-  "toast.session.export.failed.title": "Seansni eksport qilib bo?lmadi",
+  "toast.session.export.failed.title": "Seansni eksport qilib boʻlmadi",
   "toast.session.export.failed.description": "Seansni eksport qilishda xatolik yuz berdi",
   "toast.session.listFailed.title": "{{project}} uchun seanslar yuklanmadi",
   "toast.project.reloadFailed.title": "{{project}} qayta yuklanmadi",
   "toast.update.title": "Yangilanish mavjud",
-  "toast.update.description": "OpenCode ({{version}}) yangi versiyasi endi o?rnatish mumkin.",
+  "toast.update.description": "OpenCode ({{version}}) yangi versiyasi endi oʻrnatish mumkin.",
   "toast.update.action.installRestart": "O'rnating va qayta ishga tushiring",
   "toast.update.action.notYet": "Hali emas",
   "error.page.title": "Nimadir xato ketdi",
@@ -649,13 +649,13 @@ export const dict = {
   "error.page.version": "Versiya: {{version}}",
   "error.dev.rootNotFound":
     "Ildiz element topilmadi. Uni index.html-ga qo'shishni unutdingizmi? Yoki id atributi noto'g'ri yozilgandir?",
-  "error.serverSync.connectFailed": "Serverga ulanib bo?lmadi. `{{url}}` da ishlaydigan server bormi?",
+  "error.serverSync.connectFailed": "Serverga ulanib boʻlmadi. `{{url}}` da ishlaydigan server bormi?",
   "error.serverSDK.noServerAvailable": "Hech qanday server mavjud emas",
   "error.serverSDK.serverNotAvailable": "Server mavjud emas",
   "error.childStore.persistedCacheCreateFailed": "Doimiy kesh yaratib bo'lmadi",
-  "error.childStore.persistedProjectMetadataCreateFailed": "Doimiy loyiha metama'lumotlarini yaratib bo?lmadi",
-  "error.childStore.persistedProjectIconCreateFailed": "Doimiy loyiha belgisini yaratib bo?lmadi",
-  "error.childStore.storeCreateFailed": "Do?kon yaratib bo?lmadi",
+  "error.childStore.persistedProjectMetadataCreateFailed": "Doimiy loyiha metamaʼlumotlarini yaratib boʻlmadi",
+  "error.childStore.persistedProjectIconCreateFailed": "Doimiy loyiha belgisini yaratib boʻlmadi",
+  "error.childStore.storeCreateFailed": "Doʻkon yaratib boʻlmadi",
   "directory.error.invalidUrl": "URL da noto'g'ri katalog.",
   "error.chain.unknown": "Noma'lum xato",
   "error.server.invalidConfiguration": "Yaroqsiz konfiguratsiya",
@@ -671,14 +671,14 @@ export const dict = {
     "MCP \"{{name}}\" serveri muvaffaqiyatsiz tugadi. E'tibor bering, OpenCode hali MCP autentifikatsiyasini qo'llab-quvvatlamaydi.",
   "error.chain.providerAuthFailed": "Provayder autentifikatsiyasi amalga oshmadi ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
-    '"{{provider}}" provayderini ishga tushirib bo?lmadi. Hisob ma\'lumotlari va konfiguratsiyani tekshiring.',
+    '"{{provider}}" provayderini ishga tushirib boʻlmadi. Hisob ma\'lumotlari va konfiguratsiyani tekshiring.',
   "error.chain.configJsonInvalid": "{{path}} da konfiguratsiya fayli yaroqsiz JSON(C)",
   "error.chain.configJsonInvalidWithMessage": "{{path}} da konfiguratsiya fayli yaroqsiz JSON(C): {{message}}",
   "error.chain.configDirectoryTypo":
     '{{path}} da "{{dir}}" katalogi yaroqsiz. Katalog nomini "{{suggestion}}" ga o\'zgartiring yoki uni olib tashlang. Bu keng tarqalgan yozuv xatosi.',
-  "error.chain.configFrontmatterError": "{{path}} da oldingi materialni tahlil qilib bo?lmadi:\n{{message}}",
+  "error.chain.configFrontmatterError": "{{path}} da oldingi materialni tahlil qilib boʻlmadi:\n{{message}}",
   "error.chain.configInvalid": "{{path}} da konfiguratsiya fayli yaroqsiz",
-  "error.chain.configInvalidWithMessage": "{{path}} da konfiguratsiya fayli noto?g?ri: {{message}}",
+  "error.chain.configInvalidWithMessage": "{{path}} da konfiguratsiya fayli notoʻgʻri: {{message}}",
   "notification.permission.title": "Ruxsat talab qilinadi",
   "notification.permission.description": "{{sessionTitle}} uchun {{projectName}} uchun ruxsat kerak",
   "notification.question.title": "Savol",
@@ -708,28 +708,28 @@ export const dict = {
   "home.providerTip":
     "Claude, GPT, Gemini va boshqalar kabi boshqa modellardan foydalanish uchun 75 dan ortiq provayderlarga ulaning.",
   "session.tab.session": "Sessiya",
-  "session.tab.review": "Ko?rib chiqish",
+  "session.tab.review": "Koʻrib chiqish",
   "session.tab.context": "Kontekst",
   "session.tab.unknown": "Noma'lum sessiya",
   "session.panel.reviewAndFiles": "Ko'rib chiqish va fayllar",
   "session.error.notFound": "Bu sessiya topilmadi",
   "session.error.notFound.description": "Ushbu yorliq endi ushbu serverda mavjud bo'lmagan seansga ishora qiladi.",
   "session.error.notFound.closeTab": "Tab ni yoping",
-  "session.error.serverConnection": "Bu serverga ulanib bo?lmadi",
+  "session.error.serverConnection": "Bu serverga ulanib boʻlmadi",
   "session.review.filesChanged": "Fayllar o'zgartirildi {{count}}",
   "session.review.change.one": "O'zgartirish",
   "session.review.change.other": "O'zgarishlar",
-  "session.review.loadingChanges": "O?zgarishlar yuklanmoqda...",
-  "session.review.empty": "Bu sessiyada hali o?zgarishlar yo?q",
+  "session.review.loadingChanges": "Oʻzgarishlar yuklanmoqda...",
+  "session.review.empty": "Bu sessiyada hali oʻzgarishlar yoʻq",
   "session.review.noVcs": "Git versiyasini boshqarish tizimi aniqlanmadi, o'zgarishlar ko'rsatilmadi",
   "session.review.noVcs.createGit.title": "Git omborini yarating",
   "session.review.noVcs.createGit.description":
-    "Ushbu loyihadagi o?zgarishlarni kuzating, ko?rib chiqing va bekor qiling",
+    "Ushbu loyihadagi oʻzgarishlarni kuzating, koʻrib chiqing va bekor qiling",
   "session.review.noVcs.createGit.actionLoading": "Git ombori yaratilmoqda...",
   "session.review.noVcs.createGit.action": "Git omborini yarating",
   "session.review.noSnapshot":
-    "Snapshot kuzatish konfiguratsiyada o?chirilgan, shuning uchun sessiya o?zgarishlari mavjud emas",
-  "session.review.noChanges": "O?zgarishlar yo?q",
+    "Snapshot kuzatish konfiguratsiyada oʻchirilgan, shuning uchun sessiya oʻzgarishlari mavjud emas",
+  "session.review.noChanges": "Oʻzgarishlar yoʻq",
   "session.review.noUncommittedChanges": "Hali tasdiqlanmagan o'zgarishlar yo'q",
   "session.review.noBranchChanges": "Hozircha filial o'zgarmadi",
   "session.files.selectToOpen": "Ochish uchun faylni tanlang",
@@ -740,7 +740,7 @@ export const dict = {
   "session.messages.loadingEarlier": "Avvalgi xabarlar yuklanmoqda...",
   "session.messages.loadEarlier": "Avvalgi xabarlarni yuklang",
   "session.messages.loading": "Xabarlar yuklanmoqda...",
-  "session.messages.jumpToLatest": "Eng oxirgisiga o?tish",
+  "session.messages.jumpToLatest": "Eng oxirgisiga oʻtish",
   "session.context.addToContext": "Kontekstga {{selection}} qo'shing",
   "session.todo.title": "Vazifalar",
   "session.todo.collapse": "Yiqilish",
@@ -772,7 +772,7 @@ export const dict = {
   "session.new.workspace.runIn": "Seansni ishga tushirish",
   "session.new.workspace.triggerLocal": "Mahalliy",
   "session.new.workspace.local": "Mahalliy ombor",
-  "session.new.workspace.existing": "Ish maydoni�",
+  "session.new.workspace.existing": "Ish maydoni…",
   "session.new.git.none": "Git yo'q",
   "session.git.switchBranch": "Switch branch",
   "session.git.branches": "Git branches",
@@ -827,7 +827,7 @@ export const dict = {
   "session.share.action.unpublish": "Nashrni bekor qilish",
   "session.share.action.unpublishing": "Nashr bekor qilinmoqda...",
   "session.share.action.view": "Ko'rish",
-  "session.share.copy.copied": "Ko?chirildi",
+  "session.share.copy.copied": "Koʻchirildi",
   "session.share.copy.copyLink": "Havolani nusxalash",
   "lsp.tooltip.none": "LSP serverlari yo'q",
   "lsp.label.connected": "{{count}} LSP",
@@ -848,15 +848,15 @@ export const dict = {
   "common.closeTab": "Tabni yoping",
   "common.dismiss": "Rad etish",
   "common.moreCountSuffix": " (+{{count}} ko'proq)",
-  "common.requestFailed": "So?rov bajarilmadi",
+  "common.requestFailed": "Soʻrov bajarilmadi",
   "common.optional": "ixtiyoriy",
   "common.moreOptions": "Boshqa variantlar",
-  "common.learnMore": "Batafsil ma'lumot",
+  "common.learnMore": "Batafsil maʼlumot",
   "common.rename": "Nomini o'zgartirish",
   "common.export": "Eksport",
   "common.reset": "Qayta tiklash",
   "common.archive": "Arxiv",
-  "common.delete": "O?chirish",
+  "common.delete": "Oʻchirish",
   "common.close": "Yopish",
   "common.edit": "Tahrirlash",
   "common.loadMore": "Ko'proq yuklash",
@@ -924,7 +924,7 @@ export const dict = {
   "debugBar.focus.on": "ON",
   "debugBar.focus.off": "OFF",
   "debugBar.direction.label": "DIR",
-  "debugBar.direction.tip": "Tanlangan tilni o?zgartirmasdan ilovaning to?liq joylashuvi yo?nalishini majburlang",
+  "debugBar.direction.tip": "Tanlangan tilni oʻzgartirmasdan ilovaning toʻliq joylashuvi yoʻnalishini majburlang",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
   "app.name.desktop": "OpenCode Desktop",
@@ -949,10 +949,10 @@ export const dict = {
   "settings.general.row.shell.autoDefault": "Avtomatik (standart)",
   "settings.general.row.shell.terminalOnly": "faqat terminal",
   "settings.general.row.appearance.title": "Tashqi ko'rinish",
-  "settings.general.row.appearance.description": "OpenCode qurilmangizda qanday ko?rinishini sozlang",
+  "settings.general.row.appearance.description": "OpenCode qurilmangizda qanday koʻrinishini sozlang",
   "settings.general.row.colorScheme.title": "Rang sxemasi",
   "settings.general.row.colorScheme.description":
-    "OpenCode tizimga, yorug?lik yoki qorong?i mavzuga amal qilishini tanlang",
+    "OpenCode tizimga, yorugʻlik yoki qorongʻi mavzuga amal qilishini tanlang",
   "settings.general.row.theme.title": "Mavzu",
   "settings.general.row.theme.description": "OpenCode mavzusini sozlash.",
   "settings.general.row.font.title": "Kod shrifti",
@@ -963,7 +963,7 @@ export const dict = {
   "settings.general.row.uiFont.description": "Interfeys davomida ishlatiladigan shriftni moslashtiring",
   "settings.general.row.followup.title": "Kuzatuv xatti-harakati",
   "settings.general.row.followup.description":
-    "Kuzatuv so?rovlari darhol boshqarilishini yoki navbatda kutishini tanlang",
+    "Kuzatuv soʻrovlari darhol boshqarilishini yoki navbatda kutishini tanlang",
   "settings.general.row.followup.option.queue": "Navbat",
   "settings.general.row.followup.option.steer": "Boshqarmoq",
   "settings.general.row.showFileTree.title": "Fayl daraxti",
@@ -991,7 +991,7 @@ export const dict = {
     "Xronologiyada sukut bo'yicha kengaytirilgan qobiq asboblari qismlarini ko'rsatish",
   "settings.general.row.editToolPartsExpanded.title": "Tahrirlash vositasi qismlarini kengaytiring",
   "settings.general.row.editToolPartsExpanded.description":
-    "Vaqt jadvalida sukut bo?yicha kengaytirilgan tahrirlash, yozish va tuzatish vositalari qismlarini ko?rsatish",
+    "Vaqt jadvalida sukut boʻyicha kengaytirilgan tahrirlash, yozish va tuzatish vositalari qismlarini koʻrsatish",
   "settings.general.row.newInterface.title": "Yangi tartib",
   "settings.general.row.newInterface.badge": "Yangi",
   "settings.general.row.newInterface.description":
@@ -1017,7 +1017,7 @@ export const dict = {
   "settings.updates.action.checkNow": "Hozir tekshiring",
   "settings.updates.action.checking": "Tekshirilmoqda...",
   "settings.updates.action.downloading": "Yuklab olinmoqda...",
-  "settings.updates.action.installing": "O?rnatilmoqda...",
+  "settings.updates.action.installing": "Oʻrnatilmoqda...",
   "settings.updates.toast.latest.title": "Siz yangilangansiz",
   "settings.updates.toast.latest.description": "Siz OpenCode oxirgi versiyasini ishga tushiryapsiz.",
   "sound.option.none": "Yo'q",
@@ -1117,7 +1117,7 @@ export const dict = {
   "settings.permissions.title": "Ruxsatlar",
   "settings.permissions.description": "Server sukut bo'yicha qanday vositalardan foydalanishi mumkinligini boshqaring.",
   "settings.permissions.section.tools": "Asboblar",
-  "settings.permissions.toast.updateFailed.title": "Ruxsatlarni yangilab bo?lmadi",
+  "settings.permissions.toast.updateFailed.title": "Ruxsatlarni yangilab boʻlmadi",
   "settings.permissions.action.allow": "Ruxsat bering",
   "settings.permissions.action.ask": "So'rang",
   "settings.permissions.action.deny": "Rad etish",
@@ -1129,7 +1129,7 @@ export const dict = {
   "settings.permissions.tool.glob.description": "Glob naqshlari yordamida fayllarni moslashtiring",
   "settings.permissions.tool.grep.title": "Grep",
   "settings.permissions.tool.grep.description": "Oddiy iboralar yordamida fayl tarkibini qidiring",
-  "settings.permissions.tool.list.title": "Ro?yxat",
+  "settings.permissions.tool.list.title": "Roʻyxat",
   "settings.permissions.tool.list.description": "Katalog ichidagi fayllarni ro'yxatlash",
   "settings.permissions.tool.bash.title": "Bash",
   "settings.permissions.tool.bash.description": "Shell buyruqlarini ishga tushiring",
@@ -1150,27 +1150,27 @@ export const dict = {
   "settings.permissions.tool.doom_loop.title": "Doom Loop",
   "settings.permissions.tool.doom_loop.description":
     "Bir xil kirish bilan takrorlangan asboblar qo'ng'iroqlarini aniqlang",
-  "session.delete.failed.title": "Seansni o?chirib bo?lmadi",
+  "session.delete.failed.title": "Seansni oʻchirib boʻlmadi",
   "session.delete.title": "Seansni o'chirish",
-  "session.delete.confirm": '"{{name}}" seansi o�chirilsinmi?',
+  "session.delete.confirm": '"{{name}}" seansi o‘chirilsinmi?',
   "session.delete.button": "Seansni o'chirish",
   "workspace.new": "Yangi ish maydoni",
   "workspace.type.local": "mahalliy",
   "workspace.type.sandbox": "qum qutisi",
-  "workspace.create.failed.title": "Ish maydoni yaratib bo?lmadi",
-  "workspace.delete.failed.title": "Ish joyini o?chirib bo?lmadi",
+  "workspace.create.failed.title": "Ish maydoni yaratib boʻlmadi",
+  "workspace.delete.failed.title": "Ish joyini oʻchirib boʻlmadi",
   "workspace.resetting.title": "Ish joyini tiklash",
   "workspace.resetting.description": "Bu bir daqiqa vaqt olishi mumkin.",
-  "workspace.reset.failed.title": "Ish joyini qayta o?rnatib bo?lmadi",
+  "workspace.reset.failed.title": "Ish joyini qayta oʻrnatib boʻlmadi",
   "workspace.reset.success.title": "Ish joyini tiklash",
   "workspace.reset.success.description": "Ish maydoni endi standart filialga mos keladi.",
   "workspace.error.stillPreparing": "Ish maydoni hali ham tayyorlanmoqda",
   "workspace.status.checking": "Birlashtirilmagan o'zgarishlar tekshirilmoqda...",
-  "workspace.status.error": "Git holatini tekshirib bo?lmadi.",
+  "workspace.status.error": "Git holatini tekshirib boʻlmadi.",
   "workspace.status.clean": "Birlashtirilmagan o'zgarishlar aniqlanmadi.",
   "workspace.status.dirty": "Ushbu ish maydonida birlashtirilmagan o'zgarishlar aniqlandi.",
   "workspace.delete.title": "Ish maydonini o'chirish",
-  "workspace.delete.confirm": '"{{name}}" ish maydoni o�chirilsinmi?',
+  "workspace.delete.confirm": '"{{name}}" ish maydoni o‘chirilsinmi?',
   "workspace.delete.button": "Ish maydonini o'chirish",
   "workspace.reset.title": "Ish joyini tiklash",
   "workspace.reset.confirm": '"{{name}}" ish maydoni qayta tiklansinmi?',
@@ -1179,7 +1179,7 @@ export const dict = {
   "workspace.reset.archived.one": "1 seans arxivlanadi.",
   "workspace.reset.archived.many": "{{count}} seanslari arxivlanadi.",
   "workspace.reset.note": "Bu standart filialga mos keladigan ish maydonini tiklaydi.",
-  "dialog.usageExceeded.dontShowAgain": "Boshqa ko�rsatma",
+  "dialog.usageExceeded.dontShowAgain": "Boshqa ko‘rsatma",
   "dialog.provider.omniroute.note": "Bring your own gateway URL and key, all models imported automatically",
   "dialog.model.selectProvider.title": "Select provider",
   "dialog.model.provider.label": "Provider",
@@ -1239,7 +1239,7 @@ export const dict = {
   "batuta.form.field.workers.command.needsSkill": "Install the batuta-cli skill for this agent in Settings > Agents first",
   "batuta.form.field.workers.args.placeholder": "Arguments (space-separated)",
   "batuta.form.field.worktree.label": "Isolated worker worktrees",
-  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout � the orchestrator reviews and merges each worker's result. This is not configurable.",
+  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout — the orchestrator reviews and merges each worker's result. This is not configurable.",
   "batuta.form.field.directory.label": "Project",
   "batuta.form.field.directory.description": "The folder this activity's orchestrator and workers run in.",
   "batuta.form.field.directory.error.required": "Choose or add a project folder.",
@@ -1269,25 +1269,25 @@ export const dict = {
   "batuta.pipeline.phase.testing": "Testing",
   "batuta.pipeline.phase.quality": "Quality",
   "batuta.pipeline.phase.delivery": "Delivery",
-  "batuta.pipeline.definition.missing": "No pipeline flow defined yet � the Architect will define it while studying the project. Issues appear grouped once it does.",
+  "batuta.pipeline.definition.missing": "No pipeline flow defined yet — the Architect will define it while studying the project. Issues appear grouped once it does.",
   "batuta.pipeline.editor.open": "Edit flow",
   "batuta.pipeline.editor.title": "Pipeline flow",
   "batuta.pipeline.editor.description": "Shared across every activity in this project (docs/batuta-pipeline.md). Define phases as \"## Phase name\" headings, each followed by a list of skill slugs (e.g. \"- tdd\"). The Orchestrator re-reads this periodically, so edits apply even mid-run.",
   "batuta.pipeline.editor.save": "Save",
   "batuta.pipeline.editor.tab.editor": "Text",
   "batuta.pipeline.editor.tab.chat": "Chat",
-  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md � it won't appear in the sessions list and can't touch anything else.",
+  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md — it won't appear in the sessions list and can't touch anything else.",
   "batuta.pipeline.chat.placeholder": "Describe the change you want to the pipeline flow...",
   "batuta.pipeline.chat.send": "Send",
-  "batuta.pipeline.chat.empty": "No messages yet � send one to start adjusting the flow.",
+  "batuta.pipeline.chat.empty": "No messages yet — send one to start adjusting the flow.",
   "batuta.pipeline.chat.starting": "Starting chat...",
   "batuta.pipeline.stage.architecture": "Architecture",
   "batuta.pipeline.stage.architecture.detail": "The Architect studied the project against the activity's goal, wrote/updated the docs (PRD, DER), used /grill-me to clarify ambiguity, and sliced the work into issues.",
   "batuta.pipeline.stage.orchestration": "Orchestration",
   "batuta.pipeline.stage.orchestration.detail": "The Orchestrator received the Architect's handoff (docs + issues) and started dispatching each issue to the right worker or skill.",
   "batuta.panel.detail.open": "Open full session",
-  "batuta.panel.detail.empty": "Nothing yet � waiting for this agent to start working.",
-  "batuta.panel.ready.title": "Architect finished � review the plan before starting",
+  "batuta.panel.detail.empty": "Nothing yet — waiting for this agent to start working.",
+  "batuta.panel.ready.title": "Architect finished — review the plan before starting",
   "batuta.panel.ready.dispatch": "Start activity",
   "batuta.form.field.branch.label": "Branch",
   "batuta.form.field.branch.description": "Branch the main checkout will be on when the activity starts. Leave the detected branch as-is, or type a new name to create and switch to it.",
@@ -1312,11 +1312,11 @@ export const dict = {
   "settings.general.row.devTools.open": "Open DevTools",
   "settings.general.row.debugMode.title": "Debug mode",
   "settings.general.row.debugMode.description": "Shows a DevTools icon in the titlebar, reachable from any screen, and enables the remote debugging (CDP) port even in packaged/production builds. Requires restarting the app.",
-  "settings.general.row.debugMode.descriptionOn": "Enabled � restart the app for the remote debugging port to take effect.",
+  "settings.general.row.debugMode.descriptionOn": "Enabled — restart the app for the remote debugging port to take effect.",
   "settings.general.row.debugMode.restart": "Restart now",
   "settings.general.row.computerUse.title": "Computer use",
-  "settings.general.row.computerUse.description": "Lets the agent control this computer directly � mouse, keyboard, and screen � not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
-  "settings.general.row.computerUse.descriptionOn": "Enabled � restart the app for computer use to take effect.",
+  "settings.general.row.computerUse.description": "Lets the agent control this computer directly — mouse, keyboard, and screen — not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
+  "settings.general.row.computerUse.descriptionOn": "Enabled — restart the app for computer use to take effect.",
   "settings.general.row.computerUse.restart": "Restart now",
   "settings.providers.view.list": "List view",
   "settings.providers.view.grid": "Grid view",
@@ -1371,7 +1371,7 @@ export const dict = {
   "settings.externalAgents.selectAll.title": "Select all detected agents",
   "settings.externalAgents.selectAll.description": "Installs the batuta-cli skill on every detected agent. Turn off to pick agents individually.",
   "settings.externalAgents.status.detected": "Detected on the connected server",
-  "settings.externalAgents.status.notDetected": "Not detected � install the CLI and click Refresh",
+  "settings.externalAgents.status.notDetected": "Not detected — install the CLI and click Refresh",
   "settings.marketplace.title": "Marketplace",
   "settings.marketplace.add.button": "Add",
   "settings.marketplace.skills.add.title": "Add skill source",
@@ -1380,7 +1380,7 @@ export const dict = {
   "settings.marketplace.mcp.add.title": "Add MCP connector",
   "settings.marketplace.suggestions.title": "Suggestions",
   "settings.marketplace.suggestions.use": "Use",
-  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format � paste the real catalog URL to confirm before it imports anything.",
+  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format — paste the real catalog URL to confirm before it imports anything.",
   "settings.marketplace.catalogs.title": "Catalogs",
   "settings.marketplace.catalogs.view": "View",
   "common.remove": "Remove",
@@ -1394,8 +1394,8 @@ export const dict = {
   "provider.omniroute.mcp.skip": "Skip MCP",
   "provider.omniroute.mcp.autoconfig": "Connecting will automatically configure the Omniroute MCP server for you.", // TODO: translate (auto-filled from en)
   "dialog.server.menu.qr": "Show QR code", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.title": "QR code � {{name}}", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server � the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.title": "QR code — {{name}}", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server — the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copy": "Copy pairing data", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copied": "Pairing data copied", // TODO: translate (auto-filled from en)
   "sshTunnel.server.viewLogs": "View logs / Connect", // TODO: translate (auto-filled from en)
@@ -1448,10 +1448,10 @@ export const dict = {
   "home.server.type.ssh": "ssh", // TODO: translate (auto-filled from en)
   "home.server.type.tailscale": "tailscale", // TODO: translate (auto-filled from en)
   "settings.general.row.bugReports.title": "Automatic bug reports", // TODO: translate (auto-filled from en)
-  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only � never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
+  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only — never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
   "settings.memory.title": "Memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.title": "Forget this project's memory too?", // TODO: translate (auto-filled from en)
-  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) � forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
+  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) — forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
   "project.forgetMemory.keep": "Keep memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.forget": "Forget memory", // TODO: translate (auto-filled from en)
   "settings.memory.field.enabled.title": "Enable memory", // TODO: translate (auto-filled from en)
@@ -1474,8 +1474,8 @@ export const dict = {
   "settings.integrations.telegram.error.required": "Enter a bot token", // TODO: translate (auto-filled from en)
   "settings.integrations.telegram.toast.connected.title": "Telegram bot connected", // TODO: translate (auto-filled from en)
   "dialog.server.qr.loopbackWarning": "This server only listens on this computer (127.0.0.1) and Tailscale isn't running here, so a phone can't reach it with this code. Start Tailscale on this machine, or pair with a server that has a real network address instead.", // TODO: translate (auto-filled from en)
-  "batuta.model.model.filterPlaceholder": "Filter models�", // TODO: translate (auto-filled from en)
-  "batuta.model.model.truncated": "Showing the first {{count}} matches � keep typing to narrow it down", // TODO: translate (auto-filled from en)
+  "batuta.model.model.filterPlaceholder": "Filter models…", // TODO: translate (auto-filled from en)
+  "batuta.model.model.truncated": "Showing the first {{count}} matches — keep typing to narrow it down", // TODO: translate (auto-filled from en)
   "settings.combos.title": "Combos", // TODO: translate (auto-filled from en)
   "settings.combos.add.button": "Add combo", // TODO: translate (auto-filled from en)
   "settings.combos.empty": "No combos yet.", // TODO: translate (auto-filled from en)
@@ -1503,42 +1503,42 @@ export const dict = {
   "settings.agentui.dialog.addTitle": "Create agent", // TODO: translate (auto-filled from en)
   "settings.agentui.dialog.editTitle": "Edit agent", // TODO: translate (auto-filled from en)
   "settings.agentui.ai.title": "AI bilan yaratish",
-  "settings.agentui.ai.hint": "Xohlagan agentingizni o'z so'zlaringiz bilan tasvirlab bering � nomi, xarakteri va sozlamalari ko'rib chiqish uchun quyida tayyorlanadi.",
+  "settings.agentui.ai.hint": "Xohlagan agentingizni o'z so'zlaringiz bilan tasvirlab bering — nomi, xarakteri va sozlamalari ko'rib chiqish uchun quyida tayyorlanadi.",
   "settings.agentui.ai.placeholder": "masalan: Uchrashuv savollariga javob beradigan do'stona tish klinikasi qabulxonachisi...",
   "settings.agentui.ai.generate": "Yaratish",
-  "settings.agentui.ai.generating": "Yaratilmoqda�",
-  "settings.agentui.ai.toast.generated": "Qoralama yaratildi � saqlashdan oldin ko'rib chiqing",
+  "settings.agentui.ai.generating": "Yaratilmoqda…",
+  "settings.agentui.ai.toast.generated": "Qoralama yaratildi — saqlashdan oldin ko'rib chiqing",
   "settings.agentui.tabs.general": "General", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.channels": "Channels", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.tools": "Tools", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.knowledge": "Knowledge", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers": "MCP servers", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default � agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings ? MCP first.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default — agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings → MCP first.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers.noDirectory": "Open a project first to see its MCP servers.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard ?", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard →", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.fetch": "Fetch sessions", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaSessions.loading": "Fetching�", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaSessions.loading": "Fetching…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.empty": "No sessions found for this API key.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.label": "WhatsApp sessions (select one or more)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.label": "Groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in � groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in — groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.fetch": "Fetch groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.loading": "Fetching�", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.loading": "Fetching…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.empty": "No groups found for the selected sessions.", // TODO: translate (auto-filled from en)
     "settings.agentui.field.whatsapp.tunnel.tailscale.hint": "Simplest option if you already have Tailscale running on this machine and the provider's server: use this machine's Tailscale IP directly, no tunnel process needed.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.use": "Use Tailscale IP", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "Detecting�", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "Detecting…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.notFound": "No Tailscale IP found. Is Tailscale installed and running?", // TODO: translate (auto-filled from en)
-"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) � the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
+"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) — the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.start": "Start public tunnel", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.starting": "Starting�", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} � the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.starting": "Starting…", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} — the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.error": "Couldn't start the tunnel. Is cloudflared installed?", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.audit": "Audit", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.title": "Message log", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.refresh": "Refresh", // TODO: translate (auto-filled from en)
-  "settings.agentui.audit.loading": "Loading�", // TODO: translate (auto-filled from en)
+  "settings.agentui.audit.loading": "Loading…", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.needsSave": "Save the agent first to see its message log.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.empty": "No messages logged yet.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.blocked": "Blocked", // TODO: translate (auto-filled from en)
@@ -1548,12 +1548,12 @@ export const dict = {
   "settings.agentui.field.personality": "Personality", // TODO: translate (auto-filled from en)
   "settings.agentui.field.model": "Model", // TODO: translate (auto-filled from en)
   "settings.agentui.field.telegram": "Reply on Telegram", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.telegramToken.placeholder": "Bot tokeni (ixtiyoriy � global botni ulashish uchun bo'sh qoldiring)",
-  "settings.agentui.field.telegramToken.hint": "Bu agentga o'zining maxsus Telegram botini berish uchun @BotFather'dan tokenni joylashtiring. Sozlamalar ? Integratsiyalar bo'limidagi umumiy bot orqali, uning buyruq prefiksi bilan kirish uchun bo'sh qoldiring.",
+  "settings.agentui.field.telegramToken.placeholder": "Bot tokeni (ixtiyoriy — global botni ulashish uchun bo'sh qoldiring)",
+  "settings.agentui.field.telegramToken.hint": "Bu agentga o'zining maxsus Telegram botini berish uchun @BotFather'dan tokenni joylashtiring. Sozlamalar → Integratsiyalar bo'limidagi umumiy bot orqali, uning buyruq prefiksi bilan kirish uchun bo'sh qoldiring.",
   "settings.agentui.field.whatsapp": "WhatsApp'da javob berish",
-  "settings.agentui.field.whatsapp.hint": "Norasmiy WhatsApp API-dan foydalanadi (waconector orqali) � provayderni tanlang va ulanish tafsilotlarini to'ldiring. O'z-o'zini joylashtiruvchi provayderlar alohida ishlaydigan o'z serveri/konteynerini talab qiladi.",
-  "settings.agentui.field.whatsapp.webhookUrl": "Webhook URL � uni provayder boshqaruv paneliga joylashtiring",
-  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret � some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.hint": "Norasmiy WhatsApp API-dan foydalanadi (waconector orqali) — provayderni tanlang va ulanish tafsilotlarini to'ldiring. O'z-o'zini joylashtiruvchi provayderlar alohida ishlaydigan o'z serveri/konteynerini talab qiladi.",
+  "settings.agentui.field.whatsapp.webhookUrl": "Webhook URL — uni provayder boshqaruv paneliga joylashtiring",
+  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret — some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.webhookAfterSave": "Provayder tomonida sozlanishi kerak bo'lgan Webhook URL saqlangandan keyin shu yerda ko'rinadi.",
   "settings.agentui.field.commandTriggers": "Command triggers (space-separated, e.g. ! #)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.guardrails": "Guardrails", // TODO: translate (auto-filled from en)
@@ -1564,13 +1564,13 @@ export const dict = {
   "settings.agentui.rag.label": "Label", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.value": "Text or URL", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.add": "Add source", // TODO: translate (auto-filled from en)
-  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase � these are stored as-is for now.", // TODO: translate (auto-filled from en)
+  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase — these are stored as-is for now.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.enabled": "Enabled",
   "settings.agentui.enable": "Enable agent",
   "settings.agentui.disable": "Disable agent",
   "settings.agentui.sandbox.open": "Test",
   "settings.agentui.sandbox.title": "Test {{name}}",
-  "settings.agentui.sandbox.empty": "Send a message to try this agent � same personality, model and guardrails it uses for real, in a private test conversation.",
+  "settings.agentui.sandbox.empty": "Send a message to try this agent — same personality, model and guardrails it uses for real, in a private test conversation.",
   "settings.agentui.sandbox.placeholder": "Type a message...",
   "settings.agentui.sandbox.send": "Send",
   "settings.agentui.sandbox.reset": "New conversation",
@@ -1638,4 +1638,202 @@ export const dict = {
   "stats.kpi.longestDuration": "Longest Request", // TODO: translate (auto-filled from en)
   "stats.kpi.longestDuration.sub": "Max time on a single task", // TODO: translate (auto-filled from en)
   "stats.sessions.col.duration": "Work Time", // TODO: translate (auto-filled from en)
+  "sidebar.tab.dashboard": "Boshqaruv paneli",
+  "project.kpi.hoursSpent": "Sarflangan vaqt",
+  "project.kpi.totalTokens": "Jami tokenlar",
+  "project.kpi.tokensPerMinute": "Token / daqiqa",
+  "project.kpi.allProjects": "Barcha loyihalar",
+  "project.import.button": "Sessiyani import qilish",
+  "project.import.title": "Eski sessiyalarni import qilish",
+  "project.import.description": "Sessiya tarixini asl OpenCode yoki boshqa o'rnatishdan bo'lingan ma'lumotlar bazasiga o'tkazing.",
+  "project.import.source.label": "Manba o'rnatish",
+  "project.import.source.customFile": "Boshqa .db faylini tanlang...",
+  "project.import.source.empty": "Boshqa o'rnatishlar avtomatik topilmadi.",
+  "project.import.filterProject": "Faqat shu loyihaning sessiyalarini filtrlash",
+  "project.import.filterProject.all": "Ma'lumotlar bazasidagi barcha sessiyalarni ko'rsatish",
+  "project.import.sessions.found": "{{count}} sessiya topildi",
+  "project.import.sessions.selectCount": "{{count}} tanlandi",
+  "project.import.sessions.empty": "Bu ma'lumotlar bazasida import qilish uchun sessiya topilmadi.",
+  "project.import.sessions.messages": "{{count}} xabar",
+  "project.import.selectAll": "Hammasini tanlash",
+  "project.import.deselectAll": "Tanlovni bekor qilish",
+  "project.import.action": "Tanlanganlarni import qilish",
+  "project.import.importing": "Sessiyalar import qilinmoqda...",
+  "project.import.success": "{{count}} sessiya muvaffaqiyatli import qilindi!",
+  "provider.action.relogin": "Re-login", // TODO: translate (auto-filled from en)
+  "provider.action.refreshToken": "Refresh token", // TODO: translate (auto-filled from en)
+  "provider.action.refreshToken.success": "Token refreshed successfully", // TODO: translate (auto-filled from en)
+  "provider.authError.toast.title": "Account verification required", // TODO: translate (auto-filled from en)
+  "provider.authError.toast.description": "Your account requires re-authentication or verification to continue.", // TODO: translate (auto-filled from en)
+  "provider.authError.action.reconnect": "Log in / Reconnect account", // TODO: translate (auto-filled from en)
+  "session.tab.memory": "Memory", // TODO: translate (auto-filled from en)
+  "settings.agentui.tabs.personality": "Personality & AI", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.routines": "Access to Routines", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.routines.hint": "Allow this agent to query, list, and trigger scheduled routines during conversations.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.agenda": "Agenda & Reminders Tools", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.agenda.hint": "Allow this agent to create and manage one-off reminders and agenda items during conversations.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.memory": "Continuous Memory & Compaction", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.memory.hint": "Allow this agent to save decisions (memory_save) and search facts (memory_search) without context bloating.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filesystem": "Files & Documents Access", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filesystem.hint": "Allow this agent to read, search, create, and edit local files and documents in the project (read, write, edit, glob, grep).", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.terminal": "Terminal / Commands (Bash)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.terminal.hint": "Allow this agent to execute terminal commands (bash) to run scripts, system tools, and automations.", // TODO: translate (auto-filled from en)
+  "sidebar.agenda": "Agenda", // TODO: translate (auto-filled from en)
+  "command.agenda.open": "Open Agenda and Reminders", // TODO: translate (auto-filled from en)
+  "agenda.title": "Agenda & Reminders", // TODO: translate (auto-filled from en)
+  "agenda.subtitle": "Reminders and appointments synchronized with AgentUI and chat channels", // TODO: translate (auto-filled from en)
+  "agenda.activeCount": "{{count}} active", // TODO: translate (auto-filled from en)
+  "agenda.new": "New Reminder", // TODO: translate (auto-filled from en)
+  "agenda.view.grid": "Grid", // TODO: translate (auto-filled from en)
+  "agenda.view.list": "List", // TODO: translate (auto-filled from en)
+  "agenda.filter.all": "All", // TODO: translate (auto-filled from en)
+  "agenda.filter.channelAll": "Channel: All", // TODO: translate (auto-filled from en)
+  "agenda.filter.pending": "Pending", // TODO: translate (auto-filled from en)
+  "agenda.filter.completed": "Completed", // TODO: translate (auto-filled from en)
+  "agenda.cancel": "Cancel", // TODO: translate (auto-filled from en)
+  "agenda.empty": "No scheduled reminders or agenda items found.", // TODO: translate (auto-filled from en)
+  "agenda.today": "Today", // TODO: translate (auto-filled from en)
+  "agenda.tomorrow": "Tomorrow", // TODO: translate (auto-filled from en)
+  "agenda.yesterday": "Yesterday", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filterAudio": "Listen to audio (only models with voice/audio support)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participants": "Participants", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.title": "Group Participants: {{subject}}", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.hint": "Select which participants in this group are allowed to interact with the agent. Selected participants will be added to the allowed senders list.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.searchPlaceholder": "Filter by name, phone or JID…", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.selectAll": "Select All", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.clearAll": "Clear Selection", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.apply": "Save Participants", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.empty": "No participants found in this group.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.admin": "Admin", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.mentionOnly.label": "Only when mentioned (@) in groups", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.mentionOnly.hint": "When enabled, the agent will only respond in groups if explicitly mentioned with @ or quoted. General messages in the group will be ignored.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.label": "Allowed senders (phone numbers or JIDs)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.hint": "Only these numbers/senders will get responses from the agent (comma or newline separated). Leave blank to allow anyone.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.placeholder": "e.g. 5585998490991, 5511999999999", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.label": "Project for Sessions", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.default": "Central AgentUI Project (Default)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.custom": "Custom Project", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.hint": "Where WhatsApp/Telegram conversation sessions are grouped. By default, all channel sessions are centralized in the AgentUI project.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.hint": "Tailscale Funnel (public HTTPS): exposes this machine to the public internet using your Tailscale Funnel domain.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.use": "Use Tailscale Funnel (Public)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.starting": "Starting Funnel…", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.error": "Could not start Tailscale Funnel. Ensure Funnel is enabled on your Tailnet.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.clear": "Change / reset host", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.action": "Diagnose and test channels", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.title": "Channel Diagnosis · {{name}}", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.description": "Connectivity and health checks across channels, LLM model, and workspace.", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.ok": "Operational", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.warning": "Warning", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.error": "Failed", // TODO: translate (auto-filled from en)
+  "settings.combos.failover.priorityRoundRobin": "Priority + Round-Robin (Recommended)", // TODO: translate (auto-filled from en)
+  "settings.combos.field.tier": "Tier", // TODO: translate (auto-filled from en)
+  "settings.combos.field.modelPriorityHint": "Priority tier (0 = highest). Models in the same tier rotate in round-robin.", // TODO: translate (auto-filled from en)
+  "settings.combos.filter.requireVision": "Require Vision / Image support", // TODO: translate (auto-filled from en)
+  "settings.combos.filter.requirePdf": "Require Document / PDF support", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.title": "AI Combo Specialist", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.hint": "Describe what you need (e.g. heavy coding focus with fast fallback, token economy, or high resilience). The specialist will inspect your connected providers and models to design the ideal failover chain.", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.placeholder": "e.g. Heavy TypeScript coding combo using top tier models with fallback to lighter fast models...", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.generate": "Generate recommendation", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.generating": "Analyzing providers and generating…", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.toast.generated": "Recommended combo generated — review before saving", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.title": "Custom System Instructions", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.description": "Global instructions sent with every prompt to guide the assistant's behavior and responses", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.placeholder": "e.g. Always monitor PRs, suggest code improvements when appropriate, maintain concise explanations...", // TODO: translate (auto-filled from en)
+  "settings.maintenance.section.title": "System maintenance", // TODO: translate (auto-filled from en)
+  "settings.maintenance.row.title": "Local database & storage", // TODO: translate (auto-filled from en)
+  "settings.maintenance.row.description": "Optimize local SQLite database, clean transaction logs and recover memory", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.optimize": "Optimize now", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.optimizing": "Optimizing...", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.deep": "Full maintenance and relaunch", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.deep_desc": "Closes local server, purges sessions older than 30 days, runs full database VACUUM, and restarts the app to reclaim disk space.", // TODO: translate (auto-filled from en)
+  "settings.maintenance.badge.needed": "Maintenance recommended", // TODO: translate (auto-filled from en)
+  "settings.maintenance.badge.healthy": "Healthy", // TODO: translate (auto-filled from en)
+  "settings.maintenance.last_run": "Last run: {{time}} (freed {{freed}}, purged {{purged}} events)", // TODO: translate (auto-filled from en)
+  "settings.maintenance.titlebar.button": "Maintenance needed", // TODO: translate (auto-filled from en)
+  "settings.maintenance.titlebar.tooltip": "The database has grown large. Click to open maintenance options.", // TODO: translate (auto-filled from en)
+  "settings.maintenance.toast.success.title": "Maintenance completed", // TODO: translate (auto-filled from en)
+  "settings.maintenance.toast.success.description": "Optimized database and freed {{freed}} of space in {{duration}}ms.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.dialogTitle": "Account quota: {{account}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.overall": "Available overall quota", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.modelsDetail": "Model Breakdown", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.noBuckets": "No detailed quota buckets returned by API.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.resetsAt": "Resets at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.tier.pro": "Pro", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.tier.free": "Free", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.buttonTooltip": "View account quota and plan", // TODO: translate (auto-filled from en)
+  "settings.providers.health.healthy": "Healthy", // TODO: translate (auto-filled from en)
+  "settings.providers.health.cooldown": "Cooldown (429)", // TODO: translate (auto-filled from en)
+  "settings.providers.health.exhausted": "Exhausted", // TODO: translate (auto-filled from en)
+  "settings.providers.health.disabled": "Disabled", // TODO: translate (auto-filled from en)
+  "settings.providers.health.resetCooldown": "Reset Cooldown", // TODO: translate (auto-filled from en)
+  "settings.providers.health.resetCooldownSuccess": "Cooldown reset successfully", // TODO: translate (auto-filled from en)
+  "settings.providers.health.toggleDisabledSuccess": "Account status updated", // TODO: translate (auto-filled from en)
+  "settings.providers.health.toggleTooltip": "Enable or disable account from routing", // TODO: translate (auto-filled from en)
+  "settings.providers.health.liberaEm": "Resets in {{time}}", // TODO: translate (auto-filled from en)
+  "settings.memory.field.autoSync.title": "Automatic sync routine", // TODO: translate (auto-filled from en)
+  "settings.memory.field.autoSync.description": "Periodically synthesizes new session memories in the background using the configured memory model.", // TODO: translate (auto-filled from en)
+  "settings.memory.field.syncInterval.title": "Routine interval", // TODO: translate (auto-filled from en)
+  "settings.memory.field.syncInterval.description": "How frequently the automatic memory sync routine runs in the background.", // TODO: translate (auto-filled from en)
+  "settings.memory.field.maxAge.title": "Session retention", // TODO: translate (auto-filled from en)
+  "settings.memory.field.maxAge.description": "Maximum period to keep active sessions in the database. Sessions older than this are synthesized into memory .md files and purged from SQLite.", // TODO: translate (auto-filled from en)
+  "settings.memory.age.7d": "7 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.15d": "15 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.30d": "30 days (default)", // TODO: translate (auto-filled from en)
+  "settings.memory.age.60d": "60 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.90d": "90 days", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.1h": "Every 1 hour", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.2h": "Every 2 hours", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.6h": "Every 6 hours (recommended)", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.12h": "Every 12 hours", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.24h": "Every 24 hours (daily)", // TODO: translate (auto-filled from en)
+  "dialog.memory.title": "Memory", // TODO: translate (auto-filled from en)
+  "dialog.memory.subtitle.project": "Memory of this project", // TODO: translate (auto-filled from en)
+  "dialog.memory.subtitle.global": "Global memory (shared across all projects)", // TODO: translate (auto-filled from en)
+  "dialog.memory.tab.project": "Project", // TODO: translate (auto-filled from en)
+  "dialog.memory.tab.global": "Global", // TODO: translate (auto-filled from en)
+  "dialog.memory.search.placeholder": "Search memory (decisions, tasks, terms)...", // TODO: translate (auto-filled from en)
+  "dialog.memory.copy.button": "Copy", // TODO: translate (auto-filled from en)
+  "dialog.memory.copy.success": "Copied to clipboard", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.search.title": "No results found", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.search.description": "Try searching with different keywords.", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.project.title": "No project memory yet", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.project.description": "Decisions and facts learned during sessions in this project appear here, or you can add notes manually.", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.global.title": "No global memory yet", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.global.description": "Global facts and preferences are shared across all projects and sessions on this server.", // TODO: translate (auto-filled from en)
+  "dialog.memory.addNote.placeholder": "Add a note to memory...", // TODO: translate (auto-filled from en)
+  "dialog.memory.addNote.button": "Save note", // TODO: translate (auto-filled from en)
+  "dialog.memory.promote.button": "Promote to Global", // TODO: translate (auto-filled from en)
+  "dialog.memory.promote.success": "Memory promoted to global scope.", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.button": "Forget project", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.confirm": "Do you want to delete all saved memories for this project? Global memory will not be affected.", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.success": "Project memory forgotten.", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.button": "Synthesize past sessions", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.running": "Synthesizing...", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.success": "Backfill complete: {{count}} of {{total}} sessions synthesized.", // TODO: translate (auto-filled from en)
+  "session.header.memory.tooltip": "Memory", // TODO: translate (auto-filled from en)
+  "sidebar.media": "Media Generation", // TODO: translate (auto-filled from en)
+  "command.media.open": "Open Media Generation", // TODO: translate (auto-filled from en)
+  "media.title": "Media Studio", // TODO: translate (auto-filled from en)
+  "media.description": "Generate and preview AI images, videos, audio, and speech across connected providers.", // TODO: translate (auto-filled from en)
+  "media.kind.image": "Images", // TODO: translate (auto-filled from en)
+  "media.kind.video": "Videos", // TODO: translate (auto-filled from en)
+  "media.kind.audio": "Audio & Speech", // TODO: translate (auto-filled from en)
+  "media.prompt": "Prompt", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.image": "Describe the image you want to generate...", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.video": "Describe the video motion and scene...", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.audio": "Enter text to convert to speech or describe audio...", // TODO: translate (auto-filled from en)
+  "media.generate": "Generate", // TODO: translate (auto-filled from en)
+  "media.generating": "Generating...", // TODO: translate (auto-filled from en)
+  "media.provider": "Provider", // TODO: translate (auto-filled from en)
+  "media.provider.all": "All connected providers", // TODO: translate (auto-filled from en)
+  "media.model": "Model", // TODO: translate (auto-filled from en)
+  "media.model.search": "Filter models...", // TODO: translate (auto-filled from en)
+  "media.size": "Dimensions", // TODO: translate (auto-filled from en)
+  "media.aspectRatio": "Aspect Ratio", // TODO: translate (auto-filled from en)
+  "media.results": "Generated Media", // TODO: translate (auto-filled from en)
+  "media.noResults": "No media generated yet. Select a model and hit Generate.", // TODO: translate (auto-filled from en)
+  "media.download": "Download", // TODO: translate (auto-filled from en)
+  "media.copyUrl": "Copy URL", // TODO: translate (auto-filled from en)
+  "media.noCompatibleModels": "No models found supporting this media capability.", // TODO: translate (auto-filled from en)
+  "media.error": "Generation failed", // TODO: translate (auto-filled from en)
 }

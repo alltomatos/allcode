@@ -1,5 +1,5 @@
 export const dict = {
-  "command.category.suggested": "ForeslÂet",
+  "command.category.suggested": "Foresl√•et",
   "command.category.view": "Vis",
   "command.category.project": "Projekt",
   "command.category.provider": "Udbyder",
@@ -14,26 +14,26 @@ export const dict = {
   "command.category.mcp": "MCP",
   "command.category.agent": "Agent",
   "command.category.permissions": "Tilladelser",
-  "command.category.workspace": "ArbejdsomrÂde",
+  "command.category.workspace": "Arbejdsomr√•de",
 
   "command.category.settings": "Indstillinger",
   "theme.scheme.system": "System",
   "theme.scheme.light": "Lys",
-  "theme.scheme.dark": "M¯rk",
+  "theme.scheme.dark": "M√∏rk",
 
-  "command.sidebar.toggle": "Skift sidebjÊlke",
-  "command.project.open": "≈bn projekt",
+  "command.sidebar.toggle": "Skift sidebj√¶lke",
+  "command.project.open": "√Öbn projekt",
   "command.project.previous": "Forrige projekt",
-  "command.project.next": "NÊste projekt",
+  "command.project.next": "N√¶ste projekt",
   "command.project.index": "Skift til projekt {{index}}",
   "command.provider.connect": "Tilslut udbyder",
   "command.server.switch": "Skift server",
-  "command.settings.open": "≈bn indstillinger",
+  "command.settings.open": "√Öbn indstillinger",
   "command.session.previous": "Forrige session",
-  "command.session.next": "NÊste session",
-  "command.session.previous.unseen": "Forrige ulÊste session",
-  "command.session.next.unseen": "NÊste ulÊste session",
-  "command.session.archive": "ArkivÈr session",
+  "command.session.next": "N√¶ste session",
+  "command.session.previous.unseen": "Forrige ul√¶ste session",
+  "command.session.next.unseen": "N√¶ste ul√¶ste session",
+  "command.session.archive": "Arkiv√©r session",
 
   "command.palette": "Kommandopalette",
 
@@ -46,45 +46,45 @@ export const dict = {
   "command.language.set": "Brug sprog: {{language}}",
 
   "command.session.new": "Ny session",
-  "command.file.open": "≈bn fil",
+  "command.file.open": "√Öbn fil",
   "command.tab.close": "Luk fane",
-  "command.tab.reopenClosed": "≈bn lukket fane igen",
-  "command.context.addSelection": "Tilf¯j markering til kontekst",
-  "command.context.addSelection.description": "Tilf¯j markerede linjer fra den aktuelle fil",
+  "command.tab.reopenClosed": "√Öbn lukket fane igen",
+  "command.context.addSelection": "Tilf√∏j markering til kontekst",
+  "command.context.addSelection.description": "Tilf√∏j markerede linjer fra den aktuelle fil",
   "command.input.focus": "Fokuser inputfelt",
   "command.terminal.toggle": "Skift terminal",
-  "command.fileTree.toggle": "Skift filtrÊ",
+  "command.fileTree.toggle": "Skift filtr√¶",
   "command.review.toggle": "Skift gennemgang",
   "command.terminal.new": "Ny terminal",
   "command.terminal.new.description": "Opret en ny terminalfane",
   "command.steps.toggle": "Skift trin",
   "command.steps.toggle.description": "Vis eller skjul trin for den aktuelle besked",
   "command.message.previous": "Forrige besked",
-  "command.message.previous.description": "GÂ til den forrige brugerbesked",
-  "command.message.next": "NÊste besked",
-  "command.message.next.description": "GÂ til den nÊste brugerbesked",
-  "command.model.choose": "VÊlg model",
-  "command.model.choose.description": "VÊlg en anden model",
+  "command.message.previous.description": "G√• til den forrige brugerbesked",
+  "command.message.next": "N√¶ste besked",
+  "command.message.next.description": "G√• til den n√¶ste brugerbesked",
+  "command.model.choose": "V√¶lg model",
+  "command.model.choose.description": "V√¶lg en anden model",
   "command.mcp.toggle": "Skift MCP'er",
   "command.mcp.toggle.description": "Skift MCP'er",
   "command.agent.cycle": "Skift agent",
-  "command.agent.cycle.description": "Skift til nÊste agent",
-  "command.agent.cycle.reverse": "Skift agent baglÊns",
+  "command.agent.cycle.description": "Skift til n√¶ste agent",
+  "command.agent.cycle.reverse": "Skift agent bagl√¶ns",
   "command.agent.cycle.reverse.description": "Skift til forrige agent",
-  "command.model.variant.cycle": "Skift tÊnkeindsats",
-  "command.model.variant.cycle.description": "Skift til nÊste indsatsniveau",
+  "command.model.variant.cycle": "Skift t√¶nkeindsats",
+  "command.model.variant.cycle.description": "Skift til n√¶ste indsatsniveau",
   "command.prompt.mode.shell": "Shell",
   "command.prompt.mode.normal": "Prompt",
   "command.permissions.autoaccept.enable": "Accepter tilladelser automatisk",
   "command.permissions.autoaccept.disable": "Stop med at acceptere tilladelser automatisk",
-  "command.workspace.toggle": "Skift arbejdsomrÂder",
-  "command.workspace.toggle.description": "Aktiver eller deaktiver flere arbejdsomrÂder i sidebjÊlken",
+  "command.workspace.toggle": "Skift arbejdsomr√•der",
+  "command.workspace.toggle.description": "Aktiver eller deaktiver flere arbejdsomr√•der i sidebj√¶lken",
   "command.session.undo": "Fortryd",
   "command.session.undo.description": "Fortryd den sidste besked",
-  "command.session.redo": "Omg¯r",
-  "command.session.redo.description": "Omg¯r den sidste fortrudte besked",
-  "command.session.compact": "KomprimÈr session",
-  "command.session.compact.description": "Opsummer sessionen for at reducere kontekstst¯rrelsen",
+  "command.session.redo": "Omg√∏r",
+  "command.session.redo.description": "Omg√∏r den sidste fortrudte besked",
+  "command.session.compact": "Komprim√©r session",
+  "command.session.compact.description": "Opsummer sessionen for at reducere kontekstst√∏rrelsen",
   "command.session.fork": "Forgren fra besked",
   "command.session.fork.description": "Opret en ny session fra en tidligere besked",
   "command.session.share": "Del session",
@@ -92,121 +92,121 @@ export const dict = {
   "command.session.unshare": "Stop deling af session",
   "command.session.unshare.description": "Stop med at dele denne session",
 
-  "command.session.export": "EksportÈr session",
-  "command.session.export.description": "EksportÈr hele sessionsudskriften som JSON",
+  "command.session.export": "Eksport√©r session",
+  "command.session.export.description": "Eksport√©r hele sessionsudskriften som JSON",
 
-  "palette.search.placeholder": "S¯g i filer, kommandoer og sessioner",
-  "palette.search.placeholder.home": "S¯g i kommandoer og sessioner",
+  "palette.search.placeholder": "S√∏g i filer, kommandoer og sessioner",
+  "palette.search.placeholder.home": "S√∏g i kommandoer og sessioner",
   "palette.empty": "Ingen resultater fundet",
   "palette.group.commands": "Kommandoer",
   "palette.group.files": "Filer",
 
-  "dialog.provider.search.placeholder": "S¯g udbydere",
+  "dialog.provider.search.placeholder": "S√∏g udbydere",
   "dialog.provider.empty": "Ingen udbydere fundet",
-  "dialog.provider.group.popular": "PopulÊre",
+  "dialog.provider.group.popular": "Popul√¶re",
   "dialog.provider.group.other": "Andre",
   "dialog.provider.custom.label": "Brugerdefineret OpenAI-kompatibel udbyder",
   "dialog.provider.tag.recommended": "Anbefalet",
   "dialog.provider.opencode.note": "Udvalgte modeller inklusive Claude, GPT, Gemini og flere",
-  "dialog.provider.opencode.tagline": "PÂlidelige optimerede modeller",
+  "dialog.provider.opencode.tagline": "P√•lidelige optimerede modeller",
   "dialog.provider.opencodeGo.tagline": "Billigt abonnement for alle",
   "dialog.provider.anthropic.note": "Direkte adgang til Claude-modeller, inklusive Pro og Max",
   "dialog.provider.copilot.note": "AI-modeller til kodningsassistance via GitHub Copilot",
   "dialog.provider.openai.note": "GPT-modeller til hurtige, kompetente generelle AI-opgaver",
   "dialog.provider.google.note": "Gemini-modeller til hurtige, strukturerede svar",
-  "dialog.provider.openrouter.note": "FÂ adgang til alle underst¯ttede modeller fra Èn udbyder",
+  "dialog.provider.openrouter.note": "F√• adgang til alle underst√∏ttede modeller fra √©n udbyder",
   "dialog.provider.vercel.note": "Samlet adgang til AI-modeller med smart routing",
 
-  "dialog.model.select.title": "VÊlg model",
-  "dialog.model.search.placeholder": "S¯g modeller",
+  "dialog.model.select.title": "V√¶lg model",
+  "dialog.model.search.placeholder": "S√∏g modeller",
   "dialog.model.empty": "Ingen modeller fundet",
   "dialog.model.manage": "Administrer modeller",
-  "dialog.model.manage.description": "Tilpas hvilke modeller der vises i modelvÊlgeren.",
+  "dialog.model.manage.description": "Tilpas hvilke modeller der vises i modelv√¶lgeren.",
   "dialog.model.manage.provider.toggle": "Skift alle {{provider}}-modeller",
 
   "dialog.model.unpaid.freeModels.title": "Gratis modeller leveret af OpenCode",
-  "dialog.model.unpaid.addMore.title": "Tilf¯j flere modeller fra populÊre udbydere",
+  "dialog.model.unpaid.addMore.title": "Tilf√∏j flere modeller fra popul√¶re udbydere",
   "dialog.model.unpaid.viewMoreProviders": "Se mere end 70 yderligere udbydere",
 
   "dialog.provider.viewAll": "Vis flere udbydere",
 
   "provider.connect.title": "Forbind {{provider}}",
   "provider.connect.title.anthropicProMax": "Log ind med Claude Pro/Max",
-  "provider.connect.selectMethod": "VÊlg loginmetode for {{provider}}.",
-  "provider.connect.method.apiKey": "API-n¯gle",
+  "provider.connect.selectMethod": "V√¶lg loginmetode for {{provider}}.",
+  "provider.connect.method.apiKey": "API-n√∏gle",
   "provider.connect.method.browser": "Browser",
-  "provider.connect.method.headless": "Browserl¯s",
+  "provider.connect.method.headless": "Browserl√∏s",
   "provider.connect.status.inProgress": "Godkendelse i gang...",
-  "provider.connect.status.waiting": "Venter pÂ godkendelse...",
+  "provider.connect.status.waiting": "Venter p√• godkendelse...",
   "provider.connect.status.failed": "Godkendelse mislykkedes: {{error}}",
   "provider.connect.apiKey.description":
-    "Indtast din API-n¯gle til {{provider}} for at forbinde din konto og bruge modeller fra {{provider}} i OpenCode.",
-  "provider.connect.apiKey.label": "API-n¯gle til {{provider}}",
-  "provider.connect.apiKey.placeholder": "API-n¯gle",
-  "provider.connect.apiKey.required": "API-n¯gle er pÂkrÊvet",
+    "Indtast din API-n√∏gle til {{provider}} for at forbinde din konto og bruge modeller fra {{provider}} i OpenCode.",
+  "provider.connect.apiKey.label": "API-n√∏gle til {{provider}}",
+  "provider.connect.apiKey.placeholder": "API-n√∏gle",
+  "provider.connect.apiKey.required": "API-n√∏gle er p√•kr√¶vet",
   "provider.connect.opencodeZen.line1":
-    "OpenCode Zen giver dig adgang til et udvalg af pÂlidelige optimerede modeller til kodningsagenter.",
+    "OpenCode Zen giver dig adgang til et udvalg af p√•lidelige optimerede modeller til kodningsagenter.",
   "provider.connect.opencodeZen.line2":
-    "Med en enkelt API-n¯gle fÂr du adgang til modeller som Claude, GPT, Gemini, GLM og flere.",
-  "provider.connect.opencodeZen.visit.prefix": "Bes¯g ",
+    "Med en enkelt API-n√∏gle f√•r du adgang til modeller som Claude, GPT, Gemini, GLM og flere.",
+  "provider.connect.opencodeZen.visit.prefix": "Bes√∏g ",
   "provider.connect.opencodeZen.visit.link": "opencode.ai/zen",
-  "provider.connect.opencodeZen.visit.suffix": " for at hente din API-n¯gle.",
-  "provider.connect.oauth.code.visit.prefix": "Bes¯g ",
+  "provider.connect.opencodeZen.visit.suffix": " for at hente din API-n√∏gle.",
+  "provider.connect.oauth.code.visit.prefix": "Bes√∏g ",
   "provider.connect.oauth.code.visit.link": "dette link",
   "provider.connect.oauth.code.visit.suffix":
     " for at hente din godkendelseskode, forbinde din konto og bruge modeller fra {{provider}} i OpenCode.",
   "provider.connect.oauth.code.label": "{{method}} godkendelseskode",
   "provider.connect.oauth.code.placeholder": "Godkendelseskode",
-  "provider.connect.oauth.code.required": "Godkendelseskode er pÂkrÊvet",
+  "provider.connect.oauth.code.required": "Godkendelseskode er p√•kr√¶vet",
   "provider.connect.oauth.code.invalid": "Ugyldig godkendelseskode",
-  "provider.connect.oauth.auto.visit.prefix": "Bes¯g ",
+  "provider.connect.oauth.auto.visit.prefix": "Bes√∏g ",
   "provider.connect.oauth.auto.visit.link": "dette link",
   "provider.connect.oauth.auto.visit.suffix":
     " og indtast koden nedenfor for at forbinde din konto og bruge modeller fra {{provider}} i OpenCode.",
-  "provider.connect.oauth.auto.confirmationCode": "BekrÊftelseskode",
+  "provider.connect.oauth.auto.confirmationCode": "Bekr√¶ftelseskode",
   "provider.connect.toast.connected.title": "{{provider}} forbundet",
-  "provider.connect.toast.connected.description": "Modeller fra {{provider}} er nu tilgÊngelige.",
+  "provider.connect.toast.connected.description": "Modeller fra {{provider}} er nu tilg√¶ngelige.",
 
   "provider.custom.title": "Brugerdefineret udbyder",
-  "provider.custom.unavailable": "Brugerdefinerede udbydere er ikke tilgÊngelige pÂ denne server",
+  "provider.custom.unavailable": "Brugerdefinerede udbydere er ikke tilg√¶ngelige p√• denne server",
   "provider.custom.description.prefix": "Konfigurer en OpenAI-kompatibel udbyder. Se ",
   "provider.custom.description.link": "dokumentation for udbyderkonfiguration",
   "provider.custom.description.suffix": ".",
   "provider.custom.field.providerID.label": "Udbyder-ID",
   "provider.custom.field.providerID.placeholder": "minudbyder",
-  "provider.custom.field.providerID.description": "SmÂ bogstaver, tal, bindestreger eller understregninger",
+  "provider.custom.field.providerID.description": "Sm√• bogstaver, tal, bindestreger eller understregninger",
   "provider.custom.field.name.label": "Visningsnavn",
   "provider.custom.field.name.placeholder": "Min AI-udbyder",
   "provider.custom.field.baseURL.label": "Basis-URL",
   "provider.custom.field.baseURL.placeholder": "https://api.minudbyder.dk/v1",
-  "provider.custom.field.apiKey.label": "API-n¯gle",
-  "provider.custom.field.apiKey.placeholder": "API-n¯gle",
-  "provider.custom.field.apiKey.description": "Valgfri. Lad vÊre tom, hvis du administrerer godkendelse via headers.",
+  "provider.custom.field.apiKey.label": "API-n√∏gle",
+  "provider.custom.field.apiKey.placeholder": "API-n√∏gle",
+  "provider.custom.field.apiKey.description": "Valgfri. Lad v√¶re tom, hvis du administrerer godkendelse via headers.",
   "provider.custom.models.label": "Modeller",
   "provider.custom.models.id.label": "ID",
   "provider.custom.models.id.placeholder": "model-id",
   "provider.custom.models.name.label": "Navn",
   "provider.custom.models.name.placeholder": "Visningsnavn",
   "provider.custom.models.remove": "Fjern model",
-  "provider.custom.models.add": "Tilf¯j model",
+  "provider.custom.models.add": "Tilf√∏j model",
   "provider.custom.headers.label": "Headers (valgfri)",
   "provider.custom.headers.key.label": "Header",
   "provider.custom.headers.key.placeholder": "Header-Navn",
-  "provider.custom.headers.value.label": "VÊrdi",
-  "provider.custom.headers.value.placeholder": "vÊrdi",
+  "provider.custom.headers.value.label": "V√¶rdi",
+  "provider.custom.headers.value.placeholder": "v√¶rdi",
   "provider.custom.headers.remove": "Fjern header",
-  "provider.custom.headers.add": "Tilf¯j header",
-  "provider.custom.error.providerID.required": "Udbyder-ID er pÂkrÊvet",
-  "provider.custom.error.providerID.format": "Brug smÂ bogstaver, tal, bindestreger eller understregninger",
+  "provider.custom.headers.add": "Tilf√∏j header",
+  "provider.custom.error.providerID.required": "Udbyder-ID er p√•kr√¶vet",
+  "provider.custom.error.providerID.format": "Brug sm√• bogstaver, tal, bindestreger eller understregninger",
   "provider.custom.error.providerID.exists": "Dette udbyder-ID findes allerede",
-  "provider.custom.error.name.required": "Visningsnavn er pÂkrÊvet",
-  "provider.custom.error.baseURL.required": "Basis-URL er pÂkrÊvet",
+  "provider.custom.error.name.required": "Visningsnavn er p√•kr√¶vet",
+  "provider.custom.error.baseURL.required": "Basis-URL er p√•kr√¶vet",
   "provider.custom.error.baseURL.format": "Skal starte med http:// eller https://",
-  "provider.custom.error.required": "PÂkrÊvet",
+  "provider.custom.error.required": "P√•kr√¶vet",
   "provider.custom.error.duplicate": "Duplikeret",
 
   "provider.disconnect.toast.disconnected.title": "{{provider}} frakoblet",
-  "provider.disconnect.toast.disconnected.description": "Modeller fra {{provider}} er ikke lÊngere tilgÊngelige.",
+  "provider.disconnect.toast.disconnected.description": "Modeller fra {{provider}} er ikke l√¶ngere tilg√¶ngelige.",
   "model.tag.free": "Gratis",
   "model.tag.latest": "Nyeste",
 
@@ -225,31 +225,31 @@ export const dict = {
   "model.tooltip.inputs": "Input",
   "model.tooltip.model": "Model",
   "model.tooltip.provider": "Udbyder",
-  "model.tooltip.reasoning": "RÊsonnering",
-  "model.tooltip.reasoning.allowed": "Tillader rÊsonnering",
-  "model.tooltip.reasoning.none": "Ingen rÊsonnering",
-  "model.tooltip.context": "KontekstgrÊnse {{limit}}",
-  "common.search.placeholder": "S¯g",
-  "common.goBack": "GÂ tilbage",
+  "model.tooltip.reasoning": "R√¶sonnering",
+  "model.tooltip.reasoning.allowed": "Tillader r√¶sonnering",
+  "model.tooltip.reasoning.none": "Ingen r√¶sonnering",
+  "model.tooltip.context": "Kontekstgr√¶nse {{limit}}",
+  "common.search.placeholder": "S√∏g",
+  "common.goBack": "G√• tilbage",
   "common.goForward": "Naviger fremad",
-  "common.loading": "IndlÊser",
+  "common.loading": "Indl√¶ser",
   "common.loading.ellipsis": "...",
   "common.cancel": "Annuller",
   "common.clear": "Ryd",
   "common.connect": "Forbind",
   "common.disconnect": "Frakobl",
-  "common.continue": "FortsÊt",
+  "common.continue": "Forts√¶t",
   "common.submit": "Indsend",
   "common.save": "Gem",
   "common.saving": "Gemmer...",
   "common.default": "Standard",
-  "common.attachment": "vedhÊftning",
+  "common.attachment": "vedh√¶ftning",
 
   "prompt.placeholder.shell": "Indtast shell-kommando... {{example}}",
-  "prompt.placeholder.normal": 'Sp¯rg om hvad som helst... "{{example}}"',
-  "prompt.placeholder.simple": "Sp¯rg om hvad som helst...",
-  "prompt.placeholder.summarizeComments": "OpsummÈr kommentarerÖ",
-  "prompt.placeholder.summarizeComment": "OpsummÈr kommentarÖ",
+  "prompt.placeholder.normal": 'Sp√∏rg om hvad som helst... "{{example}}"',
+  "prompt.placeholder.simple": "Sp√∏rg om hvad som helst...",
+  "prompt.placeholder.summarizeComments": "Opsumm√©r kommentarer‚Ä¶",
+  "prompt.placeholder.summarizeComment": "Opsumm√©r kommentar‚Ä¶",
   "prompt.mode.shell": "Shell",
   "prompt.mode.normal": "Prompt",
   "prompt.mode.shell.exit": "esc for at afslutte",
@@ -258,34 +258,34 @@ export const dict = {
 
   "prompt.example.1": "Ret en TODO i koden",
   "prompt.example.2": "Hvad er teknologistakken for dette projekt?",
-  "prompt.example.3": "Ret ¯delagte tests",
+  "prompt.example.3": "Ret √∏delagte tests",
   "prompt.example.4": "Forklar hvordan godkendelse fungerer",
   "prompt.example.5": "Find og ret sikkerhedshuller",
-  "prompt.example.6": "Tilf¯j enhedstests for brugertjenesten",
-  "prompt.example.7": "Refaktorer denne funktion sÂ den er mere lÊsbar",
+  "prompt.example.6": "Tilf√∏j enhedstests for brugertjenesten",
+  "prompt.example.7": "Refaktorer denne funktion s√• den er mere l√¶sbar",
   "prompt.example.8": "Hvad betyder denne fejl?",
-  "prompt.example.9": "HjÊlp mig med at debugge dette problem",
+  "prompt.example.9": "Hj√¶lp mig med at debugge dette problem",
   "prompt.example.10": "Generer API-dokumentation",
-  "prompt.example.11": "Optimer databaseforesp¯rgsler",
-  "prompt.example.12": "Tilf¯j validering af input",
+  "prompt.example.11": "Optimer databaseforesp√∏rgsler",
+  "prompt.example.12": "Tilf√∏j validering af input",
   "prompt.example.13": "Opret en ny komponent til...",
   "prompt.example.14": "Hvordan deployerer jeg dette projekt?",
-  "prompt.example.15": "GennemgÂ min kode for bedste praksis",
-  "prompt.example.16": "Tilf¯j fejlhÂndtering til denne funktion",
-  "prompt.example.17": "Forklar dette regex-m¯nster",
+  "prompt.example.15": "Gennemg√• min kode for bedste praksis",
+  "prompt.example.16": "Tilf√∏j fejlh√•ndtering til denne funktion",
+  "prompt.example.17": "Forklar dette regex-m√∏nster",
   "prompt.example.18": "Konverter dette til TypeScript",
-  "prompt.example.19": "Tilf¯j logning i hele koden",
-  "prompt.example.20": "Hvilke afhÊngigheder er forÊldede?",
-  "prompt.example.21": "HjÊlp mig med at skrive et migreringsscript",
+  "prompt.example.19": "Tilf√∏j logning i hele koden",
+  "prompt.example.20": "Hvilke afh√¶ngigheder er for√¶ldede?",
+  "prompt.example.21": "Hj√¶lp mig med at skrive et migreringsscript",
   "prompt.example.22": "Implementer caching for dette endpoint",
-  "prompt.example.23": "Tilf¯j sideinddeling til denne liste",
+  "prompt.example.23": "Tilf√∏j sideinddeling til denne liste",
   "prompt.example.24": "Opret en CLI-kommando til...",
-  "prompt.example.25": "Hvordan fungerer milj¯variabler her?",
+  "prompt.example.25": "Hvordan fungerer milj√∏variabler her?",
 
   "prompt.popover.emptyResults": "Ingen matchende resultater",
   "prompt.popover.emptyCommands": "Ingen matchende kommandoer",
   "prompt.dropzone.label": "Slip billeder, PDF'er eller tekstfiler her",
-  "prompt.dropzone.file.label": "Slip for at @nÊvne fil",
+  "prompt.dropzone.file.label": "Slip for at @n√¶vne fil",
   "prompt.slash.badge.custom": "brugerdefineret",
   "prompt.slash.badge.skill": "skill",
   "prompt.slash.badge.mcp": "mcp",
@@ -293,26 +293,26 @@ export const dict = {
   "prompt.context.includeActiveFile": "Inkluder aktiv fil",
   "prompt.context.removeActiveFile": "Fjern aktiv fil fra kontekst",
   "prompt.context.removeFile": "Fjern fil fra kontekst",
-  "prompt.action.attachFile": "VedhÊft fil",
-  "prompt.menu.addImagesAndFiles": "Tilf¯j filer og mere",
+  "prompt.action.attachFile": "Vedh√¶ft fil",
+  "prompt.menu.addImagesAndFiles": "Tilf√∏j filer og mere",
   "prompt.menu.imagesAndFiles": "Billeder og filer",
   "prompt.menu.commands": "Kommandoer",
   "prompt.menu.context": "Kontekst",
   "prompt.menu.shellCommand": "Shell-kommando",
-  "prompt.attachment.remove": "Fjern vedhÊftning",
+  "prompt.attachment.remove": "Fjern vedh√¶ftning",
   "prompt.action.send": "Send",
   "prompt.action.stop": "Stop",
 
-  "prompt.toast.pasteUnsupported.title": "Ikke underst¯ttet vedhÊftning",
+  "prompt.toast.pasteUnsupported.title": "Ikke underst√∏ttet vedh√¶ftning",
   "prompt.toast.attachmentDuplicate.title": "Denne fil er allerede uploadet",
-  "prompt.toast.pasteUnsupported.description": "Kun billeder, PDF'er eller tekstfiler kan vedhÊftes her.",
-  "prompt.toast.modelAgentRequired.title": "VÊlg en agent og model",
-  "prompt.toast.modelAgentRequired.description": "VÊlg en agent og model f¯r du sender en foresp¯rgsel.",
+  "prompt.toast.pasteUnsupported.description": "Kun billeder, PDF'er eller tekstfiler kan vedh√¶ftes her.",
+  "prompt.toast.modelAgentRequired.title": "V√¶lg en agent og model",
+  "prompt.toast.modelAgentRequired.description": "V√¶lg en agent og model f√∏r du sender en foresp√∏rgsel.",
   "prompt.toast.worktreeCreateFailed.title": "Kunne ikke oprette worktree",
   "prompt.toast.sessionCreateFailed.title": "Kunne ikke oprette session",
   "prompt.toast.shellSendFailed.title": "Kunne ikke sende shell-kommando",
   "prompt.toast.commandSendFailed.title": "Kunne ikke sende kommando",
-  "prompt.toast.promptSendFailed.title": "Kunne ikke sende foresp¯rgsel",
+  "prompt.toast.promptSendFailed.title": "Kunne ikke sende foresp√∏rgsel",
   "prompt.toast.promptSendFailed.description": "Kunne ikke hente session",
 
   "dialog.mcp.title": "MCP'er",
@@ -324,30 +324,30 @@ export const dict = {
 
   "mcp.status.connected": "forbundet",
   "mcp.status.failed": "mislykkedes",
-  "mcp.status.needs_auth": "krÊver godkendelse",
+  "mcp.status.needs_auth": "kr√¶ver godkendelse",
   "mcp.auth.clickToAuthenticate": "Klik for at godkende",
   "mcp.status.disabled": "deaktiveret",
 
   "dialog.fork.empty": "Ingen beskeder at forgrene fra",
 
-  "dialog.directory.search.placeholder": "S¯g mapper",
+  "dialog.directory.search.placeholder": "S√∏g mapper",
   "dialog.directory.empty": "Ingen mapper fundet",
-  "dialog.directory.action.selectFile": "VÊlg fil",
-  "dialog.directory.action.selectFolder": "VÊlg mappe",
+  "dialog.directory.action.selectFile": "V√¶lg fil",
+  "dialog.directory.action.selectFolder": "V√¶lg mappe",
   "dialog.directory.root": "Rod",
   "dialog.directory.parent": "Overordnet",
-  "dialog.directory.readError": "Denne mappe kan ikke lÊses",
+  "dialog.directory.readError": "Denne mappe kan ikke l√¶ses",
 
   "dialog.server.title": "Servere",
   "dialog.server.description": "Skift hvilken OpenCode-server denne app forbinder til.",
-  "dialog.server.search.placeholder": "S¯g servere",
+  "dialog.server.search.placeholder": "S√∏g servere",
   "dialog.server.empty": "Ingen servere endnu",
-  "dialog.server.add.title": "Tilf¯j en server",
+  "dialog.server.add.title": "Tilf√∏j en server",
   "dialog.server.add.url": "Serveradresse",
   "dialog.server.add.placeholder": "http://localhost:4096",
   "dialog.server.add.error": "Kunne ikke forbinde til server",
   "dialog.server.add.checking": "Tjekker...",
-  "dialog.server.add.button": "Tilf¯j server",
+  "dialog.server.add.button": "Tilf√∏j server",
   "dialog.server.add.name": "Servernavn (valgfrit)",
   "dialog.server.add.namePlaceholder": "Localhost",
   "dialog.server.add.username": "Brugernavn (valgfrit)",
@@ -355,9 +355,9 @@ export const dict = {
   "dialog.server.edit.title": "Rediger server",
   "dialog.server.default.title": "Standardserver",
   "dialog.server.default.description":
-    "Opret forbindelse til denne server, nÂr appen starter, i stedet for at starte en lokal server. KrÊver genstart.",
+    "Opret forbindelse til denne server, n√•r appen starter, i stedet for at starte en lokal server. Kr√¶ver genstart.",
   "dialog.server.default.none": "Ingen server valgt",
-  "dialog.server.default.set": "SÊt nuvÊrende server som standard",
+  "dialog.server.default.set": "S√¶t nuv√¶rende server som standard",
   "dialog.server.default.clear": "Ryd",
   "dialog.server.action.remove": "Fjern server",
 
@@ -365,32 +365,32 @@ export const dict = {
   "dialog.server.menu.rename": "Rename", // TODO: translate (auto-filled from en)
   "dialog.server.rename.title": "Rename server", // TODO: translate (auto-filled from en)
   "dialog.server.rename.placeholder": "Server name", // TODO: translate (auto-filled from en)
-  "dialog.server.menu.default": "SÊt som standard",
+  "dialog.server.menu.default": "S√¶t som standard",
   "dialog.server.menu.defaultRemove": "Fjern som standard",
   "dialog.server.menu.delete": "Slet",
-  "dialog.server.current": "NuvÊrende server",
+  "dialog.server.current": "Nuv√¶rende server",
   "dialog.server.status.default": "Standard",
-  "wsl.server.add": "Tilf¯j WSL-server",
-  "wsl.server.addShort": "Tilf¯j WSL",
+  "wsl.server.add": "Tilf√∏j WSL-server",
+  "wsl.server.addShort": "Tilf√∏j WSL",
   "wsl.server.label": "WSL",
   "wsl.server.menu.label": "WSL-server",
-  "wsl.server.retryStart": "Pr¯v at starte igen",
+  "wsl.server.retryStart": "Pr√∏v at starte igen",
   "wsl.server.updating": "Opdaterer...",
-  "wsl.onboarding.step.distro": "VÊlg distribution",
+  "wsl.onboarding.step.distro": "V√¶lg distribution",
   "wsl.onboarding.step.opencode": "OpenCode",
   "wsl.onboarding.checkingRuntime": "Tjekker WSL...",
-  "wsl.onboarding.restartRequired": "Windows skal genstartes for at fuldf¯re installationen af WSL.",
+  "wsl.onboarding.restartRequired": "Windows skal genstartes for at fuldf√∏re installationen af WSL.",
   "wsl.onboarding.ready": "WSL er klar.",
-  "wsl.onboarding.required": "WSL er pÂkrÊvet for at fortsÊtte.",
+  "wsl.onboarding.required": "WSL er p√•kr√¶vet for at forts√¶tte.",
   "wsl.onboarding.checkingDistros": "Tjekker distributioner...",
   "wsl.onboarding.installingDistro": "Installerer {{distro}}...",
   "wsl.onboarding.checkingDistro": "Tjekker {{distro}}...",
   "wsl.onboarding.listingDistros": "Henter liste over distributioner...",
   "wsl.onboarding.distroReady": "{{distro}} er klar.",
   "wsl.onboarding.distroNotInstalled": "{{distro}} er ikke installeret endnu.",
-  "wsl.onboarding.openDistroOnce": "≈bn {{distro}} Èn gang for at fuldf¯re opsÊtningen.",
-  "wsl.onboarding.finishingDistro": "Fuldf¯rer opsÊtningen af {{distro}}.",
-  "wsl.onboarding.pickDistro": "VÊlg en distribution, eller installer en nedenfor.",
+  "wsl.onboarding.openDistroOnce": "√Öbn {{distro}} √©n gang for at fuldf√∏re ops√¶tningen.",
+  "wsl.onboarding.finishingDistro": "Fuldf√∏rer ops√¶tningen af {{distro}}.",
+  "wsl.onboarding.pickDistro": "V√¶lg en distribution, eller installer en nedenfor.",
   "wsl.onboarding.checkingOpencode": "Tjekker OpenCode...",
   "wsl.onboarding.checkingOpencodeIn": "Tjekker OpenCode i {{distro}}...",
   "wsl.onboarding.updatingOpencode": "Opdaterer OpenCode...",
@@ -401,84 +401,84 @@ export const dict = {
   "wsl.onboarding.opencodeReady": "OpenCode er klar.",
   "wsl.onboarding.installOpencodeIn": "Installer OpenCode i {{distro}}.",
   "wsl.onboarding.installOpencode": "Installer OpenCode",
-  "wsl.onboarding.chooseDistroFirst": "VÊlg f¯rst en distribution.",
-  "wsl.onboarding.loadFailed": "Kunne ikke indlÊse WSL-status.",
-  "wsl.onboarding.loading": "IndlÊser...",
+  "wsl.onboarding.chooseDistroFirst": "V√¶lg f√∏rst en distribution.",
+  "wsl.onboarding.loadFailed": "Kunne ikke indl√¶se WSL-status.",
+  "wsl.onboarding.loading": "Indl√¶ser...",
   "wsl.onboarding.installedDistros": "Installerede distributioner",
   "wsl.onboarding.checkAgain": "Tjek igen",
   "wsl.onboarding.distroStatus.ready": "Klar",
   "wsl.onboarding.distroStatus.checking": "Tjekker...",
   "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode er ikke installeret",
   "wsl.onboarding.distroStatus.missingTools": "Mangler bash, curl",
-  "wsl.onboarding.distroStatus.unsupported": "Ikke underst¯ttet ∑ Brug WSL 2",
+  "wsl.onboarding.distroStatus.unsupported": "Ikke underst√∏ttet ¬∑ Brug WSL 2",
   "wsl.onboarding.needAnotherDistro": "Har du brug for en anden distribution?",
   "wsl.onboarding.needAnotherDistroHint": "Installer en Linux-distribution fra WSL-kataloget",
   "wsl.onboarding.wslNotInstalled.title": "WSL er ikke installeret",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Subsystem for Linux) er pÂkrÊvet, f¯r OpenCode kan tilf¯je en WSL-server",
-  "wsl.onboarding.wslUnavailable.title": "WSL er ikke tilgÊngelig",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode kunne ikke bekrÊfte WSL pÂ denne maskine.",
+    "WSL (Windows Subsystem for Linux) er p√•kr√¶vet, f√∏r OpenCode kan tilf√∏je en WSL-server",
+  "wsl.onboarding.wslUnavailable.title": "WSL er ikke tilg√¶ngelig",
+  "wsl.onboarding.wslUnavailable.description": "OpenCode kunne ikke bekr√¶fte WSL p√• denne maskine.",
   "wsl.onboarding.installWsl": "Installer WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Genstart Windows for at fuldf¯re installationen af WSL, og Âbn derefter OpenCode igen.",
-  "wsl.onboarding.next": "NÊste",
+    "Genstart Windows for at fuldf√∏re installationen af WSL, og √•bn derefter OpenCode igen.",
+  "wsl.onboarding.next": "N√¶ste",
   "wsl.onboarding.refresh": "Opdater",
-  "wsl.onboarding.allDistrosAdded": "Alle installerede distributioner er allerede tilf¯jet.",
+  "wsl.onboarding.allDistrosAdded": "Alle installerede distributioner er allerede tilf√∏jet.",
   "wsl.onboarding.noDistros": "Ingen distributioner fundet endnu.",
   "wsl.onboarding.install": "Installer",
   "wsl.onboarding.installing": "Installerer...",
   "wsl.onboarding.installDistro": "Installer distribution",
-  "wsl.onboarding.searchDistros": "S¯g efter distributioner",
-  "wsl.onboarding.wsl2Required": "WSL 2 er pÂkrÊvet.",
-  "wsl.onboarding.toolsRequired": "Denne distribution krÊver bash og curl.",
-  "wsl.onboarding.openTerminal": "≈bn terminal",
+  "wsl.onboarding.searchDistros": "S√∏g efter distributioner",
+  "wsl.onboarding.wsl2Required": "WSL 2 er p√•kr√¶vet.",
+  "wsl.onboarding.toolsRequired": "Denne distribution kr√¶ver bash og curl.",
+  "wsl.onboarding.openTerminal": "√Öbn terminal",
   "wsl.onboarding.path": "Sti: {{path}}",
   "wsl.onboarding.notFound": "ikke fundet",
   "wsl.onboarding.version": "Version: {{version}}",
   "wsl.onboarding.unknown": "ukendt",
   "wsl.onboarding.desktopVersion": "desktop {{version}}",
   "wsl.onboarding.versionMismatch": "Den installerede version matcher ikke desktopappens version.",
-  "wsl.onboarding.adding": "Tilf¯jer...",
+  "wsl.onboarding.adding": "Tilf√∏jer...",
 
   "dialog.project.edit.title": "Rediger projekt",
   "dialog.project.edit.name": "Navn",
   "dialog.project.edit.icon": "Ikon",
   "dialog.project.edit.icon.alt": "Projektikon",
-  "dialog.project.edit.icon.hint": "Klik eller trÊk et billede",
+  "dialog.project.edit.icon.hint": "Klik eller tr√¶k et billede",
   "dialog.project.edit.icon.recommended": "Anbefalet: 128x128px",
   "dialog.project.edit.color": "Farve",
-  "dialog.project.edit.color.select": "VÊlg farven {{color}}",
+  "dialog.project.edit.color.select": "V√¶lg farven {{color}}",
 
-  "dialog.project.edit.worktree.startup": "Opstartsscript for arbejdsomrÂde",
-  "dialog.project.edit.worktree.startup.description": "K¯res efter oprettelse af et nyt arbejdsomrÂde (worktree).",
+  "dialog.project.edit.worktree.startup": "Opstartsscript for arbejdsomr√•de",
+  "dialog.project.edit.worktree.startup.description": "K√∏res efter oprettelse af et nyt arbejdsomr√•de (worktree).",
   "dialog.project.edit.worktree.startup.placeholder": "f.eks. bun install",
   "dialog.usageExceeded.dontShowAgain": "Vis ikke igen",
 
   "context.breakdown.title": "Kontekstfordeling",
   "context.breakdown.note":
-    'Omtrentlig fordeling af input-tokens. "Andre" inkluderer vÊrkt¯jsdefinitioner og overhead.',
+    'Omtrentlig fordeling af input-tokens. "Andre" inkluderer v√¶rkt√∏jsdefinitioner og overhead.',
   "context.breakdown.system": "System",
   "context.breakdown.user": "Bruger",
   "context.breakdown.assistant": "Assistent",
-  "context.breakdown.tool": "VÊrkt¯jskald",
+  "context.breakdown.tool": "V√¶rkt√∏jskald",
   "context.breakdown.other": "Andre",
 
   "context.systemPrompt.title": "Systemprompt",
-  "context.rawMessages.title": "RÂ beskeder",
+  "context.rawMessages.title": "R√• beskeder",
 
-  "context.export.session": "EksportÈr session",
+  "context.export.session": "Eksport√©r session",
 
   "context.stats.session": "Session",
   "context.stats.messages": "Beskeder",
   "context.stats.provider": "Udbyder",
   "context.stats.model": "Model",
-  "context.stats.limit": "KontekstgrÊnse",
+  "context.stats.limit": "Kontekstgr√¶nse",
   "context.stats.totalTokens": "Samlede tokens",
   "context.stats.usage": "Forbrug",
   "context.stats.inputTokens": "Input-tokens",
   "context.stats.outputTokens": "Output-tokens",
-  "context.stats.reasoningTokens": "RÊsonneringstokens",
-  "context.stats.cacheTokens": "Cachetokens (lÊsning/skrivning)",
+  "context.stats.reasoningTokens": "R√¶sonneringstokens",
+  "context.stats.cacheTokens": "Cachetokens (l√¶sning/skrivning)",
   "context.stats.userMessages": "Brugerbeskeder",
   "context.stats.assistantMessages": "Assistentbeskeder",
   "context.stats.totalCost": "Samlede omkostninger",
@@ -492,23 +492,23 @@ export const dict = {
   "context.usage.view": "Se kontekstforbrug",
 
   "language.en": "English",
-  "language.zh": "????",
-  "language.zht": "????",
-  "language.ko": "???",
+  "language.zh": "ÁÆÄ‰Ωì‰∏≠Êñá",
+  "language.zht": "ÁπÅÈ´î‰∏≠Êñá",
+  "language.ko": "ÌïúÍµ≠Ïñ¥",
   "language.de": "Deutsch",
-  "language.es": "EspaÒol",
-  "language.fr": "FranÁais",
+  "language.es": "Espa√±ol",
+  "language.fr": "Fran√ßais",
   "language.da": "Dansk",
-  "language.ja": "???",
+  "language.ja": "Êó•Êú¨Ë™û",
   "language.pl": "Polski",
-  "language.ru": "???????",
-  "language.ar": "???????",
+  "language.ru": "–†—É—Å—Å–∫–∏–π",
+  "language.ar": "ÿßŸÑÿπÿ±ÿ®Ÿäÿ©",
   "language.no": "Norsk",
-  "language.br": "PortuguÍs (Brasil)",
+  "language.br": "Portugu√™s (Brasil)",
   "language.bs": "Bosanski",
-  "language.uk": "??????????",
-  "language.th": "???",
-  "language.tr": "T¸rkÁe",
+  "language.uk": "–£–∫—Ä–∞—ó–Ω—Å—å–∫–∞",
+  "language.th": "‡πÑ‡∏ó‡∏¢",
+  "language.tr": "T√ºrk√ße",
 
   "toast.language.title": "Sprog",
   "toast.language.description": "Skiftede til {{language}}",
@@ -519,21 +519,21 @@ export const dict = {
   "toast.permissions.autoaccept.on.title": "Accepterer tilladelser automatisk",
   "toast.permissions.autoaccept.on.description": "Anmodninger om tilladelse godkendes automatisk",
   "toast.permissions.autoaccept.off.title": "Stoppet med at acceptere tilladelser automatisk",
-  "toast.permissions.autoaccept.off.description": "Anmodninger om tilladelse vil krÊve godkendelse",
+  "toast.permissions.autoaccept.off.description": "Anmodninger om tilladelse vil kr√¶ve godkendelse",
 
-  "toast.workspace.enabled.title": "ArbejdsomrÂder aktiveret",
+  "toast.workspace.enabled.title": "Arbejdsomr√•der aktiveret",
   "toast.workspace.enabled.description": "Flere worktrees vises nu i sidepanelet",
-  "toast.workspace.disabled.title": "ArbejdsomrÂder deaktiveret",
+  "toast.workspace.disabled.title": "Arbejdsomr√•der deaktiveret",
   "toast.workspace.disabled.description": "Kun hoved-worktree vises i sidepanelet",
 
   "toast.model.none.title": "Ingen model valgt",
   "toast.model.none.description": "Forbind en udbyder for at opsummere denne session",
 
-  "toast.file.loadFailed.title": "Kunne ikke indlÊse fil",
+  "toast.file.loadFailed.title": "Kunne ikke indl√¶se fil",
 
   "toast.file.listFailed.title": "Kunne ikke liste filer",
   "toast.context.noLineSelection.title": "Ingen linjevalg",
-  "toast.context.noLineSelection.description": "VÊlg f¯rst et linjeinterval i en filfane.",
+  "toast.context.noLineSelection.description": "V√¶lg f√∏rst et linjeinterval i en filfane.",
   "toast.session.share.copyFailed.title": "Kunne ikke kopiere URL til udklipsholder",
   "toast.session.share.success.title": "Session delt",
   "toast.session.share.success.description": "Delings-URL kopieret til udklipsholder!",
@@ -550,60 +550,60 @@ export const dict = {
   "toast.session.export.failed.title": "Kunne ikke eksportere session",
   "toast.session.export.failed.description": "Der opstod en fejl under eksport af sessionen",
 
-  "toast.session.listFailed.title": "Kunne ikke indlÊse sessioner for {{project}}",
+  "toast.session.listFailed.title": "Kunne ikke indl√¶se sessioner for {{project}}",
 
-  "toast.update.title": "Opdatering tilgÊngelig",
-  "toast.update.description": "En ny version af OpenCode ({{version}}) er nu tilgÊngelig til installation.",
+  "toast.update.title": "Opdatering tilg√¶ngelig",
+  "toast.update.description": "En ny version af OpenCode ({{version}}) er nu tilg√¶ngelig til installation.",
   "toast.update.action.installRestart": "Installer og genstart",
   "toast.update.action.notYet": "Ikke endnu",
 
   "error.page.title": "Noget gik galt",
-  "error.page.description": "Der opstod en fejl under indlÊsning af applikationen.",
+  "error.page.description": "Der opstod en fejl under indl√¶sning af applikationen.",
   "error.page.description.localServerStartup": "Der opstod en fejl under start af den lokale server.",
   "error.page.details.label": "Fejldetaljer",
   "error.page.action.restart": "Genstart",
-  "error.page.action.report": "RapportÈr fejl",
+  "error.page.action.report": "Rapport√©r fejl",
   "error.page.action.reported": "Fejl rapporteret",
-  "error.page.action.exportLogs": "EksportÈr logfiler",
+  "error.page.action.exportLogs": "Eksport√©r logfiler",
   "error.page.action.checking": "Tjekker...",
   "error.page.action.checkUpdates": "Tjek for opdateringer",
   "error.page.action.updateTo": "Opdater til {{version}}",
   "error.page.report.prefix": "Rapporter venligst denne fejl til OpenCode-teamet",
-  "error.page.report.discord": "pÂ Discord",
+  "error.page.report.discord": "p√• Discord",
   "error.page.version": "Version: {{version}}",
 
   "error.dev.rootNotFound":
-    "Rodelement ikke fundet. Har du glemt at tilf¯je det til din index.html? Eller mÂske er id-attributten stavet forkert?",
+    "Rodelement ikke fundet. Har du glemt at tilf√∏je det til din index.html? Eller m√•ske er id-attributten stavet forkert?",
 
-  "error.serverSync.connectFailed": "Kunne ikke forbinde til server. K¯rer der en server pÂ `{{url}}`?",
+  "error.serverSync.connectFailed": "Kunne ikke forbinde til server. K√∏rer der en server p√• `{{url}}`?",
   "directory.error.invalidUrl": "Ugyldig mappe i URL.",
 
   "error.chain.unknown": "Ukendt fejl",
-  "error.chain.causedBy": "ForÂrsaget af:",
+  "error.chain.causedBy": "For√•rsaget af:",
   "error.chain.apiError": "API-fejl",
   "error.chain.status": "Status: {{status}}",
-  "error.chain.retryable": "Kan fors¯ges igen: {{retryable}}",
+  "error.chain.retryable": "Kan fors√∏ges igen: {{retryable}}",
   "error.chain.responseBody": "Svarindhold:\n{{body}}",
   "error.chain.didYouMean": "Mente du: {{suggestions}}",
   "error.chain.modelNotFound": "Model ikke fundet: {{provider}}/{{model}}",
-  "error.chain.checkConfig": "KontrollÈr udbyder- og modelnavnene i din konfiguration (opencode.json)",
-  "error.chain.mcpFailed": 'MCP-server "{{name}}" fejlede. BemÊrk, OpenCode underst¯tter ikke MCP-godkendelse endnu.',
+  "error.chain.checkConfig": "Kontroll√©r udbyder- og modelnavnene i din konfiguration (opencode.json)",
+  "error.chain.mcpFailed": 'MCP-server "{{name}}" fejlede. Bem√¶rk, OpenCode underst√∏tter ikke MCP-godkendelse endnu.',
   "error.chain.providerAuthFailed": "Udbydergodkendelse mislykkedes ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Kunne ikke initialisere udbyder "{{provider}}". Tjek legitimationsoplysninger og konfiguration.',
-  "error.chain.configJsonInvalid": "Konfigurationsfil pÂ {{path}} er ikke gyldig JSON(C)",
-  "error.chain.configJsonInvalidWithMessage": "Konfigurationsfil pÂ {{path}} er ikke gyldig JSON(C): {{message}}",
+  "error.chain.configJsonInvalid": "Konfigurationsfil p√• {{path}} er ikke gyldig JSON(C)",
+  "error.chain.configJsonInvalidWithMessage": "Konfigurationsfil p√• {{path}} er ikke gyldig JSON(C): {{message}}",
   "error.chain.configDirectoryTypo":
-    'Mappe "{{dir}}" i {{path}} er ikke gyldig. Omd¯b mappen til "{{suggestion}}" eller fjern den. Dette er en almindelig slÂfejl.',
+    'Mappe "{{dir}}" i {{path}} er ikke gyldig. Omd√∏b mappen til "{{suggestion}}" eller fjern den. Dette er en almindelig sl√•fejl.',
   "error.chain.configFrontmatterError": "Kunne ikke parse frontmatter i {{path}}:\n{{message}}",
-  "error.chain.configInvalid": "Konfigurationsfil pÂ {{path}} er ugyldig",
-  "error.chain.configInvalidWithMessage": "Konfigurationsfil pÂ {{path}} er ugyldig: {{message}}",
+  "error.chain.configInvalid": "Konfigurationsfil p√• {{path}} er ugyldig",
+  "error.chain.configInvalidWithMessage": "Konfigurationsfil p√• {{path}} er ugyldig: {{message}}",
 
-  "notification.permission.title": "Tilladelse pÂkrÊvet",
-  "notification.permission.description": "{{sessionTitle}} i {{projectName}} krÊver tilladelse",
-  "notification.question.title": "Sp¯rgsmÂl",
-  "notification.question.description": "{{sessionTitle}} i {{projectName}} har et sp¯rgsmÂl",
-  "notification.action.goToSession": "GÂ til session",
+  "notification.permission.title": "Tilladelse p√•kr√¶vet",
+  "notification.permission.description": "{{sessionTitle}} i {{projectName}} kr√¶ver tilladelse",
+  "notification.question.title": "Sp√∏rgsm√•l",
+  "notification.question.description": "{{sessionTitle}} i {{projectName}} har et sp√∏rgsm√•l",
+  "notification.action.goToSession": "G√• til session",
 
   "notification.session.responseReady.title": "Svar klar",
   "notification.session.error.title": "Sessionsfejl",
@@ -611,22 +611,22 @@ export const dict = {
 
   "home.recentProjects": "Seneste projekter",
   "home.empty.title": "Ingen seneste projekter",
-  "home.empty.description": "Kom i gang ved at Âbne et lokalt projekt",
+  "home.empty.description": "Kom i gang ved at √•bne et lokalt projekt",
   "home.title": "Hjem",
   "home.projects": "Projekter",
-  "home.project.add": "Tilf¯j projekt",
+  "home.project.add": "Tilf√∏j projekt",
   "home.recentlyClosed": "Lukket for nylig",
   "home.server.collapse": "Skjul serverprojekter",
   "home.server.expand": "Udvid serverprojekter",
-  "home.sessions.search.placeholder": "S¯g i sessioner",
-  "home.sessions.search.placeholder.scoped": "S¯g i sessioner i {{scope}}",
+  "home.sessions.search.placeholder": "S√∏g i sessioner",
+  "home.sessions.search.placeholder.scoped": "S√∏g i sessioner i {{scope}}",
   "home.sessions.search.sessions": "Sessioner",
   "home.sessions.search.noResults": "Ingen sessioner fundet for {{query}}",
   "home.sessions.empty": "Intet her endnu",
   "home.sessions.empty.description": "Opret en session for at komme i gang",
   "home.sessions.group.today": "I dag",
-  "home.sessions.group.yesterday": "I gÂr",
-  "home.sessions.group.older": "∆ldre",
+  "home.sessions.group.yesterday": "I g√•r",
+  "home.sessions.group.older": "√Üldre",
   "home.providerTip":
     "Opret forbindelse til mere end 75 udbydere for at bruge andre modeller, herunder Claude, GPT, Gemini og flere",
 
@@ -636,44 +636,44 @@ export const dict = {
   "session.tab.unknown": "Ukendt session",
   "session.panel.reviewAndFiles": "Gennemgang og filer",
   "session.error.notFound": "Denne session kan ikke findes",
-  "session.error.notFound.description": "Denne fane henviser til en session, der ikke lÊngere findes pÂ denne server.",
+  "session.error.notFound.description": "Denne fane henviser til en session, der ikke l√¶ngere findes p√• denne server.",
   "session.error.notFound.closeTab": "Luk fane",
   "session.error.serverConnection": "Kan ikke oprette forbindelse til denne server",
-  "session.review.filesChanged": "{{count}} Êndrede filer",
-  "session.review.change.one": "∆ndring",
-  "session.review.change.other": "∆ndringer",
-  "session.review.loadingChanges": "IndlÊser Êndringer...",
-  "session.review.empty": "Ingen Êndringer i denne session endnu",
-  "session.review.noVcs": "Intet Git-versionsstyringssystem fundet, sÂ Êndringer vises ikke",
+  "session.review.filesChanged": "{{count}} √¶ndrede filer",
+  "session.review.change.one": "√Ündring",
+  "session.review.change.other": "√Ündringer",
+  "session.review.loadingChanges": "Indl√¶ser √¶ndringer...",
+  "session.review.empty": "Ingen √¶ndringer i denne session endnu",
+  "session.review.noVcs": "Intet Git-versionsstyringssystem fundet, s√• √¶ndringer vises ikke",
   "session.review.noSnapshot":
-    "Snapshot-sporing er deaktiveret i konfigurationen, sÂ sessionsÊndringer er ikke tilgÊngelige",
-  "session.review.noChanges": "Ingen Êndringer",
-  "session.review.noUncommittedChanges": "Ingen Êndringer uden commit endnu",
-  "session.review.noBranchChanges": "Ingen grenÊndringer endnu",
-  "session.files.selectToOpen": "VÊlg en fil at Âbne",
+    "Snapshot-sporing er deaktiveret i konfigurationen, s√• sessions√¶ndringer er ikke tilg√¶ngelige",
+  "session.review.noChanges": "Ingen √¶ndringer",
+  "session.review.noUncommittedChanges": "Ingen √¶ndringer uden commit endnu",
+  "session.review.noBranchChanges": "Ingen gren√¶ndringer endnu",
+  "session.files.selectToOpen": "V√¶lg en fil at √•bne",
   "session.files.all": "Alle filer",
   "session.files.empty": "Ingen filer",
-  "session.files.binaryContent": "BinÊr fil (indhold kan ikke vises)",
+  "session.files.binaryContent": "Bin√¶r fil (indhold kan ikke vises)",
   "session.messages.renderEarlier": "Vis tidligere beskeder",
-  "session.messages.loadingEarlier": "IndlÊser tidligere beskeder...",
-  "session.messages.loadEarlier": "IndlÊs tidligere beskeder",
-  "session.messages.loading": "IndlÊser beskeder...",
+  "session.messages.loadingEarlier": "Indl√¶ser tidligere beskeder...",
+  "session.messages.loadEarlier": "Indl√¶s tidligere beskeder",
+  "session.messages.loading": "Indl√¶ser beskeder...",
 
-  "session.messages.jumpToLatest": "GÂ til seneste",
-  "session.context.addToContext": "Tilf¯j {{selection}} til kontekst",
+  "session.messages.jumpToLatest": "G√• til seneste",
+  "session.context.addToContext": "Tilf√∏j {{selection}} til kontekst",
   "session.todo.title": "Opgaver",
   "session.todo.collapse": "Skjul",
   "session.todo.expand": "Udvid",
-  "session.question.minimize": "Minimer sp¯rgsmÂl",
-  "session.question.restore": "Gendan sp¯rgsmÂl",
-  "session.question.pending.one": "{{count}} afventende sp¯rgsmÂl",
-  "session.question.pending.other": "{{count}} afventende sp¯rgsmÂl",
-  "session.followupDock.summary.one": "{{count}} besked i k¯",
-  "session.followupDock.summary.other": "{{count}} beskeder i k¯",
+  "session.question.minimize": "Minimer sp√∏rgsm√•l",
+  "session.question.restore": "Gendan sp√∏rgsm√•l",
+  "session.question.pending.one": "{{count}} afventende sp√∏rgsm√•l",
+  "session.question.pending.other": "{{count}} afventende sp√∏rgsm√•l",
+  "session.followupDock.summary.one": "{{count}} besked i k√∏",
+  "session.followupDock.summary.other": "{{count}} beskeder i k√∏",
   "session.followupDock.sendNow": "Send nu",
   "session.followupDock.edit": "Rediger",
-  "session.followupDock.collapse": "Skjul beskeder i k¯",
-  "session.followupDock.expand": "Udvid beskeder i k¯",
+  "session.followupDock.collapse": "Skjul beskeder i k√∏",
+  "session.followupDock.expand": "Udvid beskeder i k√∏",
   "session.revertDock.summary.one": "{{count}} tilbagerullet besked",
   "session.revertDock.summary.other": "{{count}} tilbagerullede beskeder",
   "session.revertDock.collapse": "Skjul tilbagerullede beskeder",
@@ -682,15 +682,15 @@ export const dict = {
 
   "session.new.title": "Byg hvad som helst",
   "session.new.project.new": "Nyt projekt",
-  "session.new.project.search": "S¯g efter projekter",
-  "session.new.project.add": "Tilf¯j projekt",
+  "session.new.project.search": "S√∏g efter projekter",
+  "session.new.project.add": "Tilf√∏j projekt",
   "session.new.worktree.main": "Hovedgren",
   "session.new.worktree.mainWithBranch": "Hovedgren ({{branch}})",
   "session.new.worktree.create": "Opret nyt worktree",
-  "session.new.workspace.runIn": "K¯r session i",
+  "session.new.workspace.runIn": "K√∏r session i",
   "session.new.workspace.triggerLocal": "Lokal",
   "session.new.workspace.local": "Lokalt repository",
-  "session.new.workspace.existing": "ArbejdsomrÂdeÖ",
+  "session.new.workspace.existing": "Arbejdsomr√•de‚Ä¶",
   "session.new.git.none": "Ingen Git",
   "session.git.switchBranch": "Switch branch",
   "session.git.branches": "Git branches",
@@ -700,14 +700,14 @@ export const dict = {
   "session.git.switchConfirmButton": "Switch anyway",
   "session.git.activeSessionWarn": "Active session running on this branch",
   "session.new.worktree.isolatedToggle": "Create in isolated worktree",
-  "session.new.lastModified": "Sidst Êndret",
+  "session.new.lastModified": "Sidst √¶ndret",
 
-  "session.header.search.placeholder": "S¯g {{project}}",
-  "session.header.searchFiles": "S¯g efter filer",
-  "session.header.openIn": "≈bn i",
-  "session.header.open.action": "≈bn {{app}}",
-  "session.header.open.ariaLabel": "≈bn i {{app}}",
-  "session.header.open.menu": "≈bningsmuligheder",
+  "session.header.search.placeholder": "S√∏g {{project}}",
+  "session.header.searchFiles": "S√∏g efter filer",
+  "session.header.openIn": "√Öbn i",
+  "session.header.open.action": "√Öbn {{app}}",
+  "session.header.open.ariaLabel": "√Öbn i {{app}}",
+  "session.header.open.menu": "√Öbningsmuligheder",
   "session.header.open.copyPath": "Kopier sti",
 
   "status.popover.trigger": "Status",
@@ -718,11 +718,11 @@ export const dict = {
   "status.popover.tab.plugins": "Plugins",
   "status.popover.action.manageServers": "Administrer servere",
 
-  "session.share.popover.title": "Udgiv pÂ nettet",
+  "session.share.popover.title": "Udgiv p√• nettet",
   "session.share.popover.description.shared":
-    "Denne session er offentlig pÂ nettet. Den er tilgÊngelig for alle med linket.",
+    "Denne session er offentlig p√• nettet. Den er tilg√¶ngelig for alle med linket.",
   "session.share.popover.description.unshared":
-    "Del session offentligt pÂ nettet. Den vil vÊre tilgÊngelig for alle med linket.",
+    "Del session offentligt p√• nettet. Den vil v√¶re tilg√¶ngelig for alle med linket.",
   "session.share.action.share": "Del",
   "session.share.action.publish": "Udgiv",
   "session.share.action.publishing": "Udgiver...",
@@ -735,16 +735,16 @@ export const dict = {
   "lsp.tooltip.none": "Ingen LSP-servere",
   "lsp.label.connected": "{{count}} LSP",
 
-  "prompt.loading": "IndlÊser prompt...",
-  "terminal.loading": "IndlÊser terminal...",
+  "prompt.loading": "Indl√¶ser prompt...",
+  "terminal.loading": "Indl√¶ser terminal...",
   "terminal.title": "Terminal",
   "terminal.title.numbered": "Terminal {{number}}",
   "terminal.close": "Luk terminal",
 
   "terminal.connectionLost.title": "Forbindelse mistet",
-  "terminal.connectionLost.description": "Terminalforbindelsen blev afbrudt. Dette kan ske, nÂr serveren genstarter.",
+  "terminal.connectionLost.description": "Terminalforbindelsen blev afbrudt. Dette kan ske, n√•r serveren genstarter.",
   "terminal.connectTicket.csrfError":
-    "PTY-forbindelsesticket blev afvist ved kontrollen af oprindelse eller CSRF. KontrollÈr serverens CORS-konfiguration.",
+    "PTY-forbindelsesticket blev afvist ved kontrollen af oprindelse eller CSRF. Kontroll√©r serverens CORS-konfiguration.",
   "terminal.connectTicket.statusError": "PTY-forbindelsesticket mislykkedes med {{status}}",
 
   "titlebar.update": "Opdater",
@@ -752,34 +752,34 @@ export const dict = {
 
   "common.closeTab": "Luk fane",
   "common.dismiss": "Afvis",
-  "common.requestFailed": "Foresp¯rgsel mislykkedes",
+  "common.requestFailed": "Foresp√∏rgsel mislykkedes",
   "common.optional": "valgfrit",
   "common.moreOptions": "Flere muligheder",
-  "common.learnMore": "LÊr mere",
-  "common.rename": "Omd¯b",
-  "common.export": "EksportÈr",
+  "common.learnMore": "L√¶r mere",
+  "common.rename": "Omd√∏b",
+  "common.export": "Eksport√©r",
   "common.reset": "Nulstil",
-  "common.archive": "ArkivÈr",
+  "common.archive": "Arkiv√©r",
   "common.delete": "Slet",
   "common.close": "Luk",
   "common.edit": "Rediger",
-  "common.loadMore": "IndlÊs flere",
+  "common.loadMore": "Indl√¶s flere",
 
   "common.key.esc": "ESC",
   "sidebar.menu.toggle": "Skift menu",
   "sidebar.nav.projectsAndSessions": "Projekter og sessioner",
   "sidebar.settings": "Indstillinger",
-  "sidebar.help": "HjÊlp",
-  "sidebar.workspaces.enable": "Aktiver arbejdsomrÂder",
-  "sidebar.workspaces.disable": "Deaktiver arbejdsomrÂder",
+  "sidebar.help": "Hj√¶lp",
+  "sidebar.workspaces.enable": "Aktiver arbejdsomr√•der",
+  "sidebar.workspaces.disable": "Deaktiver arbejdsomr√•der",
   "sidebar.gettingStarted.title": "Kom i gang",
-  "sidebar.gettingStarted.line1": "OpenCode inkluderer gratis modeller sÂ du kan starte med det samme.",
+  "sidebar.gettingStarted.line1": "OpenCode inkluderer gratis modeller s√• du kan starte med det samme.",
   "sidebar.gettingStarted.line2": "Forbind enhver udbyder for at bruge modeller, inkl. Claude, GPT, Gemini osv.",
   "sidebar.project.recentSessions": "Seneste sessioner",
   "sidebar.project.viewAllSessions": "Vis alle sessioner",
   "sidebar.project.clearNotifications": "Ryd notifikationer",
-  "sidebar.empty.title": "Ingen Âbne projekter",
-  "sidebar.empty.description": "≈bn et projekt for at komme i gang",
+  "sidebar.empty.title": "Ingen √•bne projekter",
+  "sidebar.empty.description": "√Öbn et projekt for at komme i gang",
 
   "app.name.desktop": "OpenCode Desktop",
   "settings.section.desktop": "Desktop",
@@ -788,7 +788,7 @@ export const dict = {
   "settings.tab.shortcuts": "Genveje",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL-integration",
-  "settings.desktop.wsl.description": "K¯r OpenCode-serveren inde i WSL pÂ Windows.",
+  "settings.desktop.wsl.description": "K√∏r OpenCode-serveren inde i WSL p√• Windows.",
 
   "settings.general.section.appearance": "Udseende",
   "settings.general.section.advanced": "Avanceret",
@@ -796,20 +796,20 @@ export const dict = {
   "settings.general.section.updates": "Opdateringer",
   "settings.general.section.sounds": "Lydeffekter",
   "settings.general.section.feed": "Feed",
-  "settings.general.section.display": "SkÊrm",
+  "settings.general.section.display": "Sk√¶rm",
 
   "settings.general.row.language.title": "Sprog",
-  "settings.general.row.language.description": "∆ndr visningssproget for OpenCode",
+  "settings.general.row.language.description": "√Ündr visningssproget for OpenCode",
   "settings.general.row.shell.title": "Terminalshell",
   "settings.general.row.shell.description":
-    "VÊlg den shell, der bruges i din terminal. Kompatible shells bruges ogsÂ til agentens vÊrkt¯jskald.",
+    "V√¶lg den shell, der bruges i din terminal. Kompatible shells bruges ogs√• til agentens v√¶rkt√∏jskald.",
   "settings.general.row.shell.autoDefault": "Automatisk (standard)",
   "settings.general.row.shell.terminalOnly": "kun terminal",
   "settings.general.row.appearance.title": "Udseende",
-  "settings.general.row.appearance.description": "Tilpas hvordan OpenCode ser ud pÂ din enhed",
+  "settings.general.row.appearance.description": "Tilpas hvordan OpenCode ser ud p√• din enhed",
   "settings.general.row.colorScheme.title": "Farveskema",
   "settings.general.row.colorScheme.description":
-    "VÊlg, om OpenCode skal f¯lge systemtemaet eller bruge et lyst eller m¯rkt tema",
+    "V√¶lg, om OpenCode skal f√∏lge systemtemaet eller bruge et lyst eller m√∏rkt tema",
   "settings.general.row.theme.title": "Tema",
   "settings.general.row.theme.description": "Tilpas OpenCodes tema.",
   "settings.general.row.font.title": "Kode-skrifttype",
@@ -817,62 +817,62 @@ export const dict = {
   "settings.general.row.terminalFont.title": "Terminalskrifttype",
   "settings.general.row.terminalFont.description": "Tilpas den skrifttype, der bruges i terminalen",
   "settings.general.row.uiFont.title": "UI-skrifttype",
-  "settings.general.row.uiFont.description": "Tilpas skrifttypen, der bruges i hele brugergrÊnsefladen",
-  "settings.general.row.followup.title": "Opf¯lgningsadfÊrd",
-  "settings.general.row.followup.description": "VÊlg om opf¯lgende foresp¯rgsler skal styre straks eller vente i k¯",
-  "settings.general.row.followup.option.queue": "K¯",
+  "settings.general.row.uiFont.description": "Tilpas skrifttypen, der bruges i hele brugergr√¶nsefladen",
+  "settings.general.row.followup.title": "Opf√∏lgningsadf√¶rd",
+  "settings.general.row.followup.description": "V√¶lg om opf√∏lgende foresp√∏rgsler skal styre straks eller vente i k√∏",
+  "settings.general.row.followup.option.queue": "K√∏",
   "settings.general.row.followup.option.steer": "Styr",
-  "settings.general.row.showFileTree.title": "FiltrÊ",
-  "settings.general.row.showFileTree.description": "Vis filtrÊspanelet i sessioner",
+  "settings.general.row.showFileTree.title": "Filtr√¶",
+  "settings.general.row.showFileTree.description": "Vis filtr√¶spanelet i sessioner",
   "settings.general.row.showNavigation.title": "Navigationsknapper",
   "settings.general.row.showNavigation.description": "Vis tilbage- og frem-knapperne i desktopappens titellinje",
   "settings.general.row.showSearch.title": "Kommandopalette",
-  "settings.general.row.showSearch.description": "Vis knappen til s¯gning og kommandopaletten i titellinjen",
+  "settings.general.row.showSearch.description": "Vis knappen til s√∏gning og kommandopaletten i titellinjen",
   "settings.general.row.showTerminal.title": "Terminal",
   "settings.general.row.showTerminal.description": "Vis terminalknappen i desktopappens titellinje",
   "settings.general.row.showStatus.title": "Serverstatus",
   "settings.general.row.showStatus.description": "Vis serverstatusknappen i titellinjen",
   "settings.general.row.mobileTitlebarBottom.title": "Navigation nederst",
   "settings.general.row.mobileTitlebarBottom.description":
-    "Placer titellinjen og sessionsfanerne nederst pÂ skÊrmen pÂ mobilenheder",
+    "Placer titellinjen og sessionsfanerne nederst p√• sk√¶rmen p√• mobilenheder",
   "settings.general.row.showCustomAgents.title": "Vis agent",
   "settings.general.row.showCustomAgents.description":
-    "Skift mellem agenter i promptfeltet. NÂr vÊlgeren er skjult, bruges Build-agenten som standard.",
-  "settings.general.row.reasoningSummaries.title": "Vis rÊsonneringsoversigter",
-  "settings.general.row.reasoningSummaries.description": "Vis oversigter over modellens rÊsonnering pÂ tidslinjen",
+    "Skift mellem agenter i promptfeltet. N√•r v√¶lgeren er skjult, bruges Build-agenten som standard.",
+  "settings.general.row.reasoningSummaries.title": "Vis r√¶sonneringsoversigter",
+  "settings.general.row.reasoningSummaries.description": "Vis oversigter over modellens r√¶sonnering p√• tidslinjen",
 
-  "settings.general.row.shellToolPartsExpanded.title": "Udvid shell-vÊrkt¯jsdele",
-  "settings.general.row.shellToolPartsExpanded.description": "Vis shell-vÊrkt¯jsdele udvidet som standard i tidslinjen",
-  "settings.general.row.editToolPartsExpanded.title": "Udvid edit-vÊrkt¯jsdele",
+  "settings.general.row.shellToolPartsExpanded.title": "Udvid shell-v√¶rkt√∏jsdele",
+  "settings.general.row.shellToolPartsExpanded.description": "Vis shell-v√¶rkt√∏jsdele udvidet som standard i tidslinjen",
+  "settings.general.row.editToolPartsExpanded.title": "Udvid edit-v√¶rkt√∏jsdele",
   "settings.general.row.editToolPartsExpanded.description":
-    "Vis edit-, write- og patch-vÊrkt¯jsdele udvidet som standard i tidslinjen",
+    "Vis edit-, write- og patch-v√¶rkt√∏jsdele udvidet som standard i tidslinjen",
   "settings.general.row.newInterface.title": "Nyt layout",
   "settings.general.row.newInterface.badge": "Ny",
   "settings.general.row.newInterface.description":
-    "Brug de nye faner og startsidens layout. Du kan skifte mellem layoutene i en begrÊnset periode.",
+    "Brug de nye faner og startsidens layout. Du kan skifte mellem layoutene i en begr√¶nset periode.",
   "settings.general.row.newInterfaceNotice.title": "Du bruger nu det nye layout",
-  "settings.general.row.newInterfaceNotice.description": "Det tidligere layout er ikke lÊngere tilgÊngeligt",
+  "settings.general.row.newInterfaceNotice.description": "Det tidligere layout er ikke l√¶ngere tilg√¶ngeligt",
   "settings.general.row.newInterfaceNotice.dismiss": "Afvis",
   "settings.general.row.pinchZoom.title": "Knib for at zoome",
-  "settings.general.row.pinchZoom.description": "Tillad knibebevÊgelser pÂ pegefeltet og Ctrl-rulning for at zoome",
+  "settings.general.row.pinchZoom.description": "Tillad knibebev√¶gelser p√• pegefeltet og Ctrl-rulning for at zoome",
   "settings.general.row.wayland.title": "Brug indbygget Wayland",
-  "settings.general.row.wayland.description": "Deaktiver X11-fallback pÂ Wayland. KrÊver genstart.",
+  "settings.general.row.wayland.description": "Deaktiver X11-fallback p√• Wayland. Kr√¶ver genstart.",
   "settings.general.row.wayland.tooltip":
-    "PÂ Linux med skÊrme med forskellige opdateringshastigheder kan indbygget Wayland vÊre mere stabilt.",
+    "P√• Linux med sk√¶rme med forskellige opdateringshastigheder kan indbygget Wayland v√¶re mere stabilt.",
 
   "settings.general.row.releaseNotes.title": "Udgivelsesnoter",
   "settings.general.row.releaseNotes.description": 'Vis pop op-vinduer med "Hvad er nyt" efter opdateringer',
 
   "settings.updates.row.startup.title": "Tjek for opdateringer ved opstart",
-  "settings.updates.row.startup.description": "Tjek automatisk for opdateringer, nÂr OpenCode starter",
+  "settings.updates.row.startup.description": "Tjek automatisk for opdateringer, n√•r OpenCode starter",
   "settings.updates.row.check.title": "Tjek for opdateringer",
-  "settings.updates.row.check.description": "Tjek manuelt for opdateringer og installer, hvis tilgÊngelig",
+  "settings.updates.row.check.description": "Tjek manuelt for opdateringer og installer, hvis tilg√¶ngelig",
   "settings.updates.action.checkNow": "Tjek nu",
   "settings.updates.action.checking": "Tjekker...",
   "settings.updates.action.downloading": "Downloader...",
   "settings.updates.action.installing": "Installerer...",
   "settings.updates.toast.latest.title": "Du er opdateret",
-  "settings.updates.toast.latest.description": "Du k¯rer den nyeste version af OpenCode.",
+  "settings.updates.toast.latest.description": "Du k√∏rer den nyeste version af OpenCode.",
 
   "sound.option.none": "Ingen",
   "sound.option.alert01": "Alarm 01",
@@ -922,18 +922,18 @@ export const dict = {
   "sound.option.yup06": "Ja 06",
   "settings.general.notifications.agent.title": "Agent",
   "settings.general.notifications.agent.description":
-    "Vis systemmeddelelse nÂr agenten er fÊrdig eller krÊver opmÊrksomhed",
+    "Vis systemmeddelelse n√•r agenten er f√¶rdig eller kr√¶ver opm√¶rksomhed",
   "settings.general.notifications.permissions.title": "Tilladelser",
-  "settings.general.notifications.permissions.description": "Vis systemmeddelelse nÂr en tilladelse er pÂkrÊvet",
+  "settings.general.notifications.permissions.description": "Vis systemmeddelelse n√•r en tilladelse er p√•kr√¶vet",
   "settings.general.notifications.errors.title": "Fejl",
-  "settings.general.notifications.errors.description": "Vis systemmeddelelse nÂr der opstÂr en fejl",
+  "settings.general.notifications.errors.description": "Vis systemmeddelelse n√•r der opst√•r en fejl",
 
   "settings.general.sounds.agent.title": "Agent",
-  "settings.general.sounds.agent.description": "Afspil lyd nÂr agenten er fÊrdig eller krÊver opmÊrksomhed",
+  "settings.general.sounds.agent.description": "Afspil lyd n√•r agenten er f√¶rdig eller kr√¶ver opm√¶rksomhed",
   "settings.general.sounds.permissions.title": "Tilladelser",
-  "settings.general.sounds.permissions.description": "Afspil lyd nÂr en tilladelse er pÂkrÊvet",
+  "settings.general.sounds.permissions.description": "Afspil lyd n√•r en tilladelse er p√•kr√¶vet",
   "settings.general.sounds.errors.title": "Fejl",
-  "settings.general.sounds.errors.description": "Afspil lyd nÂr der opstÂr en fejl",
+  "settings.general.sounds.errors.description": "Afspil lyd n√•r der opst√•r en fejl",
 
   "settings.shortcuts.title": "Tastaturgenveje",
   "settings.shortcuts.reset.button": "Nulstil til standard",
@@ -942,8 +942,8 @@ export const dict = {
   "settings.shortcuts.conflict.title": "Genvej allerede i brug",
   "settings.shortcuts.conflict.description": "{{keybind}} er allerede tildelt til {{titles}}.",
   "settings.shortcuts.unassigned": "Ikke tildelt",
-  "settings.shortcuts.pressKeys": "Tryk pÂ taster",
-  "settings.shortcuts.search.placeholder": "S¯g genveje",
+  "settings.shortcuts.pressKeys": "Tryk p√• taster",
+  "settings.shortcuts.search.placeholder": "S√∏g genveje",
   "settings.shortcuts.search.empty": "Ingen genveje fundet",
 
   "settings.shortcuts.group.general": "Generelt",
@@ -957,8 +957,8 @@ export const dict = {
   "settings.providers.description": "Udbyderindstillinger vil kunne konfigureres her.",
   "settings.providers.section.connected": "Forbundne udbydere",
   "settings.providers.connected.empty": "Ingen forbundne udbydere",
-  "settings.providers.section.popular": "PopulÊre udbydere",
-  "settings.providers.tag.environment": "Milj¯",
+  "settings.providers.section.popular": "Popul√¶re udbydere",
+  "settings.providers.tag.environment": "Milj√∏",
   "settings.providers.tag.config": "Konfiguration",
   "settings.providers.tag.custom": "Brugerdefineret",
   "settings.providers.tag.other": "Andet",
@@ -972,107 +972,107 @@ export const dict = {
   "settings.mcp.description": "MCP-indstillinger vil kunne konfigureres her.",
 
   "settings.permissions.title": "Tilladelser",
-  "settings.permissions.description": "Styr hvilke vÊrkt¯jer serveren kan bruge som standard.",
-  "settings.permissions.section.tools": "VÊrkt¯jer",
+  "settings.permissions.description": "Styr hvilke v√¶rkt√∏jer serveren kan bruge som standard.",
+  "settings.permissions.section.tools": "V√¶rkt√∏jer",
   "settings.permissions.toast.updateFailed.title": "Kunne ikke opdatere tilladelser",
 
   "settings.permissions.action.allow": "Tillad",
-  "settings.permissions.action.ask": "Sp¯rg",
+  "settings.permissions.action.ask": "Sp√∏rg",
   "settings.permissions.action.deny": "Afvis",
 
-  "settings.permissions.tool.read.title": "LÊs",
-  "settings.permissions.tool.read.description": "LÊsning af en fil (matcher filstien)",
+  "settings.permissions.tool.read.title": "L√¶s",
+  "settings.permissions.tool.read.description": "L√¶sning af en fil (matcher filstien)",
   "settings.permissions.tool.edit.title": "Rediger",
   "settings.permissions.tool.edit.description":
     "Rediger filer, herunder med redigeringer, skrivning, patches og multiredigeringer",
   "settings.permissions.tool.glob.title": "Glob",
-  "settings.permissions.tool.glob.description": "Find filer ved hjÊlp af globm¯nstre",
+  "settings.permissions.tool.glob.description": "Find filer ved hj√¶lp af globm√∏nstre",
   "settings.permissions.tool.grep.title": "Grep",
-  "settings.permissions.tool.grep.description": "S¯g i filindhold ved hjÊlp af regulÊre udtryk",
+  "settings.permissions.tool.grep.description": "S√∏g i filindhold ved hj√¶lp af regul√¶re udtryk",
   "settings.permissions.tool.list.title": "Liste",
   "settings.permissions.tool.list.description": "List filer i en mappe",
   "settings.permissions.tool.bash.title": "Bash",
-  "settings.permissions.tool.bash.description": "K¯r shell-kommandoer",
+  "settings.permissions.tool.bash.description": "K√∏r shell-kommandoer",
   "settings.permissions.tool.task.title": "Opgave",
   "settings.permissions.tool.task.description": "Start underagenter",
-  "settings.permissions.tool.skill.title": "FÊrdighed",
-  "settings.permissions.tool.skill.description": "IndlÊs en fÊrdighed efter navn",
+  "settings.permissions.tool.skill.title": "F√¶rdighed",
+  "settings.permissions.tool.skill.description": "Indl√¶s en f√¶rdighed efter navn",
   "settings.permissions.tool.lsp.title": "LSP",
-  "settings.permissions.tool.lsp.description": "K¯r sprogserverforesp¯rgsler",
+  "settings.permissions.tool.lsp.description": "K√∏r sprogserverforesp√∏rgsler",
   "settings.permissions.tool.todowrite.title": "Skriv to-do",
   "settings.permissions.tool.todowrite.description": "Opdater to-do-listen",
   "settings.permissions.tool.webfetch.title": "Webhentning",
   "settings.permissions.tool.webfetch.description": "Hent indhold fra en URL",
-  "settings.permissions.tool.websearch.title": "Webs¯gning",
-  "settings.permissions.tool.websearch.description": "S¯g pÂ nettet",
+  "settings.permissions.tool.websearch.title": "Webs√∏gning",
+  "settings.permissions.tool.websearch.description": "S√∏g p√• nettet",
   "settings.permissions.tool.external_directory.title": "Ekstern mappe",
-  "settings.permissions.tool.external_directory.description": "FÂ adgang til filer uden for projektmappen",
+  "settings.permissions.tool.external_directory.description": "F√• adgang til filer uden for projektmappen",
   "settings.permissions.tool.doom_loop.title": "Doom Loop",
-  "settings.permissions.tool.doom_loop.description": "Opdag gentagne vÊrkt¯jskald med identisk input",
+  "settings.permissions.tool.doom_loop.description": "Opdag gentagne v√¶rkt√∏jskald med identisk input",
 
   "session.delete.failed.title": "Kunne ikke slette session",
   "session.delete.title": "Slet session",
   "session.delete.confirm": 'Slet session "{{name}}"?',
   "session.delete.button": "Slet session",
 
-  "workspace.new": "Nyt arbejdsomrÂde",
+  "workspace.new": "Nyt arbejdsomr√•de",
   "workspace.type.local": "lokal",
   "workspace.type.sandbox": "sandkasse",
-  "workspace.create.failed.title": "Kunne ikke oprette arbejdsomrÂde",
-  "workspace.delete.failed.title": "Kunne ikke slette arbejdsomrÂde",
-  "workspace.resetting.title": "Nulstiller arbejdsomrÂde",
+  "workspace.create.failed.title": "Kunne ikke oprette arbejdsomr√•de",
+  "workspace.delete.failed.title": "Kunne ikke slette arbejdsomr√•de",
+  "workspace.resetting.title": "Nulstiller arbejdsomr√•de",
   "workspace.resetting.description": "Dette kan tage et minut.",
-  "workspace.reset.failed.title": "Kunne ikke nulstille arbejdsomrÂde",
-  "workspace.reset.success.title": "ArbejdsomrÂde nulstillet",
-  "workspace.reset.success.description": "ArbejdsomrÂdet matcher nu hovedgrenen.",
-  "workspace.error.stillPreparing": "ArbejdsomrÂdet er stadig ved at blive klargjort",
-  "workspace.status.checking": "Tjekker for uflettede Êndringer...",
-  "workspace.status.error": "Kunne ikke bekrÊfte Git-status.",
-  "workspace.status.clean": "Ingen uflettede Êndringer fundet.",
-  "workspace.status.dirty": "Uflettede Êndringer fundet i dette arbejdsomrÂde.",
-  "workspace.delete.title": "Slet arbejdsomrÂde",
-  "workspace.delete.confirm": 'Slet arbejdsomrÂde "{{name}}"?',
-  "workspace.delete.button": "Slet arbejdsomrÂde",
-  "workspace.reset.title": "Nulstil arbejdsomrÂde",
-  "workspace.reset.confirm": 'Nulstil arbejdsomrÂde "{{name}}"?',
-  "workspace.reset.button": "Nulstil arbejdsomrÂde",
+  "workspace.reset.failed.title": "Kunne ikke nulstille arbejdsomr√•de",
+  "workspace.reset.success.title": "Arbejdsomr√•de nulstillet",
+  "workspace.reset.success.description": "Arbejdsomr√•det matcher nu hovedgrenen.",
+  "workspace.error.stillPreparing": "Arbejdsomr√•det er stadig ved at blive klargjort",
+  "workspace.status.checking": "Tjekker for uflettede √¶ndringer...",
+  "workspace.status.error": "Kunne ikke bekr√¶fte Git-status.",
+  "workspace.status.clean": "Ingen uflettede √¶ndringer fundet.",
+  "workspace.status.dirty": "Uflettede √¶ndringer fundet i dette arbejdsomr√•de.",
+  "workspace.delete.title": "Slet arbejdsomr√•de",
+  "workspace.delete.confirm": 'Slet arbejdsomr√•de "{{name}}"?',
+  "workspace.delete.button": "Slet arbejdsomr√•de",
+  "workspace.reset.title": "Nulstil arbejdsomr√•de",
+  "workspace.reset.confirm": 'Nulstil arbejdsomr√•de "{{name}}"?',
+  "workspace.reset.button": "Nulstil arbejdsomr√•de",
   "workspace.reset.archived.none": "Ingen aktive sessioner vil blive arkiveret.",
   "workspace.reset.archived.one": "1 session vil blive arkiveret.",
   "workspace.reset.archived.many": "{{count}} sessioner vil blive arkiveret.",
-  "workspace.reset.note": "Dette vil nulstille arbejdsomrÂdet til at matche hovedgrenen.",
-  "common.open": "≈bn",
+  "workspace.reset.note": "Dette vil nulstille arbejdsomr√•det til at matche hovedgrenen.",
+  "common.open": "√Öbn",
   "dialog.releaseNotes.action.getStarted": "Kom i gang",
-  "dialog.releaseNotes.action.next": "NÊste",
+  "dialog.releaseNotes.action.next": "N√¶ste",
   "dialog.releaseNotes.action.hideFuture": "Vis ikke disse i fremtiden",
-  "dialog.releaseNotes.media.alt": "ForhÂndsvisning af udgivelse",
-  "toast.project.reloadFailed.title": "Kunne ikke genindlÊse {{project}}",
+  "dialog.releaseNotes.media.alt": "Forh√•ndsvisning af udgivelse",
+  "toast.project.reloadFailed.title": "Kunne ikke genindl√¶se {{project}}",
   "error.server.invalidConfiguration": "Ugyldig konfiguration",
   "common.moreCountSuffix": " (+{{count}} mere)",
   "common.time.justNow": "Lige nu",
   "common.time.minutesAgo.short": "{{count}}m siden",
   "common.time.hoursAgo.short": "{{count}}t siden",
   "common.time.daysAgo.short": "{{count}}d siden",
-  "settings.providers.connected.environmentDescription": "Tilsluttet fra dine milj¯variabler",
-  "settings.providers.custom.description": "Tilf¯j en OpenAI-kompatibel udbyder via basis-URL.",
+  "settings.providers.connected.environmentDescription": "Tilsluttet fra dine milj√∏variabler",
+  "settings.providers.custom.description": "Tilf√∏j en OpenAI-kompatibel udbyder via basis-URL.",
 
-  "app.server.unreachable": "Kunne ikke nÂ {{server}}",
-  "app.server.retrying": "Pr¯ver igen automatisk...",
+  "app.server.unreachable": "Kunne ikke n√• {{server}}",
+  "app.server.retrying": "Pr√∏ver igen automatisk...",
   "app.server.otherServers": "Andre servere",
   "dialog.server.add.usernamePlaceholder": "brugernavn",
   "dialog.server.add.passwordPlaceholder": "adgangskode",
   "server.row.noUsername": "intet brugernavn",
   "session.review.noVcs.createGit.title": "Opret et Git-repository",
-  "session.review.noVcs.createGit.description": "Spor, gennemgÂ og fortryd Êndringer i dette projekt",
+  "session.review.noVcs.createGit.description": "Spor, gennemg√• og fortryd √¶ndringer i dette projekt",
   "session.review.noVcs.createGit.actionLoading": "Opretter Git-repository...",
   "session.review.noVcs.createGit.action": "Opret Git-repository",
-  "session.todo.progress": "{{done}} af {{total}} opgaver fuldf¯rt",
-  "session.question.progress": "{{current}} af {{total}} sp¯rgsmÂl",
+  "session.todo.progress": "{{done}} af {{total}} opgaver fuldf√∏rt",
+  "session.question.progress": "{{current}} af {{total}} sp√∏rgsm√•l",
   "session.header.open.finder": "Finder",
   "session.header.open.fileExplorer": "Stifinder",
   "session.header.reveal.finder": "Vis i Finder",
   "session.header.reveal.fileExplorer": "Vis i Stifinder",
-  "session.header.reveal.containingFolder": "≈bn den overordnede mappe",
-  "session.header.open.fileManager": "FilhÂndtering",
+  "session.header.reveal.containingFolder": "√Öbn den overordnede mappe",
+  "session.header.open.fileManager": "Filh√•ndtering",
   "session.header.open.app.vscode": "VS Code",
   "session.header.open.app.cursor": "Cursor",
   "session.header.open.app.zed": "Zed",
@@ -1090,31 +1090,31 @@ export const dict = {
   "debugBar.na": "n/a",
   "debugBar.nav.label": "NAV",
   "debugBar.nav.tip":
-    "Sidste gennemf¯rte ruteovergang, der ber¯rer en sessionsside, mÂlt fra routerstart til den f¯rste optegning efter den falder til ro.",
+    "Sidste gennemf√∏rte ruteovergang, der ber√∏rer en sessionsside, m√•lt fra routerstart til den f√∏rste optegning efter den falder til ro.",
   "debugBar.fps.label": "FPS",
   "debugBar.fps.tip": "Rullende antal billedrammer pr. sekund over de sidste 5 sekunder.",
   "debugBar.frame.label": "FRAME",
-  "debugBar.frame.tip": "LÊngste billedrammetid over de sidste 5 sekunder.",
+  "debugBar.frame.tip": "L√¶ngste billedrammetid over de sidste 5 sekunder.",
   "debugBar.jank.label": "JANK",
   "debugBar.jank.tip": "Billedrammer over 32 ms i de sidste 5 sekunder.",
   "debugBar.long.label": "LONG",
   "debugBar.long.tip": "Blokeret tid og antal lange opgaver i de sidste 5 sekunder. Maks opgave: {{max}}.",
   "debugBar.delay.label": "DELAY",
-  "debugBar.delay.tip": "VÊrste observerede inputforsinkelse i de sidste 5 sekunder.",
+  "debugBar.delay.tip": "V√¶rste observerede inputforsinkelse i de sidste 5 sekunder.",
   "debugBar.inp.label": "INP",
   "debugBar.inp.tip":
     "Omtrentlig interaktionsvarighed over de sidste 5 sekunder. Dette er INP-lignende, ikke den officielle Web Vitals INP.",
   "debugBar.cls.label": "CLS",
-  "debugBar.cls.tip": "Kumulativt layoutskift for den nuvÊrende app-levetid.",
+  "debugBar.cls.tip": "Kumulativt layoutskift for den nuv√¶rende app-levetid.",
   "debugBar.mem.label": "MEM",
-  "debugBar.mem.tipUnavailable": "Brugt JS-heap sammenholdt med heapgrÊnsen. Kun Chromium.",
-  "debugBar.mem.tip": "Brugt JS-heap sammenholdt med heapgrÊnsen. {{used}} af {{limit}}.",
+  "debugBar.mem.tipUnavailable": "Brugt JS-heap sammenholdt med heapgr√¶nsen. Kun Chromium.",
+  "debugBar.mem.tip": "Brugt JS-heap sammenholdt med heapgr√¶nsen. {{used}} af {{limit}}.",
   "debugBar.focus.label": "FOCUS",
   "debugBar.focus.tip": "Gennemtving fokusstile for alle interaktive elementer",
   "debugBar.focus.on": "TIL",
   "debugBar.focus.off": "FRA",
   "debugBar.direction.label": "DIR",
-  "debugBar.direction.tip": "Gennemtving layoutretningen for hele appen uden at Êndre det valgte sprog",
+  "debugBar.direction.tip": "Gennemtving layoutretningen for hele appen uden at √¶ndre det valgte sprog",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
   "common.key.ctrl": "Ctrl",
@@ -1132,9 +1132,9 @@ export const dict = {
   "common.key.pageDown": "Page Down",
   "common.key.insert": "Insert",
   "common.unknown": "ukendt",
-  "error.page.circular": "[CirkulÊr]",
-  "error.serverSDK.noServerAvailable": "Ingen server tilgÊngelig",
-  "error.serverSDK.serverNotAvailable": "Server ikke tilgÊngelig",
+  "error.page.circular": "[Cirkul√¶r]",
+  "error.serverSDK.noServerAvailable": "Ingen server tilg√¶ngelig",
+  "error.serverSDK.serverNotAvailable": "Server ikke tilg√¶ngelig",
   "error.childStore.persistedCacheCreateFailed": "Kunne ikke oprette vedvarende cache",
   "error.childStore.persistedProjectMetadataCreateFailed": "Kunne ikke oprette vedvarende projektmetadata",
   "error.childStore.persistedProjectIconCreateFailed": "Kunne ikke oprette vedvarende projektikon",
@@ -1145,49 +1145,49 @@ export const dict = {
   "desktop.menu.file": "Arkiv",
   "desktop.menu.edit": "Rediger",
   "desktop.menu.view": "Oversigt",
-  "desktop.menu.go": "GÂ",
+  "desktop.menu.go": "G√•",
   "desktop.menu.window": "Vindue",
-  "desktop.menu.help": "HjÊlp",
-  "desktop.menu.checkForUpdates": "S¯g efter opdateringer...",
+  "desktop.menu.help": "Hj√¶lp",
+  "desktop.menu.checkForUpdates": "S√∏g efter opdateringer...",
   "desktop.menu.settings": "Indstillinger",
-  "desktop.menu.reloadWebview": "GenindlÊs webvisning",
+  "desktop.menu.reloadWebview": "Genindl√¶s webvisning",
   "desktop.menu.restart": "Genstart",
-  "desktop.menu.exportLogs": "EksportÈr logfiler...",
+  "desktop.menu.exportLogs": "Eksport√©r logfiler...",
   "desktop.menu.newSession": "Ny session",
-  "desktop.menu.openProject": "≈bn projekt...",
+  "desktop.menu.openProject": "√Öbn projekt...",
   "desktop.menu.newWindow": "Nyt vindue",
   "desktop.menu.closeWindow": "Luk vindue",
   "desktop.menu.undo": "Fortryd",
   "desktop.menu.redo": "Gentag",
   "desktop.menu.cut": "Klip",
   "desktop.menu.copy": "Kopier",
-  "desktop.menu.paste": "SÊt ind",
+  "desktop.menu.paste": "S√¶t ind",
   "desktop.menu.delete": "Slet",
-  "desktop.menu.selectAll": "VÊlg alt",
+  "desktop.menu.selectAll": "V√¶lg alt",
   "desktop.menu.toggleSidebar": "Vis eller skjul indholdsoversigt",
   "desktop.menu.toggleTerminal": "Vis eller skjul terminal",
-  "desktop.menu.toggleFileTree": "Vis eller skjul filtrÊ",
-  "desktop.menu.reload": "GenindlÊs",
-  "desktop.menu.toggleDeveloperTools": "Vis eller skjul udviklervÊrkt¯jer",
-  "desktop.menu.actualSize": "Faktisk st¯rrelse",
+  "desktop.menu.toggleFileTree": "Vis eller skjul filtr√¶",
+  "desktop.menu.reload": "Genindl√¶s",
+  "desktop.menu.toggleDeveloperTools": "Vis eller skjul udviklerv√¶rkt√∏jer",
+  "desktop.menu.actualSize": "Faktisk st√∏rrelse",
   "desktop.menu.zoomIn": "Zoom ind",
   "desktop.menu.zoomOut": "Zoom ud",
-  "desktop.menu.toggleFullScreen": "SlÂ fuldskÊrmsvisning til eller fra",
+  "desktop.menu.toggleFullScreen": "Sl√• fuldsk√¶rmsvisning til eller fra",
   "desktop.menu.back": "Tilbage",
   "desktop.menu.forward": "Frem",
   "desktop.menu.previousSession": "Forrige session",
-  "desktop.menu.nextSession": "NÊste session",
+  "desktop.menu.nextSession": "N√¶ste session",
   "desktop.menu.previousProject": "Forrige projekt",
-  "desktop.menu.nextProject": "NÊste projekt",
+  "desktop.menu.nextProject": "N√¶ste projekt",
   "desktop.menu.minimize": "Minimer",
   "desktop.menu.maximize": "Maksimer",
   "desktop.menu.documentation": "OpenCode-dokumentation",
   "desktop.menu.supportForum": "Supportforum",
   "desktop.menu.shareFeedback": "Giv feedback",
-  "desktop.menu.reportBug": "RapportÈr en fejl",
+  "desktop.menu.reportBug": "Rapport√©r en fejl",
   "desktop.menu.ariaLabel": "OpenCode-menu",
 
-  "desktop.updater.dialog.checkFailed.message": "S¯gningen efter opdateringer mislykkedes.",
+  "desktop.updater.dialog.checkFailed.message": "S√∏gningen efter opdateringer mislykkedes.",
   "desktop.updater.dialog.checkFailed.title": "Opdateringsfejl",
   "desktop.updater.dialog.upToDate.message": "Du er opdateret.",
   "desktop.updater.dialog.upToDate.title": "Ingen opdateringer",
@@ -1197,50 +1197,50 @@ export const dict = {
   "desktop.updater.dialog.later": "Senere",
 
   "desktop.recovery.action.relaunch": "Start igen",
-  "desktop.recovery.action.exportLogs": "EksportÈr logfiler",
+  "desktop.recovery.action.exportLogs": "Eksport√©r logfiler",
   "desktop.recovery.action.keepWaiting": "Vent fortsat",
   "desktop.recovery.action.quit": "Afslut",
-  "desktop.recovery.loadFailed": "OpenCode kunne ikke indlÊses",
+  "desktop.recovery.loadFailed": "OpenCode kunne ikke indl√¶ses",
   "desktop.recovery.terminated": "OpenCode-vinduet blev uventet afsluttet",
   "desktop.recovery.unresponsive": "OpenCode svarer ikke",
-  "desktop.recovery.unresponsive.detail": "Du kan starte appen igen, Âbne logfilerne eller fortsÊtte med at vente.",
+  "desktop.recovery.unresponsive.detail": "Du kan starte appen igen, √•bne logfilerne eller forts√¶tte med at vente.",
   "desktop.recovery.loadFailed.detail": "Vindue: {{window}}\nURL: {{url}}\nFejl: {{code}} {{description}}",
-  "desktop.recovery.terminated.detail": "Vindue: {{window}}\n≈rsag: {{reason}}\nKode: {{code}}",
+  "desktop.recovery.terminated.detail": "Vindue: {{window}}\n√Örsag: {{reason}}\nKode: {{code}}",
   "desktop.recovery.unknown": "<ukendt>",
 
-  "desktop.dialog.chooseFolder": "VÊlg en mappe",
-  "desktop.dialog.chooseFile": "VÊlg en fil",
+  "desktop.dialog.chooseFolder": "V√¶lg en mappe",
+  "desktop.dialog.chooseFile": "V√¶lg en fil",
   "desktop.dialog.saveFile": "Gem fil",
   "desktop.dialog.files": "Filer",
   "desktop.server.local": "Lokal server",
 
-  "desktop.wsl.error.windowsOnly": "WSL er kun tilgÊngelig i Windows",
-  "desktop.wsl.error.unavailable": "WSL er ikke tilgÊngelig",
+  "desktop.wsl.error.windowsOnly": "WSL er kun tilg√¶ngelig i Windows",
+  "desktop.wsl.error.unavailable": "WSL er ikke tilg√¶ngelig",
   "desktop.wsl.error.listInstalled": "Kunne ikke vise installerede WSL-distributioner",
-  "desktop.wsl.error.listOnline": "Kunne ikke vise WSL-distributioner pÂ nettet",
-  "desktop.wsl.error.executeDistro": "Kan ikke udf¯re kommandoer i distributionen",
+  "desktop.wsl.error.listOnline": "Kunne ikke vise WSL-distributioner p√• nettet",
+  "desktop.wsl.error.executeDistro": "Kan ikke udf√∏re kommandoer i distributionen",
   "desktop.wsl.error.installWsl": "Installationen af WSL mislykkedes",
   "desktop.wsl.error.installDistro": "Kunne ikke installere distributionen: {{distro}}",
   "desktop.wsl.error.installOpencode": "Installationen af OpenCode mislykkedes",
-  "desktop.wsl.error.alreadyAdded": "{{distro}} er allerede tilf¯jet",
+  "desktop.wsl.error.alreadyAdded": "{{distro}} er allerede tilf√∏jet",
   "desktop.wsl.error.opencodeMissing": "opencode er ikke installeret i denne distribution",
-  "desktop.wsl.error.opencodeCannotRun": "opencode er installeret, men kunne ikke k¯re",
+  "desktop.wsl.error.opencodeCannotRun": "opencode er installeret, men kunne ikke k√∏re",
   "desktop.wsl.error.opencodeNotInstalled": "OpenCode er ikke installeret i {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "Opdateringen af OpenCode er fuldf¯rt, men {{distro}} rapporterer stadig {{installed}}. Forventet: {{expected}}",
+    "Opdateringen af OpenCode er fuldf√∏rt, men {{distro}} rapporterer stadig {{installed}}. Forventet: {{expected}}",
   "desktop.wsl.error.noVersion": "ingen version",
   "desktop.wsl.error.serverExited": "WSL-serveren blev afsluttet efter opstart (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
-    "WSL-serveren blev afsluttet, f¯r den var klar (code={{code}} signal={{signal}}){{output}}",
+    "WSL-serveren blev afsluttet, f√∏r den var klar (code={{code}} signal={{signal}}){{output}}",
   "desktop.wsl.error.healthTimeout":
     "Tilstandskontrollen af sidecar-processen for {{distro}} fik timeout efter {{timeout}} ms",
   "desktop.wsl.error.commandTimeout": "{{command}} {{args}} fik timeout efter {{timeout}} ms",
   "desktop.wsl.error.failedPort": "Kunne ikke hente porten",
 
-  "desktop.picker.error.notSelected": "Filen blev ikke valgt i filvÊlgeren",
-  "desktop.picker.error.sizeLimit": "De valgte vedhÊftede filer overskrider grÊnsen pÂ {{limit}} MB",
+  "desktop.picker.error.notSelected": "Filen blev ikke valgt i filv√¶lgeren",
+  "desktop.picker.error.sizeLimit": "De valgte vedh√¶ftede filer overskrider gr√¶nsen p√• {{limit}} MB",
 
-  "command.logs.export": "EksportÈr logfiler",
+  "command.logs.export": "Eksport√©r logfiler",
 
   "help.tabs.toast.ariaLabel": "Introduktion til faner. Organiser dit arbejde og dine aktive sessioner med faner",
   "help.tabs.toast.dismiss": "Luk oplysninger om faner",
@@ -1249,14 +1249,14 @@ export const dict = {
   "help.tabs.date": "14. juli",
   "help.tabs.introduction": "OpenCode Desktop er nu bygget op omkring faner.",
   "help.tabs.sessions":
-    "Start en ny session i en fane, eller Âbn en eksisterende session fra et af dine projekter. ≈bn en ny fane, nÂr du gÂr i gang med noget nyt, og luk den, nÂr du er fÊrdig.",
+    "Start en ny session i en fane, eller √•bn en eksisterende session fra et af dine projekter. √Öbn en ny fane, n√•r du g√•r i gang med noget nyt, og luk den, n√•r du er f√¶rdig.",
   "help.tabs.organize":
-    "NÂr du holder nogle fÂ faner Âbne, er det nemmere at organisere dine aktive sessioner. Giv fanerne navne, der er nemme at huske, hvis du vil beholde dem.",
+    "N√•r du holder nogle f√• faner √•bne, er det nemmere at organisere dine aktive sessioner. Giv fanerne navne, der er nemme at huske, hvis du vil beholde dem.",
   "help.tabs.home":
-    "Du finder alle dine sessioner og projekter pÂ den nye startskÊrm. NÂr du vÊlger en session, Âbnes den i en fane.",
-  "help.tabs.persistence": "Dine faner er stadig Âbne, nÂr du Âbner appen igen.",
+    "Du finder alle dine sessioner og projekter p√• den nye startsk√¶rm. N√•r du v√¶lger en session, √•bnes den i en fane.",
+  "help.tabs.persistence": "Dine faner er stadig √•bne, n√•r du √•bner appen igen.",
   "help.tabs.worktrees":
-    "Det nye design underst¯tter endnu ikke Git Worktrees, men underst¯ttelsen kommer snart. Hvis du foretrÊkker at fortsÊtte med det tidligere layout, kan du skifte mellem layoutene under Indstillinger. BemÊrk, at det nye layout bliver permanent om nogle fÂ uger.",
+    "Det nye design underst√∏tter endnu ikke Git Worktrees, men underst√∏ttelsen kommer snart. Hvis du foretr√¶kker at forts√¶tte med det tidligere layout, kan du skifte mellem layoutene under Indstillinger. Bem√¶rk, at det nye layout bliver permanent om nogle f√• uger.",
   "dialog.provider.omniroute.note": "Bring your own gateway URL and key, all models imported automatically",
   "dialog.model.selectProvider.title": "Select provider",
   "dialog.model.provider.label": "Provider",
@@ -1316,7 +1316,7 @@ export const dict = {
   "batuta.form.field.workers.command.needsSkill": "Install the batuta-cli skill for this agent in Settings > Agents first",
   "batuta.form.field.workers.args.placeholder": "Arguments (space-separated)",
   "batuta.form.field.worktree.label": "Isolated worker worktrees",
-  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout ó the orchestrator reviews and merges each worker's result. This is not configurable.",
+  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout ‚Äî the orchestrator reviews and merges each worker's result. This is not configurable.",
   "batuta.form.field.directory.label": "Project",
   "batuta.form.field.directory.description": "The folder this activity's orchestrator and workers run in.",
   "batuta.form.field.directory.error.required": "Choose or add a project folder.",
@@ -1346,25 +1346,25 @@ export const dict = {
   "batuta.pipeline.phase.testing": "Testing",
   "batuta.pipeline.phase.quality": "Quality",
   "batuta.pipeline.phase.delivery": "Delivery",
-  "batuta.pipeline.definition.missing": "No pipeline flow defined yet ó the Architect will define it while studying the project. Issues appear grouped once it does.",
+  "batuta.pipeline.definition.missing": "No pipeline flow defined yet ‚Äî the Architect will define it while studying the project. Issues appear grouped once it does.",
   "batuta.pipeline.editor.open": "Edit flow",
   "batuta.pipeline.editor.title": "Pipeline flow",
   "batuta.pipeline.editor.description": "Shared across every activity in this project (docs/batuta-pipeline.md). Define phases as \"## Phase name\" headings, each followed by a list of skill slugs (e.g. \"- tdd\"). The Orchestrator re-reads this periodically, so edits apply even mid-run.",
   "batuta.pipeline.editor.save": "Save",
   "batuta.pipeline.editor.tab.editor": "Text",
   "batuta.pipeline.editor.tab.chat": "Chat",
-  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md ó it won't appear in the sessions list and can't touch anything else.",
+  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md ‚Äî it won't appear in the sessions list and can't touch anything else.",
   "batuta.pipeline.chat.placeholder": "Describe the change you want to the pipeline flow...",
   "batuta.pipeline.chat.send": "Send",
-  "batuta.pipeline.chat.empty": "No messages yet ó send one to start adjusting the flow.",
+  "batuta.pipeline.chat.empty": "No messages yet ‚Äî send one to start adjusting the flow.",
   "batuta.pipeline.chat.starting": "Starting chat...",
   "batuta.pipeline.stage.architecture": "Architecture",
   "batuta.pipeline.stage.architecture.detail": "The Architect studied the project against the activity's goal, wrote/updated the docs (PRD, DER), used /grill-me to clarify ambiguity, and sliced the work into issues.",
   "batuta.pipeline.stage.orchestration": "Orchestration",
   "batuta.pipeline.stage.orchestration.detail": "The Orchestrator received the Architect's handoff (docs + issues) and started dispatching each issue to the right worker or skill.",
   "batuta.panel.detail.open": "Open full session",
-  "batuta.panel.detail.empty": "Nothing yet ó waiting for this agent to start working.",
-  "batuta.panel.ready.title": "Architect finished ó review the plan before starting",
+  "batuta.panel.detail.empty": "Nothing yet ‚Äî waiting for this agent to start working.",
+  "batuta.panel.ready.title": "Architect finished ‚Äî review the plan before starting",
   "batuta.panel.ready.dispatch": "Start activity",
   "batuta.form.field.branch.label": "Branch",
   "batuta.form.field.branch.description": "Branch the main checkout will be on when the activity starts. Leave the detected branch as-is, or type a new name to create and switch to it.",
@@ -1389,11 +1389,11 @@ export const dict = {
   "settings.general.row.devTools.open": "Open DevTools",
   "settings.general.row.debugMode.title": "Debug mode",
   "settings.general.row.debugMode.description": "Shows a DevTools icon in the titlebar, reachable from any screen, and enables the remote debugging (CDP) port even in packaged/production builds. Requires restarting the app.",
-  "settings.general.row.debugMode.descriptionOn": "Enabled ó restart the app for the remote debugging port to take effect.",
+  "settings.general.row.debugMode.descriptionOn": "Enabled ‚Äî restart the app for the remote debugging port to take effect.",
   "settings.general.row.debugMode.restart": "Restart now",
   "settings.general.row.computerUse.title": "Computer use",
-  "settings.general.row.computerUse.description": "Lets the agent control this computer directly ó mouse, keyboard, and screen ó not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
-  "settings.general.row.computerUse.descriptionOn": "Enabled ó restart the app for computer use to take effect.",
+  "settings.general.row.computerUse.description": "Lets the agent control this computer directly ‚Äî mouse, keyboard, and screen ‚Äî not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
+  "settings.general.row.computerUse.descriptionOn": "Enabled ‚Äî restart the app for computer use to take effect.",
   "settings.general.row.computerUse.restart": "Restart now",
   "settings.providers.view.list": "List view",
   "settings.providers.view.grid": "Grid view",
@@ -1448,7 +1448,7 @@ export const dict = {
   "settings.externalAgents.selectAll.title": "Select all detected agents",
   "settings.externalAgents.selectAll.description": "Installs the batuta-cli skill on every detected agent. Turn off to pick agents individually.",
   "settings.externalAgents.status.detected": "Detected on the connected server",
-  "settings.externalAgents.status.notDetected": "Not detected ó install the CLI and click Refresh",
+  "settings.externalAgents.status.notDetected": "Not detected ‚Äî install the CLI and click Refresh",
   "settings.marketplace.title": "Marketplace",
   "settings.marketplace.add.button": "Add",
   "settings.marketplace.skills.add.title": "Add skill source",
@@ -1457,7 +1457,7 @@ export const dict = {
   "settings.marketplace.mcp.add.title": "Add MCP connector",
   "settings.marketplace.suggestions.title": "Suggestions",
   "settings.marketplace.suggestions.use": "Use",
-  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format ó paste the real catalog URL to confirm before it imports anything.",
+  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format ‚Äî paste the real catalog URL to confirm before it imports anything.",
   "settings.marketplace.catalogs.title": "Catalogs",
   "settings.marketplace.catalogs.view": "View",
   "common.remove": "Remove",
@@ -1471,8 +1471,8 @@ export const dict = {
   "provider.omniroute.mcp.skip": "Skip MCP",
   "provider.omniroute.mcp.autoconfig": "Connecting will automatically configure the Omniroute MCP server for you.", // TODO: translate (auto-filled from en)
   "dialog.server.menu.qr": "Show QR code", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.title": "QR code ó {{name}}", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server ó the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.title": "QR code ‚Äî {{name}}", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server ‚Äî the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copy": "Copy pairing data", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copied": "Pairing data copied", // TODO: translate (auto-filled from en)
   "sshTunnel.server.viewLogs": "View logs / Connect", // TODO: translate (auto-filled from en)
@@ -1525,10 +1525,10 @@ export const dict = {
   "home.server.type.ssh": "ssh", // TODO: translate (auto-filled from en)
   "home.server.type.tailscale": "tailscale", // TODO: translate (auto-filled from en)
   "settings.general.row.bugReports.title": "Automatic bug reports", // TODO: translate (auto-filled from en)
-  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only ó never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
+  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only ‚Äî never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
   "settings.memory.title": "Memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.title": "Forget this project's memory too?", // TODO: translate (auto-filled from en)
-  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) ó forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
+  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) ‚Äî forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
   "project.forgetMemory.keep": "Keep memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.forget": "Forget memory", // TODO: translate (auto-filled from en)
   "settings.memory.field.enabled.title": "Enable memory", // TODO: translate (auto-filled from en)
@@ -1551,8 +1551,8 @@ export const dict = {
   "settings.integrations.telegram.error.required": "Enter a bot token", // TODO: translate (auto-filled from en)
   "settings.integrations.telegram.toast.connected.title": "Telegram bot connected", // TODO: translate (auto-filled from en)
   "dialog.server.qr.loopbackWarning": "This server only listens on this computer (127.0.0.1) and Tailscale isn't running here, so a phone can't reach it with this code. Start Tailscale on this machine, or pair with a server that has a real network address instead.", // TODO: translate (auto-filled from en)
-  "batuta.model.model.filterPlaceholder": "Filter modelsÖ", // TODO: translate (auto-filled from en)
-  "batuta.model.model.truncated": "Showing the first {{count}} matches ó keep typing to narrow it down", // TODO: translate (auto-filled from en)
+  "batuta.model.model.filterPlaceholder": "Filter models‚Ä¶", // TODO: translate (auto-filled from en)
+  "batuta.model.model.truncated": "Showing the first {{count}} matches ‚Äî keep typing to narrow it down", // TODO: translate (auto-filled from en)
   "settings.combos.title": "Combos", // TODO: translate (auto-filled from en)
   "settings.combos.add.button": "Add combo", // TODO: translate (auto-filled from en)
   "settings.combos.empty": "No combos yet.", // TODO: translate (auto-filled from en)
@@ -1574,48 +1574,48 @@ export const dict = {
   "settings.agentui.add.button": "Create agent", // TODO: translate (auto-filled from en)
   "settings.agentui.empty": "No agents yet.", // TODO: translate (auto-filled from en)
   "settings.agentui.error.incomplete": "Give the agent a name and pick a model.", // TODO: translate (auto-filled from en)
-  "settings.agentui.error.telegramNeedsProject": "≈bn denne side fra et forbundet projekt for at give denne agent sin egen Telegram-bot.",
-  "settings.agentui.error.whatsappIncomplete": "≈bn denne side fra et forbundet projekt, og udfyld alle pÂkrÊvede felter for den valgte WhatsApp-udbyder.",
+  "settings.agentui.error.telegramNeedsProject": "√Öbn denne side fra et forbundet projekt for at give denne agent sin egen Telegram-bot.",
+  "settings.agentui.error.whatsappIncomplete": "√Öbn denne side fra et forbundet projekt, og udfyld alle p√•kr√¶vede felter for den valgte WhatsApp-udbyder.",
   "settings.agentui.toast.saved": "Agent saved", // TODO: translate (auto-filled from en)
   "settings.agentui.dialog.addTitle": "Create agent", // TODO: translate (auto-filled from en)
   "settings.agentui.dialog.editTitle": "Edit agent", // TODO: translate (auto-filled from en)
   "settings.agentui.ai.title": "Opret med AI",
-  "settings.agentui.ai.hint": "Beskriv den agent, du vil have, med dine egne ord ó navn, personlighed og indstillinger udkastes nedenfor til gennemsyn.",
-  "settings.agentui.ai.placeholder": "f.eks. En venlig receptionist pÂ en tandlÊgeklinik, der svarer pÂ sp¯rgsmÂl om tider...",
+  "settings.agentui.ai.hint": "Beskriv den agent, du vil have, med dine egne ord ‚Äî navn, personlighed og indstillinger udkastes nedenfor til gennemsyn.",
+  "settings.agentui.ai.placeholder": "f.eks. En venlig receptionist p√• en tandl√¶geklinik, der svarer p√• sp√∏rgsm√•l om tider...",
   "settings.agentui.ai.generate": "Generer",
-  "settings.agentui.ai.generating": "GenerererÖ",
-  "settings.agentui.ai.toast.generated": "Udkast genereret ó gennemgÂ f¯r du gemmer",
+  "settings.agentui.ai.generating": "Genererer‚Ä¶",
+  "settings.agentui.ai.toast.generated": "Udkast genereret ‚Äî gennemg√• f√∏r du gemmer",
   "settings.agentui.tabs.general": "General", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.channels": "Channels", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.tools": "Tools", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.knowledge": "Knowledge", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers": "MCP servers", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default ó agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings ? MCP first.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default ‚Äî agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings ‚Üí MCP first.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers.noDirectory": "Open a project first to see its MCP servers.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard ?", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard ‚Üí", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.fetch": "Fetch sessions", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaSessions.loading": "FetchingÖ", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaSessions.loading": "Fetching‚Ä¶", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.empty": "No sessions found for this API key.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.label": "WhatsApp sessions (select one or more)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.label": "Groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in ó groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in ‚Äî groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.fetch": "Fetch groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.loading": "FetchingÖ", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.loading": "Fetching‚Ä¶", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.empty": "No groups found for the selected sessions.", // TODO: translate (auto-filled from en)
     "settings.agentui.field.whatsapp.tunnel.tailscale.hint": "Simplest option if you already have Tailscale running on this machine and the provider's server: use this machine's Tailscale IP directly, no tunnel process needed.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.use": "Use Tailscale IP", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "DetectingÖ", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "Detecting‚Ä¶", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.notFound": "No Tailscale IP found. Is Tailscale installed and running?", // TODO: translate (auto-filled from en)
-"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) ó the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
+"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) ‚Äî the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.start": "Start public tunnel", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.starting": "StartingÖ", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} ó the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.starting": "Starting‚Ä¶", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} ‚Äî the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.error": "Couldn't start the tunnel. Is cloudflared installed?", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.audit": "Audit", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.title": "Message log", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.refresh": "Refresh", // TODO: translate (auto-filled from en)
-  "settings.agentui.audit.loading": "LoadingÖ", // TODO: translate (auto-filled from en)
+  "settings.agentui.audit.loading": "Loading‚Ä¶", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.needsSave": "Save the agent first to see its message log.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.empty": "No messages logged yet.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.blocked": "Blocked", // TODO: translate (auto-filled from en)
@@ -1625,12 +1625,12 @@ export const dict = {
   "settings.agentui.field.personality": "Personality", // TODO: translate (auto-filled from en)
   "settings.agentui.field.model": "Model", // TODO: translate (auto-filled from en)
   "settings.agentui.field.telegram": "Reply on Telegram", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.telegramToken.placeholder": "Bot-token (valgfrit ó lad stÂ tomt for at dele den globale bot)",
-  "settings.agentui.field.telegramToken.hint": "IndsÊt et token fra @BotFather for at give denne agent sin egen dedikerede Telegram-bot. Lad stÂ tomt for at nÂ den via den delte bot i Indstillinger ? Integrationer, med dens kommandoprÊfiks.",
-  "settings.agentui.field.whatsapp": "Svar pÂ WhatsApp",
-  "settings.agentui.field.whatsapp.hint": "Bruger en uofficiel WhatsApp-API (via waconector) ó vÊlg en udbyder, og udfyld forbindelsesoplysningerne. Selv-hostede udbydere krÊver deres egen server/container k¯rende separat; dette forbinder blot til den.",
-  "settings.agentui.field.whatsapp.webhookUrl": "Webhook-URL ó indsÊt den i udbyderens dashboard",
-  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret ó some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.telegramToken.placeholder": "Bot-token (valgfrit ‚Äî lad st√• tomt for at dele den globale bot)",
+  "settings.agentui.field.telegramToken.hint": "Inds√¶t et token fra @BotFather for at give denne agent sin egen dedikerede Telegram-bot. Lad st√• tomt for at n√• den via den delte bot i Indstillinger ‚Üí Integrationer, med dens kommandopr√¶fiks.",
+  "settings.agentui.field.whatsapp": "Svar p√• WhatsApp",
+  "settings.agentui.field.whatsapp.hint": "Bruger en uofficiel WhatsApp-API (via waconector) ‚Äî v√¶lg en udbyder, og udfyld forbindelsesoplysningerne. Selv-hostede udbydere kr√¶ver deres egen server/container k√∏rende separat; dette forbinder blot til den.",
+  "settings.agentui.field.whatsapp.webhookUrl": "Webhook-URL ‚Äî inds√¶t den i udbyderens dashboard",
+  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret ‚Äî some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.webhookAfterSave": "Webhook-URL'en, der skal konfigureres hos udbyderen, vises her efter du gemmer.",
   "settings.agentui.field.commandTriggers": "Command triggers (space-separated, e.g. ! #)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.guardrails": "Guardrails", // TODO: translate (auto-filled from en)
@@ -1641,13 +1641,13 @@ export const dict = {
   "settings.agentui.rag.label": "Label", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.value": "Text or URL", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.add": "Add source", // TODO: translate (auto-filled from en)
-  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase ó these are stored as-is for now.", // TODO: translate (auto-filled from en)
+  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase ‚Äî these are stored as-is for now.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.enabled": "Enabled",
   "settings.agentui.enable": "Enable agent",
   "settings.agentui.disable": "Disable agent",
   "settings.agentui.sandbox.open": "Test",
   "settings.agentui.sandbox.title": "Test {{name}}",
-  "settings.agentui.sandbox.empty": "Send a message to try this agent ó same personality, model and guardrails it uses for real, in a private test conversation.",
+  "settings.agentui.sandbox.empty": "Send a message to try this agent ‚Äî same personality, model and guardrails it uses for real, in a private test conversation.",
   "settings.agentui.sandbox.placeholder": "Type a message...",
   "settings.agentui.sandbox.send": "Send",
   "settings.agentui.sandbox.reset": "New conversation",
@@ -1715,4 +1715,202 @@ export const dict = {
   "stats.kpi.longestDuration": "Longest Request", // TODO: translate (auto-filled from en)
   "stats.kpi.longestDuration.sub": "Max time on a single task", // TODO: translate (auto-filled from en)
   "stats.sessions.col.duration": "Work Time", // TODO: translate (auto-filled from en)
+  "sidebar.tab.dashboard": "Oversigt",
+  "project.kpi.hoursSpent": "Brugt tid",
+  "project.kpi.totalTokens": "Samlede tokens",
+  "project.kpi.tokensPerMinute": "Tokens / min",
+  "project.kpi.allProjects": "Alle projekter",
+  "project.import.button": "Import√©r session",
+  "project.import.title": "Import√©r √¶ldre sessioner",
+  "project.import.description": "Overf√∏r sessionshistorik fra den originale OpenCode eller en anden installation til den opdelte database.",
+  "project.import.source.label": "Kildefinstallation",
+  "project.import.source.customFile": "V√¶lg en anden .db-fil...",
+  "project.import.source.empty": "Der blev ikke fundet andre installationer automatisk.",
+  "project.import.filterProject": "Filtrer kun sessioner for dette projekt",
+  "project.import.filterProject.all": "Vis alle databasesessioner",
+  "project.import.sessions.found": "{{count}} sessioner fundet",
+  "project.import.sessions.selectCount": "{{count}} valgt",
+  "project.import.sessions.empty": "Der blev ikke fundet sessioner at importere i denne database.",
+  "project.import.sessions.messages": "{{count}} beskeder",
+  "project.import.selectAll": "V√¶lg alle",
+  "project.import.deselectAll": "Frav√¶lg alle",
+  "project.import.action": "Import√©r valgte",
+  "project.import.importing": "Importerer sessioner...",
+  "project.import.success": "{{count}} sessioner importeret!",
+  "provider.action.relogin": "Re-login", // TODO: translate (auto-filled from en)
+  "provider.action.refreshToken": "Refresh token", // TODO: translate (auto-filled from en)
+  "provider.action.refreshToken.success": "Token refreshed successfully", // TODO: translate (auto-filled from en)
+  "provider.authError.toast.title": "Account verification required", // TODO: translate (auto-filled from en)
+  "provider.authError.toast.description": "Your account requires re-authentication or verification to continue.", // TODO: translate (auto-filled from en)
+  "provider.authError.action.reconnect": "Log in / Reconnect account", // TODO: translate (auto-filled from en)
+  "session.tab.memory": "Memory", // TODO: translate (auto-filled from en)
+  "settings.agentui.tabs.personality": "Personality & AI", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.routines": "Access to Routines", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.routines.hint": "Allow this agent to query, list, and trigger scheduled routines during conversations.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.agenda": "Agenda & Reminders Tools", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.agenda.hint": "Allow this agent to create and manage one-off reminders and agenda items during conversations.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.memory": "Continuous Memory & Compaction", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.memory.hint": "Allow this agent to save decisions (memory_save) and search facts (memory_search) without context bloating.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filesystem": "Files & Documents Access", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filesystem.hint": "Allow this agent to read, search, create, and edit local files and documents in the project (read, write, edit, glob, grep).", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.terminal": "Terminal / Commands (Bash)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.terminal.hint": "Allow this agent to execute terminal commands (bash) to run scripts, system tools, and automations.", // TODO: translate (auto-filled from en)
+  "sidebar.agenda": "Agenda", // TODO: translate (auto-filled from en)
+  "command.agenda.open": "Open Agenda and Reminders", // TODO: translate (auto-filled from en)
+  "agenda.title": "Agenda & Reminders", // TODO: translate (auto-filled from en)
+  "agenda.subtitle": "Reminders and appointments synchronized with AgentUI and chat channels", // TODO: translate (auto-filled from en)
+  "agenda.activeCount": "{{count}} active", // TODO: translate (auto-filled from en)
+  "agenda.new": "New Reminder", // TODO: translate (auto-filled from en)
+  "agenda.view.grid": "Grid", // TODO: translate (auto-filled from en)
+  "agenda.view.list": "List", // TODO: translate (auto-filled from en)
+  "agenda.filter.all": "All", // TODO: translate (auto-filled from en)
+  "agenda.filter.channelAll": "Channel: All", // TODO: translate (auto-filled from en)
+  "agenda.filter.pending": "Pending", // TODO: translate (auto-filled from en)
+  "agenda.filter.completed": "Completed", // TODO: translate (auto-filled from en)
+  "agenda.cancel": "Cancel", // TODO: translate (auto-filled from en)
+  "agenda.empty": "No scheduled reminders or agenda items found.", // TODO: translate (auto-filled from en)
+  "agenda.today": "Today", // TODO: translate (auto-filled from en)
+  "agenda.tomorrow": "Tomorrow", // TODO: translate (auto-filled from en)
+  "agenda.yesterday": "Yesterday", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filterAudio": "Listen to audio (only models with voice/audio support)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participants": "Participants", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.title": "Group Participants: {{subject}}", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.hint": "Select which participants in this group are allowed to interact with the agent. Selected participants will be added to the allowed senders list.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.searchPlaceholder": "Filter by name, phone or JID‚Ä¶", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.selectAll": "Select All", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.clearAll": "Clear Selection", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.apply": "Save Participants", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.empty": "No participants found in this group.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.admin": "Admin", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.mentionOnly.label": "Only when mentioned (@) in groups", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.mentionOnly.hint": "When enabled, the agent will only respond in groups if explicitly mentioned with @ or quoted. General messages in the group will be ignored.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.label": "Allowed senders (phone numbers or JIDs)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.hint": "Only these numbers/senders will get responses from the agent (comma or newline separated). Leave blank to allow anyone.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.placeholder": "e.g. 5585998490991, 5511999999999", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.label": "Project for Sessions", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.default": "Central AgentUI Project (Default)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.custom": "Custom Project", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.hint": "Where WhatsApp/Telegram conversation sessions are grouped. By default, all channel sessions are centralized in the AgentUI project.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.hint": "Tailscale Funnel (public HTTPS): exposes this machine to the public internet using your Tailscale Funnel domain.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.use": "Use Tailscale Funnel (Public)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.starting": "Starting Funnel‚Ä¶", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.error": "Could not start Tailscale Funnel. Ensure Funnel is enabled on your Tailnet.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.clear": "Change / reset host", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.action": "Diagnose and test channels", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.title": "Channel Diagnosis ¬∑ {{name}}", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.description": "Connectivity and health checks across channels, LLM model, and workspace.", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.ok": "Operational", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.warning": "Warning", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.error": "Failed", // TODO: translate (auto-filled from en)
+  "settings.combos.failover.priorityRoundRobin": "Priority + Round-Robin (Recommended)", // TODO: translate (auto-filled from en)
+  "settings.combos.field.tier": "Tier", // TODO: translate (auto-filled from en)
+  "settings.combos.field.modelPriorityHint": "Priority tier (0 = highest). Models in the same tier rotate in round-robin.", // TODO: translate (auto-filled from en)
+  "settings.combos.filter.requireVision": "Require Vision / Image support", // TODO: translate (auto-filled from en)
+  "settings.combos.filter.requirePdf": "Require Document / PDF support", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.title": "AI Combo Specialist", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.hint": "Describe what you need (e.g. heavy coding focus with fast fallback, token economy, or high resilience). The specialist will inspect your connected providers and models to design the ideal failover chain.", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.placeholder": "e.g. Heavy TypeScript coding combo using top tier models with fallback to lighter fast models...", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.generate": "Generate recommendation", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.generating": "Analyzing providers and generating‚Ä¶", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.toast.generated": "Recommended combo generated ‚Äî review before saving", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.title": "Custom System Instructions", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.description": "Global instructions sent with every prompt to guide the assistant's behavior and responses", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.placeholder": "e.g. Always monitor PRs, suggest code improvements when appropriate, maintain concise explanations...", // TODO: translate (auto-filled from en)
+  "settings.maintenance.section.title": "System maintenance", // TODO: translate (auto-filled from en)
+  "settings.maintenance.row.title": "Local database & storage", // TODO: translate (auto-filled from en)
+  "settings.maintenance.row.description": "Optimize local SQLite database, clean transaction logs and recover memory", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.optimize": "Optimize now", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.optimizing": "Optimizing...", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.deep": "Full maintenance and relaunch", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.deep_desc": "Closes local server, purges sessions older than 30 days, runs full database VACUUM, and restarts the app to reclaim disk space.", // TODO: translate (auto-filled from en)
+  "settings.maintenance.badge.needed": "Maintenance recommended", // TODO: translate (auto-filled from en)
+  "settings.maintenance.badge.healthy": "Healthy", // TODO: translate (auto-filled from en)
+  "settings.maintenance.last_run": "Last run: {{time}} (freed {{freed}}, purged {{purged}} events)", // TODO: translate (auto-filled from en)
+  "settings.maintenance.titlebar.button": "Maintenance needed", // TODO: translate (auto-filled from en)
+  "settings.maintenance.titlebar.tooltip": "The database has grown large. Click to open maintenance options.", // TODO: translate (auto-filled from en)
+  "settings.maintenance.toast.success.title": "Maintenance completed", // TODO: translate (auto-filled from en)
+  "settings.maintenance.toast.success.description": "Optimized database and freed {{freed}} of space in {{duration}}ms.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.dialogTitle": "Account quota: {{account}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.overall": "Available overall quota", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.modelsDetail": "Model Breakdown", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.noBuckets": "No detailed quota buckets returned by API.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.resetsAt": "Resets at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.tier.pro": "Pro", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.tier.free": "Free", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.buttonTooltip": "View account quota and plan", // TODO: translate (auto-filled from en)
+  "settings.providers.health.healthy": "Healthy", // TODO: translate (auto-filled from en)
+  "settings.providers.health.cooldown": "Cooldown (429)", // TODO: translate (auto-filled from en)
+  "settings.providers.health.exhausted": "Exhausted", // TODO: translate (auto-filled from en)
+  "settings.providers.health.disabled": "Disabled", // TODO: translate (auto-filled from en)
+  "settings.providers.health.resetCooldown": "Reset Cooldown", // TODO: translate (auto-filled from en)
+  "settings.providers.health.resetCooldownSuccess": "Cooldown reset successfully", // TODO: translate (auto-filled from en)
+  "settings.providers.health.toggleDisabledSuccess": "Account status updated", // TODO: translate (auto-filled from en)
+  "settings.providers.health.toggleTooltip": "Enable or disable account from routing", // TODO: translate (auto-filled from en)
+  "settings.providers.health.liberaEm": "Resets in {{time}}", // TODO: translate (auto-filled from en)
+  "settings.memory.field.autoSync.title": "Automatic sync routine", // TODO: translate (auto-filled from en)
+  "settings.memory.field.autoSync.description": "Periodically synthesizes new session memories in the background using the configured memory model.", // TODO: translate (auto-filled from en)
+  "settings.memory.field.syncInterval.title": "Routine interval", // TODO: translate (auto-filled from en)
+  "settings.memory.field.syncInterval.description": "How frequently the automatic memory sync routine runs in the background.", // TODO: translate (auto-filled from en)
+  "settings.memory.field.maxAge.title": "Session retention", // TODO: translate (auto-filled from en)
+  "settings.memory.field.maxAge.description": "Maximum period to keep active sessions in the database. Sessions older than this are synthesized into memory .md files and purged from SQLite.", // TODO: translate (auto-filled from en)
+  "settings.memory.age.7d": "7 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.15d": "15 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.30d": "30 days (default)", // TODO: translate (auto-filled from en)
+  "settings.memory.age.60d": "60 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.90d": "90 days", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.1h": "Every 1 hour", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.2h": "Every 2 hours", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.6h": "Every 6 hours (recommended)", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.12h": "Every 12 hours", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.24h": "Every 24 hours (daily)", // TODO: translate (auto-filled from en)
+  "dialog.memory.title": "Memory", // TODO: translate (auto-filled from en)
+  "dialog.memory.subtitle.project": "Memory of this project", // TODO: translate (auto-filled from en)
+  "dialog.memory.subtitle.global": "Global memory (shared across all projects)", // TODO: translate (auto-filled from en)
+  "dialog.memory.tab.project": "Project", // TODO: translate (auto-filled from en)
+  "dialog.memory.tab.global": "Global", // TODO: translate (auto-filled from en)
+  "dialog.memory.search.placeholder": "Search memory (decisions, tasks, terms)...", // TODO: translate (auto-filled from en)
+  "dialog.memory.copy.button": "Copy", // TODO: translate (auto-filled from en)
+  "dialog.memory.copy.success": "Copied to clipboard", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.search.title": "No results found", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.search.description": "Try searching with different keywords.", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.project.title": "No project memory yet", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.project.description": "Decisions and facts learned during sessions in this project appear here, or you can add notes manually.", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.global.title": "No global memory yet", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.global.description": "Global facts and preferences are shared across all projects and sessions on this server.", // TODO: translate (auto-filled from en)
+  "dialog.memory.addNote.placeholder": "Add a note to memory...", // TODO: translate (auto-filled from en)
+  "dialog.memory.addNote.button": "Save note", // TODO: translate (auto-filled from en)
+  "dialog.memory.promote.button": "Promote to Global", // TODO: translate (auto-filled from en)
+  "dialog.memory.promote.success": "Memory promoted to global scope.", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.button": "Forget project", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.confirm": "Do you want to delete all saved memories for this project? Global memory will not be affected.", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.success": "Project memory forgotten.", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.button": "Synthesize past sessions", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.running": "Synthesizing...", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.success": "Backfill complete: {{count}} of {{total}} sessions synthesized.", // TODO: translate (auto-filled from en)
+  "session.header.memory.tooltip": "Memory", // TODO: translate (auto-filled from en)
+  "sidebar.media": "Media Generation", // TODO: translate (auto-filled from en)
+  "command.media.open": "Open Media Generation", // TODO: translate (auto-filled from en)
+  "media.title": "Media Studio", // TODO: translate (auto-filled from en)
+  "media.description": "Generate and preview AI images, videos, audio, and speech across connected providers.", // TODO: translate (auto-filled from en)
+  "media.kind.image": "Images", // TODO: translate (auto-filled from en)
+  "media.kind.video": "Videos", // TODO: translate (auto-filled from en)
+  "media.kind.audio": "Audio & Speech", // TODO: translate (auto-filled from en)
+  "media.prompt": "Prompt", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.image": "Describe the image you want to generate...", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.video": "Describe the video motion and scene...", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.audio": "Enter text to convert to speech or describe audio...", // TODO: translate (auto-filled from en)
+  "media.generate": "Generate", // TODO: translate (auto-filled from en)
+  "media.generating": "Generating...", // TODO: translate (auto-filled from en)
+  "media.provider": "Provider", // TODO: translate (auto-filled from en)
+  "media.provider.all": "All connected providers", // TODO: translate (auto-filled from en)
+  "media.model": "Model", // TODO: translate (auto-filled from en)
+  "media.model.search": "Filter models...", // TODO: translate (auto-filled from en)
+  "media.size": "Dimensions", // TODO: translate (auto-filled from en)
+  "media.aspectRatio": "Aspect Ratio", // TODO: translate (auto-filled from en)
+  "media.results": "Generated Media", // TODO: translate (auto-filled from en)
+  "media.noResults": "No media generated yet. Select a model and hit Generate.", // TODO: translate (auto-filled from en)
+  "media.download": "Download", // TODO: translate (auto-filled from en)
+  "media.copyUrl": "Copy URL", // TODO: translate (auto-filled from en)
+  "media.noCompatibleModels": "No models found supporting this media capability.", // TODO: translate (auto-filled from en)
+  "media.error": "Generation failed", // TODO: translate (auto-filled from en)
 }

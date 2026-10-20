@@ -326,8 +326,8 @@ export const dict = {
   "prompt.placeholder.shell": "Masukkan arahan shell... {{example}}",
   "prompt.placeholder.normal": 'Tanya apa-apa... "{{example}}"',
   "prompt.placeholder.simple": "Tanya apa-apa...",
-  "prompt.placeholder.summarizeComments": "Ringkaskan komen�",
-  "prompt.placeholder.summarizeComment": "Ringkaskan komen�",
+  "prompt.placeholder.summarizeComments": "Ringkaskan komen…",
+  "prompt.placeholder.summarizeComment": "Ringkaskan komen…",
   "prompt.mode.shell": "Shell",
   "prompt.mode.normal": "Arahan",
   "prompt.mode.shell.exit": "esc untuk keluar",
@@ -483,7 +483,7 @@ export const dict = {
   "wsl.onboarding.distroStatus.checking": "Sedang menyemak...",
   "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode belum dipasang",
   "wsl.onboarding.distroStatus.missingTools": "bash, curl tiada",
-  "wsl.onboarding.distroStatus.unsupported": "Tidak disokong � Guna WSL 2",
+  "wsl.onboarding.distroStatus.unsupported": "Tidak disokong · Guna WSL 2",
   "wsl.onboarding.needAnotherDistro": "Perlukan distro lain?",
   "wsl.onboarding.needAnotherDistroHint": "Pasang distribusi Linux daripada katalog WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL belum dipasang",
@@ -575,23 +575,23 @@ export const dict = {
   "context.usage.clickToView": "Klik untuk lihat konteks",
   "context.usage.view": "Lihat penggunaan konteks",
   "language.en": "English",
-  "language.zh": "????",
-  "language.zht": "????",
-  "language.ko": "???",
+  "language.zh": "简体中文",
+  "language.zht": "繁體中文",
+  "language.ko": "한국어",
   "language.de": "Deutsch",
-  "language.es": "Espa�ol",
-  "language.fr": "Fran�ais",
+  "language.es": "Español",
+  "language.fr": "Français",
   "language.da": "Dansk",
-  "language.ja": "???",
+  "language.ja": "日本語",
   "language.pl": "Polski",
-  "language.ru": "???????",
-  "language.ar": "???????",
+  "language.ru": "Русский",
+  "language.ar": "العربية",
   "language.no": "Norsk",
-  "language.br": "Portugu�s (Brasil)",
+  "language.br": "Português (Brasil)",
   "language.bs": "Bosanski",
-  "language.uk": "??????????",
-  "language.th": "???",
-  "language.tr": "T�rk�e",
+  "language.uk": "Українська",
+  "language.th": "ไทย",
+  "language.tr": "Türkçe",
   "toast.language.title": "Bahasa",
   "toast.language.description": "Bertukar kepada {{language}}",
   "toast.theme.title": "Tema telah ditukar",
@@ -765,7 +765,7 @@ export const dict = {
   "session.new.workspace.runIn": "Jalankan sesi dalam",
   "session.new.workspace.triggerLocal": "Setempat",
   "session.new.workspace.local": "Repositori setempat",
-  "session.new.workspace.existing": "Ruang kerja�",
+  "session.new.workspace.existing": "Ruang kerja…",
   "session.new.git.none": "Tiada Git",
   "session.git.switchBranch": "Switch branch",
   "session.git.branches": "Git branches",
@@ -1225,7 +1225,7 @@ export const dict = {
   "batuta.form.field.workers.command.needsSkill": "Install the batuta-cli skill for this agent in Settings > Agents first",
   "batuta.form.field.workers.args.placeholder": "Arguments (space-separated)",
   "batuta.form.field.worktree.label": "Isolated worker worktrees",
-  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout � the orchestrator reviews and merges each worker's result. This is not configurable.",
+  "batuta.form.field.worktree.description": "Every worker always gets its own git worktree, isolated from your main checkout — the orchestrator reviews and merges each worker's result. This is not configurable.",
   "batuta.form.field.directory.label": "Project",
   "batuta.form.field.directory.description": "The folder this activity's orchestrator and workers run in.",
   "batuta.form.field.directory.error.required": "Choose or add a project folder.",
@@ -1255,25 +1255,25 @@ export const dict = {
   "batuta.pipeline.phase.testing": "Testing",
   "batuta.pipeline.phase.quality": "Quality",
   "batuta.pipeline.phase.delivery": "Delivery",
-  "batuta.pipeline.definition.missing": "No pipeline flow defined yet � the Architect will define it while studying the project. Issues appear grouped once it does.",
+  "batuta.pipeline.definition.missing": "No pipeline flow defined yet — the Architect will define it while studying the project. Issues appear grouped once it does.",
   "batuta.pipeline.editor.open": "Edit flow",
   "batuta.pipeline.editor.title": "Pipeline flow",
   "batuta.pipeline.editor.description": "Shared across every activity in this project (docs/batuta-pipeline.md). Define phases as \"## Phase name\" headings, each followed by a list of skill slugs (e.g. \"- tdd\"). The Orchestrator re-reads this periodically, so edits apply even mid-run.",
   "batuta.pipeline.editor.save": "Save",
   "batuta.pipeline.editor.tab.editor": "Text",
   "batuta.pipeline.editor.tab.chat": "Chat",
-  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md � it won't appear in the sessions list and can't touch anything else.",
+  "batuta.pipeline.chat.description": "Chat with a session restricted to only reading/writing docs/batuta-pipeline.md — it won't appear in the sessions list and can't touch anything else.",
   "batuta.pipeline.chat.placeholder": "Describe the change you want to the pipeline flow...",
   "batuta.pipeline.chat.send": "Send",
-  "batuta.pipeline.chat.empty": "No messages yet � send one to start adjusting the flow.",
+  "batuta.pipeline.chat.empty": "No messages yet — send one to start adjusting the flow.",
   "batuta.pipeline.chat.starting": "Starting chat...",
   "batuta.pipeline.stage.architecture": "Architecture",
   "batuta.pipeline.stage.architecture.detail": "The Architect studied the project against the activity's goal, wrote/updated the docs (PRD, DER), used /grill-me to clarify ambiguity, and sliced the work into issues.",
   "batuta.pipeline.stage.orchestration": "Orchestration",
   "batuta.pipeline.stage.orchestration.detail": "The Orchestrator received the Architect's handoff (docs + issues) and started dispatching each issue to the right worker or skill.",
   "batuta.panel.detail.open": "Open full session",
-  "batuta.panel.detail.empty": "Nothing yet � waiting for this agent to start working.",
-  "batuta.panel.ready.title": "Architect finished � review the plan before starting",
+  "batuta.panel.detail.empty": "Nothing yet — waiting for this agent to start working.",
+  "batuta.panel.ready.title": "Architect finished — review the plan before starting",
   "batuta.panel.ready.dispatch": "Start activity",
   "batuta.form.field.branch.label": "Branch",
   "batuta.form.field.branch.description": "Branch the main checkout will be on when the activity starts. Leave the detected branch as-is, or type a new name to create and switch to it.",
@@ -1298,11 +1298,11 @@ export const dict = {
   "settings.general.row.devTools.open": "Open DevTools",
   "settings.general.row.debugMode.title": "Debug mode",
   "settings.general.row.debugMode.description": "Shows a DevTools icon in the titlebar, reachable from any screen, and enables the remote debugging (CDP) port even in packaged/production builds. Requires restarting the app.",
-  "settings.general.row.debugMode.descriptionOn": "Enabled � restart the app for the remote debugging port to take effect.",
+  "settings.general.row.debugMode.descriptionOn": "Enabled — restart the app for the remote debugging port to take effect.",
   "settings.general.row.debugMode.restart": "Restart now",
   "settings.general.row.computerUse.title": "Computer use",
-  "settings.general.row.computerUse.description": "Lets the agent control this computer directly � mouse, keyboard, and screen � not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
-  "settings.general.row.computerUse.descriptionOn": "Enabled � restart the app for computer use to take effect.",
+  "settings.general.row.computerUse.description": "Lets the agent control this computer directly — mouse, keyboard, and screen — not just the embedded browser. On by default; every action still asks for confirmation first. Requires restarting the app to take effect.",
+  "settings.general.row.computerUse.descriptionOn": "Enabled — restart the app for computer use to take effect.",
   "settings.general.row.computerUse.restart": "Restart now",
   "settings.providers.view.list": "List view",
   "settings.providers.view.grid": "Grid view",
@@ -1357,7 +1357,7 @@ export const dict = {
   "settings.externalAgents.selectAll.title": "Select all detected agents",
   "settings.externalAgents.selectAll.description": "Installs the batuta-cli skill on every detected agent. Turn off to pick agents individually.",
   "settings.externalAgents.status.detected": "Detected on the connected server",
-  "settings.externalAgents.status.notDetected": "Not detected � install the CLI and click Refresh",
+  "settings.externalAgents.status.notDetected": "Not detected — install the CLI and click Refresh",
   "settings.marketplace.title": "Marketplace",
   "settings.marketplace.add.button": "Add",
   "settings.marketplace.skills.add.title": "Add skill source",
@@ -1366,7 +1366,7 @@ export const dict = {
   "settings.marketplace.mcp.add.title": "Add MCP connector",
   "settings.marketplace.suggestions.title": "Suggestions",
   "settings.marketplace.suggestions.use": "Use",
-  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format � paste the real catalog URL to confirm before it imports anything.",
+  "settings.marketplace.skills.suggestions.description": "Not verified against opencode's skill manifest format — paste the real catalog URL to confirm before it imports anything.",
   "settings.marketplace.catalogs.title": "Catalogs",
   "settings.marketplace.catalogs.view": "View",
   "common.remove": "Remove",
@@ -1380,8 +1380,8 @@ export const dict = {
   "provider.omniroute.mcp.skip": "Skip MCP",
   "provider.omniroute.mcp.autoconfig": "Connecting will automatically configure the Omniroute MCP server for you.", // TODO: translate (auto-filled from en)
   "dialog.server.menu.qr": "Show QR code", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.title": "QR code � {{name}}", // TODO: translate (auto-filled from en)
-  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server � the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.title": "QR code — {{name}}", // TODO: translate (auto-filled from en)
+  "dialog.server.qr.description": "Scan this from a paired mobile client to auto-configure this server — the code carries the same credential this app already uses, so treat it like a password.", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copy": "Copy pairing data", // TODO: translate (auto-filled from en)
   "dialog.server.qr.copied": "Pairing data copied", // TODO: translate (auto-filled from en)
   "sshTunnel.server.viewLogs": "View logs / Connect", // TODO: translate (auto-filled from en)
@@ -1434,10 +1434,10 @@ export const dict = {
   "home.server.type.ssh": "ssh", // TODO: translate (auto-filled from en)
   "home.server.type.tailscale": "tailscale", // TODO: translate (auto-filled from en)
   "settings.general.row.bugReports.title": "Automatic bug reports", // TODO: translate (auto-filled from en)
-  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only � never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
+  "settings.general.row.bugReports.description": "Sends crash reports (error message and stack trace only — never your files, conversations, or env vars) to help fix bugs faster. Reports are deduped against existing GitHub issues before a new one is opened. On by default.", // TODO: translate (auto-filled from en)
   "settings.memory.title": "Memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.title": "Forget this project's memory too?", // TODO: translate (auto-filled from en)
-  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) � forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
+  "project.forgetMemory.description": "This project has recorded memory. Closing it only removes it from the list (you can reopen it later) — forgetting memory is separate and can't be undone.", // TODO: translate (auto-filled from en)
   "project.forgetMemory.keep": "Keep memory", // TODO: translate (auto-filled from en)
   "project.forgetMemory.forget": "Forget memory", // TODO: translate (auto-filled from en)
   "settings.memory.field.enabled.title": "Enable memory", // TODO: translate (auto-filled from en)
@@ -1460,8 +1460,8 @@ export const dict = {
   "settings.integrations.telegram.error.required": "Enter a bot token", // TODO: translate (auto-filled from en)
   "settings.integrations.telegram.toast.connected.title": "Telegram bot connected", // TODO: translate (auto-filled from en)
   "dialog.server.qr.loopbackWarning": "This server only listens on this computer (127.0.0.1) and Tailscale isn't running here, so a phone can't reach it with this code. Start Tailscale on this machine, or pair with a server that has a real network address instead.", // TODO: translate (auto-filled from en)
-  "batuta.model.model.filterPlaceholder": "Filter models�", // TODO: translate (auto-filled from en)
-  "batuta.model.model.truncated": "Showing the first {{count}} matches � keep typing to narrow it down", // TODO: translate (auto-filled from en)
+  "batuta.model.model.filterPlaceholder": "Filter models…", // TODO: translate (auto-filled from en)
+  "batuta.model.model.truncated": "Showing the first {{count}} matches — keep typing to narrow it down", // TODO: translate (auto-filled from en)
   "settings.combos.title": "Combos", // TODO: translate (auto-filled from en)
   "settings.combos.add.button": "Add combo", // TODO: translate (auto-filled from en)
   "settings.combos.empty": "No combos yet.", // TODO: translate (auto-filled from en)
@@ -1489,42 +1489,42 @@ export const dict = {
   "settings.agentui.dialog.addTitle": "Create agent", // TODO: translate (auto-filled from en)
   "settings.agentui.dialog.editTitle": "Edit agent", // TODO: translate (auto-filled from en)
   "settings.agentui.ai.title": "Cipta dengan AI",
-  "settings.agentui.ai.hint": "Terangkan ejen yang anda mahukan dengan kata-kata anda sendiri � nama, personaliti dan tetapan akan dirangka di bawah untuk semakan anda.",
+  "settings.agentui.ai.hint": "Terangkan ejen yang anda mahukan dengan kata-kata anda sendiri — nama, personaliti dan tetapan akan dirangka di bawah untuk semakan anda.",
   "settings.agentui.ai.placeholder": "cth. Penyambut tetamu klinik pergigian yang mesra dan menjawab soalan berkaitan temujanji...",
   "settings.agentui.ai.generate": "Jana",
-  "settings.agentui.ai.generating": "Menjana�",
-  "settings.agentui.ai.toast.generated": "Draf dijana � semak sebelum menyimpan",
+  "settings.agentui.ai.generating": "Menjana…",
+  "settings.agentui.ai.toast.generated": "Draf dijana — semak sebelum menyimpan",
   "settings.agentui.tabs.general": "General", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.channels": "Channels", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.tools": "Tools", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.knowledge": "Knowledge", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers": "MCP servers", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default � agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings ? MCP first.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.hint": "Let this agent call tools from the MCP servers below, connected to the same project as its channels. Off by default — agents are conversational-only until you turn one on.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.mcpServers.empty": "No MCP servers configured for this project yet. Add one in Settings → MCP first.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.mcpServers.noDirectory": "Open a project first to see its MCP servers.", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard ?", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.providerLink": "Open {{provider}} dashboard →", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.fetch": "Fetch sessions", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaSessions.loading": "Fetching�", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaSessions.loading": "Fetching…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.empty": "No sessions found for this API key.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaSessions.label": "WhatsApp sessions (select one or more)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.label": "Groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in � groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.hint": "Direct messages are always answered. Check any groups the agent should also answer in — groups left unchecked are ignored.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.fetch": "Fetch groups", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.izapiaGroups.loading": "Fetching�", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.loading": "Fetching…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.izapiaGroups.empty": "No groups found for the selected sessions.", // TODO: translate (auto-filled from en)
     "settings.agentui.field.whatsapp.tunnel.tailscale.hint": "Simplest option if you already have Tailscale running on this machine and the provider's server: use this machine's Tailscale IP directly, no tunnel process needed.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.use": "Use Tailscale IP", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "Detecting�", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscale.detecting": "Detecting…", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.tailscale.notFound": "No Tailscale IP found. Is Tailscale installed and running?", // TODO: translate (auto-filled from en)
-"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) � the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
+"settings.agentui.field.whatsapp.tunnel.hint": "This server's URL is local (127.0.0.1/localhost) — the provider can't call it back to deliver messages. Start a public tunnel so it can.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.start": "Start public tunnel", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.starting": "Starting�", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} � the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.starting": "Starting…", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.active": "Public tunnel active: {{url}} — the webhook URL below now uses it.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.tunnel.error": "Couldn't start the tunnel. Is cloudflared installed?", // TODO: translate (auto-filled from en)
   "settings.agentui.tabs.audit": "Audit", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.title": "Message log", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.refresh": "Refresh", // TODO: translate (auto-filled from en)
-  "settings.agentui.audit.loading": "Loading�", // TODO: translate (auto-filled from en)
+  "settings.agentui.audit.loading": "Loading…", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.needsSave": "Save the agent first to see its message log.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.empty": "No messages logged yet.", // TODO: translate (auto-filled from en)
   "settings.agentui.audit.blocked": "Blocked", // TODO: translate (auto-filled from en)
@@ -1534,12 +1534,12 @@ export const dict = {
   "settings.agentui.field.personality": "Personality", // TODO: translate (auto-filled from en)
   "settings.agentui.field.model": "Model", // TODO: translate (auto-filled from en)
   "settings.agentui.field.telegram": "Reply on Telegram", // TODO: translate (auto-filled from en)
-  "settings.agentui.field.telegramToken.placeholder": "Token bot (pilihan � biarkan kosong untuk berkongsi bot global)",
-  "settings.agentui.field.telegramToken.hint": "Tampal token daripada @BotFather untuk memberikan ejen ini bot Telegram khusus miliknya sendiri. Biarkan kosong untuk mengaksesnya melalui bot yang dikongsi dalam Tetapan ? Integrasi, menggunakan awalan arahannya.",
+  "settings.agentui.field.telegramToken.placeholder": "Token bot (pilihan — biarkan kosong untuk berkongsi bot global)",
+  "settings.agentui.field.telegramToken.hint": "Tampal token daripada @BotFather untuk memberikan ejen ini bot Telegram khusus miliknya sendiri. Biarkan kosong untuk mengaksesnya melalui bot yang dikongsi dalam Tetapan → Integrasi, menggunakan awalan arahannya.",
   "settings.agentui.field.whatsapp": "Balas di WhatsApp",
-  "settings.agentui.field.whatsapp.hint": "Menggunakan API WhatsApp tidak rasmi (melalui waconector) � pilih pembekal dan isikan butiran sambungan. Pembekal self-hosted memerlukan pelayan/bekas sendiri yang berjalan berasingan.",
-  "settings.agentui.field.whatsapp.webhookUrl": "URL webhook � tampalkan ke papan pemuka pembekal",
-  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret � some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.hint": "Menggunakan API WhatsApp tidak rasmi (melalui waconector) — pilih pembekal dan isikan butiran sambungan. Pembekal self-hosted memerlukan pelayan/bekas sendiri yang berjalan berasingan.",
+  "settings.agentui.field.whatsapp.webhookUrl": "URL webhook — tampalkan ke papan pemuka pembekal",
+  "settings.agentui.field.whatsapp.webhookSecret": "Webhook secret — some providers (e.g. izapia) ask for this separately", // TODO: translate (auto-filled from en)
   "settings.agentui.field.whatsapp.webhookAfterSave": "URL webhook yang perlu dikonfigurasikan di pihak pembekal muncul di sini selepas anda menyimpan.",
   "settings.agentui.field.commandTriggers": "Command triggers (space-separated, e.g. ! #)", // TODO: translate (auto-filled from en)
   "settings.agentui.field.guardrails": "Guardrails", // TODO: translate (auto-filled from en)
@@ -1550,13 +1550,13 @@ export const dict = {
   "settings.agentui.rag.label": "Label", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.value": "Text or URL", // TODO: translate (auto-filled from en)
   "settings.agentui.rag.add": "Add source", // TODO: translate (auto-filled from en)
-  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase � these are stored as-is for now.", // TODO: translate (auto-filled from en)
+  "settings.agentui.rag.note": "File upload and real retrieval land in a later phase — these are stored as-is for now.", // TODO: translate (auto-filled from en)
   "settings.agentui.field.enabled": "Enabled",
   "settings.agentui.enable": "Enable agent",
   "settings.agentui.disable": "Disable agent",
   "settings.agentui.sandbox.open": "Test",
   "settings.agentui.sandbox.title": "Test {{name}}",
-  "settings.agentui.sandbox.empty": "Send a message to try this agent � same personality, model and guardrails it uses for real, in a private test conversation.",
+  "settings.agentui.sandbox.empty": "Send a message to try this agent — same personality, model and guardrails it uses for real, in a private test conversation.",
   "settings.agentui.sandbox.placeholder": "Type a message...",
   "settings.agentui.sandbox.send": "Send",
   "settings.agentui.sandbox.reset": "New conversation",
@@ -1624,4 +1624,202 @@ export const dict = {
   "stats.kpi.longestDuration": "Longest Request", // TODO: translate (auto-filled from en)
   "stats.kpi.longestDuration.sub": "Max time on a single task", // TODO: translate (auto-filled from en)
   "stats.sessions.col.duration": "Work Time", // TODO: translate (auto-filled from en)
+  "sidebar.tab.dashboard": "Papan pemuka",
+  "project.kpi.hoursSpent": "Masa dihabiskan",
+  "project.kpi.totalTokens": "Jumlah token",
+  "project.kpi.tokensPerMinute": "Token / min",
+  "project.kpi.allProjects": "Semua projek",
+  "project.import.button": "Import sesi",
+  "project.import.title": "Import sesi lama",
+  "project.import.description": "Pindahkan sejarah sesi daripada OpenCode asal atau pemasangan lain ke pangkalan data berpartisi.",
+  "project.import.source.label": "Pemasangan sumber",
+  "project.import.source.customFile": "Pilih fail .db lain...",
+  "project.import.source.empty": "Tiada pemasangan lain ditemui secara automatik.",
+  "project.import.filterProject": "Tapis hanya sesi projek ini",
+  "project.import.filterProject.all": "Tunjukkan semua sesi pangkalan data",
+  "project.import.sessions.found": "{{count}} sesi ditemui",
+  "project.import.sessions.selectCount": "{{count}} dipilih",
+  "project.import.sessions.empty": "Tiada sesi untuk diimport dalam pangkalan data ini.",
+  "project.import.sessions.messages": "{{count}} mesej",
+  "project.import.selectAll": "Pilih semua",
+  "project.import.deselectAll": "Nyahpilih semua",
+  "project.import.action": "Import yang dipilih",
+  "project.import.importing": "Mengimport sesi...",
+  "project.import.success": "{{count}} sesi berjaya diimport!",
+  "provider.action.relogin": "Re-login", // TODO: translate (auto-filled from en)
+  "provider.action.refreshToken": "Refresh token", // TODO: translate (auto-filled from en)
+  "provider.action.refreshToken.success": "Token refreshed successfully", // TODO: translate (auto-filled from en)
+  "provider.authError.toast.title": "Account verification required", // TODO: translate (auto-filled from en)
+  "provider.authError.toast.description": "Your account requires re-authentication or verification to continue.", // TODO: translate (auto-filled from en)
+  "provider.authError.action.reconnect": "Log in / Reconnect account", // TODO: translate (auto-filled from en)
+  "session.tab.memory": "Memory", // TODO: translate (auto-filled from en)
+  "settings.agentui.tabs.personality": "Personality & AI", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.routines": "Access to Routines", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.routines.hint": "Allow this agent to query, list, and trigger scheduled routines during conversations.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.agenda": "Agenda & Reminders Tools", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.agenda.hint": "Allow this agent to create and manage one-off reminders and agenda items during conversations.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.memory": "Continuous Memory & Compaction", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.memory.hint": "Allow this agent to save decisions (memory_save) and search facts (memory_search) without context bloating.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filesystem": "Files & Documents Access", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filesystem.hint": "Allow this agent to read, search, create, and edit local files and documents in the project (read, write, edit, glob, grep).", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.terminal": "Terminal / Commands (Bash)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.terminal.hint": "Allow this agent to execute terminal commands (bash) to run scripts, system tools, and automations.", // TODO: translate (auto-filled from en)
+  "sidebar.agenda": "Agenda", // TODO: translate (auto-filled from en)
+  "command.agenda.open": "Open Agenda and Reminders", // TODO: translate (auto-filled from en)
+  "agenda.title": "Agenda & Reminders", // TODO: translate (auto-filled from en)
+  "agenda.subtitle": "Reminders and appointments synchronized with AgentUI and chat channels", // TODO: translate (auto-filled from en)
+  "agenda.activeCount": "{{count}} active", // TODO: translate (auto-filled from en)
+  "agenda.new": "New Reminder", // TODO: translate (auto-filled from en)
+  "agenda.view.grid": "Grid", // TODO: translate (auto-filled from en)
+  "agenda.view.list": "List", // TODO: translate (auto-filled from en)
+  "agenda.filter.all": "All", // TODO: translate (auto-filled from en)
+  "agenda.filter.channelAll": "Channel: All", // TODO: translate (auto-filled from en)
+  "agenda.filter.pending": "Pending", // TODO: translate (auto-filled from en)
+  "agenda.filter.completed": "Completed", // TODO: translate (auto-filled from en)
+  "agenda.cancel": "Cancel", // TODO: translate (auto-filled from en)
+  "agenda.empty": "No scheduled reminders or agenda items found.", // TODO: translate (auto-filled from en)
+  "agenda.today": "Today", // TODO: translate (auto-filled from en)
+  "agenda.tomorrow": "Tomorrow", // TODO: translate (auto-filled from en)
+  "agenda.yesterday": "Yesterday", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.filterAudio": "Listen to audio (only models with voice/audio support)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participants": "Participants", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.title": "Group Participants: {{subject}}", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.hint": "Select which participants in this group are allowed to interact with the agent. Selected participants will be added to the allowed senders list.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.searchPlaceholder": "Filter by name, phone or JID…", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.selectAll": "Select All", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.clearAll": "Clear Selection", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.apply": "Save Participants", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.empty": "No participants found in this group.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.izapiaGroups.participantsDialog.admin": "Admin", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.mentionOnly.label": "Only when mentioned (@) in groups", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.mentionOnly.hint": "When enabled, the agent will only respond in groups if explicitly mentioned with @ or quoted. General messages in the group will be ignored.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.label": "Allowed senders (phone numbers or JIDs)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.hint": "Only these numbers/senders will get responses from the agent (comma or newline separated). Leave blank to allow anyone.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.allowedSenders.placeholder": "e.g. 5585998490991, 5511999999999", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.label": "Project for Sessions", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.default": "Central AgentUI Project (Default)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.custom": "Custom Project", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.directory.hint": "Where WhatsApp/Telegram conversation sessions are grouped. By default, all channel sessions are centralized in the AgentUI project.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.hint": "Tailscale Funnel (public HTTPS): exposes this machine to the public internet using your Tailscale Funnel domain.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.use": "Use Tailscale Funnel (Public)", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.starting": "Starting Funnel…", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.tailscaleFunnel.error": "Could not start Tailscale Funnel. Ensure Funnel is enabled on your Tailnet.", // TODO: translate (auto-filled from en)
+  "settings.agentui.field.whatsapp.tunnel.clear": "Change / reset host", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.action": "Diagnose and test channels", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.title": "Channel Diagnosis · {{name}}", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.description": "Connectivity and health checks across channels, LLM model, and workspace.", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.ok": "Operational", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.warning": "Warning", // TODO: translate (auto-filled from en)
+  "settings.agentui.diagnose.status.error": "Failed", // TODO: translate (auto-filled from en)
+  "settings.combos.failover.priorityRoundRobin": "Priority + Round-Robin (Recommended)", // TODO: translate (auto-filled from en)
+  "settings.combos.field.tier": "Tier", // TODO: translate (auto-filled from en)
+  "settings.combos.field.modelPriorityHint": "Priority tier (0 = highest). Models in the same tier rotate in round-robin.", // TODO: translate (auto-filled from en)
+  "settings.combos.filter.requireVision": "Require Vision / Image support", // TODO: translate (auto-filled from en)
+  "settings.combos.filter.requirePdf": "Require Document / PDF support", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.title": "AI Combo Specialist", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.hint": "Describe what you need (e.g. heavy coding focus with fast fallback, token economy, or high resilience). The specialist will inspect your connected providers and models to design the ideal failover chain.", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.placeholder": "e.g. Heavy TypeScript coding combo using top tier models with fallback to lighter fast models...", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.generate": "Generate recommendation", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.generating": "Analyzing providers and generating…", // TODO: translate (auto-filled from en)
+  "settings.combos.ai.toast.generated": "Recommended combo generated — review before saving", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.title": "Custom System Instructions", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.description": "Global instructions sent with every prompt to guide the assistant's behavior and responses", // TODO: translate (auto-filled from en)
+  "settings.general.row.customSystemPrompt.placeholder": "e.g. Always monitor PRs, suggest code improvements when appropriate, maintain concise explanations...", // TODO: translate (auto-filled from en)
+  "settings.maintenance.section.title": "System maintenance", // TODO: translate (auto-filled from en)
+  "settings.maintenance.row.title": "Local database & storage", // TODO: translate (auto-filled from en)
+  "settings.maintenance.row.description": "Optimize local SQLite database, clean transaction logs and recover memory", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.optimize": "Optimize now", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.optimizing": "Optimizing...", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.deep": "Full maintenance and relaunch", // TODO: translate (auto-filled from en)
+  "settings.maintenance.action.deep_desc": "Closes local server, purges sessions older than 30 days, runs full database VACUUM, and restarts the app to reclaim disk space.", // TODO: translate (auto-filled from en)
+  "settings.maintenance.badge.needed": "Maintenance recommended", // TODO: translate (auto-filled from en)
+  "settings.maintenance.badge.healthy": "Healthy", // TODO: translate (auto-filled from en)
+  "settings.maintenance.last_run": "Last run: {{time}} (freed {{freed}}, purged {{purged}} events)", // TODO: translate (auto-filled from en)
+  "settings.maintenance.titlebar.button": "Maintenance needed", // TODO: translate (auto-filled from en)
+  "settings.maintenance.titlebar.tooltip": "The database has grown large. Click to open maintenance options.", // TODO: translate (auto-filled from en)
+  "settings.maintenance.toast.success.title": "Maintenance completed", // TODO: translate (auto-filled from en)
+  "settings.maintenance.toast.success.description": "Optimized database and freed {{freed}} of space in {{duration}}ms.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.dialogTitle": "Account quota: {{account}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.overall": "Available overall quota", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.modelsDetail": "Model Breakdown", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.noBuckets": "No detailed quota buckets returned by API.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.resetsAt": "Resets at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.tier.pro": "Pro", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.tier.free": "Free", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.buttonTooltip": "View account quota and plan", // TODO: translate (auto-filled from en)
+  "settings.providers.health.healthy": "Healthy", // TODO: translate (auto-filled from en)
+  "settings.providers.health.cooldown": "Cooldown (429)", // TODO: translate (auto-filled from en)
+  "settings.providers.health.exhausted": "Exhausted", // TODO: translate (auto-filled from en)
+  "settings.providers.health.disabled": "Disabled", // TODO: translate (auto-filled from en)
+  "settings.providers.health.resetCooldown": "Reset Cooldown", // TODO: translate (auto-filled from en)
+  "settings.providers.health.resetCooldownSuccess": "Cooldown reset successfully", // TODO: translate (auto-filled from en)
+  "settings.providers.health.toggleDisabledSuccess": "Account status updated", // TODO: translate (auto-filled from en)
+  "settings.providers.health.toggleTooltip": "Enable or disable account from routing", // TODO: translate (auto-filled from en)
+  "settings.providers.health.liberaEm": "Resets in {{time}}", // TODO: translate (auto-filled from en)
+  "settings.memory.field.autoSync.title": "Automatic sync routine", // TODO: translate (auto-filled from en)
+  "settings.memory.field.autoSync.description": "Periodically synthesizes new session memories in the background using the configured memory model.", // TODO: translate (auto-filled from en)
+  "settings.memory.field.syncInterval.title": "Routine interval", // TODO: translate (auto-filled from en)
+  "settings.memory.field.syncInterval.description": "How frequently the automatic memory sync routine runs in the background.", // TODO: translate (auto-filled from en)
+  "settings.memory.field.maxAge.title": "Session retention", // TODO: translate (auto-filled from en)
+  "settings.memory.field.maxAge.description": "Maximum period to keep active sessions in the database. Sessions older than this are synthesized into memory .md files and purged from SQLite.", // TODO: translate (auto-filled from en)
+  "settings.memory.age.7d": "7 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.15d": "15 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.30d": "30 days (default)", // TODO: translate (auto-filled from en)
+  "settings.memory.age.60d": "60 days", // TODO: translate (auto-filled from en)
+  "settings.memory.age.90d": "90 days", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.1h": "Every 1 hour", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.2h": "Every 2 hours", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.6h": "Every 6 hours (recommended)", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.12h": "Every 12 hours", // TODO: translate (auto-filled from en)
+  "settings.memory.interval.24h": "Every 24 hours (daily)", // TODO: translate (auto-filled from en)
+  "dialog.memory.title": "Memory", // TODO: translate (auto-filled from en)
+  "dialog.memory.subtitle.project": "Memory of this project", // TODO: translate (auto-filled from en)
+  "dialog.memory.subtitle.global": "Global memory (shared across all projects)", // TODO: translate (auto-filled from en)
+  "dialog.memory.tab.project": "Project", // TODO: translate (auto-filled from en)
+  "dialog.memory.tab.global": "Global", // TODO: translate (auto-filled from en)
+  "dialog.memory.search.placeholder": "Search memory (decisions, tasks, terms)...", // TODO: translate (auto-filled from en)
+  "dialog.memory.copy.button": "Copy", // TODO: translate (auto-filled from en)
+  "dialog.memory.copy.success": "Copied to clipboard", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.search.title": "No results found", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.search.description": "Try searching with different keywords.", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.project.title": "No project memory yet", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.project.description": "Decisions and facts learned during sessions in this project appear here, or you can add notes manually.", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.global.title": "No global memory yet", // TODO: translate (auto-filled from en)
+  "dialog.memory.empty.global.description": "Global facts and preferences are shared across all projects and sessions on this server.", // TODO: translate (auto-filled from en)
+  "dialog.memory.addNote.placeholder": "Add a note to memory...", // TODO: translate (auto-filled from en)
+  "dialog.memory.addNote.button": "Save note", // TODO: translate (auto-filled from en)
+  "dialog.memory.promote.button": "Promote to Global", // TODO: translate (auto-filled from en)
+  "dialog.memory.promote.success": "Memory promoted to global scope.", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.button": "Forget project", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.confirm": "Do you want to delete all saved memories for this project? Global memory will not be affected.", // TODO: translate (auto-filled from en)
+  "dialog.memory.forgetProject.success": "Project memory forgotten.", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.button": "Synthesize past sessions", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.running": "Synthesizing...", // TODO: translate (auto-filled from en)
+  "dialog.memory.backfill.success": "Backfill complete: {{count}} of {{total}} sessions synthesized.", // TODO: translate (auto-filled from en)
+  "session.header.memory.tooltip": "Memory", // TODO: translate (auto-filled from en)
+  "sidebar.media": "Media Generation", // TODO: translate (auto-filled from en)
+  "command.media.open": "Open Media Generation", // TODO: translate (auto-filled from en)
+  "media.title": "Media Studio", // TODO: translate (auto-filled from en)
+  "media.description": "Generate and preview AI images, videos, audio, and speech across connected providers.", // TODO: translate (auto-filled from en)
+  "media.kind.image": "Images", // TODO: translate (auto-filled from en)
+  "media.kind.video": "Videos", // TODO: translate (auto-filled from en)
+  "media.kind.audio": "Audio & Speech", // TODO: translate (auto-filled from en)
+  "media.prompt": "Prompt", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.image": "Describe the image you want to generate...", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.video": "Describe the video motion and scene...", // TODO: translate (auto-filled from en)
+  "media.prompt.placeholder.audio": "Enter text to convert to speech or describe audio...", // TODO: translate (auto-filled from en)
+  "media.generate": "Generate", // TODO: translate (auto-filled from en)
+  "media.generating": "Generating...", // TODO: translate (auto-filled from en)
+  "media.provider": "Provider", // TODO: translate (auto-filled from en)
+  "media.provider.all": "All connected providers", // TODO: translate (auto-filled from en)
+  "media.model": "Model", // TODO: translate (auto-filled from en)
+  "media.model.search": "Filter models...", // TODO: translate (auto-filled from en)
+  "media.size": "Dimensions", // TODO: translate (auto-filled from en)
+  "media.aspectRatio": "Aspect Ratio", // TODO: translate (auto-filled from en)
+  "media.results": "Generated Media", // TODO: translate (auto-filled from en)
+  "media.noResults": "No media generated yet. Select a model and hit Generate.", // TODO: translate (auto-filled from en)
+  "media.download": "Download", // TODO: translate (auto-filled from en)
+  "media.copyUrl": "Copy URL", // TODO: translate (auto-filled from en)
+  "media.noCompatibleModels": "No models found supporting this media capability.", // TODO: translate (auto-filled from en)
+  "media.error": "Generation failed", // TODO: translate (auto-filled from en)
 }

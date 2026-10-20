@@ -76,9 +76,9 @@ const pluralCategories = new Map(
 )
 // "dv" (Divehi): Intl.PluralRules' resolved categories for this locale
 // disagree across ICU builds (seen: Windows resolves ["one","many","other"],
-// Linux CI resolves ["one","other"] — see issue #197). Every dv.ts already
+// Linux CI resolves ["one","other"] â€” see issue #197). Every dv.ts already
 // only carries .one/.other (no .many/.few/.two/.zero content), so pin an
-// empty extra-category list here instead of letting the platform decide —
+// empty extra-category list here instead of letting the platform decide â€”
 // makes this test deterministic across OSes without touching translations.
 pluralCategories.set("dv", [])
 

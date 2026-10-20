@@ -206,4 +206,5 @@ export const dict: Record<string, string> = {
   "ui.backgroundTasks.status.completed": "Completed",
   "ui.backgroundTasks.status.error": "Failed",
   "ui.backgroundTasks.status.cancelled": "Cancelled",
+  "ui.tool.skill.triggered": "Skill triggered: {{name}}", // TODO: translate (auto-filled from en)
 }

@@ -227,4 +227,5 @@ export const dict = {
   "ui.toolErrorCard.copyError": "Copiar erro",
   "ui.message.duration.seconds": "{{count}}s",
   "ui.message.duration.minutesSeconds": "{{minutes}}m {{seconds}}s",
+  "ui.tool.task": "Task", // TODO: translate (auto-filled from en)
 }
