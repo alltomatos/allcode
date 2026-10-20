@@ -1,0 +1,229 @@
+name: release-prod
+
+# Release de produção. Dispara no push para `prod` (o merge de um PR de
+# promoção dev -> prod) e builda em paralelo:
+#   - os pacotes npm do CLI (@alltomatosbr/allcode + binários por plataforma)
+#   - os instaladores desktop de Windows, macOS e Linux (GitHub Release)
+#
+# A versão é sempre o próximo patch de packages/desktop/package.json. Ao final
+# de um release bem-sucedido ela é commitada de volta em `prod` com o marcador
+# [skip release]; o job `version` ignora esse commit para não re-disparar o
+# release em loop.
+on:
+  push:
+    branches:
+      - prod
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Versão existente para reconstruir (vazio = bump automático de patch)"
+        required: false
+        type: string
+
+# Um release nunca deve ser cancelado no meio: os três instaladores precisam
+# terminar para o release do GitHub ser publicado por inteiro.
+concurrency:
+  group: release-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    if: github.repository == 'alltomatos/allcode' && !contains(github.event.head_commit.message, '[skip release]')
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      base: ${{ steps.version.outputs.base }}
+      bump: ${{ steps.version.outputs.bump }}
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: prod
+
+      - name: Compute release version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=$(node -p "require('./packages/desktop/package.json').version")
+          version="${{ inputs.version }}"
+          if [ -n "$version" ]; then
+            bump=false
+          else
+            version=$(node -e 'const v = process.argv[1].split("-")[0].split(".").map(Number); v[2] += 1; console.log(v.join("."))' "$base")
+            bump=true
+          fi
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Versão inválida '$version' (esperado MAJOR.MINOR.PATCH)"
+            exit 1
+          fi
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "bump=$bump" >> "$GITHUB_OUTPUT"
+          echo "Releasing v$version (base: $base, auto bump: $bump)"
+
+  publish-npm:
+    needs: version
+    if: github.repository == 'alltomatos/allcode'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: prod
+
+      - uses: ./.github/actions/setup-bun
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Check npm token
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "::error::Configure o secret NPM_TOKEN com permissão de publish no escopo @alltomatosbr"
+            exit 1
+          fi
+
+      # Cross-compila todos os alvos (linux/mac/win, x64/arm64, baseline/musl)
+      # num único runner Linux. O binário de cada pacote é enorme, então o
+      # web UI embutido fica de fora — o desktop usa o bundle Node próprio.
+      - name: Build CLI binaries
+        working-directory: packages/allcode
+        shell: bash
+        run: bun ./script/build.ts --skip-embed-web-ui
+        env:
+          OPENCODE_CHANNEL: latest
+          OPENCODE_VERSION: ${{ needs.version.outputs.version }}
+
+      - name: Publish to npm
+        working-directory: packages/allcode
+        shell: bash
+        run: bun ./script/publish-fork.ts
+        env:
+          OPENCODE_CHANNEL: latest
+          OPENCODE_VERSION: ${{ needs.version.outputs.version }}
+          NPM_TAG: latest
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  build-desktop:
+    needs: version
+    if: github.repository == 'alltomatos/allcode'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            script: package:win
+            extra_args: ""
+          - os: macos-latest
+            script: package:mac
+            extra_args: --universal
+          - os: ubuntu-latest
+            script: package:linux
+            extra_args: ""
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 120
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: prod
+
+      - name: Install rpm (linux only, needed by electron-builder's fpm packaging)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends rpm
+
+      - uses: ./.github/actions/setup-bun
+
+      # electron-builder lê a versão de packages/desktop/package.json para
+      # nomear os artefatos e criar a tag do release.
+      - name: Set desktop version
+        shell: bash
+        run: |
+          node -e 'const fs = require("fs"); const p = "packages/desktop/package.json"; const j = JSON.parse(fs.readFileSync(p, "utf8")); j.version = process.argv[1]; fs.writeFileSync(p, JSON.stringify(j, null, 2) + "\n")' "${{ needs.version.outputs.version }}"
+
+      # package:* roda `bun run build` antes do electron-builder. O publisher
+      # cria o release como draft; o job `undraft` publica depois que as três
+      # plataformas terminarem.
+      - name: Build and publish
+        working-directory: packages/desktop
+        shell: bash
+        run: bun run ${{ matrix.script }} -- ${{ matrix.extra_args }} --publish always
+        env:
+          OPENCODE_CHANNEL: prod
+          OPENCODE_VERSION: ${{ needs.version.outputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+          # O bundle do main process embute o servidor inteiro (~33MB) e o
+          # default heap do Node não basta para o build universal do macOS.
+          NODE_OPTIONS: --max-old-space-size=6144
+
+  undraft:
+    # electron-builder sempre cria o release como draft e o electron-updater
+    # ignora drafts. Só publica depois que as três plataformas terminaram,
+    # para um build parcial nunca parecer completo.
+    needs:
+      - version
+      - build-desktop
+    if: github.repository == 'alltomatos/allcode'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: prod
+
+      - name: Publish the prod release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ needs.version.outputs.version }}
+        run: gh release edit "v${VERSION}" --draft=false --latest --repo alltomatos/allcode
+
+  bump:
+    # Commita o próximo patch em prod só depois de npm + desktop publicados.
+    # Se prod avançou durante o build, não sobrescreve a versão de outro merge.
+    needs:
+      - version
+      - publish-npm
+      - undraft
+    if: needs.version.outputs.bump == 'true' && github.repository == 'alltomatos/allcode'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          ref: prod
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Commit next version
+        shell: bash
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          BASE: ${{ needs.version.outputs.base }}
+        run: |
+          set -euo pipefail
+          git fetch origin prod
+          current=$(node -p "require('./packages/desktop/package.json').version")
+          if [ "$current" != "$BASE" ] || [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/prod)" ]; then
+            echo "::warning::prod avançou durante o release (base $BASE, atual $current); versão não commitada"
+            exit 0
+          fi
+
+          for file in packages/desktop/package.json packages/allcode/package.json; do
+            node -e 'const fs = require("fs"); const p = process.argv[1]; const j = JSON.parse(fs.readFileSync(p, "utf8")); j.version = process.argv[2]; fs.writeFileSync(p, JSON.stringify(j, null, 2) + "\n")' "$file" "$VERSION"
+          done
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add packages/desktop/package.json packages/allcode/package.json
+          git commit -m "chore(release): v${VERSION} [skip release]"
+          git push origin HEAD:prod

@@ -27,7 +27,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository == 'alltomatos/opencode'
+    if: github.repository == 'alltomatos/allcode'
     strategy:
       fail-fast: false
       matrix:
@@ -86,10 +86,10 @@ jobs:
     # silently stops auto-updating. Un-draft only after all three platform
     # builds succeed, so a partial/failed build never ships as if complete.
     needs: build
-    if: github.repository == 'alltomatos/opencode'
+    if: github.repository == 'alltomatos/allcode'
     runs-on: ubuntu-latest
     steps:
       - name: Publish the dev-channel release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release edit "v${{ needs.build.outputs.version }}" --draft=false --prerelease --repo alltomatos/opencode
+        run: gh release edit "v${{ needs.build.outputs.version }}" --draft=false --prerelease --repo alltomatos/allcode

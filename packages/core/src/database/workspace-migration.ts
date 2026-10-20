@@ -6,7 +6,7 @@ import path from "path"
 import fs from "fs/promises"
 import { createHash } from "crypto"
 import { Global } from "../global"
-import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
+import type { EffectDrizzleSqlite } from "@allcode/effect-drizzle-sqlite"
 
 import { Database } from "./database"
 

@@ -248,6 +248,7 @@ beforeAll(async () => {
           serverSessionSyncs++
         },
       },
+      indexSession: () => undefined,
       child: (directory: string) => {
         syncedDirectories.push(directory)
         storedSessions[directory] ??= []

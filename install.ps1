@@ -1,23 +1,23 @@
 #Requires -Version 5.1
 <#
 .SYNOPSIS
-  Installs OpenCode Desktop (fork by Alltomatos) on Windows.
+  Installs AllCode Desktop (fork of OpenCode by Alltomatos) on Windows.
 
 .DESCRIPTION
   Downloads the latest release installer from GitHub and runs it silently.
 
 .EXAMPLE
-  irm https://raw.githubusercontent.com/alltomatos/opencode/prod/install.ps1 | iex
+  irm https://raw.githubusercontent.com/alltomatos/allcode/prod/install.ps1 | iex
 #>
 
 $ErrorActionPreference = "Stop"
 
-$repo = "alltomatos/opencode"
-$assetName = "opencode-desktop-win-x64.exe"
+$repo = "alltomatos/allcode"
+$assetName = "allcode-desktop-win-x64.exe"
 
-Write-Host "OpenCode Desktop installer (fork by Alltomatos)" -ForegroundColor Cyan
+Write-Host "AllCode Desktop installer (fork of OpenCode by Alltomatos)" -ForegroundColor Cyan
 
-$release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -Headers @{ "User-Agent" = "opencode-installer" }
+$release = Invoke-RestMethod -Uri "https://api.github.com/repos/$repo/releases/latest" -Headers @{ "User-Agent" = "allcode-installer" }
 $asset = $release.assets | Where-Object { $_.name -eq $assetName } | Select-Object -First 1
 
 if (-not $asset) {
@@ -36,4 +36,4 @@ Start-Process -FilePath $installerPath -Wait
 
 Remove-Item $installerPath -Force -ErrorAction SilentlyContinue
 
-Write-Host "Done. OpenCode Desktop $version installed." -ForegroundColor Green
+Write-Host "Done. AllCode Desktop $version installed." -ForegroundColor Green

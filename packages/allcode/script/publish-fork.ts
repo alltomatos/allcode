@@ -1,15 +1,15 @@
 #!/usr/bin/env bun
 // Publishes this fork's own CLI to npm under its own scope (default
-// @alltomatos), separate from upstream's `opencode-ai`/`@allcode/*`
+// @alltomatosbr), separate from upstream's `opencode-ai`/`@allcode/*`
 // packages — those are published only from anomalyco/opencode (see
 // script/publish.ts, guarded in .github/workflows/publish.yml). This is the
 // fork-specific counterpart, driven by dist/ output from
-// packages/opencode/script/build.ts.
+// packages/allcode/script/build.ts.
 //
 // Requires (as env vars): OPENCODE_VERSION, NPM_TAG ("dev" or "latest"),
 // and an npm auth token available to `npm publish` (e.g. via .npmrc set up
 // by actions/setup-node + secrets.NPM_TOKEN in CI). Optional: NPM_SCOPE
-// (defaults to "@alltomatos").
+// (defaults to "@alltomatosbr").
 
 import { $ } from "bun"
 import { fileURLToPath } from "url"
@@ -17,10 +17,14 @@ import { fileURLToPath } from "url"
 const dir = fileURLToPath(new URL("..", import.meta.url))
 process.chdir(dir)
 
-const SCOPE = process.env.NPM_SCOPE ?? "@alltomatos"
+const SCOPE = process.env.NPM_SCOPE ?? "@alltomatosbr"
 const TAG = process.env.NPM_TAG ?? "dev"
 const VERSION = process.env.OPENCODE_VERSION
 if (!VERSION) throw new Error("OPENCODE_VERSION is required")
+
+// packages/allcode is the source of truth for the fork's CLI name/binary.
+const manifest = await Bun.file("./package.json").json()
+const CLI_NAME: string = manifest.name.replace(/^@[^/]+\//, "")
 
 async function published(name: string, version: string) {
   return (await $`npm view ${name}@${version} version`.nothrow()).exitCode === 0
@@ -38,7 +42,7 @@ async function publish(distDir: string, name: string, version: string) {
 }
 
 // Re-scope each per-platform binary package build.ts produced unscoped
-// (dist/opencode-<platform>-<arch>/package.json, name "opencode-<...>") and
+// (dist/allcode-<platform>-<arch>/package.json, name "allcode-<...>") and
 // collect them as the wrapper's optionalDependencies.
 const binaries: Record<string, string> = {}
 const platformDirs: Record<string, string> = {}
@@ -55,13 +59,13 @@ for (const filepath of new Bun.Glob("*/package.json").scanSync({ cwd: "./dist" }
 }
 console.log("binaries", binaries)
 
-const wrapperName = `${SCOPE}/opencode`
-const wrapperDir = "./dist/opencode-wrapper"
+const wrapperName = `${SCOPE}/${CLI_NAME}`
+const wrapperDir = `./dist/${CLI_NAME}-wrapper`
 await $`mkdir -p ${wrapperDir}/bin`
 await $`cp ./script/postinstall.mjs ${wrapperDir}/postinstall.mjs`
 await Bun.file(`${wrapperDir}/LICENSE`).write(await Bun.file("../../LICENSE").text())
 await Bun.file(`${wrapperDir}/README.md`).write(await Bun.file("../../README.md").text())
-await Bun.file(`${wrapperDir}/bin/opencode.exe`).write(
+await Bun.file(`${wrapperDir}/bin/${CLI_NAME}.exe`).write(
   [
     `echo "Error: ${wrapperName}'s postinstall script was not run." >&2`,
     'echo "" >&2',
@@ -80,7 +84,9 @@ await Bun.file(`${wrapperDir}/package.json`).write(
   JSON.stringify(
     {
       name: wrapperName,
-      bin: { opencode: "./bin/opencode.exe" },
+      // Keep `opencode` as an alias: the desktop's SSH/VPS flow still runs
+      // `opencode serve`, and existing scripts expect the old command name.
+      bin: { [CLI_NAME]: `./bin/${CLI_NAME}.exe`, opencode: `./bin/${CLI_NAME}.exe` },
       scripts: { postinstall: "node ./postinstall.mjs" },
       version: VERSION,
       license: "MIT",

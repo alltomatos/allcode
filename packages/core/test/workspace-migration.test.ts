@@ -160,6 +160,12 @@ describe("WorkspaceMigration", () => {
 
       yield* Effect.gen(function* () {
         // Publicar criação de sessão dentro do escopo de localização do workspace
+        // project.db enforces the project FK, so seed the row before the session.
+        const db = (yield* Database.Service).db
+        yield* db.run(
+          sql`INSERT INTO project (id, worktree, time_created, time_updated, sandboxes)
+              VALUES ('proj_part', ${testDir}, 1000, 1000, '[]')`,
+        )
         const events = yield* EventV2.Service
         yield* events.publish(SessionV1.Event.Created, { sessionID, info }, { location: { directory: AbsolutePath.make(testDir) } })
       }).pipe(
