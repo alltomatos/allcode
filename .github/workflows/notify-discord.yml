@@ -6,10 +6,12 @@ on:
 
 jobs:
   notify:
-    if: ${{ secrets.DISCORD_WEBHOOK != '' }}
     runs-on: ubuntu-latest
+    env:
+      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
     steps:
       - name: Send nicely-formatted embed to Discord
+        if: env.DISCORD_WEBHOOK != ''
         uses: SethCohen/github-releases-to-discord@24d166886aee4646d448c8a389ff9e1ebcab3682 # v1.20.0
         with:
-          webhook_url: ${{ secrets.DISCORD_WEBHOOK }}
+          webhook_url: ${{ env.DISCORD_WEBHOOK }}
