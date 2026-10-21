@@ -241,6 +241,7 @@ beforeAll(async () => {
 
   mock.module("@/context/server-sync", () => ({
     useServerSync: () => () => ({
+      indexSession: () => undefined,
       session: {
         remember: () => undefined,
         set: () => undefined,
