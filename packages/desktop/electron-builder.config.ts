@@ -117,7 +117,7 @@ const getBase = (appId: string): Configuration => ({
     // @electron/universal needs it in this allowlist too or the universal
     // merge step refuses to proceed (only hit by the dev channel — prod/beta
     // never bundle opencode-cli).
-    x64ArchFiles: "Contents/Resources/{opencode-cli,app.asar.unpacked/node_modules/**/*-darwin-*/**/*}",
+    x64ArchFiles: "Contents/Resources/{allcode-cli,opencode-cli,app.asar.unpacked/node_modules/**/*-darwin-*/**/*}",
   },
   dmg: {
     sign: !!process.env.CSC_LINK,

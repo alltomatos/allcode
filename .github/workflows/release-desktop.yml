@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository == 'alltomatos/opencode'
+    if: github.repository == 'alltomatos/allcode'
     strategy:
       fail-fast: false
       matrix:
@@ -75,7 +75,7 @@ jobs:
     # three platform builds succeed, so a partial/failed build never ships
     # as if complete.
     needs: build
-    if: github.repository == 'alltomatos/opencode'
+    if: github.repository == 'alltomatos/allcode'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
@@ -84,4 +84,4 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           version=$(node -p "require('./packages/desktop/package.json').version")
-          gh release edit "v${version}" --draft=false --latest --repo alltomatos/opencode
+          gh release edit "v${version}" --draft=false --latest --repo alltomatos/allcode

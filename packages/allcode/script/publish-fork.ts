@@ -1,10 +1,9 @@
 #!/usr/bin/env bun
 // Publishes this fork's own CLI to npm under its own scope (default
-// @alltomatos), separate from upstream's `opencode-ai`/`@allcode/*`
-// packages — those are published only from anomalyco/opencode (see
-// script/publish.ts, guarded in .github/workflows/publish.yml). This is the
-// fork-specific counterpart, driven by dist/ output from
-// packages/opencode/script/build.ts.
+// @alltomatos), separate from upstream's `opencode-ai` packages — those are
+// published only from anomalyco/opencode (see script/publish.ts, guarded in
+// .github/workflows/publish.yml). This is the fork-specific counterpart,
+// driven by dist/ output from packages/allcode/script/build.ts.
 //
 // Requires (as env vars): OPENCODE_VERSION, NPM_TAG ("dev" or "latest"),
 // and an npm auth token available to `npm publish` (e.g. via .npmrc set up
@@ -38,12 +37,12 @@ async function publish(distDir: string, name: string, version: string) {
 }
 
 // Re-scope each per-platform binary package build.ts produced unscoped
-// (dist/opencode-<platform>-<arch>/package.json, name "opencode-<...>") and
+// (dist/allcode-<platform>-<arch>/package.json, name "allcode-<...>") and
 // collect them as the wrapper's optionalDependencies.
 const binaries: Record<string, string> = {}
 const platformDirs: Record<string, string> = {}
 for (const filepath of new Bun.Glob("*/package.json").scanSync({ cwd: "./dist" })) {
-  const platformDir = filepath.split("/")[0]!
+  const platformDir = filepath.replaceAll("\\", "/").split("/")[0]!
   const pkgPath = `./dist/${platformDir}/package.json`
   const pkg = await Bun.file(pkgPath).json()
   const scopedName = `${SCOPE}/${pkg.name}`
@@ -55,13 +54,13 @@ for (const filepath of new Bun.Glob("*/package.json").scanSync({ cwd: "./dist" }
 }
 console.log("binaries", binaries)
 
-const wrapperName = `${SCOPE}/opencode`
-const wrapperDir = "./dist/opencode-wrapper"
+const wrapperName = `${SCOPE}/allcode`
+const wrapperDir = "./dist/allcode-wrapper"
 await $`mkdir -p ${wrapperDir}/bin`
 await $`cp ./script/postinstall.mjs ${wrapperDir}/postinstall.mjs`
 await Bun.file(`${wrapperDir}/LICENSE`).write(await Bun.file("../../LICENSE").text())
 await Bun.file(`${wrapperDir}/README.md`).write(await Bun.file("../../README.md").text())
-await Bun.file(`${wrapperDir}/bin/opencode.exe`).write(
+await Bun.file(`${wrapperDir}/bin/allcode.exe`).write(
   [
     `echo "Error: ${wrapperName}'s postinstall script was not run." >&2`,
     'echo "" >&2',
@@ -80,7 +79,7 @@ await Bun.file(`${wrapperDir}/package.json`).write(
   JSON.stringify(
     {
       name: wrapperName,
-      bin: { opencode: "./bin/opencode.exe" },
+      bin: { allcode: "./bin/allcode.exe" },
       scripts: { postinstall: "node ./postinstall.mjs" },
       version: VERSION,
       license: "MIT",
@@ -98,4 +97,3 @@ await Promise.all(tasks)
 await publish(wrapperDir, wrapperName, VERSION)
 
 console.log(`published ${wrapperName}@${VERSION} (tag: ${TAG})`)
-

@@ -3,12 +3,11 @@ name: release-npm-fork
 # Publishes this fork's own CLI to npm under its own scope (default
 # @alltomatos), so it can be installed with a channel via npm's own @tag
 # syntax:
-#   npm install -g @alltomatos/opencode@dev     # every push to dev
-#   npm install -g @alltomatos/opencode@latest  # every push to prod
+#   npm install -g @alltomatos/allcode@dev     # every push to dev
+#   npm install -g @alltomatos/allcode@latest  # every push to prod
 #
-# Separate from upstream's own opencode-ai/@allcode/* npm packages
-# (published only from anomalyco/opencode by publish.yml) — this fork does
-# not have permission to publish under that name, and shouldn't.
+# The wrapper publishes per-platform binaries as
+# @alltomatos/allcode-<os>-<arch> (see packages/allcode/script/publish-fork.ts).
 
 on:
   push:
@@ -28,7 +27,7 @@ permissions:
 
 jobs:
   publish:
-    if: github.repository == 'alltomatos/opencode'
+    if: github.repository == 'alltomatos/allcode'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
@@ -53,14 +52,14 @@ jobs:
           fi
 
       - name: Build CLI binaries (cross-compiled, single runner)
-        working-directory: packages/opencode
+        working-directory: packages/allcode
         run: bun ./script/build.ts --skip-embed-web-ui
         env:
           OPENCODE_CHANNEL: ${{ steps.version.outputs.tag }}
           OPENCODE_VERSION: ${{ steps.version.outputs.version }}
 
       - name: Publish to npm
-        working-directory: packages/opencode
+        working-directory: packages/allcode
         run: bun ./script/publish-fork.ts
         env:
           OPENCODE_VERSION: ${{ steps.version.outputs.version }}
