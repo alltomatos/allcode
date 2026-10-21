@@ -113,6 +113,7 @@ export function buildLocationServiceMap(
         return LayerNode.compile(location.node).pipe(
           Layer.fresh,
           Layer.provide(LayerNode.compile(location.hoisted)),
+          Layer.provide(Database.globalLayer),
           Layer.tap(() =>
             Effect.logInfo("booting location services", {
               directory: ref.directory,

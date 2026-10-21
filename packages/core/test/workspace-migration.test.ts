@@ -114,6 +114,12 @@ describe("WorkspaceMigration", () => {
           sql`SELECT name FROM sqlite_master WHERE type = 'table' AND name IN ('session', 'message', 'part')`
         )
         expect(tables.length).toBe(3)
+
+        // O banco global nunca deve ser anexado ao project.db: BEGIN IMMEDIATE em uma
+        // conexão com ATTACH trava todos os arquivos anexados e provoca "database is locked"
+        // nas escritas concorrentes da conexão global.
+        const attached = yield* db.all<{ name: string }>(sql`PRAGMA database_list`)
+        expect(attached.map((row) => row.name)).toEqual(["main"])
       }).pipe(Effect.provide(WorkspaceMigration.workspaceDatabaseLayer(testHash))),
     )
 
