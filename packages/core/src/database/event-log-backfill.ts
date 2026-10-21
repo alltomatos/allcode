@@ -2,7 +2,7 @@ export * as EventLogBackfill from "./event-log-backfill"
 
 import { Context, Effect, Layer } from "effect"
 import { sql } from "drizzle-orm"
-import type { EffectDrizzleSqlite } from "@opencode-ai/effect-drizzle-sqlite"
+import type { EffectDrizzleSqlite } from "@allcode/effect-drizzle-sqlite"
 import { Database } from "./database"
 import { WorkspaceMigration } from "./workspace-migration"
 

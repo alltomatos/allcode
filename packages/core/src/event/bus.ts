@@ -1,7 +1,7 @@
 export * as EventBus from "./bus"
 
 import { Cause, Context, Effect, Layer, PubSub, Stream } from "effect"
-import type { Definition, Payload } from "@opencode-ai/schema/event"
+import type { Definition, Payload } from "@allcode/schema/event"
 import { makeGlobalNode, type GlobalNode } from "../effect/app-node"
 
 export type Subscriber<D extends Definition = Definition> = (event: Payload<D>) => Effect.Effect<void>
