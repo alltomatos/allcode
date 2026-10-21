@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "次のプロジェクト",
   "desktop.menu.minimize": "最小化",
   "desktop.menu.maximize": "最大化",
-  "desktop.menu.documentation": "OpenCodeドキュメント",
+  "desktop.menu.documentation": "AllCodeドキュメント",
   "desktop.menu.supportForum": "サポートフォーラム",
   "desktop.menu.shareFeedback": "フィードバックを送信",
   "desktop.menu.reportBug": "バグを報告",
-  "desktop.menu.ariaLabel": "OpenCodeメニュー",
+  "desktop.menu.ariaLabel": "AllCodeメニュー",
 
   "desktop.updater.dialog.checkFailed.message": "アップデートを確認できませんでした。",
   "desktop.updater.dialog.checkFailed.title": "アップデートエラー",
@@ -58,9 +58,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "ログをエクスポート",
   "desktop.recovery.action.keepWaiting": "待機を続ける",
   "desktop.recovery.action.quit": "終了",
-  "desktop.recovery.loadFailed": "OpenCodeを読み込めませんでした",
-  "desktop.recovery.terminated": "OpenCodeのウインドウが予期せず終了しました",
-  "desktop.recovery.unresponsive": "OpenCodeが応答していません",
+  "desktop.recovery.loadFailed": "AllCodeを読み込めませんでした",
+  "desktop.recovery.terminated": "AllCodeのウインドウが予期せず終了しました",
+  "desktop.recovery.unresponsive": "AllCodeが応答していません",
   "desktop.recovery.unresponsive.detail": "アプリを再起動するか、ログを開くか、待機を続けることができます。",
   "desktop.recovery.loadFailed.detail": "ウインドウ: {{window}}\nURL: {{url}}\nエラー: {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "ウインドウ: {{window}}\n理由: {{reason}}\nコード: {{code}}",
@@ -79,13 +79,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "ディストリビューションでコマンドを実行できません",
   "desktop.wsl.error.installWsl": "WSLのインストールに失敗しました",
   "desktop.wsl.error.installDistro": "ディストリビューションのインストールに失敗しました: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCodeのインストールに失敗しました",
+  "desktop.wsl.error.installOpencode": "AllCodeのインストールに失敗しました",
   "desktop.wsl.error.alreadyAdded": "{{distro}}はすでに追加されています",
   "desktop.wsl.error.opencodeMissing": "このディストリビューションにはopencodeがインストールされていません",
   "desktop.wsl.error.opencodeCannotRun": "opencodeはインストールされていますが、実行できませんでした",
-  "desktop.wsl.error.opencodeNotInstalled": "{{distro}}にはOpenCodeがインストールされていません",
+  "desktop.wsl.error.opencodeNotInstalled": "{{distro}}にはAllCodeがインストールされていません",
   "desktop.wsl.error.updateVersion":
-    "OpenCodeのアップデートは完了しましたが、{{distro}}から報告されたバージョンはまだ{{installed}}です。想定されるバージョンは{{expected}}です",
+    "AllCodeのアップデートは完了しましたが、{{distro}}から報告されたバージョンはまだ{{installed}}です。想定されるバージョンは{{expected}}です",
   "desktop.wsl.error.noVersion": "バージョンなし",
   "desktop.wsl.error.serverExited": "WSLサーバーが起動後に終了しました (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -213,7 +213,7 @@ export const dict = {
   "dialog.model.manage": "モデルを管理",
   "dialog.model.manage.description": "モデルセレクターに表示するモデルをカスタマイズします。",
   "dialog.model.manage.provider.toggle": "すべての{{provider}}モデルを切り替え",
-  "dialog.model.unpaid.freeModels.title": "OpenCodeが提供する無料モデル",
+  "dialog.model.unpaid.freeModels.title": "AllCodeが提供する無料モデル",
   "dialog.model.unpaid.addMore.title": "人気のプロバイダーからモデルを追加",
   "dialog.model.unpaid.viewMoreProviders": "その他70以上のプロバイダーを見る",
   "dialog.provider.viewAll": "さらにプロバイダーを表示",
@@ -227,7 +227,7 @@ export const dict = {
   "provider.connect.status.waiting": "認証を待機中...",
   "provider.connect.status.failed": "認証に失敗しました: {{error}}",
   "provider.connect.apiKey.description":
-    "{{provider}}のAPIキーを入力してアカウントを接続し、OpenCodeで{{provider}}モデルを使用します。",
+    "{{provider}}のAPIキーを入力してアカウントを接続し、AllCodeで{{provider}}モデルを使用します。",
   "provider.connect.apiKey.label": "{{provider}} APIキー",
   "provider.connect.apiKey.placeholder": "APIキー",
   "provider.connect.apiKey.required": "APIキーが必要です",
@@ -240,7 +240,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": " ",
   "provider.connect.oauth.code.visit.link": "このリンク",
   "provider.connect.oauth.code.visit.suffix":
-    " にアクセスして認証コードを取得し、アカウントを接続してOpenCodeで{{provider}}モデルを使用してください。",
+    " にアクセスして認証コードを取得し、アカウントを接続してAllCodeで{{provider}}モデルを使用してください。",
   "provider.connect.oauth.code.label": "{{method}} 認証コード",
   "provider.connect.oauth.code.placeholder": "認証コード",
   "provider.connect.oauth.code.required": "認証コードが必要です",
@@ -248,7 +248,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": " ",
   "provider.connect.oauth.auto.visit.link": "このリンク",
   "provider.connect.oauth.auto.visit.suffix":
-    " にアクセスし、以下のコードを入力してアカウントを接続し、OpenCodeで{{provider}}モデルを使用してください。",
+    " にアクセスし、以下のコードを入力してアカウントを接続し、AllCodeで{{provider}}モデルを使用してください。",
   "provider.connect.oauth.auto.confirmationCode": "確認コード",
   "provider.connect.toast.connected.title": "{{provider}}が接続されました",
   "provider.connect.toast.connected.description": "{{provider}}モデルが使用可能になりました。",
@@ -412,7 +412,7 @@ export const dict = {
   "dialog.directory.parent": "親フォルダ",
   "dialog.directory.readError": "このフォルダを読み取れません",
   "dialog.server.title": "サーバー",
-  "dialog.server.description": "このアプリが接続するOpenCodeサーバーを切り替えます。",
+  "dialog.server.description": "このアプリが接続するAllCodeサーバーを切り替えます。",
   "dialog.server.search.placeholder": "サーバーを検索",
   "dialog.server.empty": "サーバーはまだありません",
   "dialog.server.add.title": "サーバーを追加",
@@ -449,7 +449,7 @@ export const dict = {
   "wsl.server.retryStart": "起動を再試行",
   "wsl.server.updating": "更新中...",
   "wsl.onboarding.step.distro": "ディストリビューションを選択",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "WSLを確認中...",
   "wsl.onboarding.restartRequired": "WSLのインストールを完了するにはWindowsの再起動が必要です。",
   "wsl.onboarding.ready": "WSLの準備ができました。",
@@ -463,16 +463,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "セットアップを完了するには、{{distro}}を一度開いてください。",
   "wsl.onboarding.finishingDistro": "{{distro}}のセットアップを完了しています。",
   "wsl.onboarding.pickDistro": "ディストリビューションを選択するか、以下からインストールしてください。",
-  "wsl.onboarding.checkingOpencode": "OpenCodeを確認中...",
-  "wsl.onboarding.checkingOpencodeIn": "{{distro}}内のOpenCodeを確認中...",
-  "wsl.onboarding.updatingOpencode": "OpenCodeを更新中...",
-  "wsl.onboarding.updatingOpencodeIn": "{{distro}}内のOpenCodeを更新中...",
-  "wsl.onboarding.updateOpencodeIn": "{{distro}}内のOpenCodeを更新してください。",
-  "wsl.onboarding.updateOpencode": "OpenCodeを更新",
-  "wsl.onboarding.opencodeReadyIn": "{{distro}}内のOpenCodeの準備ができました。",
-  "wsl.onboarding.opencodeReady": "OpenCodeの準備ができました。",
-  "wsl.onboarding.installOpencodeIn": "{{distro}}にOpenCodeをインストールしてください。",
-  "wsl.onboarding.installOpencode": "OpenCodeをインストール",
+  "wsl.onboarding.checkingOpencode": "AllCodeを確認中...",
+  "wsl.onboarding.checkingOpencodeIn": "{{distro}}内のAllCodeを確認中...",
+  "wsl.onboarding.updatingOpencode": "AllCodeを更新中...",
+  "wsl.onboarding.updatingOpencodeIn": "{{distro}}内のAllCodeを更新中...",
+  "wsl.onboarding.updateOpencodeIn": "{{distro}}内のAllCodeを更新してください。",
+  "wsl.onboarding.updateOpencode": "AllCodeを更新",
+  "wsl.onboarding.opencodeReadyIn": "{{distro}}内のAllCodeの準備ができました。",
+  "wsl.onboarding.opencodeReady": "AllCodeの準備ができました。",
+  "wsl.onboarding.installOpencodeIn": "{{distro}}にAllCodeをインストールしてください。",
+  "wsl.onboarding.installOpencode": "AllCodeをインストール",
   "wsl.onboarding.chooseDistroFirst": "先にディストリビューションを選択してください。",
   "wsl.onboarding.loadFailed": "WSLの状態を読み込めませんでした。",
   "wsl.onboarding.loading": "読み込み中...",
@@ -480,19 +480,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "再確認",
   "wsl.onboarding.distroStatus.ready": "準備完了",
   "wsl.onboarding.distroStatus.checking": "確認中...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCodeがインストールされていません",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCodeがインストールされていません",
   "wsl.onboarding.distroStatus.missingTools": "bash、curlがありません",
   "wsl.onboarding.distroStatus.unsupported": "非対応 · WSL 2を使用してください",
   "wsl.onboarding.needAnotherDistro": "別のディストリビューションが必要ですか？",
   "wsl.onboarding.needAnotherDistroHint": "WSLカタログからLinuxディストリビューションをインストール",
   "wsl.onboarding.wslNotInstalled.title": "WSLがインストールされていません",
   "wsl.onboarding.wslNotInstalled.description":
-    "OpenCodeでWSLサーバーを追加するには、WSL (Windows Subsystem for Linux) が必要です",
+    "AllCodeでWSLサーバーを追加するには、WSL (Windows Subsystem for Linux) が必要です",
   "wsl.onboarding.wslUnavailable.title": "WSLを利用できません",
   "wsl.onboarding.wslUnavailable.description": "このマシンのWSLを確認できませんでした。",
   "wsl.onboarding.installWsl": "WSLをインストール",
   "wsl.onboarding.windowsRestartRequired":
-    "WSLのインストールを完了するにはWindowsを再起動し、OpenCodeをもう一度開いてください。",
+    "WSLのインストールを完了するにはWindowsを再起動し、AllCodeをもう一度開いてください。",
   "wsl.onboarding.next": "次へ",
   "wsl.onboarding.refresh": "更新",
   "wsl.onboarding.allDistrosAdded": "インストール済みのディストリビューションはすべて追加済みです。",
@@ -517,7 +517,7 @@ export const dict = {
   "help.tabs.title": "タブのご紹介",
   "help.tabs.description": "タブを使って作業と進行中のセッションを整理できます",
   "help.tabs.date": "7月14日",
-  "help.tabs.introduction": "OpenCode Desktopでタブを中心とした操作ができるようになりました。",
+  "help.tabs.introduction": "AllCode Desktopでタブを中心とした操作ができるようになりました。",
   "help.tabs.sessions":
     "新しいセッションをタブで開始したり、プロジェクトから既存のセッションを開いたりできます。新しい作業を始めるときは新しいタブを開き、作業が終わったら閉じます。",
   "help.tabs.organize":
@@ -625,7 +625,7 @@ export const dict = {
 
   "toast.session.listFailed.title": "{{project}}のセッション読み込みに失敗しました",
   "toast.update.title": "アップデートが利用可能です",
-  "toast.update.description": "OpenCodeの新しいバージョン ({{version}}) がインストール可能です。",
+  "toast.update.description": "AllCodeの新しいバージョン ({{version}}) がインストール可能です。",
   "toast.update.action.installRestart": "インストールして再起動",
   "toast.update.action.notYet": "今はしない",
   "error.page.title": "問題が発生しました",
@@ -639,7 +639,7 @@ export const dict = {
   "error.page.action.checking": "確認中...",
   "error.page.action.checkUpdates": "アップデートを確認",
   "error.page.action.updateTo": "{{version}}にアップデート",
-  "error.page.report.prefix": "このエラーをOpenCodeチームに報告してください: ",
+  "error.page.report.prefix": "このエラーをAllCodeチームに報告してください: ",
   "error.page.report.discord": "Discord",
   "error.page.version": "バージョン: {{version}}",
   "error.dev.rootNotFound":
@@ -655,7 +655,7 @@ export const dict = {
   "error.chain.didYouMean": "もしかして: {{suggestions}}",
   "error.chain.modelNotFound": "モデルが見つかりません: {{provider}}/{{model}}",
   "error.chain.checkConfig": "config (opencode.json) のプロバイダー/モデル名を確認してください",
-  "error.chain.mcpFailed": 'MCPサーバー "{{name}}" が失敗しました。注意: OpenCodeはまだMCP認証をサポートしていません。',
+  "error.chain.mcpFailed": 'MCPサーバー "{{name}}" が失敗しました。注意: AllCodeはまだMCP認証をサポートしていません。',
   "error.chain.providerAuthFailed": "プロバイダー認証に失敗しました ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'プロバイダー "{{provider}}" の初期化に失敗しました。認証情報と設定を確認してください。',
@@ -820,21 +820,21 @@ export const dict = {
   "sidebar.workspaces.enable": "ワークスペースを有効化",
   "sidebar.workspaces.disable": "ワークスペースを無効化",
   "sidebar.gettingStarted.title": "はじめに",
-  "sidebar.gettingStarted.line1": "OpenCodeには無料モデルが含まれているため、すぐに開始できます。",
+  "sidebar.gettingStarted.line1": "AllCodeには無料モデルが含まれているため、すぐに開始できます。",
   "sidebar.gettingStarted.line2": "プロバイダーを接続して、Claude、GPT、Geminiなどのモデルを使用できます。",
   "sidebar.project.recentSessions": "最近のセッション",
   "sidebar.project.viewAllSessions": "すべてのセッションを表示",
   "sidebar.project.clearNotifications": "通知をクリア",
   "sidebar.empty.title": "開いているプロジェクトはありません",
   "sidebar.empty.description": "プロジェクトを開いて始めましょう",
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "デスクトップ",
   "settings.section.server": "サーバー",
   "settings.tab.general": "一般",
   "settings.tab.shortcuts": "ショートカット",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL連携",
-  "settings.desktop.wsl.description": "WindowsのWSL環境でOpenCodeサーバーを実行します。",
+  "settings.desktop.wsl.description": "WindowsのWSL環境でAllCodeサーバーを実行します。",
   "settings.general.section.appearance": "外観",
   "settings.general.section.advanced": "詳細設定",
   "settings.general.section.notifications": "システム通知",
@@ -843,18 +843,18 @@ export const dict = {
   "settings.general.section.feed": "フィード",
   "settings.general.section.display": "ディスプレイ",
   "settings.general.row.language.title": "言語",
-  "settings.general.row.language.description": "OpenCodeの表示言語を変更します",
+  "settings.general.row.language.description": "AllCodeの表示言語を変更します",
   "settings.general.row.shell.title": "ターミナルシェル",
   "settings.general.row.shell.description":
     "ターミナルで使用するシェルを選択します。互換性のあるシェルはエージェントのツール呼び出しにも使用されます。",
   "settings.general.row.shell.autoDefault": "自動 (デフォルト)",
   "settings.general.row.shell.terminalOnly": "ターミナルのみ",
   "settings.general.row.appearance.title": "外観",
-  "settings.general.row.appearance.description": "デバイスでのOpenCodeの表示をカスタマイズします",
+  "settings.general.row.appearance.description": "デバイスでのAllCodeの表示をカスタマイズします",
   "settings.general.row.colorScheme.title": "配色",
-  "settings.general.row.colorScheme.description": "OpenCodeがシステム、ライト、またはダークテーマに従うかを選択します",
+  "settings.general.row.colorScheme.description": "AllCodeがシステム、ライト、またはダークテーマに従うかを選択します",
   "settings.general.row.theme.title": "テーマ",
-  "settings.general.row.theme.description": "OpenCodeのテーマをカスタマイズします。",
+  "settings.general.row.theme.description": "AllCodeのテーマをカスタマイズします。",
   "settings.general.row.font.title": "コードフォント",
   "settings.general.row.font.description": "コードブロックで使用するフォントをカスタマイズします",
   "settings.general.row.terminalFont.title": "ターミナルのフォント",
@@ -907,7 +907,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "リリースノート",
   "settings.general.row.releaseNotes.description": "アップデート後に「新機能」ポップアップを表示",
   "settings.updates.row.startup.title": "起動時にアップデートを確認",
-  "settings.updates.row.startup.description": "OpenCode の起動時に自動でアップデートを確認します",
+  "settings.updates.row.startup.description": "AllCode の起動時に自動でアップデートを確認します",
   "settings.updates.row.check.title": "アップデートを確認",
   "settings.updates.row.check.description": "手動でアップデートを確認し、利用可能ならインストールします",
   "settings.updates.action.checkNow": "今すぐ確認",
@@ -915,7 +915,7 @@ export const dict = {
   "settings.updates.action.downloading": "ダウンロード中...",
   "settings.updates.action.installing": "インストール中...",
   "settings.updates.toast.latest.title": "最新です",
-  "settings.updates.toast.latest.description": "OpenCode は最新バージョンです。",
+  "settings.updates.toast.latest.description": "AllCode は最新バージョンです。",
   "sound.option.none": "なし",
   "sound.option.alert01": "アラート 01",
   "sound.option.alert02": "アラート 02",
@@ -1298,11 +1298,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1400,7 +1400,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1412,14 +1412,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

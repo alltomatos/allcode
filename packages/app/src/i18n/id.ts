@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Proyek berikutnya",
   "desktop.menu.minimize": "Minimalkan",
   "desktop.menu.maximize": "Maksimalkan",
-  "desktop.menu.documentation": "Dokumentasi OpenCode",
+  "desktop.menu.documentation": "Dokumentasi AllCode",
   "desktop.menu.supportForum": "Forum dukungan",
   "desktop.menu.shareFeedback": "Bagikan umpan balik",
   "desktop.menu.reportBug": "Laporkan bug",
-  "desktop.menu.ariaLabel": "Menu OpenCode",
+  "desktop.menu.ariaLabel": "Menu AllCode",
 
   "desktop.updater.dialog.checkFailed.message": "Pemeriksaan pembaruan gagal.",
   "desktop.updater.dialog.checkFailed.title": "Kesalahan pembaruan",
@@ -58,9 +58,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Ekspor log",
   "desktop.recovery.action.keepWaiting": "Tetap tunggu",
   "desktop.recovery.action.quit": "Keluar",
-  "desktop.recovery.loadFailed": "OpenCode gagal dimuat",
-  "desktop.recovery.terminated": "Jendela OpenCode berhenti secara tidak terduga",
-  "desktop.recovery.unresponsive": "OpenCode tidak merespons",
+  "desktop.recovery.loadFailed": "AllCode gagal dimuat",
+  "desktop.recovery.terminated": "Jendela AllCode berhenti secara tidak terduga",
+  "desktop.recovery.unresponsive": "AllCode tidak merespons",
   "desktop.recovery.unresponsive.detail": "Anda dapat meluncurkan ulang aplikasi, membuka log, atau tetap menunggu.",
   "desktop.recovery.loadFailed.detail": "Jendela: {{window}}\nURL: {{url}}\nKesalahan: {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "Jendela: {{window}}\nAlasan: {{reason}}\nKode: {{code}}",
@@ -80,13 +80,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Tidak dapat menjalankan perintah di distro",
   "desktop.wsl.error.installWsl": "Instalasi WSL gagal",
   "desktop.wsl.error.installDistro": "Gagal menginstal distro: {{distro}}",
-  "desktop.wsl.error.installOpencode": "Instalasi OpenCode gagal",
+  "desktop.wsl.error.installOpencode": "Instalasi AllCode gagal",
   "desktop.wsl.error.alreadyAdded": "{{distro}} sudah ditambahkan",
   "desktop.wsl.error.opencodeMissing": "opencode belum terinstal di distro ini",
   "desktop.wsl.error.opencodeCannotRun": "opencode telah terinstal, tetapi tidak dapat dijalankan",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode belum terinstal di {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode belum terinstal di {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "Pembaruan OpenCode selesai, tetapi {{distro}} masih melaporkan {{installed}}; seharusnya {{expected}}",
+    "Pembaruan AllCode selesai, tetapi {{distro}} masih melaporkan {{installed}}; seharusnya {{expected}}",
   "desktop.wsl.error.noVersion": "tanpa versi",
   "desktop.wsl.error.serverExited": "Server WSL berhenti setelah dimulai (kode={{code}} sinyal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -225,7 +225,7 @@ export const dict = {
   "dialog.model.manage.description": "Sesuaikan model mana yang muncul di pemilih model.",
   "dialog.model.manage.provider.toggle": "Alihkan semua model {{provider}}",
 
-  "dialog.model.unpaid.freeModels.title": "Model gratis disediakan oleh OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Model gratis disediakan oleh AllCode",
   "dialog.model.unpaid.addMore.title": "Tambahkan lebih banyak model dari penyedia populer",
   "dialog.model.unpaid.viewMoreProviders": "Lihat 70+ penyedia lainnya",
 
@@ -241,7 +241,7 @@ export const dict = {
   "provider.connect.status.waiting": "Menunggu otorisasi...",
   "provider.connect.status.failed": "Otorisasi gagal: {{error}}",
   "provider.connect.apiKey.description":
-    "Masukkan kunci API {{provider}} untuk menghubungkan akun Anda dan gunakan model {{provider}} di OpenCode.",
+    "Masukkan kunci API {{provider}} untuk menghubungkan akun Anda dan gunakan model {{provider}} di AllCode.",
   "provider.connect.apiKey.label": "Kunci API {{provider}}",
   "provider.connect.apiKey.placeholder": "Kunci API",
   "provider.connect.apiKey.required": "Kunci API diperlukan",
@@ -255,7 +255,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Kunjungi ",
   "provider.connect.oauth.code.visit.link": "tautan ini",
   "provider.connect.oauth.code.visit.suffix":
-    " untuk mendapatkan kode otorisasi guna menghubungkan akun Anda dan menggunakan model {{provider}} di OpenCode.",
+    " untuk mendapatkan kode otorisasi guna menghubungkan akun Anda dan menggunakan model {{provider}} di AllCode.",
   "provider.connect.oauth.code.label": "Kode otorisasi {{method}}",
   "provider.connect.oauth.code.placeholder": "Kode otorisasi",
   "provider.connect.oauth.code.required": "Kode otorisasi diperlukan",
@@ -263,7 +263,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Kunjungi ",
   "provider.connect.oauth.auto.visit.link": "tautan ini",
   "provider.connect.oauth.auto.visit.suffix":
-    " dan masukkan kode di bawah untuk menghubungkan akun dan menggunakan model {{provider}} di OpenCode.",
+    " dan masukkan kode di bawah untuk menghubungkan akun dan menggunakan model {{provider}} di AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "Kode konfirmasi",
   "provider.connect.toast.connected.title": "{{provider}} terhubung",
   "provider.connect.toast.connected.description": "Model {{provider}} sekarang tersedia untuk digunakan.",
@@ -446,7 +446,7 @@ export const dict = {
   "app.server.otherServers": "Server lainnya",
 
   "dialog.server.title": "Server",
-  "dialog.server.description": "Ganti server OpenCode mana yang terhubung dengan aplikasi ini.",
+  "dialog.server.description": "Ganti server AllCode mana yang terhubung dengan aplikasi ini.",
   "dialog.server.search.placeholder": "Cari server",
   "dialog.server.empty": "Belum ada server",
   "dialog.server.add.title": "Tambah server",
@@ -486,7 +486,7 @@ export const dict = {
   "wsl.server.retryStart": "Coba mulai ulang",
   "wsl.server.updating": "Memperbarui...",
   "wsl.onboarding.step.distro": "Pilih distro",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Memeriksa WSL...",
   "wsl.onboarding.restartRequired": "Windows perlu dimulai ulang untuk menyelesaikan instalasi WSL.",
   "wsl.onboarding.ready": "WSL siap.",
@@ -500,16 +500,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Buka {{distro}} sekali untuk menyelesaikan pengaturan.",
   "wsl.onboarding.finishingDistro": "Menyelesaikan pengaturan untuk {{distro}}.",
   "wsl.onboarding.pickDistro": "Pilih distro atau instal salah satu di bawah.",
-  "wsl.onboarding.checkingOpencode": "Memeriksa OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Memeriksa OpenCode di {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Memperbarui OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Memperbarui OpenCode di {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Perbarui OpenCode di {{distro}}.",
-  "wsl.onboarding.updateOpencode": "Perbarui OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode siap di {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode siap.",
-  "wsl.onboarding.installOpencodeIn": "Instal OpenCode di {{distro}}.",
-  "wsl.onboarding.installOpencode": "Instal OpenCode",
+  "wsl.onboarding.checkingOpencode": "Memeriksa AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Memeriksa AllCode di {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Memperbarui AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Memperbarui AllCode di {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Perbarui AllCode di {{distro}}.",
+  "wsl.onboarding.updateOpencode": "Perbarui AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode siap di {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode siap.",
+  "wsl.onboarding.installOpencodeIn": "Instal AllCode di {{distro}}.",
+  "wsl.onboarding.installOpencode": "Instal AllCode",
   "wsl.onboarding.chooseDistroFirst": "Pilih distro terlebih dahulu.",
   "wsl.onboarding.loadFailed": "Gagal memuat keadaan WSL.",
   "wsl.onboarding.loading": "Memuat...",
@@ -517,19 +517,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Periksa lagi",
   "wsl.onboarding.distroStatus.ready": "Siap",
   "wsl.onboarding.distroStatus.checking": "Memeriksa...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode belum terinstal",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode belum terinstal",
   "wsl.onboarding.distroStatus.missingTools": "bash dan curl tidak tersedia",
   "wsl.onboarding.distroStatus.unsupported": "Tidak didukung · Gunakan WSL 2",
   "wsl.onboarding.needAnotherDistro": "Perlu distro lain?",
   "wsl.onboarding.needAnotherDistroHint": "Instal distribusi Linux dari katalog WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL belum terinstal",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Subsystem for Linux) diperlukan sebelum OpenCode dapat menambahkan server WSL",
+    "WSL (Windows Subsystem for Linux) diperlukan sebelum AllCode dapat menambahkan server WSL",
   "wsl.onboarding.wslUnavailable.title": "WSL tidak tersedia",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode tidak dapat memverifikasi WSL di komputer ini.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode tidak dapat memverifikasi WSL di komputer ini.",
   "wsl.onboarding.installWsl": "Instal WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Mulai ulang Windows untuk menyelesaikan instalasi WSL, lalu buka kembali OpenCode.",
+    "Mulai ulang Windows untuk menyelesaikan instalasi WSL, lalu buka kembali AllCode.",
   "wsl.onboarding.next": "Berikutnya",
   "wsl.onboarding.refresh": "Muat ulang",
   "wsl.onboarding.allDistrosAdded": "Semua distro yang terinstal sudah ditambahkan.",
@@ -554,7 +554,7 @@ export const dict = {
   "help.tabs.title": "Memperkenalkan Tab",
   "help.tabs.description": "Atur pekerjaan dan sesi aktif Anda dengan tab",
   "help.tabs.date": "14 Juli",
-  "help.tabs.introduction": "OpenCode Desktop kini dirancang dengan tab sebagai pusatnya.",
+  "help.tabs.introduction": "AllCode Desktop kini dirancang dengan tab sebagai pusatnya.",
   "help.tabs.sessions":
     "Mulai sesi baru di tab, atau buka sesi yang sudah ada dari proyek Anda. Buka tab baru saat Anda memulai sesuatu yang baru, lalu tutup setelah selesai.",
   "help.tabs.organize":
@@ -683,7 +683,7 @@ export const dict = {
   "toast.project.reloadFailed.title": "Gagal memuat ulang {{project}}",
 
   "toast.update.title": "Pembaruan tersedia",
-  "toast.update.description": "Versi baru OpenCode ({{version}}) sekarang tersedia untuk diinstal.",
+  "toast.update.description": "Versi baru AllCode ({{version}}) sekarang tersedia untuk diinstal.",
   "toast.update.action.installRestart": "Instal dan mulai ulang",
   "toast.update.action.notYet": "Nanti saja",
 
@@ -699,7 +699,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Periksa pembaruan",
   "error.page.action.updateTo": "Perbarui ke {{version}}",
   "error.page.circular": "[Sirkular]",
-  "error.page.report.prefix": "Harap laporkan kesalahan ini ke tim OpenCode",
+  "error.page.report.prefix": "Harap laporkan kesalahan ini ke tim AllCode",
   "error.page.report.discord": "di Discord",
   "error.page.version": "Versi: {{version}}",
 
@@ -725,7 +725,7 @@ export const dict = {
   "error.chain.didYouMean": "Maksud Anda: {{suggestions}}",
   "error.chain.modelNotFound": "Model tidak ditemukan: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Periksa nama penyedia/model di konfigurasi Anda (opencode.json)",
-  "error.chain.mcpFailed": 'Server MCP "{{name}}" gagal. Catatan: OpenCode belum mendukung autentikasi MCP.',
+  "error.chain.mcpFailed": 'Server MCP "{{name}}" gagal. Catatan: AllCode belum mendukung autentikasi MCP.',
   "error.chain.providerAuthFailed": "Autentikasi penyedia gagal ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Gagal menginisialisasi penyedia "{{provider}}". Periksa kredensial dan konfigurasi.',
@@ -957,7 +957,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Aktifkan ruang kerja",
   "sidebar.workspaces.disable": "Nonaktifkan ruang kerja",
   "sidebar.gettingStarted.title": "Memulai",
-  "sidebar.gettingStarted.line1": "OpenCode menyertakan model gratis sehingga Anda dapat memulai dengan segera.",
+  "sidebar.gettingStarted.line1": "AllCode menyertakan model gratis sehingga Anda dapat memulai dengan segera.",
   "sidebar.gettingStarted.line2":
     "Hubungkan penyedia mana pun untuk menggunakan model, termasuk Claude, GPT, Gemini, dll.",
   "sidebar.project.recentSessions": "Sesi terbaru",
@@ -997,7 +997,7 @@ export const dict = {
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
 
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
 
   "settings.section.desktop": "Desktop",
   "settings.section.server": "Server",
@@ -1005,7 +1005,7 @@ export const dict = {
   "settings.tab.shortcuts": "Pintasan",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "Integrasi WSL",
-  "settings.desktop.wsl.description": "Jalankan server OpenCode di dalam WSL di Windows.",
+  "settings.desktop.wsl.description": "Jalankan server AllCode di dalam WSL di Windows.",
 
   "settings.general.section.appearance": "Tampilan",
   "settings.general.section.advanced": "Lanjutan",
@@ -1016,17 +1016,17 @@ export const dict = {
   "settings.general.section.display": "Tampilan",
 
   "settings.general.row.language.title": "Bahasa",
-  "settings.general.row.language.description": "Ubah bahasa tampilan untuk OpenCode",
+  "settings.general.row.language.description": "Ubah bahasa tampilan untuk AllCode",
   "settings.general.row.shell.title": "Shell terminal",
   "settings.general.row.shell.description": "Shell yang digunakan oleh terminal dan alat agen",
   "settings.general.row.shell.autoDefault": "Otomatis (Bawaan)",
   "settings.general.row.shell.terminalOnly": "hanya terminal",
   "settings.general.row.appearance.title": "Tampilan",
-  "settings.general.row.appearance.description": "Sesuaikan tampilan OpenCode di perangkat Anda",
+  "settings.general.row.appearance.description": "Sesuaikan tampilan AllCode di perangkat Anda",
   "settings.general.row.colorScheme.title": "Skema warna",
-  "settings.general.row.colorScheme.description": "Pilih apakah OpenCode mengikuti tema sistem, terang, atau gelap",
+  "settings.general.row.colorScheme.description": "Pilih apakah AllCode mengikuti tema sistem, terang, atau gelap",
   "settings.general.row.theme.title": "Tema",
-  "settings.general.row.theme.description": "Sesuaikan tema OpenCode.",
+  "settings.general.row.theme.description": "Sesuaikan tema AllCode.",
   "settings.general.row.font.title": "Font kode",
   "settings.general.row.font.description": "Sesuaikan font yang digunakan di blok kode",
   "settings.general.row.terminalFont.title": "Font terminal",
@@ -1082,7 +1082,7 @@ export const dict = {
   "settings.general.row.releaseNotes.description": "Tampilkan pop-up Apa yang Baru setelah pembaruan",
 
   "settings.updates.row.startup.title": "Periksa pembaruan saat dimulai",
-  "settings.updates.row.startup.description": "Secara otomatis memeriksa pembaruan saat OpenCode diluncurkan",
+  "settings.updates.row.startup.description": "Secara otomatis memeriksa pembaruan saat AllCode diluncurkan",
   "settings.updates.row.check.title": "Periksa pembaruan",
   "settings.updates.row.check.description": "Periksa pembaruan secara manual dan instal jika tersedia",
   "settings.updates.action.checkNow": "Periksa sekarang",
@@ -1090,7 +1090,7 @@ export const dict = {
   "settings.updates.action.downloading": "Mengunduh...",
   "settings.updates.action.installing": "Menginstal...",
   "settings.updates.toast.latest.title": "Versi Anda sudah terbaru",
-  "settings.updates.toast.latest.description": "Anda menjalankan versi terbaru OpenCode.",
+  "settings.updates.toast.latest.description": "Anda menjalankan versi terbaru AllCode.",
   "sound.option.none": "Tidak ada",
   "sound.option.alert01": "Peringatan 01",
   "sound.option.alert02": "Peringatan 02",
@@ -1379,11 +1379,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1481,7 +1481,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1493,14 +1493,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

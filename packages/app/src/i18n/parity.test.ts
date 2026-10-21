@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { desktopNativePluralCategories } from "./desktop-native"
+import { DESKTOP_NATIVE_ENGLISH, desktopNativePluralCategories } from "./desktop-native"
 
 const appLocales = [
   "ar",
@@ -205,6 +205,18 @@ describe("i18n plural parity", () => {
         })
       }
     }
+  })
+})
+
+describe("i18n branding", () => {
+  test("desktop menu title uses the product name in every locale", async () => {
+    expect(DESKTOP_NATIVE_ENGLISH["desktop.menu.app"]).toBe("AllCode")
+    const untranslated: string[] = []
+    for (const locale of appLocales) {
+      const target = await dictionary(`./${locale}.ts`)
+      if (target["desktop.menu.app"] !== "AllCode") untranslated.push(`${locale}: ${target["desktop.menu.app"]}`)
+    }
+    expect(untranslated).toEqual([])
   })
 })
 

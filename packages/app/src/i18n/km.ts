@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "គម្រោងបន្ទាប់",
   "desktop.menu.minimize": "បង្រួមអប្បបរមា",
   "desktop.menu.maximize": "អតិបរមា",
-  "desktop.menu.documentation": "ឯកសារ OpenCode",
+  "desktop.menu.documentation": "ឯកសារ AllCode",
   "desktop.menu.supportForum": "វេទិកាគាំទ្រ",
   "desktop.menu.shareFeedback": "ចែករំលែកមតិកែលម្អ",
   "desktop.menu.reportBug": "រាយការណ៍អំពីបញ្ហា",
-  "desktop.menu.ariaLabel": "ម៉ឺនុយ OpenCode",
+  "desktop.menu.ariaLabel": "ម៉ឺនុយ AllCode",
   "desktop.updater.dialog.checkFailed.message": "ការត្រួតពិនិត្យការអាប់ដេតបានបរាជ័យ។",
   "desktop.updater.dialog.checkFailed.title": "កំហុសក្នុងការអាប់ដេត",
   "desktop.updater.dialog.upToDate.message": "អ្នកទាន់សម័យហើយ។",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "នាំចេញកំណត់ហេតុ",
   "desktop.recovery.action.keepWaiting": "បន្តរង់ចាំ",
   "desktop.recovery.action.quit": "ឈប់",
-  "desktop.recovery.loadFailed": "OpenCode បានបរាជ័យក្នុងការផ្ទុក",
-  "desktop.recovery.terminated": "បង្អួច OpenCode ត្រូវបានបញ្ចប់ដោយមិននឹកស្មានដល់",
-  "desktop.recovery.unresponsive": "OpenCode មិនឆ្លើយតបទេ។",
+  "desktop.recovery.loadFailed": "AllCode បានបរាជ័យក្នុងការផ្ទុក",
+  "desktop.recovery.terminated": "បង្អួច AllCode ត្រូវបានបញ្ចប់ដោយមិននឹកស្មានដល់",
+  "desktop.recovery.unresponsive": "AllCode មិនឆ្លើយតបទេ។",
   "desktop.recovery.unresponsive.detail": "អ្នកអាចបើកកម្មវិធីឡើងវិញ បើកកំណត់ហេតុ ឬបន្តរង់ចាំ។",
   "desktop.recovery.loadFailed.detail": "បង្អួច៖ {{window}}\nURL៖ {{url}}\nកំហុស៖ {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "បង្អួច៖ {{window}}\nហេតុផល៖ {{reason}}\nលេខកូដ៖ {{code}}",
@@ -75,13 +75,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "មិនអាចប្រតិបត្តិពាក្យបញ្ជានៅក្នុង distro បានទេ។",
   "desktop.wsl.error.installWsl": "ការដំឡើង WSL បានបរាជ័យ",
   "desktop.wsl.error.installDistro": "បរាជ័យក្នុងការដំឡើង distro៖ {{distro}}",
-  "desktop.wsl.error.installOpencode": "ការដំឡើង OpenCode បានបរាជ័យ",
+  "desktop.wsl.error.installOpencode": "ការដំឡើង AllCode បានបរាជ័យ",
   "desktop.wsl.error.alreadyAdded": "{{distro}} ត្រូវបានបន្ថែមរួចហើយ",
   "desktop.wsl.error.opencodeMissing": "opencode មិនត្រូវបានដំឡើងនៅក្នុង distro នេះទេ។",
   "desktop.wsl.error.opencodeCannotRun": "opencode ត្រូវបានដំឡើង ប៉ុន្តែមិនអាចដំណើរការបានទេ។",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode មិនត្រូវបានដំឡើងនៅក្នុង {{distro}} ទេ។",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode មិនត្រូវបានដំឡើងនៅក្នុង {{distro}} ទេ។",
   "desktop.wsl.error.updateVersion":
-    "ការធ្វើបច្ចុប្បន្នភាព OpenCode បានបញ្ចប់ ប៉ុន្តែ {{distro}} នៅតែរាយការណ៍ {{installed}}; {{expected}} រំពឹងទុក",
+    "ការធ្វើបច្ចុប្បន្នភាព AllCode បានបញ្ចប់ ប៉ុន្តែ {{distro}} នៅតែរាយការណ៍ {{installed}}; {{expected}} រំពឹងទុក",
   "desktop.wsl.error.noVersion": "គ្មានកំណែ",
   "desktop.wsl.error.serverExited": "ម៉ាស៊ីនមេ WSL បានចាកចេញបន្ទាប់ពីការចាប់ផ្ដើម (កូដ={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -206,7 +206,7 @@ export const dict = {
   "dialog.model.manage": "គ្រប់គ្រងម៉ូដែល",
   "dialog.model.manage.description": "ប្ដូរម៉ូដែលដែលបង្ហាញក្នុងឧបករណ៍ជ្រើសរើសម៉ូដែលតាមបំណង។",
   "dialog.model.manage.provider.toggle": "បិទ/បើកម៉ូដែល {{provider}} ទាំងអស់។",
-  "dialog.model.unpaid.freeModels.title": "ម៉ូដែលឥតគិតថ្លៃដែលផ្តល់ដោយ OpenCode",
+  "dialog.model.unpaid.freeModels.title": "ម៉ូដែលឥតគិតថ្លៃដែលផ្តល់ដោយ AllCode",
   "dialog.model.unpaid.addMore.title": "បន្ថែមម៉ូដែលជាច្រើនទៀតពីអ្នកផ្តល់សេវាពេញនិយម",
   "dialog.model.unpaid.viewMoreProviders": "មើលអ្នកផ្តល់សេវា 70+ ទៀត។",
   "dialog.provider.viewAll": "បង្ហាញអ្នកផ្តល់សេវាបន្ថែម",
@@ -220,7 +220,7 @@ export const dict = {
   "provider.connect.status.waiting": "រង់ចាំការអនុញ្ញាត...",
   "provider.connect.status.failed": "ការអនុញ្ញាតបានបរាជ័យ៖ {{error}}",
   "provider.connect.apiKey.description":
-    "បញ្ចូល {{provider}} API key របស់អ្នក ដើម្បីភ្ជាប់គណនីរបស់អ្នក ហើយប្រើម៉ូដែល {{provider}} នៅក្នុង OpenCode។",
+    "បញ្ចូល {{provider}} API key របស់អ្នក ដើម្បីភ្ជាប់គណនីរបស់អ្នក ហើយប្រើម៉ូដែល {{provider}} នៅក្នុង AllCode។",
   "provider.connect.apiKey.label": "សោ API {{provider}}",
   "provider.connect.apiKey.placeholder": "សោ API",
   "provider.connect.apiKey.required": "ត្រូវការសោ API",
@@ -234,7 +234,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "ទស្សនា",
   "provider.connect.oauth.code.visit.link": "តំណនេះ។",
   "provider.connect.oauth.code.visit.suffix":
-    "ដើម្បីប្រមូលលេខកូដអនុញ្ញាតរបស់អ្នកដើម្បីភ្ជាប់គណនីរបស់អ្នក និងប្រើម៉ូដែល {{provider}} នៅក្នុង OpenCode ។",
+    "ដើម្បីប្រមូលលេខកូដអនុញ្ញាតរបស់អ្នកដើម្បីភ្ជាប់គណនីរបស់អ្នក និងប្រើម៉ូដែល {{provider}} នៅក្នុង AllCode ។",
   "provider.connect.oauth.code.label": "លេខកូដអនុញ្ញាត {{method}}",
   "provider.connect.oauth.code.placeholder": "លេខកូដអនុញ្ញាត",
   "provider.connect.oauth.code.required": "ទាមទារលេខកូដអនុញ្ញាត",
@@ -242,7 +242,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "ទស្សនា",
   "provider.connect.oauth.auto.visit.link": "តំណនេះ។",
   "provider.connect.oauth.auto.visit.suffix":
-    "ហើយបញ្ចូលលេខកូដខាងក្រោមដើម្បីភ្ជាប់គណនីរបស់អ្នក ហើយប្រើម៉ូដែល {{provider}} នៅក្នុង OpenCode។",
+    "ហើយបញ្ចូលលេខកូដខាងក្រោមដើម្បីភ្ជាប់គណនីរបស់អ្នក ហើយប្រើម៉ូដែល {{provider}} នៅក្នុង AllCode។",
   "provider.connect.oauth.auto.confirmationCode": "លេខកូដបញ្ជាក់",
   "provider.connect.toast.connected.title": "{{provider}} បានភ្ជាប់",
   "provider.connect.toast.connected.description": "ម៉ូដែល {{provider}} ឥឡូវអាចប្រើបាន។",
@@ -410,7 +410,7 @@ export const dict = {
   "app.server.retrying": "កំពុងព្យាយាមម្តងទៀតដោយស្វ័យប្រវត្តិ...",
   "app.server.otherServers": "ម៉ាស៊ីនមេផ្សេងទៀត។",
   "dialog.server.title": "ម៉ាស៊ីនមេ",
-  "dialog.server.description": "ប្តូរម៉ាស៊ីនមេ OpenCode ដែលកម្មវិធីនេះភ្ជាប់ទៅ។",
+  "dialog.server.description": "ប្តូរម៉ាស៊ីនមេ AllCode ដែលកម្មវិធីនេះភ្ជាប់ទៅ។",
   "dialog.server.search.placeholder": "ម៉ាស៊ីនមេស្វែងរក",
   "dialog.server.empty": "មិនទាន់មានម៉ាស៊ីនមេទេ។",
   "dialog.server.add.title": "បន្ថែមម៉ាស៊ីនមេ",
@@ -449,7 +449,7 @@ export const dict = {
   "wsl.server.retryStart": "ព្យាយាមចាប់ផ្តើមឡើងវិញ",
   "wsl.server.updating": "កំពុងអាប់ដេត...",
   "wsl.onboarding.step.distro": "ជ្រើសរើស distro",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "កំពុងពិនិត្យ WSL...",
   "wsl.onboarding.restartRequired": "វីនដូត្រូវការការចាប់ផ្តើមឡើងវិញដើម្បីបញ្ចប់ការដំឡើង WSL ។",
   "wsl.onboarding.ready": "WSL រួចរាល់ហើយ។",
@@ -463,16 +463,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "បើក {{distro}} ម្តង ដើម្បីបញ្ចប់ការដំឡើង។",
   "wsl.onboarding.finishingDistro": "បញ្ចប់ការដំឡើងសម្រាប់ {{distro}} ។",
   "wsl.onboarding.pickDistro": "ជ្រើសរើស distro ឬដំឡើងមួយខាងក្រោម។",
-  "wsl.onboarding.checkingOpencode": "កំពុងពិនិត្យមើលកូដ OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "កំពុងពិនិត្យកូដ OpenCode ក្នុង {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "កំពុងអាប់ដេត OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "កំពុងអាប់ដេត OpenCode ក្នុង {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "ធ្វើបច្ចុប្បន្នភាព OpenCode ក្នុង {{distro}} ។",
-  "wsl.onboarding.updateOpencode": "ធ្វើបច្ចុប្បន្នភាព OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode គឺរួចរាល់នៅក្នុង {{distro}} ។",
-  "wsl.onboarding.opencodeReady": "OpenCode គឺរួចរាល់។",
-  "wsl.onboarding.installOpencodeIn": "ដំឡើង OpenCode ក្នុង {{distro}} ។",
-  "wsl.onboarding.installOpencode": "ដំឡើង OpenCode",
+  "wsl.onboarding.checkingOpencode": "កំពុងពិនិត្យមើលកូដ AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "កំពុងពិនិត្យកូដ AllCode ក្នុង {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "កំពុងអាប់ដេត AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "កំពុងអាប់ដេត AllCode ក្នុង {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "ធ្វើបច្ចុប្បន្នភាព AllCode ក្នុង {{distro}} ។",
+  "wsl.onboarding.updateOpencode": "ធ្វើបច្ចុប្បន្នភាព AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode គឺរួចរាល់នៅក្នុង {{distro}} ។",
+  "wsl.onboarding.opencodeReady": "AllCode គឺរួចរាល់។",
+  "wsl.onboarding.installOpencodeIn": "ដំឡើង AllCode ក្នុង {{distro}} ។",
+  "wsl.onboarding.installOpencode": "ដំឡើង AllCode",
   "wsl.onboarding.chooseDistroFirst": "ជ្រើសរើសការចែកចាយជាមុនសិន។",
   "wsl.onboarding.loadFailed": "បានបរាជ័យក្នុងការផ្ទុកស្ថានភាព WSL ។",
   "wsl.onboarding.loading": "កំពុងផ្ទុក...",
@@ -480,19 +480,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "ពិនិត្យម្តងទៀត",
   "wsl.onboarding.distroStatus.ready": "រួចរាល់",
   "wsl.onboarding.distroStatus.checking": "កំពុងពិនិត្យ...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode មិនត្រូវបានដំឡើងទេ។",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode មិនត្រូវបានដំឡើងទេ។",
   "wsl.onboarding.distroStatus.missingTools": "បាត់ bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "មិនគាំទ្រ · ប្រើ WSL 2",
   "wsl.onboarding.needAnotherDistro": "ត្រូវការអ្នកចែកចាយផ្សេងទៀតទេ?",
   "wsl.onboarding.needAnotherDistroHint": "ដំឡើងការចែកចាយលីនុចពីកាតាឡុក WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL មិនត្រូវបានដំឡើងទេ។",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (ប្រព័ន្ធរងវីនដូសម្រាប់លីនុច) ត្រូវបានទាមទារ មុនពេល OpenCode អាចបន្ថែមម៉ាស៊ីនមេ WSL",
+    "WSL (ប្រព័ន្ធរងវីនដូសម្រាប់លីនុច) ត្រូវបានទាមទារ មុនពេល AllCode អាចបន្ថែមម៉ាស៊ីនមេ WSL",
   "wsl.onboarding.wslUnavailable.title": "WSL មិនអាចប្រើបានទេ។",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode មិនអាចផ្ទៀងផ្ទាត់ WSL នៅលើម៉ាស៊ីននេះបានទេ។",
+  "wsl.onboarding.wslUnavailable.description": "AllCode មិនអាចផ្ទៀងផ្ទាត់ WSL នៅលើម៉ាស៊ីននេះបានទេ។",
   "wsl.onboarding.installWsl": "ដំឡើង WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "ចាប់ផ្ដើម Windows ឡើងវិញ ដើម្បីបញ្ចប់ការដំឡើង WSL បន្ទាប់មកបើក OpenCode ឡើងវិញ។",
+    "ចាប់ផ្ដើម Windows ឡើងវិញ ដើម្បីបញ្ចប់ការដំឡើង WSL បន្ទាប់មកបើក AllCode ឡើងវិញ។",
   "wsl.onboarding.next": "បន្ទាប់",
   "wsl.onboarding.refresh": "ធ្វើឱ្យស្រស់",
   "wsl.onboarding.allDistrosAdded": "ការចែកចាយដែលបានដំឡើងទាំងអស់ត្រូវបានបន្ថែមរួចហើយ។",
@@ -516,7 +516,7 @@ export const dict = {
   "help.tabs.title": "ការណែនាំផ្ទាំង",
   "help.tabs.description": "រៀបចំការងារ និងសម័យសកម្មរបស់អ្នកជាមួយផ្ទាំង",
   "help.tabs.date": "ថ្ងៃទី 14 ខែកក្កដា",
-  "help.tabs.introduction": "OpenCode Desktop ឥឡូវនេះត្រូវបានបង្កើតឡើងនៅជុំវិញផ្ទាំង។",
+  "help.tabs.introduction": "AllCode Desktop ឥឡូវនេះត្រូវបានបង្កើតឡើងនៅជុំវិញផ្ទាំង។",
   "help.tabs.sessions":
     "ចាប់ផ្តើមសម័យថ្មីនៅក្នុងផ្ទាំងមួយ ឬបើកសម័យដែលមានស្រាប់ពីគម្រោងណាមួយរបស់អ្នក។ បើកផ្ទាំងថ្មីនៅពេលអ្នកចាប់ផ្តើមអ្វីថ្មី ហើយបិទវានៅពេលអ្នករួចរាល់។",
   "help.tabs.organize":
@@ -625,7 +625,7 @@ export const dict = {
   "toast.session.listFailed.title": "បានបរាជ័យក្នុងការផ្ទុកសម័យសម្រាប់ {{project}}",
   "toast.project.reloadFailed.title": "បានបរាជ័យក្នុងការផ្ទុក {{project}} ឡើងវិញ",
   "toast.update.title": "មានបច្ចុប្បន្នភាព",
-  "toast.update.description": "កំណែថ្មីនៃ OpenCode ({{version}}) ឥឡូវនេះមានសម្រាប់ដំឡើងហើយ។",
+  "toast.update.description": "កំណែថ្មីនៃ AllCode ({{version}}) ឥឡូវនេះមានសម្រាប់ដំឡើងហើយ។",
   "toast.update.action.installRestart": "ដំឡើង និងចាប់ផ្តើមឡើងវិញ",
   "toast.update.action.notYet": "មិនទាន់",
   "error.page.title": "មានអ្វីមួយខុសប្រក្រតី",
@@ -640,7 +640,7 @@ export const dict = {
   "error.page.action.checkUpdates": "ពិនិត្យមើលបច្ចុប្បន្នភាព",
   "error.page.action.updateTo": "ធ្វើបច្ចុប្បន្នភាពទៅ {{version}}",
   "error.page.circular": "[សារាចរ]",
-  "error.page.report.prefix": "សូមរាយការណ៍ពីកំហុសនេះទៅកាន់ក្រុម OpenCode",
+  "error.page.report.prefix": "សូមរាយការណ៍ពីកំហុសនេះទៅកាន់ក្រុម AllCode",
   "error.page.report.discord": "នៅលើ Discord",
   "error.page.version": "កំណែ៖ {{version}}",
   "error.dev.rootNotFound":
@@ -663,7 +663,7 @@ export const dict = {
   "error.chain.didYouMean": "តើអ្នកមានន័យថា៖ {{suggestions}}",
   "error.chain.modelNotFound": "រកមិនឃើញម៉ូដែល៖ {{provider}}/{{model}}",
   "error.chain.checkConfig": "ពិនិត្យការកំណត់រចនាសម្ព័ន្ធរបស់អ្នក (opencode.json) អ្នកផ្តល់សេវា/ឈ្មោះម៉ូដែល",
-  "error.chain.mcpFailed": 'ម៉ាស៊ីនមេ MCP "{{name}}" បានបរាជ័យ។ ចំណាំ OpenCode មិនគាំទ្រការផ្ទៀងផ្ទាត់ MCP នៅឡើយទេ។',
+  "error.chain.mcpFailed": 'ម៉ាស៊ីនមេ MCP "{{name}}" បានបរាជ័យ។ ចំណាំ AllCode មិនគាំទ្រការផ្ទៀងផ្ទាត់ MCP នៅឡើយទេ។',
   "error.chain.providerAuthFailed": "ការផ្ទៀងផ្ទាត់អ្នកផ្តល់សេវាបានបរាជ័យ ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'បានបរាជ័យក្នុងការចាប់ផ្តើមអ្នកផ្តល់សេវា "{{provider}}" ។ ពិនិត្យអត្តសញ្ញាណ និងការកំណត់រចនាសម្ព័ន្ធ។',
@@ -878,7 +878,7 @@ export const dict = {
   "sidebar.workspaces.enable": "បើកកន្លែងធ្វើការ",
   "sidebar.workspaces.disable": "បិទកន្លែងធ្វើការ",
   "sidebar.gettingStarted.title": "ការចាប់ផ្តើម",
-  "sidebar.gettingStarted.line1": "OpenCode រួមបញ្ចូលម៉ូដែលឥតគិតថ្លៃ ដូច្នេះអ្នកអាចចាប់ផ្តើមភ្លាមៗ។",
+  "sidebar.gettingStarted.line1": "AllCode រួមបញ្ចូលម៉ូដែលឥតគិតថ្លៃ ដូច្នេះអ្នកអាចចាប់ផ្តើមភ្លាមៗ។",
   "sidebar.gettingStarted.line2": "ភ្ជាប់អ្នកផ្តល់សេវាណាមួយដើម្បីប្រើម៉ូដែល, inc ។ Claude, GPT, Gemini ជាដើម។",
   "sidebar.project.recentSessions": "សម័យថ្មីៗ",
   "sidebar.project.viewAllSessions": "មើលសម័យទាំងអស់។",
@@ -917,14 +917,14 @@ export const dict = {
   "debugBar.direction.tip": "បង្ខំទិសដៅប្លង់កម្មវិធីពេញលេញដោយមិនផ្លាស់ប្តូរភាសាដែលបានជ្រើសរើស",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "ផ្ទៃតុ",
   "settings.section.server": "ម៉ាស៊ីនមេ",
   "settings.tab.general": "ទូទៅ",
   "settings.tab.shortcuts": "ផ្លូវកាត់",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "ការរួមបញ្ចូល WSL",
-  "settings.desktop.wsl.description": "ដំណើរការម៉ាស៊ីនមេ OpenCode នៅខាងក្នុង WSL នៅលើ Windows ។",
+  "settings.desktop.wsl.description": "ដំណើរការម៉ាស៊ីនមេ AllCode នៅខាងក្នុង WSL នៅលើ Windows ។",
   "settings.general.section.appearance": "រូបរាង",
   "settings.general.section.advanced": "កម្រិតខ្ពស់",
   "settings.general.section.notifications": "ការជូនដំណឹងប្រព័ន្ធ",
@@ -933,17 +933,17 @@ export const dict = {
   "settings.general.section.feed": "មតិព័ត៌មាន",
   "settings.general.section.display": "បង្ហាញ",
   "settings.general.row.language.title": "ភាសា",
-  "settings.general.row.language.description": "ប្តូរភាសាបង្ហាញសម្រាប់ OpenCode",
+  "settings.general.row.language.description": "ប្តូរភាសាបង្ហាញសម្រាប់ AllCode",
   "settings.general.row.shell.title": "សែលស្ថានីយ",
   "settings.general.row.shell.description": "សែលប្រើដោយឧបករណ៍ស្ថានីយ និងភ្នាក់ងារ",
   "settings.general.row.shell.autoDefault": "ស្វ័យប្រវត្តិ (លំនាំដើម)\nស្ថានីយ",
   "settings.general.row.shell.terminalOnly": "ប៉ុណ្ណោះ។",
   "settings.general.row.appearance.title": "រូបរាង",
-  "settings.general.row.appearance.description": "ប្ដូរតាមបំណងពីរបៀបដែល OpenCode មើលទៅលើឧបករណ៍របស់អ្នក។",
+  "settings.general.row.appearance.description": "ប្ដូរតាមបំណងពីរបៀបដែល AllCode មើលទៅលើឧបករណ៍របស់អ្នក។",
   "settings.general.row.colorScheme.title": "ពណ៌ចម្រុះ",
-  "settings.general.row.colorScheme.description": "ជ្រើសរើសថាតើ OpenCode ធ្វើតាមប្រព័ន្ធ ពន្លឺ ឬរូបរាងងងឹត",
+  "settings.general.row.colorScheme.description": "ជ្រើសរើសថាតើ AllCode ធ្វើតាមប្រព័ន្ធ ពន្លឺ ឬរូបរាងងងឹត",
   "settings.general.row.theme.title": "ស្បែក",
-  "settings.general.row.theme.description": "ប្ដូរតាមបំណងពីរបៀបដែល OpenCode មានប្រធានបទ។",
+  "settings.general.row.theme.description": "ប្ដូរតាមបំណងពីរបៀបដែល AllCode មានប្រធានបទ។",
   "settings.general.row.font.title": "ពុម្ពអក្សរកូដ",
   "settings.general.row.font.description": "ប្ដូរពុម្ពអក្សរដែលប្រើក្នុងប្លុកកូដតាមបំណង",
   "settings.general.row.terminalFont.title": "ពុម្ពអក្សរស្ថានីយ",
@@ -992,7 +992,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "កំណត់ចំណាំចេញផ្សាយ",
   "settings.general.row.releaseNotes.description": "បង្ហាញអ្វីដែលថ្មីលេចឡើងបន្ទាប់ពីការអាប់ដេត",
   "settings.updates.row.startup.title": "ពិនិត្យមើលការអាប់ដេតនៅពេលចាប់ផ្តើម",
-  "settings.updates.row.startup.description": "ពិនិត្យមើលការអាប់ដេតដោយស្វ័យប្រវត្តិនៅពេលដែល OpenCode ចាប់ផ្តើម",
+  "settings.updates.row.startup.description": "ពិនិត្យមើលការអាប់ដេតដោយស្វ័យប្រវត្តិនៅពេលដែល AllCode ចាប់ផ្តើម",
   "settings.updates.row.check.title": "ពិនិត្យមើលបច្ចុប្បន្នភាព",
   "settings.updates.row.check.description": "ពិនិត្យមើលបច្ចុប្បន្នភាពដោយដៃ ហើយដំឡើងប្រសិនបើមាន",
   "settings.updates.action.checkNow": "ពិនិត្យឥឡូវនេះ",
@@ -1000,7 +1000,7 @@ export const dict = {
   "settings.updates.action.downloading": "កំពុងទាញយក...",
   "settings.updates.action.installing": "កំពុងដំឡើង...",
   "settings.updates.toast.latest.title": "អ្នកទាន់សម័យហើយ។",
-  "settings.updates.toast.latest.description": "អ្នកកំពុងដំណើរការកំណែចុងក្រោយបំផុតនៃ OpenCode ។",
+  "settings.updates.toast.latest.description": "អ្នកកំពុងដំណើរការកំណែចុងក្រោយបំផុតនៃ AllCode ។",
   "sound.option.none": "គ្មានទេ។",
   "sound.option.alert01": "ដាស់តឿន ០១",
   "sound.option.alert02": "ដាស់តឿន ០២",
@@ -1280,11 +1280,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1382,7 +1382,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1394,14 +1394,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Наступний проєкт",
   "desktop.menu.minimize": "Згорнути",
   "desktop.menu.maximize": "Розгорнути",
-  "desktop.menu.documentation": "Документація OpenCode",
+  "desktop.menu.documentation": "Документація AllCode",
   "desktop.menu.supportForum": "Форум підтримки",
   "desktop.menu.shareFeedback": "Надіслати відгук",
   "desktop.menu.reportBug": "Повідомити про помилку",
-  "desktop.menu.ariaLabel": "Меню OpenCode",
+  "desktop.menu.ariaLabel": "Меню AllCode",
 
   "desktop.updater.dialog.checkFailed.message": "Не вдалося перевірити наявність оновлень.",
   "desktop.updater.dialog.checkFailed.title": "Помилка оновлення",
@@ -58,9 +58,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Експортувати журнали",
   "desktop.recovery.action.keepWaiting": "Продовжити очікування",
   "desktop.recovery.action.quit": "Завершити роботу",
-  "desktop.recovery.loadFailed": "Не вдалося завантажити OpenCode",
-  "desktop.recovery.terminated": "Роботу вікна OpenCode несподівано завершено",
-  "desktop.recovery.unresponsive": "OpenCode не відповідає",
+  "desktop.recovery.loadFailed": "Не вдалося завантажити AllCode",
+  "desktop.recovery.terminated": "Роботу вікна AllCode несподівано завершено",
+  "desktop.recovery.unresponsive": "AllCode не відповідає",
   "desktop.recovery.unresponsive.detail":
     "Ви можете повторно запустити програму, відкрити журнали або продовжити очікування.",
   "desktop.recovery.loadFailed.detail": "Вікно: {{window}}\nURL: {{url}}\nПомилка: {{code}} {{description}}",
@@ -80,13 +80,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Не вдалося виконати команди в дистрибутиві",
   "desktop.wsl.error.installWsl": "Не вдалося встановити WSL",
   "desktop.wsl.error.installDistro": "Не вдалося встановити дистрибутив: {{distro}}",
-  "desktop.wsl.error.installOpencode": "Не вдалося встановити OpenCode",
+  "desktop.wsl.error.installOpencode": "Не вдалося встановити AllCode",
   "desktop.wsl.error.alreadyAdded": "{{distro}} уже додано",
   "desktop.wsl.error.opencodeMissing": "opencode не встановлено в цьому дистрибутиві",
   "desktop.wsl.error.opencodeCannotRun": "opencode встановлено, але його не вдалося запустити",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode не встановлено в {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode не встановлено в {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "Оновлення OpenCode завершено, але {{distro}} усе ще повідомляє про версію {{installed}}; очікувалася {{expected}}",
+    "Оновлення AllCode завершено, але {{distro}} усе ще повідомляє про версію {{installed}}; очікувалася {{expected}}",
   "desktop.wsl.error.noVersion": "версію не вказано",
   "desktop.wsl.error.serverExited": "Сервер WSL завершив роботу після запуску (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -225,7 +225,7 @@ export const dict = {
   "dialog.model.manage.description": "Налаштуйте, які моделі відображатимуться у виборі моделей.",
   "dialog.model.manage.provider.toggle": "Перемкнути всі моделі {{provider}}",
 
-  "dialog.model.unpaid.freeModels.title": "Безкоштовні моделі від OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Безкоштовні моделі від AllCode",
   "dialog.model.unpaid.addMore.title": "Додати більше моделей від популярних провайдерів",
   "dialog.model.unpaid.viewMoreProviders": "Переглянути ще понад 70 провайдерів",
 
@@ -241,7 +241,7 @@ export const dict = {
   "provider.connect.status.waiting": "Очікування авторизації...",
   "provider.connect.status.failed": "Авторизація не вдалася: {{error}}",
   "provider.connect.apiKey.description":
-    "Введіть ключ API {{provider}}, щоб підключити обліковий запис і використовувати моделі {{provider}} у OpenCode.",
+    "Введіть ключ API {{provider}}, щоб підключити обліковий запис і використовувати моделі {{provider}} у AllCode.",
   "provider.connect.apiKey.label": "Ключ API {{provider}}",
   "provider.connect.apiKey.placeholder": "Ключ API",
   "provider.connect.apiKey.required": "Ключ API обов'язковий",
@@ -255,7 +255,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Відвідайте ",
   "provider.connect.oauth.code.visit.link": "це посилання",
   "provider.connect.oauth.code.visit.suffix":
-    ", щоб отримати код авторизації, підключити обліковий запис і використовувати моделі {{provider}} у OpenCode.",
+    ", щоб отримати код авторизації, підключити обліковий запис і використовувати моделі {{provider}} у AllCode.",
   "provider.connect.oauth.code.label": "Код авторизації {{method}}",
   "provider.connect.oauth.code.placeholder": "Код авторизації",
   "provider.connect.oauth.code.required": "Код авторизації обов'язковий",
@@ -263,7 +263,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Відвідайте ",
   "provider.connect.oauth.auto.visit.link": "це посилання",
   "provider.connect.oauth.auto.visit.suffix":
-    " і введіть код нижче, щоб підключити обліковий запис і використовувати моделі {{provider}} у OpenCode.",
+    " і введіть код нижче, щоб підключити обліковий запис і використовувати моделі {{provider}} у AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "Код підтвердження",
   "provider.connect.toast.connected.title": "{{provider}} підключено",
   "provider.connect.toast.connected.description": "Моделі {{provider}} тепер доступні для використання.",
@@ -447,7 +447,7 @@ export const dict = {
   "app.server.otherServers": "Інші сервери",
 
   "dialog.server.title": "Сервери",
-  "dialog.server.description": "Перемкніть сервер OpenCode, до якого підключається ця програма.",
+  "dialog.server.description": "Перемкніть сервер AllCode, до якого підключається ця програма.",
   "dialog.server.search.placeholder": "Пошук серверів",
   "dialog.server.empty": "Ще немає серверів",
   "dialog.server.add.title": "Додати сервер",
@@ -487,7 +487,7 @@ export const dict = {
   "wsl.server.retryStart": "Повторити запуск",
   "wsl.server.updating": "Оновлення...",
   "wsl.onboarding.step.distro": "Вибрати дистрибутив",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Перевірка WSL...",
   "wsl.onboarding.restartRequired": "Щоб завершити встановлення WSL, потрібно перезапустити Windows.",
   "wsl.onboarding.ready": "WSL готова до роботи.",
@@ -501,16 +501,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Відкрийте {{distro}} один раз, щоб завершити налаштування.",
   "wsl.onboarding.finishingDistro": "Завершення налаштування {{distro}}.",
   "wsl.onboarding.pickDistro": "Виберіть дистрибутив або встановіть один із наведених нижче.",
-  "wsl.onboarding.checkingOpencode": "Перевірка OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Перевірка OpenCode у {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Оновлення OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Оновлення OpenCode у {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Оновіть OpenCode у {{distro}}.",
-  "wsl.onboarding.updateOpencode": "Оновити OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode готовий до роботи у {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode готовий до роботи.",
-  "wsl.onboarding.installOpencodeIn": "Встановіть OpenCode у {{distro}}.",
-  "wsl.onboarding.installOpencode": "Встановити OpenCode",
+  "wsl.onboarding.checkingOpencode": "Перевірка AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Перевірка AllCode у {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Оновлення AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Оновлення AllCode у {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Оновіть AllCode у {{distro}}.",
+  "wsl.onboarding.updateOpencode": "Оновити AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode готовий до роботи у {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode готовий до роботи.",
+  "wsl.onboarding.installOpencodeIn": "Встановіть AllCode у {{distro}}.",
+  "wsl.onboarding.installOpencode": "Встановити AllCode",
   "wsl.onboarding.chooseDistroFirst": "Спочатку виберіть дистрибутив.",
   "wsl.onboarding.loadFailed": "Не вдалося завантажити стан WSL.",
   "wsl.onboarding.loading": "Завантаження...",
@@ -518,19 +518,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Перевірити ще раз",
   "wsl.onboarding.distroStatus.ready": "Готовий",
   "wsl.onboarding.distroStatus.checking": "Перевірка...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode не встановлено",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode не встановлено",
   "wsl.onboarding.distroStatus.missingTools": "Немає bash і curl",
   "wsl.onboarding.distroStatus.unsupported": "Не підтримується · Використовуйте WSL 2",
   "wsl.onboarding.needAnotherDistro": "Потрібен інший дистрибутив?",
   "wsl.onboarding.needAnotherDistroHint": "Встановіть дистрибутив Linux із каталогу WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL не встановлено",
   "wsl.onboarding.wslNotInstalled.description":
-    "Для додавання сервера WSL в OpenCode потрібна WSL (Підсистема Windows для Linux)",
+    "Для додавання сервера WSL в AllCode потрібна WSL (Підсистема Windows для Linux)",
   "wsl.onboarding.wslUnavailable.title": "WSL недоступна",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode не вдалося перевірити WSL на цьому комп'ютері.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode не вдалося перевірити WSL на цьому комп'ютері.",
   "wsl.onboarding.installWsl": "Встановити WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Перезапустіть Windows, щоб завершити встановлення WSL, а потім знову відкрийте OpenCode.",
+    "Перезапустіть Windows, щоб завершити встановлення WSL, а потім знову відкрийте AllCode.",
   "wsl.onboarding.next": "Далі",
   "wsl.onboarding.refresh": "Оновити",
   "wsl.onboarding.allDistrosAdded": "Усі встановлені дистрибутиви вже додано.",
@@ -555,7 +555,7 @@ export const dict = {
   "help.tabs.title": "Представляємо вкладки",
   "help.tabs.description": "Упорядковуйте роботу й активні сесії за допомогою вкладок",
   "help.tabs.date": "14 липня",
-  "help.tabs.introduction": "OpenCode Desktop тепер побудовано навколо вкладок.",
+  "help.tabs.introduction": "AllCode Desktop тепер побудовано навколо вкладок.",
   "help.tabs.sessions":
     "Почніть нову сесію у вкладці або відкрийте наявну сесію з будь-якого свого проєкту. Відкривайте нову вкладку, коли починаєте щось нове, і закривайте її після завершення.",
   "help.tabs.organize":
@@ -687,7 +687,7 @@ export const dict = {
   "toast.project.reloadFailed.title": "Не вдалося перезавантажити {{project}}",
 
   "toast.update.title": "Доступне оновлення",
-  "toast.update.description": "Нова версія OpenCode ({{version}}) тепер доступна для встановлення.",
+  "toast.update.description": "Нова версія AllCode ({{version}}) тепер доступна для встановлення.",
   "toast.update.action.installRestart": "Встановити та перезапустити",
   "toast.update.action.notYet": "Не зараз",
 
@@ -703,7 +703,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Перевірити оновлення",
   "error.page.action.updateTo": "Оновити до {{version}}",
   "error.page.circular": "[Циклічне]",
-  "error.page.report.prefix": "Будь ласка, повідомте про цю помилку команді OpenCode",
+  "error.page.report.prefix": "Будь ласка, повідомте про цю помилку команді AllCode",
   "error.page.report.discord": "у Discord",
   "error.page.version": "Версія: {{version}}",
 
@@ -730,7 +730,7 @@ export const dict = {
   "error.chain.modelNotFound": "Модель не знайдено: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Перевірте назви провайдерів/моделей у конфігурації (opencode.json)",
   "error.chain.mcpFailed":
-    'Сервер MCP "{{name}}" не працює. Зверніть увагу, OpenCode ще не підтримує автентифікацію MCP.',
+    'Сервер MCP "{{name}}" не працює. Зверніть увагу, AllCode ще не підтримує автентифікацію MCP.',
   "error.chain.providerAuthFailed": "Автентифікація провайдера не вдалася ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Не вдалося ініціалізувати провайдера "{{provider}}". Перевірте облікові дані та конфігурацію.',
@@ -970,7 +970,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Увімкнути робочі області",
   "sidebar.workspaces.disable": "Вимкнути робочі області",
   "sidebar.gettingStarted.title": "Початок роботи",
-  "sidebar.gettingStarted.line1": "OpenCode містить безкоштовні моделі, тому ви можете почати негайно.",
+  "sidebar.gettingStarted.line1": "AllCode містить безкоштовні моделі, тому ви можете почати негайно.",
   "sidebar.gettingStarted.line2":
     "Підключіть будь-якого провайдера, щоб використовувати моделі, включаючи Claude, GPT, Gemini тощо.",
   "sidebar.project.recentSessions": "Нещодавні сесії",
@@ -1011,7 +1011,7 @@ export const dict = {
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
 
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
 
   "settings.section.desktop": "Десктопний застосунок",
   "settings.section.server": "Сервер",
@@ -1019,7 +1019,7 @@ export const dict = {
   "settings.tab.shortcuts": "Клавіатурні скорочення",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "Інтеграція WSL",
-  "settings.desktop.wsl.description": "Запускати сервер OpenCode всередині WSL на Windows.",
+  "settings.desktop.wsl.description": "Запускати сервер AllCode всередині WSL на Windows.",
 
   "settings.general.section.appearance": "Зовнішній вигляд",
   "settings.general.section.advanced": "Додатково",
@@ -1030,18 +1030,18 @@ export const dict = {
   "settings.general.section.display": "Дисплей",
 
   "settings.general.row.language.title": "Мова",
-  "settings.general.row.language.description": "Змінити мову інтерфейсу OpenCode",
+  "settings.general.row.language.description": "Змінити мову інтерфейсу AllCode",
   "settings.general.row.shell.title": "Командна оболонка термінала",
   "settings.general.row.shell.description":
     "Виберіть оболонку для термінала. Сумісні оболонки також використовуються для викликів інструментів агента.",
   "settings.general.row.shell.autoDefault": "Автоматично (за замовчуванням)",
   "settings.general.row.shell.terminalOnly": "тільки термінал",
   "settings.general.row.appearance.title": "Зовнішній вигляд",
-  "settings.general.row.appearance.description": "Налаштуйте вигляд OpenCode на вашому пристрої",
+  "settings.general.row.appearance.description": "Налаштуйте вигляд AllCode на вашому пристрої",
   "settings.general.row.colorScheme.title": "Кольорова схема",
-  "settings.general.row.colorScheme.description": "Виберіть, чи OpenCode використовує системну, світлу або темну тему",
+  "settings.general.row.colorScheme.description": "Виберіть, чи AllCode використовує системну, світлу або темну тему",
   "settings.general.row.theme.title": "Тема",
-  "settings.general.row.theme.description": "Налаштуйте тему OpenCode.",
+  "settings.general.row.theme.description": "Налаштуйте тему AllCode.",
   "settings.general.row.font.title": "Шрифт коду",
   "settings.general.row.font.description": "Налаштуйте шрифт, який використовується в блоках коду",
   "settings.general.row.terminalFont.title": "Шрифт термінала",
@@ -1098,7 +1098,7 @@ export const dict = {
   "settings.general.row.releaseNotes.description": 'Показувати спливаючі вікна "Що нового" після оновлень',
 
   "settings.updates.row.startup.title": "Перевіряти оновлення під час запуску",
-  "settings.updates.row.startup.description": "Автоматично перевіряти наявність оновлень під час запуску OpenCode",
+  "settings.updates.row.startup.description": "Автоматично перевіряти наявність оновлень під час запуску AllCode",
   "settings.updates.row.check.title": "Перевірити оновлення",
   "settings.updates.row.check.description": "Вручну перевірити наявність оновлень і встановити, якщо доступні",
   "settings.updates.action.checkNow": "Перевірити зараз",
@@ -1106,7 +1106,7 @@ export const dict = {
   "settings.updates.action.downloading": "Завантаження...",
   "settings.updates.action.installing": "Встановлення...",
   "settings.updates.toast.latest.title": "У вас актуальна версія",
-  "settings.updates.toast.latest.description": "Ви використовуєте останню версію OpenCode.",
+  "settings.updates.toast.latest.description": "Ви використовуєте останню версію AllCode.",
   "sound.option.none": "Немає",
   "sound.option.alert01": "Alert 01",
   "sound.option.alert02": "Alert 02",
@@ -1396,11 +1396,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1498,7 +1498,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1510,14 +1510,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

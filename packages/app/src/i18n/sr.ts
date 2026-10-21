@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Следећи пројекат",
   "desktop.menu.minimize": "Умањи",
   "desktop.menu.maximize": "Увећај",
-  "desktop.menu.documentation": "OpenCode Документација",
+  "desktop.menu.documentation": "AllCode Документација",
   "desktop.menu.supportForum": "Форум подршке",
   "desktop.menu.shareFeedback": "Делите повратне информације",
   "desktop.menu.reportBug": "Пријавите грешку",
-  "desktop.menu.ariaLabel": "OpenCode мени",
+  "desktop.menu.ariaLabel": "AllCode мени",
   "desktop.updater.dialog.checkFailed.message": "Провера ажурирања није успела.",
   "desktop.updater.dialog.checkFailed.title": "Грешка при ажурирању",
   "desktop.updater.dialog.upToDate.message": "Ажурни сте.",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Извоз евиденције",
   "desktop.recovery.action.keepWaiting": "Кееп Ваитинг",
   "desktop.recovery.action.quit": "Прекини",
-  "desktop.recovery.loadFailed": "OpenCode није успело учитавање",
-  "desktop.recovery.terminated": "OpenCode прозор је неочекивано прекинут",
-  "desktop.recovery.unresponsive": "OpenCode не реагује",
+  "desktop.recovery.loadFailed": "AllCode није успело учитавање",
+  "desktop.recovery.terminated": "AllCode прозор је неочекивано прекинут",
+  "desktop.recovery.unresponsive": "AllCode не реагује",
   "desktop.recovery.unresponsive.detail":
     "Можете поново покренути апликацију, отворити евиденције или наставити да чекате.",
   "desktop.recovery.loadFailed.detail": "Прозор: {{window}}\nURL: {{url}}\nГрешка: {{code}} {{description}}",
@@ -76,13 +76,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Не могу да изврше команде у дистрибуцији",
   "desktop.wsl.error.installWsl": "WSL инсталација није успела",
   "desktop.wsl.error.installDistro": "Инсталација дистрибуције није успела: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode инсталација није успела",
+  "desktop.wsl.error.installOpencode": "AllCode инсталација није успела",
   "desktop.wsl.error.alreadyAdded": "{{distro}} је већ додат",
   "desktop.wsl.error.opencodeMissing": "opencode није инсталиран у овој дистрибуцији",
   "desktop.wsl.error.opencodeCannotRun": "opencode је инсталиран, али не може да се покрене",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode није инсталиран у {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode није инсталиран у {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "OpenCode ажурирање је завршено, али {{distro}} и даље извештава {{installed}}; очекивано {{expected}}",
+    "AllCode ажурирање је завршено, али {{distro}} и даље извештава {{installed}}; очекивано {{expected}}",
   "desktop.wsl.error.noVersion": "нема верзије",
   "desktop.wsl.error.serverExited": "WSL сервер је изашао након покретања (код={{code}} сигнал={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -207,7 +207,7 @@ export const dict = {
   "dialog.model.manage": "Управљајте моделима",
   "dialog.model.manage.description": "Прилагодите који се модели појављују у бирачу модела.",
   "dialog.model.manage.provider.toggle": "Укључите све {{provider}} моделе",
-  "dialog.model.unpaid.freeModels.title": "Бесплатне моделе обезбеђује OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Бесплатне моделе обезбеђује AllCode",
   "dialog.model.unpaid.addMore.title": "Додајте још модела популарних провајдера",
   "dialog.model.unpaid.viewMoreProviders": "Погледајте више од 70 провајдера",
   "dialog.provider.viewAll": "Прикажи више добављача",
@@ -221,7 +221,7 @@ export const dict = {
   "provider.connect.status.waiting": "Чека се ауторизација...",
   "provider.connect.status.failed": "Ауторизација није успела: {{error}}",
   "provider.connect.apiKey.description":
-    "Унесите свој {{provider}} API кључ да бисте повезали свој налог и користили {{provider}} моделе у OpenCode.",
+    "Унесите свој {{provider}} API кључ да бисте повезали свој налог и користили {{provider}} моделе у AllCode.",
   "provider.connect.apiKey.label": "{{provider}} API кључ",
   "provider.connect.apiKey.placeholder": "API кључ",
   "provider.connect.apiKey.required": "API кључ је неопходан",
@@ -235,7 +235,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Посетите",
   "provider.connect.oauth.code.visit.link": "ова веза",
   "provider.connect.oauth.code.visit.suffix":
-    "да бисте прикупили ваш ауторизациони код за повезивање налога и коришћење {{provider}} модела у OpenCode.",
+    "да бисте прикупили ваш ауторизациони код за повезивање налога и коришћење {{provider}} модела у AllCode.",
   "provider.connect.oauth.code.label": "{{method}} ауторизациони код",
   "provider.connect.oauth.code.placeholder": "Ауторизациони код",
   "provider.connect.oauth.code.required": "Потребан је код за ауторизацију",
@@ -243,7 +243,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Посетите",
   "provider.connect.oauth.auto.visit.link": "ова веза",
   "provider.connect.oauth.auto.visit.suffix":
-    "и унесите код испод да бисте повезали свој налог и користили {{provider}} моделе у OpenCode.",
+    "и унесите код испод да бисте повезали свој налог и користили {{provider}} моделе у AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "код за потврду",
   "provider.connect.toast.connected.title": "{{provider}} повезан",
   "provider.connect.toast.connected.description": "{{provider}} модела је сада доступно за коришћење.",
@@ -411,7 +411,7 @@ export const dict = {
   "app.server.retrying": "Аутоматски поновни покушај...",
   "app.server.otherServers": "Други сервери",
   "dialog.server.title": "Сервери",
-  "dialog.server.description": "Промените на који OpenCode сервер се ова апликација повезује.",
+  "dialog.server.description": "Промените на који AllCode сервер се ова апликација повезује.",
   "dialog.server.search.placeholder": "сервери за претрагу",
   "dialog.server.empty": "Још нема сервера",
   "dialog.server.add.title": "Додај сервер",
@@ -450,7 +450,7 @@ export const dict = {
   "wsl.server.retryStart": "Поново покушајте",
   "wsl.server.updating": "Ажурирање...",
   "wsl.onboarding.step.distro": "Изаберите дистро",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Проверавам WSL...",
   "wsl.onboarding.restartRequired": "Windows потребно је поновно покретање да би се завршила инсталација WSL.",
   "wsl.onboarding.ready": "WSL је спреман.",
@@ -464,16 +464,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Отворите {{distro}} једном да бисте завршили подешавање.",
   "wsl.onboarding.finishingDistro": "Завршавање подешавања за {{distro}}.",
   "wsl.onboarding.pickDistro": "Изаберите дистро или га инсталирајте испод.",
-  "wsl.onboarding.checkingOpencode": "Проверавам OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Проверавам OpenCode у {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Ажурирање OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Ажурирање OpenCode у {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Ажурирајте OpenCode у {{distro}}.",
-  "wsl.onboarding.updateOpencode": "ажурирање OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode је спреман за {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode је спреман.",
-  "wsl.onboarding.installOpencodeIn": "Инсталирајте OpenCode у {{distro}}.",
-  "wsl.onboarding.installOpencode": "Инсталирај OpenCode",
+  "wsl.onboarding.checkingOpencode": "Проверавам AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Проверавам AllCode у {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Ажурирање AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Ажурирање AllCode у {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Ажурирајте AllCode у {{distro}}.",
+  "wsl.onboarding.updateOpencode": "ажурирање AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode је спреман за {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode је спреман.",
+  "wsl.onboarding.installOpencodeIn": "Инсталирајте AllCode у {{distro}}.",
+  "wsl.onboarding.installOpencode": "Инсталирај AllCode",
   "wsl.onboarding.chooseDistroFirst": "Прво изаберите дистро.",
   "wsl.onboarding.loadFailed": "Учитавање WSL стања није успело.",
   "wsl.onboarding.loading": "Учитавање...",
@@ -481,19 +481,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Проверите поново",
   "wsl.onboarding.distroStatus.ready": "Спреман",
   "wsl.onboarding.distroStatus.checking": "Проверавам...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode није инсталиран",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode није инсталиран",
   "wsl.onboarding.distroStatus.missingTools": "недостаје bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "Неподржано · Користите WSL 2",
   "wsl.onboarding.needAnotherDistro": "Треба вам још један дистро?",
   "wsl.onboarding.needAnotherDistroHint": "Инсталирајте Linux дистрибуцију из каталога WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL није инсталиран",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Subsystem for Linux) је потребан да би OpenCode могао да дода WSL сервер",
+    "WSL (Windows Subsystem for Linux) је потребан да би AllCode могао да дода WSL сервер",
   "wsl.onboarding.wslUnavailable.title": "WSL недоступан",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode није могао да потврди WSL на овој машини.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode није могао да потврди WSL на овој машини.",
   "wsl.onboarding.installWsl": "Инсталирај WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Поново покрените Windows да бисте завршили инсталирање WSL, а затим поново отворите OpenCode.",
+    "Поново покрените Windows да бисте завршили инсталирање WSL, а затим поново отворите AllCode.",
   "wsl.onboarding.next": "Следеће",
   "wsl.onboarding.refresh": "Освежи",
   "wsl.onboarding.allDistrosAdded": "Све инсталиране дистрибуције су већ додате.",
@@ -517,7 +517,7 @@ export const dict = {
   "help.tabs.title": "Представљамо картице",
   "help.tabs.description": "Организујте свој рад и активне сесије помоћу картица",
   "help.tabs.date": "14. јул",
-  "help.tabs.introduction": "OpenCode Desktop је сада направљен око картица.",
+  "help.tabs.introduction": "AllCode Desktop је сада направљен око картица.",
   "help.tabs.sessions":
     "Започните нову сесију на картици или отворите постојећу сесију из било ког пројекта. Отворите нову картицу када започињете нешто ново и затворите је када завршите.",
   "help.tabs.organize":
@@ -627,7 +627,7 @@ export const dict = {
   "toast.session.listFailed.title": "Учитавање сесија за {{project}} није успело",
   "toast.project.reloadFailed.title": "Поновно учитавање није успело {{project}}",
   "toast.update.title": "доступно је ажурирање",
-  "toast.update.description": "Нова верзија OpenCode ({{version}}) је сада доступна за инсталацију.",
+  "toast.update.description": "Нова верзија AllCode ({{version}}) је сада доступна за инсталацију.",
   "toast.update.action.installRestart": "Инсталирајте и поново покрените",
   "toast.update.action.notYet": "Не још",
   "error.page.title": "Нешто је пошло наопако",
@@ -642,7 +642,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Проверите да ли постоје ажурирања",
   "error.page.action.updateTo": "ажурирање на {{version}}",
   "error.page.circular": "[Цирцулар]",
-  "error.page.report.prefix": "пријавите ову грешку OpenCode тиму",
+  "error.page.report.prefix": "пријавите ову грешку AllCode тиму",
   "error.page.report.discord": "дана Discord",
   "error.page.version": "Верзија: {{version}}",
   "error.dev.rootNotFound":
@@ -666,7 +666,7 @@ export const dict = {
   "error.chain.modelNotFound": "Модел није пронађен: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Проверите имена добављача/модела конфигурације (opencode.json).",
   "error.chain.mcpFailed":
-    "MCP сервер „{{name}}“ није успео. Напомена, OpenCode још увек не подржава MCP аутентификацију.",
+    "MCP сервер „{{name}}“ није успео. Напомена, AllCode још увек не подржава MCP аутентификацију.",
   "error.chain.providerAuthFailed": "аутентификација добављача није успела ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     "Иницијализација добављача „{{provider}}“ није успела. Проверите акредитиве и конфигурацију.",
@@ -884,7 +884,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Омогућите радне просторе",
   "sidebar.workspaces.disable": "Онемогућите радне просторе",
   "sidebar.gettingStarted.title": "Почетак",
-  "sidebar.gettingStarted.line1": "OpenCode укључује бесплатне моделе тако да можете одмах да почнете.",
+  "sidebar.gettingStarted.line1": "AllCode укључује бесплатне моделе тако да можете одмах да почнете.",
   "sidebar.gettingStarted.line2":
     "Повежите било ког провајдера да бисте користили моделе, вк. Claude, GPT, Gemini итд.",
   "sidebar.project.recentSessions": "Недавне сесије",
@@ -923,14 +923,14 @@ export const dict = {
   "debugBar.direction.tip": "Форсирајте пун смер распореда апликације без промене изабраног језика",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "Десктоп",
   "settings.section.server": "Сервер",
   "settings.tab.general": "Опште",
   "settings.tab.shortcuts": "Пречице",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL интеграција",
-  "settings.desktop.wsl.description": "Покрените OpenCode сервер унутар WSL на Windows.",
+  "settings.desktop.wsl.description": "Покрените AllCode сервер унутар WSL на Windows.",
   "settings.general.section.appearance": "Изглед",
   "settings.general.section.advanced": "Напредно",
   "settings.general.section.notifications": "Системска обавештења",
@@ -939,17 +939,17 @@ export const dict = {
   "settings.general.section.feed": "Феед",
   "settings.general.section.display": "Приказ",
   "settings.general.row.language.title": "Језик",
-  "settings.general.row.language.description": "Промените језик приказа за OpenCode",
+  "settings.general.row.language.description": "Промените језик приказа за AllCode",
   "settings.general.row.shell.title": "Терминал shell",
   "settings.general.row.shell.description": "Shell који користе алати терминала и агента",
   "settings.general.row.shell.autoDefault": "аутоматски (подразумевано)",
   "settings.general.row.shell.terminalOnly": "само терминал",
   "settings.general.row.appearance.title": "Изглед",
-  "settings.general.row.appearance.description": "Прилагодите како OpenCode изгледа на вашем уређају",
+  "settings.general.row.appearance.description": "Прилагодите како AllCode изгледа на вашем уређају",
   "settings.general.row.colorScheme.title": "Шема боја",
-  "settings.general.row.colorScheme.description": "Одаберите да ли OpenCode прати системску, светлу или тамну тему",
+  "settings.general.row.colorScheme.description": "Одаберите да ли AllCode прати системску, светлу или тамну тему",
   "settings.general.row.theme.title": "Тема",
-  "settings.general.row.theme.description": "Прилагодите како је OpenCode тематски.",
+  "settings.general.row.theme.description": "Прилагодите како је AllCode тематски.",
   "settings.general.row.font.title": "Фонт кода",
   "settings.general.row.font.description": "Прилагодите фонт који се користи у блоковима кода",
   "settings.general.row.terminalFont.title": "Фонт терминала",
@@ -1002,7 +1002,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "белешке о издању",
   "settings.general.row.releaseNotes.description": "Прикажи шта је ново након ажурирања",
   "settings.updates.row.startup.title": "Проверите да ли има ажурирања при покретању",
-  "settings.updates.row.startup.description": "Аутоматски провери да ли постоје ажурирања када се OpenCode покрене",
+  "settings.updates.row.startup.description": "Аутоматски провери да ли постоје ажурирања када се AllCode покрене",
   "settings.updates.row.check.title": "Проверите да ли постоје ажурирања",
   "settings.updates.row.check.description": "Ручно проверите да ли постоје ажурирања и инсталирајте ако су доступна",
   "settings.updates.action.checkNow": "Проверите сада",
@@ -1010,7 +1010,7 @@ export const dict = {
   "settings.updates.action.downloading": "Преузимање...",
   "settings.updates.action.installing": "Инсталирање...",
   "settings.updates.toast.latest.title": "Ажурни сте",
-  "settings.updates.toast.latest.description": "Користите најновију верзију OpenCode.",
+  "settings.updates.toast.latest.description": "Користите најновију верзију AllCode.",
   "sound.option.none": "Нема",
   "sound.option.alert01": "Упозорење 01",
   "sound.option.alert02": "Упозорење 02",
@@ -1290,11 +1290,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1392,7 +1392,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1404,14 +1404,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

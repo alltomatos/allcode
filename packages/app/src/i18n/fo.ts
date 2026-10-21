@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Næsta verkætlan",
   "desktop.menu.minimize": "Minka um",
   "desktop.menu.maximize": "Maksimera",
-  "desktop.menu.documentation": "OpenCode Skjøl",
+  "desktop.menu.documentation": "AllCode Skjøl",
   "desktop.menu.supportForum": "Stuðulsforum",
   "desktop.menu.shareFeedback": "Deil afturmeldingar",
   "desktop.menu.reportBug": "Melda ein feil",
-  "desktop.menu.ariaLabel": "OpenCode valmynd",
+  "desktop.menu.ariaLabel": "AllCode valmynd",
   "desktop.updater.dialog.checkFailed.message": "Dagføringarkanningin miseydnaðist.",
   "desktop.updater.dialog.checkFailed.title": "Dagføring feilur",
   "desktop.updater.dialog.upToDate.message": "Tú ert dagførdur.",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Útflyt loggar",
   "desktop.recovery.action.keepWaiting": "Halt áfram at bíða",
   "desktop.recovery.action.quit": "Gevst",
-  "desktop.recovery.loadFailed": "OpenCode miseydnaðist at heinta",
-  "desktop.recovery.terminated": "OpenCode vindeygað endað óvæntað",
-  "desktop.recovery.unresponsive": "OpenCode svarar ikki",
+  "desktop.recovery.loadFailed": "AllCode miseydnaðist at heinta",
+  "desktop.recovery.terminated": "AllCode vindeygað endað óvæntað",
+  "desktop.recovery.unresponsive": "AllCode svarar ikki",
   "desktop.recovery.unresponsive.detail": "Tú kanst seta appina í gongd aftur, lata loggarnar upp ella bíða.",
   "desktop.recovery.loadFailed.detail": "Vindeyga: {{window}}\nURL: {{url}}\nFeilur: {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "Vindeyga: {{window}}\nOrsøk: {{reason}}\nKoda: {{code}}",
@@ -75,13 +75,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Kann ikki útføra skipanir í distro",
   "desktop.wsl.error.installWsl": "WSL uppsetingin miseydnaðist",
   "desktop.wsl.error.installDistro": "Tað eydnaðist ikki at seta distro upp: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode uppsetingin miseydnaðist",
+  "desktop.wsl.error.installOpencode": "AllCode uppsetingin miseydnaðist",
   "desktop.wsl.error.alreadyAdded": "{{distro}} er longu lagt afturat .",
   "desktop.wsl.error.opencodeMissing": "opencode er ikki sett upp í hesi distro",
   "desktop.wsl.error.opencodeCannotRun": "opencode er sett upp men kundi ikki koyra",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode er ikki sett upp í {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode er ikki sett upp í {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "OpenCode dagføring liðug men {{distro}} greiðir enn frá {{installed}}; væntað {{expected}}.",
+    "AllCode dagføring liðug men {{distro}} greiðir enn frá {{installed}}; væntað {{expected}}.",
   "desktop.wsl.error.noVersion": "eingin útgáva",
   "desktop.wsl.error.serverExited": "WSL-ambætarin steðgaði eftir uppstart (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -206,7 +206,7 @@ export const dict = {
   "dialog.model.manage": "Umsita modellir",
   "dialog.model.manage.description": "Tillaga hvørji modell síggjast í modellveljaranum.",
   "dialog.model.manage.provider.toggle": "Skift øll {{provider}} modellini",
-  "dialog.model.unpaid.freeModels.title": "Ókeypis modellir veitt av OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Ókeypis modellir veitt av AllCode",
   "dialog.model.unpaid.addMore.title": "Legg fleiri modellir til frá vælumtóktum veitarum",
   "dialog.model.unpaid.viewMoreProviders": "Sí 70+ fleiri veitarar",
   "dialog.provider.viewAll": "Vís fleiri veitarar",
@@ -220,7 +220,7 @@ export const dict = {
   "provider.connect.status.waiting": "Bíða eftir heimild...",
   "provider.connect.status.failed": "Heimild miseydnaðist: {{error}}",
   "provider.connect.apiKey.description":
-    "Skriva {{provider}} API-lykilin fyri at knýta kontuna saman og brúka {{provider}}-modell í OpenCode.",
+    "Skriva {{provider}} API-lykilin fyri at knýta kontuna saman og brúka {{provider}}-modell í AllCode.",
   "provider.connect.apiKey.label": "{{provider}} API lykil",
   "provider.connect.apiKey.placeholder": "API lykil",
   "provider.connect.apiKey.required": "API lykilin er kravdur",
@@ -234,7 +234,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Vitja ",
   "provider.connect.oauth.code.visit.link": "hesa leinkjuna",
   "provider.connect.oauth.code.visit.suffix":
-    " at savna inn tína heimildarkotu til at knýta tína kontu saman og brúka {{provider}} modellir í OpenCode.",
+    " at savna inn tína heimildarkotu til at knýta tína kontu saman og brúka {{provider}} modellir í AllCode.",
   "provider.connect.oauth.code.label": "{{method}} heimildarkoda",
   "provider.connect.oauth.code.placeholder": "Heimildarkoda",
   "provider.connect.oauth.code.required": "Heimildarkoda er kravd",
@@ -242,7 +242,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Vitja ",
   "provider.connect.oauth.auto.visit.link": "hesa leinkjuna",
   "provider.connect.oauth.auto.visit.suffix":
-    " og skriva kotuna niðanfyri fyri at knýta tína kontu saman og brúka {{provider}} modellir í OpenCode.",
+    " og skriva kotuna niðanfyri fyri at knýta tína kontu saman og brúka {{provider}} modellir í AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "Staðfestingarkoda",
   "provider.connect.toast.connected.title": "{{provider}} tengt",
   "provider.connect.toast.connected.description": "{{provider}} modellir eru nú tøk at brúka.",
@@ -410,7 +410,7 @@ export const dict = {
   "app.server.retrying": "Roynir aftur sjálvvirkandi...",
   "app.server.otherServers": "Aðrir ambætarar",
   "dialog.server.title": "Ambætarar",
-  "dialog.server.description": "Skift hvønn OpenCode ambætara henda appin hevur samband við.",
+  "dialog.server.description": "Skift hvønn AllCode ambætara henda appin hevur samband við.",
   "dialog.server.search.placeholder": "Leita eftir ambætarum",
   "dialog.server.empty": "Ongar ambætarar enn",
   "dialog.server.add.title": "Legg ambætara til",
@@ -449,7 +449,7 @@ export const dict = {
   "wsl.server.retryStart": "Royn aftur at byrja",
   "wsl.server.updating": "Dagføring...",
   "wsl.onboarding.step.distro": "Vel distro",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Kanna WSL...",
   "wsl.onboarding.restartRequired": "Windows hevur brúk fyri endurbyrjan fyri at klára at seta upp WSL.",
   "wsl.onboarding.ready": "WSL er klárt.",
@@ -463,16 +463,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Opna {{distro}} einaferð fyri at klára uppsetingina.",
   "wsl.onboarding.finishingDistro": "Klára uppseting til {{distro}}.",
   "wsl.onboarding.pickDistro": "Vel eina distro ella set eina upp niðanfyri.",
-  "wsl.onboarding.checkingOpencode": "Kanna OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Kanna OpenCode í {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Dagføring OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Dagføring OpenCode í {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Dagfør OpenCode í {{distro}}.",
-  "wsl.onboarding.updateOpencode": "Dagfør OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode er klárt í {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode er klárt.",
-  "wsl.onboarding.installOpencodeIn": "Set OpenCode upp í {{distro}}.",
-  "wsl.onboarding.installOpencode": "Set upp OpenCode",
+  "wsl.onboarding.checkingOpencode": "Kanna AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Kanna AllCode í {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Dagføring AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Dagføring AllCode í {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Dagfør AllCode í {{distro}}.",
+  "wsl.onboarding.updateOpencode": "Dagfør AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode er klárt í {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode er klárt.",
+  "wsl.onboarding.installOpencodeIn": "Set AllCode upp í {{distro}}.",
+  "wsl.onboarding.installOpencode": "Set upp AllCode",
   "wsl.onboarding.chooseDistroFirst": "Vel eina distro fyrst.",
   "wsl.onboarding.loadFailed": "Tað eydnaðist ikki at heinta WSL tilstandin.",
   "wsl.onboarding.loading": "Heinta...",
@@ -480,19 +480,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Kanna aftur",
   "wsl.onboarding.distroStatus.ready": "Klárt",
   "wsl.onboarding.distroStatus.checking": "Kanna...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode ikki innstillað",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode ikki innstillað",
   "wsl.onboarding.distroStatus.missingTools": "Manglar bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "Óstuðlað · Brúka WSL 2",
   "wsl.onboarding.needAnotherDistro": "Tørvar tær eina aðra distro?",
   "wsl.onboarding.needAnotherDistroHint": "Set upp Linux útbreiðslu frá WSL kataloginum",
   "wsl.onboarding.wslNotInstalled.title": "WSL ikki innstillað",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Undirskipan til Linux) er kravd áðrenn OpenCode kann leggja ein WSL ambætara til",
+    "WSL (Windows Undirskipan til Linux) er kravd áðrenn AllCode kann leggja ein WSL ambætara til",
   "wsl.onboarding.wslUnavailable.title": "WSL ikki tøkt",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode kundi ikki staðfesta WSL á hesi maskinuni.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode kundi ikki staðfesta WSL á hesi maskinuni.",
   "wsl.onboarding.installWsl": "Set upp WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Endurbyrja Windows fyri at klára at seta upp WSL, og opna síðani OpenCode aftur.",
+    "Endurbyrja Windows fyri at klára at seta upp WSL, og opna síðani AllCode aftur.",
   "wsl.onboarding.next": "Næsta",
   "wsl.onboarding.refresh": "Fríska upp",
   "wsl.onboarding.allDistrosAdded": "Allar uppsettar distros eru longu lagdar afturat.",
@@ -516,7 +516,7 @@ export const dict = {
   "help.tabs.title": "Innleiðing av flikum",
   "help.tabs.description": "Skipa títt arbeiði og virknu setur við flikum",
   "help.tabs.date": "14. juli Kl.",
-  "help.tabs.introduction": "OpenCode Skrivaraborð er nú bygt rundan um flikar.",
+  "help.tabs.introduction": "AllCode Skrivaraborð er nú bygt rundan um flikar.",
   "help.tabs.sessions":
     "Byrja eina nýggja setu í einum flipa, ella opna eina verandi setu frá nøkrum av tínum verkætlanum. Lat ein nýggjan flipa upp, tá tú byrjar okkurt nýtt, og lat hann aftur, tá tú ert liðugur.",
   "help.tabs.organize":
@@ -626,7 +626,7 @@ export const dict = {
   "toast.session.listFailed.title": "Tað eydnaðist ikki at heinta setur fyri {{project}}",
   "toast.project.reloadFailed.title": "Tað eydnaðist ikki at endurlesa {{project}}",
   "toast.update.title": "Dagføring er tøk",
-  "toast.update.description": "Ein nýggj útgáva av OpenCode ({{version}}) er nú tøk at seta upp.",
+  "toast.update.description": "Ein nýggj útgáva av AllCode ({{version}}) er nú tøk at seta upp.",
   "toast.update.action.installRestart": "Set upp og endurbyrja",
   "toast.update.action.notYet": "Ikki enn",
   "error.page.title": "Okkurt gekk galið",
@@ -641,7 +641,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Kanna fyri dagføringum",
   "error.page.action.updateTo": "Dagfør til {{version}}",
   "error.page.circular": "[Rundskriv]",
-  "error.page.report.prefix": "Vinarliga melda hendan feilin til OpenCode toymið",
+  "error.page.report.prefix": "Vinarliga melda hendan feilin til AllCode toymið",
   "error.page.report.discord": "á Discord",
   "error.page.version": "Útgáva: {{version}}",
   "error.dev.rootNotFound":
@@ -665,7 +665,7 @@ export const dict = {
   "error.chain.didYouMean": "Meinti tú: {{suggestions}}",
   "error.chain.modelNotFound": "Fyrimynd ikki funnið: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Kanna tíni uppseting (opencode.json) veitara/modell nøvn",
-  "error.chain.mcpFailed": 'MCP ambætarin "{{name}}" miseydnaðist. Viðmæli, OpenCode stuðlar ikki MCP sannroynd enn.',
+  "error.chain.mcpFailed": 'MCP ambætarin "{{name}}" miseydnaðist. Viðmæli, AllCode stuðlar ikki MCP sannroynd enn.',
   "error.chain.providerAuthFailed": "Veitaragóðkenning miseydnaðist ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Tað eydnaðist ikki at initialisera veitara "{{provider}}". Kanna trúnaðarupplýsingar og uppseting.',
@@ -881,7 +881,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Virkja workspace",
   "sidebar.workspaces.disable": "Slá workspace frá",
   "sidebar.gettingStarted.title": "Kom í gongd",
-  "sidebar.gettingStarted.line1": "OpenCode inniheldur ókeypis modellir so tú kanst byrja beinanvegin.",
+  "sidebar.gettingStarted.line1": "AllCode inniheldur ókeypis modellir so tú kanst byrja beinanvegin.",
   "sidebar.gettingStarted.line2":
     "Set ein og hvønn veitara í samband við at brúka modellir, inc. Claude, GPT, Gemini o.s.fr.",
   "sidebar.project.recentSessions": "Seinastu fundir",
@@ -919,14 +919,14 @@ export const dict = {
   "debugBar.direction.tip": "Tvinga alla app-uppsetingina uttan at broyta valda málið",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode Skrivaraborð",
+  "app.name.desktop": "AllCode Skrivaraborð",
   "settings.section.desktop": "Skrivaraborð",
   "settings.section.server": "Ambætari",
   "settings.tab.general": "Almenn",
   "settings.tab.shortcuts": "Snarvegir",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL samanlegging",
-  "settings.desktop.wsl.description": "Koyr OpenCode ambætaran inni í WSL á Windows.",
+  "settings.desktop.wsl.description": "Koyr AllCode ambætaran inni í WSL á Windows.",
   "settings.general.section.appearance": "Útsjónd",
   "settings.general.section.advanced": "Framkomin",
   "settings.general.section.notifications": "Skipanarfráboðanir",
@@ -935,17 +935,17 @@ export const dict = {
   "settings.general.section.feed": "Fóður",
   "settings.general.section.display": "Sýn",
   "settings.general.row.language.title": "Mál",
-  "settings.general.row.language.description": "Broyt sýnismálið fyri OpenCode",
+  "settings.general.row.language.description": "Broyt sýnismálið fyri AllCode",
   "settings.general.row.shell.title": "Terminal-shell",
   "settings.general.row.shell.description": "Shell, sum terminal- og agenttólini brúka",
   "settings.general.row.shell.autoDefault": "Sjálvvirkandi (Standard)",
   "settings.general.row.shell.terminalOnly": "bert farstøð",
   "settings.general.row.appearance.title": "Útsjónd",
-  "settings.general.row.appearance.description": "Tillaga hvussu OpenCode sær út á tínari eind",
+  "settings.general.row.appearance.description": "Tillaga hvussu AllCode sær út á tínari eind",
   "settings.general.row.colorScheme.title": "Litskipan",
-  "settings.general.row.colorScheme.description": "Vel um OpenCode fylgir skipanini, ljósa ella myrka temanum",
+  "settings.general.row.colorScheme.description": "Vel um AllCode fylgir skipanini, ljósa ella myrka temanum",
   "settings.general.row.theme.title": "Tema",
-  "settings.general.row.theme.description": "Tillaga hvussu OpenCode er tema.",
+  "settings.general.row.theme.description": "Tillaga hvussu AllCode er tema.",
   "settings.general.row.font.title": "Koda skriftslag",
   "settings.general.row.font.description": "Tillaga skriftslagið, sum verður brúkt í kodublokkum",
   "settings.general.row.terminalFont.title": "Terminalskriftslag",
@@ -995,7 +995,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "Útgávuviðmerkingar",
   "settings.general.row.releaseNotes.description": "Vís Hvat er nýtt popups eftir dagføringar",
   "settings.updates.row.startup.title": "Kanna fyri dagføringum um uppstart",
-  "settings.updates.row.startup.description": "Kanna sjálvvirkandi fyri dagføringum, tá OpenCode byrjar",
+  "settings.updates.row.startup.description": "Kanna sjálvvirkandi fyri dagføringum, tá AllCode byrjar",
   "settings.updates.row.check.title": "Kanna fyri dagføringum",
   "settings.updates.row.check.description": "Kanna manuelt fyri dagføringum og set upp, um tær eru tøkar",
   "settings.updates.action.checkNow": "Kanna nú",
@@ -1003,7 +1003,7 @@ export const dict = {
   "settings.updates.action.downloading": "Heinta...",
   "settings.updates.action.installing": "Seta upp...",
   "settings.updates.toast.latest.title": "Tú ert dagførdur",
-  "settings.updates.toast.latest.description": "Tú koyrir nýggjastu útgávuna av OpenCode.",
+  "settings.updates.toast.latest.description": "Tú koyrir nýggjastu útgávuna av AllCode.",
   "sound.option.none": "Eingin",
   "sound.option.alert01": "Ávaring 01",
   "sound.option.alert02": "Ávaring 02",
@@ -1283,11 +1283,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1385,7 +1385,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1397,14 +1397,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

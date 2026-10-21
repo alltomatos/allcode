@@ -124,7 +124,7 @@ export const dict = {
   "dialog.model.manage.description": "Tilpas hvilke modeller der vises i modelvælgeren.",
   "dialog.model.manage.provider.toggle": "Skift alle {{provider}}-modeller",
 
-  "dialog.model.unpaid.freeModels.title": "Gratis modeller leveret af OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Gratis modeller leveret af AllCode",
   "dialog.model.unpaid.addMore.title": "Tilføj flere modeller fra populære udbydere",
   "dialog.model.unpaid.viewMoreProviders": "Se mere end 70 yderligere udbydere",
 
@@ -140,7 +140,7 @@ export const dict = {
   "provider.connect.status.waiting": "Venter på godkendelse...",
   "provider.connect.status.failed": "Godkendelse mislykkedes: {{error}}",
   "provider.connect.apiKey.description":
-    "Indtast din API-nøgle til {{provider}} for at forbinde din konto og bruge modeller fra {{provider}} i OpenCode.",
+    "Indtast din API-nøgle til {{provider}} for at forbinde din konto og bruge modeller fra {{provider}} i AllCode.",
   "provider.connect.apiKey.label": "API-nøgle til {{provider}}",
   "provider.connect.apiKey.placeholder": "API-nøgle",
   "provider.connect.apiKey.required": "API-nøgle er påkrævet",
@@ -154,7 +154,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Besøg ",
   "provider.connect.oauth.code.visit.link": "dette link",
   "provider.connect.oauth.code.visit.suffix":
-    " for at hente din godkendelseskode, forbinde din konto og bruge modeller fra {{provider}} i OpenCode.",
+    " for at hente din godkendelseskode, forbinde din konto og bruge modeller fra {{provider}} i AllCode.",
   "provider.connect.oauth.code.label": "{{method}} godkendelseskode",
   "provider.connect.oauth.code.placeholder": "Godkendelseskode",
   "provider.connect.oauth.code.required": "Godkendelseskode er påkrævet",
@@ -162,7 +162,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Besøg ",
   "provider.connect.oauth.auto.visit.link": "dette link",
   "provider.connect.oauth.auto.visit.suffix":
-    " og indtast koden nedenfor for at forbinde din konto og bruge modeller fra {{provider}} i OpenCode.",
+    " og indtast koden nedenfor for at forbinde din konto og bruge modeller fra {{provider}} i AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "Bekræftelseskode",
   "provider.connect.toast.connected.title": "{{provider}} forbundet",
   "provider.connect.toast.connected.description": "Modeller fra {{provider}} er nu tilgængelige.",
@@ -339,7 +339,7 @@ export const dict = {
   "dialog.directory.readError": "Denne mappe kan ikke læses",
 
   "dialog.server.title": "Servere",
-  "dialog.server.description": "Skift hvilken OpenCode-server denne app forbinder til.",
+  "dialog.server.description": "Skift hvilken AllCode-server denne app forbinder til.",
   "dialog.server.search.placeholder": "Søg servere",
   "dialog.server.empty": "Ingen servere endnu",
   "dialog.server.add.title": "Tilføj en server",
@@ -377,7 +377,7 @@ export const dict = {
   "wsl.server.retryStart": "Prøv at starte igen",
   "wsl.server.updating": "Opdaterer...",
   "wsl.onboarding.step.distro": "Vælg distribution",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Tjekker WSL...",
   "wsl.onboarding.restartRequired": "Windows skal genstartes for at fuldføre installationen af WSL.",
   "wsl.onboarding.ready": "WSL er klar.",
@@ -391,16 +391,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Åbn {{distro}} én gang for at fuldføre opsætningen.",
   "wsl.onboarding.finishingDistro": "Fuldfører opsætningen af {{distro}}.",
   "wsl.onboarding.pickDistro": "Vælg en distribution, eller installer en nedenfor.",
-  "wsl.onboarding.checkingOpencode": "Tjekker OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Tjekker OpenCode i {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Opdaterer OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Opdaterer OpenCode i {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Opdater OpenCode i {{distro}}.",
-  "wsl.onboarding.updateOpencode": "Opdater OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode er klar i {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode er klar.",
-  "wsl.onboarding.installOpencodeIn": "Installer OpenCode i {{distro}}.",
-  "wsl.onboarding.installOpencode": "Installer OpenCode",
+  "wsl.onboarding.checkingOpencode": "Tjekker AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Tjekker AllCode i {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Opdaterer AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Opdaterer AllCode i {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Opdater AllCode i {{distro}}.",
+  "wsl.onboarding.updateOpencode": "Opdater AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode er klar i {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode er klar.",
+  "wsl.onboarding.installOpencodeIn": "Installer AllCode i {{distro}}.",
+  "wsl.onboarding.installOpencode": "Installer AllCode",
   "wsl.onboarding.chooseDistroFirst": "Vælg først en distribution.",
   "wsl.onboarding.loadFailed": "Kunne ikke indlæse WSL-status.",
   "wsl.onboarding.loading": "Indlæser...",
@@ -408,19 +408,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Tjek igen",
   "wsl.onboarding.distroStatus.ready": "Klar",
   "wsl.onboarding.distroStatus.checking": "Tjekker...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode er ikke installeret",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode er ikke installeret",
   "wsl.onboarding.distroStatus.missingTools": "Mangler bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "Ikke understøttet · Brug WSL 2",
   "wsl.onboarding.needAnotherDistro": "Har du brug for en anden distribution?",
   "wsl.onboarding.needAnotherDistroHint": "Installer en Linux-distribution fra WSL-kataloget",
   "wsl.onboarding.wslNotInstalled.title": "WSL er ikke installeret",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Subsystem for Linux) er påkrævet, før OpenCode kan tilføje en WSL-server",
+    "WSL (Windows Subsystem for Linux) er påkrævet, før AllCode kan tilføje en WSL-server",
   "wsl.onboarding.wslUnavailable.title": "WSL er ikke tilgængelig",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode kunne ikke bekræfte WSL på denne maskine.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode kunne ikke bekræfte WSL på denne maskine.",
   "wsl.onboarding.installWsl": "Installer WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Genstart Windows for at fuldføre installationen af WSL, og åbn derefter OpenCode igen.",
+    "Genstart Windows for at fuldføre installationen af WSL, og åbn derefter AllCode igen.",
   "wsl.onboarding.next": "Næste",
   "wsl.onboarding.refresh": "Opdater",
   "wsl.onboarding.allDistrosAdded": "Alle installerede distributioner er allerede tilføjet.",
@@ -553,7 +553,7 @@ export const dict = {
   "toast.session.listFailed.title": "Kunne ikke indlæse sessioner for {{project}}",
 
   "toast.update.title": "Opdatering tilgængelig",
-  "toast.update.description": "En ny version af OpenCode ({{version}}) er nu tilgængelig til installation.",
+  "toast.update.description": "En ny version af AllCode ({{version}}) er nu tilgængelig til installation.",
   "toast.update.action.installRestart": "Installer og genstart",
   "toast.update.action.notYet": "Ikke endnu",
 
@@ -568,7 +568,7 @@ export const dict = {
   "error.page.action.checking": "Tjekker...",
   "error.page.action.checkUpdates": "Tjek for opdateringer",
   "error.page.action.updateTo": "Opdater til {{version}}",
-  "error.page.report.prefix": "Rapporter venligst denne fejl til OpenCode-teamet",
+  "error.page.report.prefix": "Rapporter venligst denne fejl til AllCode-teamet",
   "error.page.report.discord": "på Discord",
   "error.page.version": "Version: {{version}}",
 
@@ -587,7 +587,7 @@ export const dict = {
   "error.chain.didYouMean": "Mente du: {{suggestions}}",
   "error.chain.modelNotFound": "Model ikke fundet: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Kontrollér udbyder- og modelnavnene i din konfiguration (opencode.json)",
-  "error.chain.mcpFailed": 'MCP-server "{{name}}" fejlede. Bemærk, OpenCode understøtter ikke MCP-godkendelse endnu.',
+  "error.chain.mcpFailed": 'MCP-server "{{name}}" fejlede. Bemærk, AllCode understøtter ikke MCP-godkendelse endnu.',
   "error.chain.providerAuthFailed": "Udbydergodkendelse mislykkedes ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Kunne ikke initialisere udbyder "{{provider}}". Tjek legitimationsoplysninger og konfiguration.',
@@ -773,7 +773,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Aktiver arbejdsområder",
   "sidebar.workspaces.disable": "Deaktiver arbejdsområder",
   "sidebar.gettingStarted.title": "Kom i gang",
-  "sidebar.gettingStarted.line1": "OpenCode inkluderer gratis modeller så du kan starte med det samme.",
+  "sidebar.gettingStarted.line1": "AllCode inkluderer gratis modeller så du kan starte med det samme.",
   "sidebar.gettingStarted.line2": "Forbind enhver udbyder for at bruge modeller, inkl. Claude, GPT, Gemini osv.",
   "sidebar.project.recentSessions": "Seneste sessioner",
   "sidebar.project.viewAllSessions": "Vis alle sessioner",
@@ -781,14 +781,14 @@ export const dict = {
   "sidebar.empty.title": "Ingen åbne projekter",
   "sidebar.empty.description": "Åbn et projekt for at komme i gang",
 
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "Desktop",
   "settings.section.server": "Server",
   "settings.tab.general": "Generelt",
   "settings.tab.shortcuts": "Genveje",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL-integration",
-  "settings.desktop.wsl.description": "Kør OpenCode-serveren inde i WSL på Windows.",
+  "settings.desktop.wsl.description": "Kør AllCode-serveren inde i WSL på Windows.",
 
   "settings.general.section.appearance": "Udseende",
   "settings.general.section.advanced": "Avanceret",
@@ -799,19 +799,19 @@ export const dict = {
   "settings.general.section.display": "Skærm",
 
   "settings.general.row.language.title": "Sprog",
-  "settings.general.row.language.description": "Ændr visningssproget for OpenCode",
+  "settings.general.row.language.description": "Ændr visningssproget for AllCode",
   "settings.general.row.shell.title": "Terminalshell",
   "settings.general.row.shell.description":
     "Vælg den shell, der bruges i din terminal. Kompatible shells bruges også til agentens værktøjskald.",
   "settings.general.row.shell.autoDefault": "Automatisk (standard)",
   "settings.general.row.shell.terminalOnly": "kun terminal",
   "settings.general.row.appearance.title": "Udseende",
-  "settings.general.row.appearance.description": "Tilpas hvordan OpenCode ser ud på din enhed",
+  "settings.general.row.appearance.description": "Tilpas hvordan AllCode ser ud på din enhed",
   "settings.general.row.colorScheme.title": "Farveskema",
   "settings.general.row.colorScheme.description":
-    "Vælg, om OpenCode skal følge systemtemaet eller bruge et lyst eller mørkt tema",
+    "Vælg, om AllCode skal følge systemtemaet eller bruge et lyst eller mørkt tema",
   "settings.general.row.theme.title": "Tema",
-  "settings.general.row.theme.description": "Tilpas OpenCodes tema.",
+  "settings.general.row.theme.description": "Tilpas AllCodes tema.",
   "settings.general.row.font.title": "Kode-skrifttype",
   "settings.general.row.font.description": "Tilpas skrifttypen, der bruges i kodeblokke",
   "settings.general.row.terminalFont.title": "Terminalskrifttype",
@@ -864,7 +864,7 @@ export const dict = {
   "settings.general.row.releaseNotes.description": 'Vis pop op-vinduer med "Hvad er nyt" efter opdateringer',
 
   "settings.updates.row.startup.title": "Tjek for opdateringer ved opstart",
-  "settings.updates.row.startup.description": "Tjek automatisk for opdateringer, når OpenCode starter",
+  "settings.updates.row.startup.description": "Tjek automatisk for opdateringer, når AllCode starter",
   "settings.updates.row.check.title": "Tjek for opdateringer",
   "settings.updates.row.check.description": "Tjek manuelt for opdateringer og installer, hvis tilgængelig",
   "settings.updates.action.checkNow": "Tjek nu",
@@ -872,7 +872,7 @@ export const dict = {
   "settings.updates.action.downloading": "Downloader...",
   "settings.updates.action.installing": "Installerer...",
   "settings.updates.toast.latest.title": "Du er opdateret",
-  "settings.updates.toast.latest.description": "Du kører den nyeste version af OpenCode.",
+  "settings.updates.toast.latest.description": "Du kører den nyeste version af AllCode.",
 
   "sound.option.none": "Ingen",
   "sound.option.alert01": "Alarm 01",
@@ -1181,11 +1181,11 @@ export const dict = {
   "desktop.menu.nextProject": "Næste projekt",
   "desktop.menu.minimize": "Minimer",
   "desktop.menu.maximize": "Maksimer",
-  "desktop.menu.documentation": "OpenCode-dokumentation",
+  "desktop.menu.documentation": "AllCode-dokumentation",
   "desktop.menu.supportForum": "Supportforum",
   "desktop.menu.shareFeedback": "Giv feedback",
   "desktop.menu.reportBug": "Rapportér en fejl",
-  "desktop.menu.ariaLabel": "OpenCode-menu",
+  "desktop.menu.ariaLabel": "AllCode-menu",
 
   "desktop.updater.dialog.checkFailed.message": "Søgningen efter opdateringer mislykkedes.",
   "desktop.updater.dialog.checkFailed.title": "Opdateringsfejl",
@@ -1200,9 +1200,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Eksportér logfiler",
   "desktop.recovery.action.keepWaiting": "Vent fortsat",
   "desktop.recovery.action.quit": "Afslut",
-  "desktop.recovery.loadFailed": "OpenCode kunne ikke indlæses",
-  "desktop.recovery.terminated": "OpenCode-vinduet blev uventet afsluttet",
-  "desktop.recovery.unresponsive": "OpenCode svarer ikke",
+  "desktop.recovery.loadFailed": "AllCode kunne ikke indlæses",
+  "desktop.recovery.terminated": "AllCode-vinduet blev uventet afsluttet",
+  "desktop.recovery.unresponsive": "AllCode svarer ikke",
   "desktop.recovery.unresponsive.detail": "Du kan starte appen igen, åbne logfilerne eller fortsætte med at vente.",
   "desktop.recovery.loadFailed.detail": "Vindue: {{window}}\nURL: {{url}}\nFejl: {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "Vindue: {{window}}\nÅrsag: {{reason}}\nKode: {{code}}",
@@ -1221,13 +1221,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Kan ikke udføre kommandoer i distributionen",
   "desktop.wsl.error.installWsl": "Installationen af WSL mislykkedes",
   "desktop.wsl.error.installDistro": "Kunne ikke installere distributionen: {{distro}}",
-  "desktop.wsl.error.installOpencode": "Installationen af OpenCode mislykkedes",
+  "desktop.wsl.error.installOpencode": "Installationen af AllCode mislykkedes",
   "desktop.wsl.error.alreadyAdded": "{{distro}} er allerede tilføjet",
   "desktop.wsl.error.opencodeMissing": "opencode er ikke installeret i denne distribution",
   "desktop.wsl.error.opencodeCannotRun": "opencode er installeret, men kunne ikke køre",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode er ikke installeret i {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode er ikke installeret i {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "Opdateringen af OpenCode er fuldført, men {{distro}} rapporterer stadig {{installed}}. Forventet: {{expected}}",
+    "Opdateringen af AllCode er fuldført, men {{distro}} rapporterer stadig {{installed}}. Forventet: {{expected}}",
   "desktop.wsl.error.noVersion": "ingen version",
   "desktop.wsl.error.serverExited": "WSL-serveren blev afsluttet efter opstart (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -1247,7 +1247,7 @@ export const dict = {
   "help.tabs.title": "Introduktion til faner",
   "help.tabs.description": "Organiser dit arbejde og dine aktive sessioner med faner",
   "help.tabs.date": "14. juli",
-  "help.tabs.introduction": "OpenCode Desktop er nu bygget op omkring faner.",
+  "help.tabs.introduction": "AllCode Desktop er nu bygget op omkring faner.",
   "help.tabs.sessions":
     "Start en ny session i en fane, eller åbn en eksisterende session fra et af dine projekter. Åbn en ny fane, når du går i gang med noget nyt, og luk den, når du er færdig.",
   "help.tabs.organize":
@@ -1377,11 +1377,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1479,7 +1479,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1491,14 +1491,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

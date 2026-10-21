@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Indiki taslama",
   "desktop.menu.minimize": "Minimallaşdyryň",
   "desktop.menu.maximize": "Ulaltmak",
-  "desktop.menu.documentation": "OpenCode Resminamalar",
+  "desktop.menu.documentation": "AllCode Resminamalar",
   "desktop.menu.supportForum": "Goldaw forumy",
   "desktop.menu.shareFeedback": "Pikir alyşma",
   "desktop.menu.reportBug": "Bug barada habar beriň",
-  "desktop.menu.ariaLabel": "OpenCode menýusy",
+  "desktop.menu.ariaLabel": "AllCode menýusy",
   "desktop.updater.dialog.checkFailed.message": "Täzelenme şowsuz boldy.",
   "desktop.updater.dialog.checkFailed.title": "Täzelenme säwligi",
   "desktop.updater.dialog.upToDate.message": "Döwrebap",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Surnallary eksport ediň",
   "desktop.recovery.action.keepWaiting": "Garaşmagy dowam ediň",
   "desktop.recovery.action.quit": "Taşla",
-  "desktop.recovery.loadFailed": "OpenCode ýükläp bilmedi",
-  "desktop.recovery.terminated": "OpenCode penjiresi garaşylmadyk ýagdaýda bes edildi",
-  "desktop.recovery.unresponsive": "OpenCode jogap berenok",
+  "desktop.recovery.loadFailed": "AllCode ýükläp bilmedi",
+  "desktop.recovery.terminated": "AllCode penjiresi garaşylmadyk ýagdaýda bes edildi",
+  "desktop.recovery.unresponsive": "AllCode jogap berenok",
   "desktop.recovery.unresponsive.detail":
     "Programmany täzeden açyp bilersiňiz, surnallary açyp ýa-da garaşyp bilersiňiz.",
   "desktop.recovery.loadFailed.detail": "Penjire: {{window}}\nURL: {{url}}\nRoralňyşlyk: {{code}} {{description}}",
@@ -76,13 +76,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Distroda buýruklary ýerine ýetirip bolmaýar",
   "desktop.wsl.error.installWsl": "WSL gurmak şowsuz",
   "desktop.wsl.error.installDistro": "Distro gurup bilmedi: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode gurmak şowsuz",
+  "desktop.wsl.error.installOpencode": "AllCode gurmak şowsuz",
   "desktop.wsl.error.alreadyAdded": "{{distro}} eýýäm goşuldy",
   "desktop.wsl.error.opencodeMissing": "açyk kod bu distroda gurlanok",
   "desktop.wsl.error.opencodeCannotRun": "opencode guruldy, ýöne işledip bilmedi",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode {{distro}} gurulmady",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode {{distro}} gurulmady",
   "desktop.wsl.error.updateVersion":
-    "OpenCode täzelenmesi gutardy, ýöne {{distro}} henizem {{installed}} habar berýär; garaşylýan {{expected}}",
+    "AllCode täzelenmesi gutardy, ýöne {{distro}} henizem {{installed}} habar berýär; garaşylýan {{expected}}",
   "desktop.wsl.error.noVersion": "wersiýasy ýok",
   "desktop.wsl.error.serverExited": "WSL serweri işe başlandan soň çykdy (kod = {{code}} signal = {{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -207,7 +207,7 @@ export const dict = {
   "dialog.model.manage": "Modelleri dolandyryň",
   "dialog.model.manage.description": "Model saýlaýjysynda haýsy modelleriň peýda bolýandygyny düzüň.",
   "dialog.model.manage.provider.toggle": "Zhli {{provider}} modellerini üýtgediň",
-  "dialog.model.unpaid.freeModels.title": "OpenCode tarapyndan mugt modeller",
+  "dialog.model.unpaid.freeModels.title": "AllCode tarapyndan mugt modeller",
   "dialog.model.unpaid.addMore.title": "Meşhur üpjün edijilerden has köp model goşuň",
   "dialog.model.unpaid.viewMoreProviders": "Moreene-de 70+ üpjün edijä serediň",
   "dialog.provider.viewAll": "Has köp üpjün edijini görkeziň",
@@ -221,7 +221,7 @@ export const dict = {
   "provider.connect.status.waiting": "Ygtyýarnama garaşýarys ...",
   "provider.connect.status.failed": "Ygtyýarnama şowsuz: {{error}}",
   "provider.connect.apiKey.description":
-    "Hasabyňyzy birikdirmek we OpenCode-da {{provider}} modellerini ulanmak üçin {{provider}} API açaryňyzy giriziň.",
+    "Hasabyňyzy birikdirmek we AllCode-da {{provider}} modellerini ulanmak üçin {{provider}} API açaryňyzy giriziň.",
   "provider.connect.apiKey.label": "{{provider}} API açary",
   "provider.connect.apiKey.placeholder": "API açary",
   "provider.connect.apiKey.required": "API açary talap edilýär",
@@ -235,7 +235,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Sapar ",
   "provider.connect.oauth.code.visit.link": "Bu baglanyşyk",
   "provider.connect.oauth.code.visit.suffix":
-    " hasabyňyzy birikdirmek we {{provider}} modellerini OpenCode-de ulanmak üçin ygtyýarnama koduňyzy ýygnamak.",
+    " hasabyňyzy birikdirmek we {{provider}} modellerini AllCode-de ulanmak üçin ygtyýarnama koduňyzy ýygnamak.",
   "provider.connect.oauth.code.label": "{{method}} ygtyýarnama kody",
   "provider.connect.oauth.code.placeholder": "Awtorizasiýa kody",
   "provider.connect.oauth.code.required": "Awtorizasiýa kody talap edilýär",
@@ -243,7 +243,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Sapar ",
   "provider.connect.oauth.auto.visit.link": "Bu baglanyşyk",
   "provider.connect.oauth.auto.visit.suffix":
-    " hasabyňyzy birikdirmek we {{provider}} modellerini OpenCode-de ulanmak üçin aşakdaky kody giriziň.",
+    " hasabyňyzy birikdirmek we {{provider}} modellerini AllCode-de ulanmak üçin aşakdaky kody giriziň.",
   "provider.connect.oauth.auto.confirmationCode": "Tassyklama kody",
   "provider.connect.toast.connected.title": "{{provider}} birikdirildi",
   "provider.connect.toast.connected.description": "{{provider}} modelleri indi ulanylyp bilner.",
@@ -411,7 +411,7 @@ export const dict = {
   "app.server.retrying": "Awtomatiki usulda gaýtadan synanyşmak ...",
   "app.server.otherServers": "Beýleki serwerler",
   "dialog.server.title": "Serwerler",
-  "dialog.server.description": "Bu programmanyň haýsy OpenCode serwerine birikýändigini üýtgediň.",
+  "dialog.server.description": "Bu programmanyň haýsy AllCode serwerine birikýändigini üýtgediň.",
   "dialog.server.search.placeholder": "Serwerleri gözläň",
   "dialog.server.empty": "Entek serwer ýok",
   "dialog.server.add.title": "Serwer goşuň",
@@ -450,7 +450,7 @@ export const dict = {
   "wsl.server.retryStart": "Başlaň",
   "wsl.server.updating": "Täzelenmek ...",
   "wsl.onboarding.step.distro": "Distro saýlaň",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "WSL barlamak ...",
   "wsl.onboarding.restartRequired": "Windows, WSL gurnamagy gutarmak üçin täzeden başlamaly.",
   "wsl.onboarding.ready": "WSL taýýar.",
@@ -464,16 +464,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Gurmak işini tamamlamak üçin {{distro}} bir gezek açyň.",
   "wsl.onboarding.finishingDistro": "{{distro}} üçin gurnama.",
   "wsl.onboarding.pickDistro": "Distro saýlaň ýa-da aşakda birini guruň.",
-  "wsl.onboarding.checkingOpencode": "OpenCode barlamak ...",
-  "wsl.onboarding.checkingOpencodeIn": "{{distro}} içinde OpenCode barlanýar...",
-  "wsl.onboarding.updatingOpencode": "OpenCode täzelenmek ...",
-  "wsl.onboarding.updatingOpencodeIn": "{{distro}}-de OpenCode täzelenmek ...",
-  "wsl.onboarding.updateOpencodeIn": "OpenCode-ni {{distro}}-de täzeläň.",
-  "wsl.onboarding.updateOpencode": "OpenCode täzeläň",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode {{distro}}-de taýýar.",
-  "wsl.onboarding.opencodeReady": "OpenCode taýýar.",
-  "wsl.onboarding.installOpencodeIn": "{{distro}}-de OpenCode guruň.",
-  "wsl.onboarding.installOpencode": "OpenCode guruň",
+  "wsl.onboarding.checkingOpencode": "AllCode barlamak ...",
+  "wsl.onboarding.checkingOpencodeIn": "{{distro}} içinde AllCode barlanýar...",
+  "wsl.onboarding.updatingOpencode": "AllCode täzelenmek ...",
+  "wsl.onboarding.updatingOpencodeIn": "{{distro}}-de AllCode täzelenmek ...",
+  "wsl.onboarding.updateOpencodeIn": "AllCode-ni {{distro}}-de täzeläň.",
+  "wsl.onboarding.updateOpencode": "AllCode täzeläň",
+  "wsl.onboarding.opencodeReadyIn": "AllCode {{distro}}-de taýýar.",
+  "wsl.onboarding.opencodeReady": "AllCode taýýar.",
+  "wsl.onboarding.installOpencodeIn": "{{distro}}-de AllCode guruň.",
+  "wsl.onboarding.installOpencode": "AllCode guruň",
   "wsl.onboarding.chooseDistroFirst": "Ilki bilen distro saýlaň.",
   "wsl.onboarding.loadFailed": "WSL ýagdaýyny ýükläp bilmedi.",
   "wsl.onboarding.loading": "Adingüklenýär ...",
@@ -481,18 +481,18 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Againene bir gezek barlaň",
   "wsl.onboarding.distroStatus.ready": "Taýýar",
   "wsl.onboarding.distroStatus.checking": "Barlamak ...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode gurulmady",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode gurulmady",
   "wsl.onboarding.distroStatus.missingTools": "Ingitirim bolan baş, egri",
   "wsl.onboarding.distroStatus.unsupported": "Goldaw berilmeýär · WSL 2 ulanyň",
   "wsl.onboarding.needAnotherDistro": "Başga bir distro gerekmi?",
   "wsl.onboarding.needAnotherDistroHint": "WSL katalogyndan Linux paýlanyşyny guruň",
   "wsl.onboarding.wslNotInstalled.title": "WSL gurulmady",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Linux üçin Windows kiçi ulgamy) OpenCode WSL serwerini goşmazdan ozal talap edilýär",
+    "WSL (Linux üçin Windows kiçi ulgamy) AllCode WSL serwerini goşmazdan ozal talap edilýär",
   "wsl.onboarding.wslUnavailable.title": "WSL elýeterli däl",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode bu enjamda WSL barlap bilmedi.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode bu enjamda WSL barlap bilmedi.",
   "wsl.onboarding.installWsl": "WSL guruň",
-  "wsl.onboarding.windowsRestartRequired": "WSL gurnamagy gutarmak üçin Windows-i täzeden açyň, soňra OpenCode açyň.",
+  "wsl.onboarding.windowsRestartRequired": "WSL gurnamagy gutarmak üçin Windows-i täzeden açyň, soňra AllCode açyň.",
   "wsl.onboarding.next": "Indiki",
   "wsl.onboarding.refresh": "Täzele",
   "wsl.onboarding.allDistrosAdded": "Gurlan distroslaryň hemmesi eýýäm goşuldy.",
@@ -517,7 +517,7 @@ export const dict = {
   "help.tabs.title": "Salgylar bilen tanyşdyrmak",
   "help.tabs.description": "Işleriňizi we işjeň sessiýalaryňyzy bellikler bilen tertipläň",
   "help.tabs.date": "14-nji iýul",
-  "help.tabs.introduction": "OpenCode Desktop indi goýmalaryň töwereginde guruldy.",
+  "help.tabs.introduction": "AllCode Desktop indi goýmalaryň töwereginde guruldy.",
   "help.tabs.sessions":
     "Salgyda täze sessiýa başlaň ýa-da islendik taslamaňyzdan bar bolan sessiýany açyň. Täze bir zat başlanyňyzda täze tab açyň we gutaranyňyzdan soň ýapyň.",
   "help.tabs.organize":
@@ -627,7 +627,7 @@ export const dict = {
   "toast.session.listFailed.title": "{{project}} üçin sessiýalary ýükläp bilmedi",
   "toast.project.reloadFailed.title": "{{project}} ýükläp bilmedi",
   "toast.update.title": "Täzelenme elýeterli",
-  "toast.update.description": "Indi gurmak üçin OpenCode ({{version}}) -iň täze wersiýasy bar.",
+  "toast.update.description": "Indi gurmak üçin AllCode ({{version}}) -iň täze wersiýasy bar.",
   "toast.update.action.installRestart": "Guruň we täzeden açyň",
   "toast.update.action.notYet": "Entek däl",
   "error.page.title": "Bir zat nädogry boldy",
@@ -642,7 +642,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Täzelenmeleri barlaň",
   "error.page.action.updateTo": "{{version}} täzeläň",
   "error.page.circular": "[Tegelek]",
-  "error.page.report.prefix": "Bu ýalňyşlygy OpenCode toparyna habar bermegiňizi haýyş edýäris",
+  "error.page.report.prefix": "Bu ýalňyşlygy AllCode toparyna habar bermegiňizi haýyş edýäris",
   "error.page.report.discord": "Diskord",
   "error.page.version": "Wersiýa: {{version}}",
   "error.dev.rootNotFound":
@@ -665,7 +665,7 @@ export const dict = {
   "error.chain.didYouMean": "Diýjek bolduňmy: {{suggestions}}",
   "error.chain.modelNotFound": "Model tapylmady: {{provider}} / {{model}}",
   "error.chain.checkConfig": "Konfigurasiýaňyzy (opencode.json) üpjün edijiniň / model atlaryny barlaň",
-  "error.chain.mcpFailed": 'MCP serweri "{{name}}" şowsuz. Üns beriň, OpenCode entek MCP tassyklamasyny goldamaýar.',
+  "error.chain.mcpFailed": 'MCP serweri "{{name}}" şowsuz. Üns beriň, AllCode entek MCP tassyklamasyny goldamaýar.',
   "error.chain.providerAuthFailed": "Prowaýderiň tassyklamasy şowsuz ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     '"{{provider}}" üpjün edijini işe girizip bilmedi. Şahsyýetnamalary we konfigurasiýany barlaň.',
@@ -881,7 +881,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Workspace-lary açyň",
   "sidebar.workspaces.disable": "Workspace-lary öçüriň",
   "sidebar.gettingStarted.title": "Başlamak",
-  "sidebar.gettingStarted.line1": "OpenCode mugt modelleri öz içine alýar, derrew başlap bilersiňiz.",
+  "sidebar.gettingStarted.line1": "AllCode mugt modelleri öz içine alýar, derrew başlap bilersiňiz.",
   "sidebar.gettingStarted.line2":
     "Modelleri ulanmak üçin islendik üpjün edijini birikdiriň. Claude, GPT, Gemini we ş.m.",
   "sidebar.project.recentSessions": "Soňky sessiýalar",
@@ -920,14 +920,14 @@ export const dict = {
   "debugBar.direction.tip": "Saýlanan dili üýtgetmän doly programma düzüliş ugruny mejbur ediň",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "Iş stoly",
   "settings.section.server": "Serwer",
   "settings.tab.general": "Umumy",
   "settings.tab.shortcuts": "Salgylanmalar",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL integrasiýa",
-  "settings.desktop.wsl.description": "OpenCode serwerini WSL-de Windows-de işlediň.",
+  "settings.desktop.wsl.description": "AllCode serwerini WSL-de Windows-de işlediň.",
   "settings.general.section.appearance": "Daş görnüşi",
   "settings.general.section.advanced": "Ösen",
   "settings.general.section.notifications": "Ulgam habarnamalary",
@@ -936,18 +936,18 @@ export const dict = {
   "settings.general.section.feed": "Iýmit",
   "settings.general.section.display": "Ekran",
   "settings.general.row.language.title": "Dil",
-  "settings.general.row.language.description": "OpenCode üçin displeý dilini üýtgediň",
+  "settings.general.row.language.description": "AllCode üçin displeý dilini üýtgediň",
   "settings.general.row.shell.title": "Terminal shell-i",
   "settings.general.row.shell.description": "Terminal we agent gurallary tarapyndan ulanylýan shell",
   "settings.general.row.shell.autoDefault": "Awto (Bellenilen)",
   "settings.general.row.shell.terminalOnly": "Diňe terminal",
   "settings.general.row.appearance.title": "Daş görnüşi",
-  "settings.general.row.appearance.description": "OpenCode enjamyňyzda nähili görünýändigini düzüň",
+  "settings.general.row.appearance.description": "AllCode enjamyňyzda nähili görünýändigini düzüň",
   "settings.general.row.colorScheme.title": "Reňk shemasy",
   "settings.general.row.colorScheme.description":
-    "OpenCode ulgamy, ýagtylygy ýa-da garaňky temany yzarlaýandygyny saýlaň",
+    "AllCode ulgamy, ýagtylygy ýa-da garaňky temany yzarlaýandygyny saýlaň",
   "settings.general.row.theme.title": "Mowzuk",
-  "settings.general.row.theme.description": "OpenCode-iň mowzuklydygyny düzüň.",
+  "settings.general.row.theme.description": "AllCode-iň mowzuklydygyny düzüň.",
   "settings.general.row.font.title": "Kod şrifti",
   "settings.general.row.font.description": "Kod bloklarynda ulanylýan şrifti düzüň",
   "settings.general.row.terminalFont.title": "Terminal şrifti",
@@ -1000,7 +1000,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "Bellikleri goýberiň",
   "settings.general.row.releaseNotes.description": "Täzelenmelerden soň täze çykýanlary görkeziň",
   "settings.updates.row.startup.title": "Başlangyçdaky täzelenmeleri barlaň",
-  "settings.updates.row.startup.description": "OpenCode işe başlanda täzelenmeleri awtomatiki barlaň",
+  "settings.updates.row.startup.description": "AllCode işe başlanda täzelenmeleri awtomatiki barlaň",
   "settings.updates.row.check.title": "Täzelenmeleri barlaň",
   "settings.updates.row.check.description": "Täzelenmeleri el bilen barlaň we bar bolsa guruň",
   "settings.updates.action.checkNow": "Indi barlaň",
@@ -1008,7 +1008,7 @@ export const dict = {
   "settings.updates.action.downloading": "Ingüklemek ...",
   "settings.updates.action.installing": "Gurmak ...",
   "settings.updates.toast.latest.title": "Döwrebap",
-  "settings.updates.toast.latest.description": "OpenCode-iň iň soňky wersiýasyny işleýärsiňiz.",
+  "settings.updates.toast.latest.description": "AllCode-iň iň soňky wersiýasyny işleýärsiňiz.",
   "sound.option.none": "Hiç",
   "sound.option.alert01": "Duýduryş 01",
   "sound.option.alert02": "Duýduryş 02",
@@ -1288,11 +1288,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1390,7 +1390,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1402,14 +1402,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

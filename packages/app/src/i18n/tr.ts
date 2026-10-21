@@ -43,11 +43,11 @@ export const dict = {
   "desktop.menu.nextProject": "Sonraki proje",
   "desktop.menu.minimize": "Simge durumuna küçült",
   "desktop.menu.maximize": "Ekranı kapla",
-  "desktop.menu.documentation": "OpenCode belgeleri",
+  "desktop.menu.documentation": "AllCode belgeleri",
   "desktop.menu.supportForum": "Destek forumu",
   "desktop.menu.shareFeedback": "Geri bildirim paylaş",
   "desktop.menu.reportBug": "Hata bildir",
-  "desktop.menu.ariaLabel": "OpenCode menüsü",
+  "desktop.menu.ariaLabel": "AllCode menüsü",
 
   "desktop.updater.dialog.checkFailed.message": "Güncellemeler kontrol edilemedi.",
   "desktop.updater.dialog.checkFailed.title": "Güncelleme hatası",
@@ -62,9 +62,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Günlükleri dışa aktar",
   "desktop.recovery.action.keepWaiting": "Beklemeye devam et",
   "desktop.recovery.action.quit": "Çık",
-  "desktop.recovery.loadFailed": "OpenCode yüklenemedi",
-  "desktop.recovery.terminated": "OpenCode penceresi beklenmedik şekilde sonlandırıldı",
-  "desktop.recovery.unresponsive": "OpenCode yanıt vermiyor",
+  "desktop.recovery.loadFailed": "AllCode yüklenemedi",
+  "desktop.recovery.terminated": "AllCode penceresi beklenmedik şekilde sonlandırıldı",
+  "desktop.recovery.unresponsive": "AllCode yanıt vermiyor",
   "desktop.recovery.unresponsive.detail":
     "Uygulamayı yeniden başlatabilir, günlükleri açabilir veya beklemeye devam edebilirsiniz.",
   "desktop.recovery.loadFailed.detail": "Pencere: {{window}}\nURL: {{url}}\nHata: {{code}} {{description}}",
@@ -84,13 +84,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Dağıtımda komutlar çalıştırılamıyor",
   "desktop.wsl.error.installWsl": "WSL kurulamadı",
   "desktop.wsl.error.installDistro": "Dağıtım kurulamadı: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode kurulamadı",
+  "desktop.wsl.error.installOpencode": "AllCode kurulamadı",
   "desktop.wsl.error.alreadyAdded": "{{distro}} zaten eklendi",
   "desktop.wsl.error.opencodeMissing": "opencode bu dağıtımda kurulu değil",
   "desktop.wsl.error.opencodeCannotRun": "opencode kurulu ancak çalıştırılamadı",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode, {{distro}} içinde kurulu değil",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode, {{distro}} içinde kurulu değil",
   "desktop.wsl.error.updateVersion":
-    "OpenCode güncellemesi tamamlandı ancak {{distro}} hâlâ {{installed}} sürümünü bildiriyor; beklenen sürüm: {{expected}}",
+    "AllCode güncellemesi tamamlandı ancak {{distro}} hâlâ {{installed}} sürümünü bildiriyor; beklenen sürüm: {{expected}}",
   "desktop.wsl.error.noVersion": "sürüm yok",
   "desktop.wsl.error.serverExited": "WSL sunucusu başlatıldıktan sonra kapandı (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -229,7 +229,7 @@ export const dict = {
   "dialog.model.manage.description": "Model seçicide hangi modellerin görüneceğini özelleştirin.",
   "dialog.model.manage.provider.toggle": "Tüm {{provider}} modellerini aç/kapat",
 
-  "dialog.model.unpaid.freeModels.title": "OpenCode tarafından sunulan ücretsiz modeller",
+  "dialog.model.unpaid.freeModels.title": "AllCode tarafından sunulan ücretsiz modeller",
   "dialog.model.unpaid.addMore.title": "Popüler sağlayıcılardan daha fazla model ekleyin",
   "dialog.model.unpaid.viewMoreProviders": "70'ten fazla sağlayıcı daha görüntüle",
 
@@ -245,7 +245,7 @@ export const dict = {
   "provider.connect.status.waiting": "Yetkilendirme bekleniyor...",
   "provider.connect.status.failed": "Yetkilendirme başarısız: {{error}}",
   "provider.connect.apiKey.description":
-    "{{provider}} hesabınızı bağlamak ve OpenCode'da {{provider}} modellerini kullanmak için API anahtarınızı girin.",
+    "{{provider}} hesabınızı bağlamak ve AllCode'da {{provider}} modellerini kullanmak için API anahtarınızı girin.",
   "provider.connect.apiKey.label": "{{provider}} API anahtarı",
   "provider.connect.apiKey.placeholder": "API anahtarı",
   "provider.connect.apiKey.required": "API anahtarı gerekli",
@@ -259,7 +259,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Yetkilendirme kodunuzu almak için ",
   "provider.connect.oauth.code.visit.link": "bu bağlantıya",
   "provider.connect.oauth.code.visit.suffix":
-    " gidin; ardından hesabınızı bağlayarak OpenCode'da {{provider}} modellerini kullanın.",
+    " gidin; ardından hesabınızı bağlayarak AllCode'da {{provider}} modellerini kullanın.",
   "provider.connect.oauth.code.label": "{{method}} yetkilendirme kodu",
   "provider.connect.oauth.code.placeholder": "Yetkilendirme kodu",
   "provider.connect.oauth.code.required": "Yetkilendirme kodu gerekli",
@@ -267,7 +267,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "",
   "provider.connect.oauth.auto.visit.link": "Bu bağlantıya",
   "provider.connect.oauth.auto.visit.suffix":
-    " tıklayarak aşağıdaki kodu girin ve hesabınızı bağlayarak OpenCode'da {{provider}} modellerini kullanın.",
+    " tıklayarak aşağıdaki kodu girin ve hesabınızı bağlayarak AllCode'da {{provider}} modellerini kullanın.",
   "provider.connect.oauth.auto.confirmationCode": "Onay kodu",
   "provider.connect.toast.connected.title": "{{provider}} bağlandı",
   "provider.connect.toast.connected.description": "{{provider}} modelleri artık kullanımda.",
@@ -446,7 +446,7 @@ export const dict = {
   "dialog.directory.readError": "Bu klasör okunamıyor",
 
   "dialog.server.title": "Sunucular",
-  "dialog.server.description": "Bu uygulamanın hangi OpenCode sunucusuna bağlanacağını değiştirin.",
+  "dialog.server.description": "Bu uygulamanın hangi AllCode sunucusuna bağlanacağını değiştirin.",
   "dialog.server.search.placeholder": "Sunucu ara",
   "dialog.server.empty": "Henüz sunucu yok",
   "dialog.server.add.title": "Sunucu ekle",
@@ -484,7 +484,7 @@ export const dict = {
   "wsl.server.retryStart": "Başlatmayı yeniden dene",
   "wsl.server.updating": "Güncelleniyor...",
   "wsl.onboarding.step.distro": "Dağıtım seç",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "WSL kontrol ediliyor...",
   "wsl.onboarding.restartRequired": "WSL kurulumunu tamamlamak için Windows'un yeniden başlatılması gerekiyor.",
   "wsl.onboarding.ready": "WSL hazır.",
@@ -498,16 +498,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Kurulumu tamamlamak için {{distro}} dağıtımını bir kez açın.",
   "wsl.onboarding.finishingDistro": "{{distro}} kurulumu tamamlanıyor.",
   "wsl.onboarding.pickDistro": "Bir dağıtım seçin veya aşağıdan bir dağıtım kurun.",
-  "wsl.onboarding.checkingOpencode": "OpenCode kontrol ediliyor...",
-  "wsl.onboarding.checkingOpencodeIn": "{{distro}} içinde OpenCode kontrol ediliyor...",
-  "wsl.onboarding.updatingOpencode": "OpenCode güncelleniyor...",
-  "wsl.onboarding.updatingOpencodeIn": "{{distro}} içinde OpenCode güncelleniyor...",
-  "wsl.onboarding.updateOpencodeIn": "{{distro}} içindeki OpenCode'u güncelleyin.",
-  "wsl.onboarding.updateOpencode": "OpenCode'u güncelle",
-  "wsl.onboarding.opencodeReadyIn": "{{distro}} içinde OpenCode hazır.",
-  "wsl.onboarding.opencodeReady": "OpenCode hazır.",
-  "wsl.onboarding.installOpencodeIn": "OpenCode'u {{distro}} içine kurun.",
-  "wsl.onboarding.installOpencode": "OpenCode'u kur",
+  "wsl.onboarding.checkingOpencode": "AllCode kontrol ediliyor...",
+  "wsl.onboarding.checkingOpencodeIn": "{{distro}} içinde AllCode kontrol ediliyor...",
+  "wsl.onboarding.updatingOpencode": "AllCode güncelleniyor...",
+  "wsl.onboarding.updatingOpencodeIn": "{{distro}} içinde AllCode güncelleniyor...",
+  "wsl.onboarding.updateOpencodeIn": "{{distro}} içindeki AllCode'u güncelleyin.",
+  "wsl.onboarding.updateOpencode": "AllCode'u güncelle",
+  "wsl.onboarding.opencodeReadyIn": "{{distro}} içinde AllCode hazır.",
+  "wsl.onboarding.opencodeReady": "AllCode hazır.",
+  "wsl.onboarding.installOpencodeIn": "AllCode'u {{distro}} içine kurun.",
+  "wsl.onboarding.installOpencode": "AllCode'u kur",
   "wsl.onboarding.chooseDistroFirst": "Önce bir dağıtım seçin.",
   "wsl.onboarding.loadFailed": "WSL durumu yüklenemedi.",
   "wsl.onboarding.loading": "Yükleniyor...",
@@ -515,19 +515,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Tekrar kontrol et",
   "wsl.onboarding.distroStatus.ready": "Hazır",
   "wsl.onboarding.distroStatus.checking": "Kontrol ediliyor...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode kurulu değil",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode kurulu değil",
   "wsl.onboarding.distroStatus.missingTools": "bash ve curl eksik",
   "wsl.onboarding.distroStatus.unsupported": "Desteklenmiyor · WSL 2 kullanın",
   "wsl.onboarding.needAnotherDistro": "Başka bir dağıtım mı gerekiyor?",
   "wsl.onboarding.needAnotherDistroHint": "WSL kataloğundan bir Linux dağıtımı kurun",
   "wsl.onboarding.wslNotInstalled.title": "WSL kurulu değil",
   "wsl.onboarding.wslNotInstalled.description":
-    "OpenCode'un WSL sunucusu ekleyebilmesi için önce WSL (Linux için Windows Alt Sistemi) kurulmalıdır",
+    "AllCode'un WSL sunucusu ekleyebilmesi için önce WSL (Linux için Windows Alt Sistemi) kurulmalıdır",
   "wsl.onboarding.wslUnavailable.title": "WSL kullanılamıyor",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode bu makinede WSL'yi doğrulayamadı.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode bu makinede WSL'yi doğrulayamadı.",
   "wsl.onboarding.installWsl": "WSL'yi kur",
   "wsl.onboarding.windowsRestartRequired":
-    "WSL kurulumunu tamamlamak için Windows'u yeniden başlatın, ardından OpenCode'u tekrar açın.",
+    "WSL kurulumunu tamamlamak için Windows'u yeniden başlatın, ardından AllCode'u tekrar açın.",
   "wsl.onboarding.next": "İleri",
   "wsl.onboarding.refresh": "Yenile",
   "wsl.onboarding.allDistrosAdded": "Kurulu tüm dağıtımlar zaten eklenmiş.",
@@ -552,7 +552,7 @@ export const dict = {
   "help.tabs.title": "Sekmelerle tanışın",
   "help.tabs.description": "Çalışmalarınızı ve etkin oturumlarınızı sekmelerle düzenleyin",
   "help.tabs.date": "14 Temmuz",
-  "help.tabs.introduction": "OpenCode Desktop artık sekmeler üzerine kurulu.",
+  "help.tabs.introduction": "AllCode Desktop artık sekmeler üzerine kurulu.",
   "help.tabs.sessions":
     "Bir sekmede yeni oturum başlatın veya projelerinizden mevcut bir oturumu açın. Yeni bir işe başlarken yeni sekme açın, işiniz bittiğinde sekmeyi kapatın.",
   "help.tabs.organize":
@@ -676,7 +676,7 @@ export const dict = {
   "toast.session.listFailed.title": "{{project}} için oturumlar yüklenemedi",
 
   "toast.update.title": "Güncelleme mevcut",
-  "toast.update.description": "OpenCode'un yeni bir sürümü ({{version}}) yüklemeye hazır.",
+  "toast.update.description": "AllCode'un yeni bir sürümü ({{version}}) yüklemeye hazır.",
   "toast.update.action.installRestart": "Yükle ve yeniden başlat",
   "toast.update.action.notYet": "Şimdi değil",
 
@@ -691,7 +691,7 @@ export const dict = {
   "error.page.action.checking": "Kontrol ediliyor...",
   "error.page.action.checkUpdates": "Güncellemeleri kontrol et",
   "error.page.action.updateTo": "{{version}} sürümüne güncelle",
-  "error.page.report.prefix": "Lütfen bu hatayı OpenCode ekibine",
+  "error.page.report.prefix": "Lütfen bu hatayı AllCode ekibine",
   "error.page.report.discord": "Discord üzerinden bildirin",
   "error.page.version": "Sürüm: {{version}}",
 
@@ -711,7 +711,7 @@ export const dict = {
   "error.chain.modelNotFound": "Model bulunamadı: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Yapılandırma dosyanızdaki (opencode.json) sağlayıcı/model adlarını kontrol edin",
   "error.chain.mcpFailed":
-    'MCP sunucusu "{{name}}" çalıştırılamadı. Not: OpenCode henüz MCP kimlik doğrulamasını desteklemiyor.',
+    'MCP sunucusu "{{name}}" çalıştırılamadı. Not: AllCode henüz MCP kimlik doğrulamasını desteklemiyor.',
   "error.chain.providerAuthFailed": "Sağlayıcı kimlik doğrulaması başarısız ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     '"{{provider}}" sağlayıcısı başlatılamadı. Kimlik bilgilerini ve yapılandırmayı kontrol edin.',
@@ -901,7 +901,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Çalışma alanlarını etkinleştir",
   "sidebar.workspaces.disable": "Çalışma alanlarını devre dışı bırak",
   "sidebar.gettingStarted.title": "Başlarken",
-  "sidebar.gettingStarted.line1": "OpenCode ücretsiz modeller içerir, böylece hemen başlayabilirsiniz.",
+  "sidebar.gettingStarted.line1": "AllCode ücretsiz modeller içerir, böylece hemen başlayabilirsiniz.",
   "sidebar.gettingStarted.line2": "Claude, GPT, Gemini vb. modelleri kullanmak için herhangi bir sağlayıcı bağlayın.",
   "sidebar.project.recentSessions": "Son oturumlar",
   "sidebar.project.viewAllSessions": "Tüm oturumları görüntüle",
@@ -909,7 +909,7 @@ export const dict = {
   "sidebar.empty.title": "Açık proje yok",
   "sidebar.empty.description": "Başlamak için bir proje açın",
 
-  "app.name.desktop": "OpenCode Masaüstü",
+  "app.name.desktop": "AllCode Masaüstü",
 
   "settings.section.desktop": "Masaüstü",
   "settings.section.server": "Sunucu",
@@ -917,7 +917,7 @@ export const dict = {
   "settings.tab.shortcuts": "Kısayollar",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL entegrasyonu",
-  "settings.desktop.wsl.description": "OpenCode sunucusunu Windows'ta WSL içinde çalıştırın.",
+  "settings.desktop.wsl.description": "AllCode sunucusunu Windows'ta WSL içinde çalıştırın.",
 
   "settings.general.section.appearance": "Görünüm",
   "settings.general.section.advanced": "Gelişmiş",
@@ -928,19 +928,19 @@ export const dict = {
   "settings.general.section.display": "Ekran",
 
   "settings.general.row.language.title": "Dil",
-  "settings.general.row.language.description": "OpenCode'un görünüm dilini değiştirin",
+  "settings.general.row.language.description": "AllCode'un görünüm dilini değiştirin",
   "settings.general.row.shell.title": "Terminal Kabuğu",
   "settings.general.row.shell.description":
     "Terminalinizde kullanılacak kabuğu seçin. Uyumlu kabuklar, ajan araç çağrılarında da kullanılır.",
   "settings.general.row.shell.autoDefault": "Otomatik (Varsayılan)",
   "settings.general.row.shell.terminalOnly": "yalnızca terminal",
   "settings.general.row.appearance.title": "Görünüm",
-  "settings.general.row.appearance.description": "OpenCode'un cihazınızdaki görünümünü özelleştirin",
+  "settings.general.row.appearance.description": "AllCode'un cihazınızdaki görünümünü özelleştirin",
   "settings.general.row.colorScheme.title": "Renk şeması",
   "settings.general.row.colorScheme.description":
-    "OpenCode'un sistem, açık veya koyu temayı takip etip etmeyeceğini seçin",
+    "AllCode'un sistem, açık veya koyu temayı takip etip etmeyeceğini seçin",
   "settings.general.row.theme.title": "Tema",
-  "settings.general.row.theme.description": "OpenCode'un temasını özelleştirin.",
+  "settings.general.row.theme.description": "AllCode'un temasını özelleştirin.",
   "settings.general.row.font.title": "Kod yazı tipi",
   "settings.general.row.font.description": "Kod bloklarında kullanılan yazı tipini özelleştirin",
   "settings.general.row.terminalFont.title": "Terminal yazı tipi",
@@ -997,7 +997,7 @@ export const dict = {
   "settings.general.row.releaseNotes.description": "Güncellemelerden sonra Yenilikler bildirimlerini göster",
 
   "settings.updates.row.startup.title": "Başlangıçta güncellemeleri kontrol et",
-  "settings.updates.row.startup.description": "OpenCode başladığında otomatik güncelleme kontrolü yap",
+  "settings.updates.row.startup.description": "AllCode başladığında otomatik güncelleme kontrolü yap",
   "settings.updates.row.check.title": "Güncellemeleri kontrol et",
   "settings.updates.row.check.description": "Elle güncelleme kontrolü yap ve varsa yükle",
   "settings.updates.action.checkNow": "Şimdi kontrol et",
@@ -1005,7 +1005,7 @@ export const dict = {
   "settings.updates.action.downloading": "İndiriliyor...",
   "settings.updates.action.installing": "Kuruluyor...",
   "settings.updates.toast.latest.title": "Güncelsiniz",
-  "settings.updates.toast.latest.description": "OpenCode'un en son sürümünü kullanıyorsunuz.",
+  "settings.updates.toast.latest.description": "AllCode'un en son sürümünü kullanıyorsunuz.",
 
   "sound.option.none": "Yok",
   "sound.option.alert01": "Uyarı 01",
@@ -1389,11 +1389,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1491,7 +1491,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1503,14 +1503,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

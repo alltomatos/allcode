@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Հաջորդ նախագիծ",
   "desktop.menu.minimize": "Նվազագույնի հասցնել",
   "desktop.menu.maximize": "Առավելագույնի հասցնել",
-  "desktop.menu.documentation": "OpenCode Փաստաթղթեր",
+  "desktop.menu.documentation": "AllCode Փաստաթղթեր",
   "desktop.menu.supportForum": "Աջակցման ֆորում",
   "desktop.menu.shareFeedback": "Կիսվել կարծիք",
   "desktop.menu.reportBug": "Հաղորդել սխալի մասին",
-  "desktop.menu.ariaLabel": "OpenCode մենյու",
+  "desktop.menu.ariaLabel": "AllCode մենյու",
   "desktop.updater.dialog.checkFailed.message": "Թարմացման ստուգումը ձախողվեց։",
   "desktop.updater.dialog.checkFailed.title": "Թարմացման սխալ",
   "desktop.updater.dialog.upToDate.message": "Դուք արդիական եք",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Արտահանման մատյաններ",
   "desktop.recovery.action.keepWaiting": "Շարունակեք սպասել",
   "desktop.recovery.action.quit": "Դուրս գալ",
-  "desktop.recovery.loadFailed": "OpenCode չհաջողվեց բեռնել",
-  "desktop.recovery.terminated": "OpenCode պատուհանն անսպասելիորեն ավարտվեց",
-  "desktop.recovery.unresponsive": "OpenCode-ը չի արձագանքում",
+  "desktop.recovery.loadFailed": "AllCode չհաջողվեց բեռնել",
+  "desktop.recovery.terminated": "AllCode պատուհանն անսպասելիորեն ավարտվեց",
+  "desktop.recovery.unresponsive": "AllCode-ը չի արձագանքում",
   "desktop.recovery.unresponsive.detail":
     "Դուք կարող եք վերագործարկել հավելվածը, բացել տեղեկամատյանները կամ շարունակել սպասել:",
   "desktop.recovery.loadFailed.detail": "Պատուհան՝ {{window}}\nURL: {{url}}\nՍխալ՝ {{code}} {{description}}",
@@ -76,13 +76,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Հնարավոր չէ կատարել հրամաններ բաշխման մեջ",
   "desktop.wsl.error.installWsl": "WSL տեղադրումը ձախողվեց",
   "desktop.wsl.error.installDistro": "Չհաջողվեց տեղադրել բաշխում՝ {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode տեղադրումը ձախողվեց",
+  "desktop.wsl.error.installOpencode": "AllCode տեղադրումը ձախողվեց",
   "desktop.wsl.error.alreadyAdded": "{{distro}} արդեն ավելացված է",
   "desktop.wsl.error.opencodeMissing": "opencode-ը տեղադրված չէ այս բաշխում",
   "desktop.wsl.error.opencodeCannotRun": "opencode-ը տեղադրված է, բայց չի կարող գործարկվել",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode տեղադրված չէ {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode տեղադրված չէ {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "OpenCode թարմացումն ավարտված է, բայց {{distro}}-ը դեռ հայտնում է {{installed}}; սպասվում է {{expected}}",
+    "AllCode թարմացումն ավարտված է, բայց {{distro}}-ը դեռ հայտնում է {{installed}}; սպասվում է {{expected}}",
   "desktop.wsl.error.noVersion": "առանց տարբերակ",
   "desktop.wsl.error.serverExited": "WSL սերվերը դուրս է եկել գործարկումից հետո (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -208,7 +208,7 @@ export const dict = {
   "dialog.model.manage": "Կառավարել մոդելները",
   "dialog.model.manage.description": "Անհատականացրեք, թե որ մոդելները կհայտնվեն մոդելի ընտրիչում:",
   "dialog.model.manage.provider.toggle": "Փոխարկել բոլոր {{provider}} մոդելները",
-  "dialog.model.unpaid.freeModels.title": "Անվճար մոդելները տրամադրվում են OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Անվճար մոդելները տրամադրվում են AllCode",
   "dialog.model.unpaid.addMore.title": "Ավելացնել ավելի շատ մոդելներ հանրաճանաչ մատակարարներից",
   "dialog.model.unpaid.viewMoreProviders": "Տես 70+ այլ մատակարարներ",
   "dialog.provider.viewAll": "Ցույց տալ ավելի շատ մատակարարներ",
@@ -222,7 +222,7 @@ export const dict = {
   "provider.connect.status.waiting": "Սպասում է թույլտվության...",
   "provider.connect.status.failed": "Լիազորումը ձախողվեց՝ {{error}}",
   "provider.connect.apiKey.description":
-    "Մուտքագրեք ձեր {{provider}} API բանալին՝ ձեր հաշիվը միացնելու և OpenCode-ում {{provider}} մոդելներ օգտագործելու համար։",
+    "Մուտքագրեք ձեր {{provider}} API բանալին՝ ձեր հաշիվը միացնելու և AllCode-ում {{provider}} մոդելներ օգտագործելու համար։",
   "provider.connect.apiKey.label": "{{provider}} API բանալի",
   "provider.connect.apiKey.placeholder": "API բանալի",
   "provider.connect.apiKey.required": "API բանալի է պահանջվում",
@@ -236,7 +236,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Այցելություն ",
   "provider.connect.oauth.code.visit.link": "այս հղումը",
   "provider.connect.oauth.code.visit.suffix":
-    " հավաքել ձեր թույլտվության կոդը՝ ձեր հաշիվը միացնելու և OpenCode-ում {{provider}} մոդելներ օգտագործելու համար:",
+    " հավաքել ձեր թույլտվության կոդը՝ ձեր հաշիվը միացնելու և AllCode-ում {{provider}} մոդելներ օգտագործելու համար:",
   "provider.connect.oauth.code.label": "{{method}} թույլտվության կոդ",
   "provider.connect.oauth.code.placeholder": "Լիցենզավորման կոդ",
   "provider.connect.oauth.code.required": "Պահանջվում է լիազորման կոդը",
@@ -244,7 +244,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Այցելություն ",
   "provider.connect.oauth.auto.visit.link": "այս հղումը",
   "provider.connect.oauth.auto.visit.suffix":
-    " և մուտքագրեք ստորև ծածկագիրը՝ ձեր հաշիվը միացնելու և OpenCode-ում {{provider}} մոդելներ օգտագործելու համար:",
+    " և մուտքագրեք ստորև ծածկագիրը՝ ձեր հաշիվը միացնելու և AllCode-ում {{provider}} մոդելներ օգտագործելու համար:",
   "provider.connect.oauth.auto.confirmationCode": "Հաստատման կոդը",
   "provider.connect.toast.connected.title": "{{provider}} կապված",
   "provider.connect.toast.connected.description": "{{provider}} մոդելներ այժմ հասանելի են օգտագործման համար։",
@@ -413,7 +413,7 @@ export const dict = {
   "app.server.retrying": "Նորից ինքնաբերաբար...",
   "app.server.otherServers": "Այլ սերվերներ",
   "dialog.server.title": "Սերվերներ",
-  "dialog.server.description": "Փոխարկեք, թե որ OpenCode սերվերին է միանում այս հավելվածը։",
+  "dialog.server.description": "Փոխարկեք, թե որ AllCode սերվերին է միանում այս հավելվածը։",
   "dialog.server.search.placeholder": "Որոնման սերվերներ",
   "dialog.server.empty": "Սերվերներ դեռ չկան",
   "dialog.server.add.title": "Ավելացնել սերվեր",
@@ -452,7 +452,7 @@ export const dict = {
   "wsl.server.retryStart": "Փորձեք նորից սկսել",
   "wsl.server.updating": "Թարմացվում է...",
   "wsl.onboarding.step.distro": "Ընտրեք բաշխում",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Ստուգում է WSL...",
   "wsl.onboarding.restartRequired": "Windows-ին անհրաժեշտ է վերագործարկում՝ WSL-ի տեղադրումն ավարտելու համար։",
   "wsl.onboarding.ready": "WSL պատրաստ է։",
@@ -466,16 +466,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Բացեք {{distro}}-ը մեկ անգամ՝ կարգավորումն ավարտելու համար:",
   "wsl.onboarding.finishingDistro": "{{distro}}-ի կարգավորումն ավարտվում է։",
   "wsl.onboarding.pickDistro": "Ընտրեք բաշխումը կամ տեղադրեք ստորև։",
-  "wsl.onboarding.checkingOpencode": "Ստուգում է OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Ստուգում է OpenCode-ը {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Թարմացվում է OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Թարմացվում է OpenCode-ը {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Թարմացնել OpenCode-ը {{distro}}-ում։",
-  "wsl.onboarding.updateOpencode": "Թարմացնել OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode պատրաստ է {{distro}}-ում։",
-  "wsl.onboarding.opencodeReady": "OpenCode պատրաստ է։",
-  "wsl.onboarding.installOpencodeIn": "Տեղադրեք OpenCode-ը {{distro}}-ում։",
-  "wsl.onboarding.installOpencode": "Տեղադրեք OpenCode",
+  "wsl.onboarding.checkingOpencode": "Ստուգում է AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Ստուգում է AllCode-ը {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Թարմացվում է AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Թարմացվում է AllCode-ը {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Թարմացնել AllCode-ը {{distro}}-ում։",
+  "wsl.onboarding.updateOpencode": "Թարմացնել AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode պատրաստ է {{distro}}-ում։",
+  "wsl.onboarding.opencodeReady": "AllCode պատրաստ է։",
+  "wsl.onboarding.installOpencodeIn": "Տեղադրեք AllCode-ը {{distro}}-ում։",
+  "wsl.onboarding.installOpencode": "Տեղադրեք AllCode",
   "wsl.onboarding.chooseDistroFirst": "Ընտրեք նախաբաշխումը։",
   "wsl.onboarding.loadFailed": "Չհաջողվեց բեռնել WSL վիճակը։",
   "wsl.onboarding.loading": "Բեռնվում է...",
@@ -483,19 +483,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Ստուգել նորից",
   "wsl.onboarding.distroStatus.ready": "Պատրաստ է",
   "wsl.onboarding.distroStatus.checking": "Ստուգում...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode տեղադրված չէ",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode տեղադրված չէ",
   "wsl.onboarding.distroStatus.missingTools": "Բացակայում են bash-ը և curl-ը",
   "wsl.onboarding.distroStatus.unsupported": "Չի աջակցվում · Օգտագործել WSL 2",
   "wsl.onboarding.needAnotherDistro": "Պետք է մեկ այլ բաշխում",
   "wsl.onboarding.needAnotherDistroHint": "Տեղադրեք Linux բաշխումը WSL կատալոգից",
   "wsl.onboarding.wslNotInstalled.title": "WSL տեղադրված չէ",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Ենթահամակարգը Linux-ի համար) անհրաժեշտ է, որպեսզի OpenCode-ը կարողանա ավելացնել WSL սերվեր",
+    "WSL (Windows Ենթահամակարգը Linux-ի համար) անհրաժեշտ է, որպեսզի AllCode-ը կարողանա ավելացնել WSL սերվեր",
   "wsl.onboarding.wslUnavailable.title": "WSL անհասանելի է",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode-ը չկարողացավ հաստատել WSL-ն այս մեքենայի վրա։",
+  "wsl.onboarding.wslUnavailable.description": "AllCode-ը չկարողացավ հաստատել WSL-ն այս մեքենայի վրա։",
   "wsl.onboarding.installWsl": "Տեղադրեք WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Վերագործարկեք Windows՝ WSL-ի տեղադրումն ավարտելու համար, այնուհետև նորից բացեք OpenCode։",
+    "Վերագործարկեք Windows՝ WSL-ի տեղադրումն ավարտելու համար, այնուհետև նորից բացեք AllCode։",
   "wsl.onboarding.next": "Հաջորդ",
   "wsl.onboarding.refresh": "Թարմացնել",
   "wsl.onboarding.allDistrosAdded": "Բոլոր տեղադրված բաշխումները արդեն ավելացված են։",
@@ -519,7 +519,7 @@ export const dict = {
   "help.tabs.title": "Ներկայացնում ենք ներդիրները",
   "help.tabs.description": "Կազմակերպեք ձեր աշխատանքը և ակտիվ նիստերը ներդիրներով",
   "help.tabs.date": "հուլիսի 14",
-  "help.tabs.introduction": "OpenCode Desktop-ն այժմ կառուցված է ներդիրների շուրջ։",
+  "help.tabs.introduction": "AllCode Desktop-ն այժմ կառուցված է ներդիրների շուրջ։",
   "help.tabs.sessions":
     "Սկսեք նոր նիստ ներդիրում կամ բացեք գոյություն ունեցող նիստը ձեր ցանկացած նախագծից: Բացեք նոր ներդիր, երբ ինչ-որ նոր բան եք սկսում, և փակեք այն, երբ ավարտեք:",
   "help.tabs.organize":
@@ -630,7 +630,7 @@ export const dict = {
   "toast.session.listFailed.title": "Չհաջողվեց բեռնել նիստերը {{project}}",
   "toast.project.reloadFailed.title": "Չհաջողվեց վերաբեռնել {{project}}",
   "toast.update.title": "Թարմացումը հասանելի է",
-  "toast.update.description": "OpenCode-ի ({{version}}) նոր տարբերակը այժմ հասանելի է տեղադրման համար:",
+  "toast.update.description": "AllCode-ի ({{version}}) նոր տարբերակը այժմ հասանելի է տեղադրման համար:",
   "toast.update.action.installRestart": "Տեղադրել և վերագործարկել",
   "toast.update.action.notYet": "դեռ ոչ",
   "error.page.title": "Սխալ առաջացավ",
@@ -645,7 +645,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Ստուգեք թարմացումների համար",
   "error.page.action.updateTo": "Թարմացնել {{version}}",
   "error.page.circular": "[Circular]",
-  "error.page.report.prefix": "Խնդրում ենք հայտնել այս սխալի մասին OpenCode թիմին",
+  "error.page.report.prefix": "Խնդրում ենք հայտնել այս սխալի մասին AllCode թիմին",
   "error.page.report.discord": "Discord",
   "error.page.version": "Տարբերակ՝ {{version}}",
   "error.dev.rootNotFound":
@@ -669,7 +669,7 @@ export const dict = {
   "error.chain.modelNotFound": "Մոդելը չի ​​գտնվել՝ {{provider}}/{{model}}",
   "error.chain.checkConfig": "Ստուգեք ձեր կազմաձևը (opencode.json) մատակարարի/մոդելի անունները",
   "error.chain.mcpFailed":
-    "MCP «{{name}}» սերվերը ձախողվեց: Նկատի ունեցեք, որ OpenCode-ը դեռ չի աջակցում MCP նույնականացումը:",
+    "MCP «{{name}}» սերվերը ձախողվեց: Նկատի ունեցեք, որ AllCode-ը դեռ չի աջակցում MCP նույնականացումը:",
   "error.chain.providerAuthFailed": "Մատակարարի նույնականացումը ձախողվեց ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     "Չհաջողվեց նախաստորագրել «{{provider}}» մատակարարը։ Ստուգեք հավատարմագրերը և կազմաձևումը:",
@@ -887,7 +887,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Միացնել աշխատանքային տարածքները",
   "sidebar.workspaces.disable": "Անջատել աշխատանքային տարածքները",
   "sidebar.gettingStarted.title": "Սկսում",
-  "sidebar.gettingStarted.line1": "OpenCode ներառում է անվճար մոդելներ, որպեսզի կարողանաք անմիջապես սկսել:",
+  "sidebar.gettingStarted.line1": "AllCode ներառում է անվճար մոդելներ, որպեսզի կարողանաք անմիջապես սկսել:",
   "sidebar.gettingStarted.line2":
     "Միացրեք ցանկացած մատակարարի՝ մոդելներ օգտագործելու համար, inc. Claude, GPT, Gemini և այլն",
   "sidebar.project.recentSessions": "Վերջին նիստերը",
@@ -927,14 +927,14 @@ export const dict = {
   "debugBar.direction.tip": "Ստիպել հավելվածի ամբողջական դասավորության ուղղությունը՝ առանց ընտրված լեզուն փոխելու",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "Սեղանաշար",
   "settings.section.server": "Սերվեր",
   "settings.tab.general": "Ընդհանուր",
   "settings.tab.shortcuts": "Դյուրանցումներ",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL ինտեգրում",
-  "settings.desktop.wsl.description": "Գործարկեք OpenCode սերվերը WSL-ի ներսում՝ Windows-ում։",
+  "settings.desktop.wsl.description": "Գործարկեք AllCode սերվերը WSL-ի ներսում՝ Windows-ում։",
   "settings.general.section.appearance": "Արտաքին տեսք",
   "settings.general.section.advanced": "Ընդլայնված",
   "settings.general.section.notifications": "Համակարգի ծանուցումներ",
@@ -943,17 +943,17 @@ export const dict = {
   "settings.general.section.feed": "Fed",
   "settings.general.section.display": "Ցուցադրել",
   "settings.general.row.language.title": "Լեզու",
-  "settings.general.row.language.description": "Փոխել ցուցադրման լեզուն OpenCode",
+  "settings.general.row.language.description": "Փոխել ցուցադրման լեզուն AllCode",
   "settings.general.row.shell.title": "Տերմինալի Shell",
   "settings.general.row.shell.description": "Shell-ն օգտագործվում է տերմինալի և գործակալի գործիքների կողմից",
   "settings.general.row.shell.autoDefault": "Ավտոմատ (կանխադրված)",
   "settings.general.row.shell.terminalOnly": "միայն տերմինալ",
   "settings.general.row.appearance.title": "Արտաքին տեսք",
-  "settings.general.row.appearance.description": "Անհատականացրեք, թե ինչպես է OpenCode տեսքը ձեր սարքում",
+  "settings.general.row.appearance.description": "Անհատականացրեք, թե ինչպես է AllCode տեսքը ձեր սարքում",
   "settings.general.row.colorScheme.title": "Գունային սխեման",
-  "settings.general.row.colorScheme.description": "Ընտրեք՝ OpenCode-ը հետևում է համակարգին, թեթև թե մուգ թեմային",
+  "settings.general.row.colorScheme.description": "Ընտրեք՝ AllCode-ը հետևում է համակարգին, թեթև թե մուգ թեմային",
   "settings.general.row.theme.title": "Թեմա",
-  "settings.general.row.theme.description": "Անհատականացրեք, թե ինչպես է OpenCode-ի թեմատիկությունը։",
+  "settings.general.row.theme.description": "Անհատականացրեք, թե ինչպես է AllCode-ի թեմատիկությունը։",
   "settings.general.row.font.title": "Կոդի տառատեսակ",
   "settings.general.row.font.description": "Անհատականացրեք կոդերի բլոկներում օգտագործվող տառատեսակը",
   "settings.general.row.terminalFont.title": "Տերմինալ տառատեսակ",
@@ -1004,7 +1004,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "Թողարկման նշումներ",
   "settings.general.row.releaseNotes.description": "Ցույց տալ, թե ինչ է նոր պատուհանները թարմացումներից հետո",
   "settings.updates.row.startup.title": "Ստուգեք գործարկման ժամանակ թարմացումների համար",
-  "settings.updates.row.startup.description": "Ավտոմատ կերպով ստուգեք թարմացումների համար, երբ OpenCode-ը գործարկվի",
+  "settings.updates.row.startup.description": "Ավտոմատ կերպով ստուգեք թարմացումների համար, երբ AllCode-ը գործարկվի",
   "settings.updates.row.check.title": "Ստուգեք թարմացումների համար",
   "settings.updates.row.check.description": "Ձեռքով ստուգեք թարմացումների համար և տեղադրեք, եթե առկա է",
   "settings.updates.action.checkNow": "Ստուգեք հիմա",
@@ -1012,7 +1012,7 @@ export const dict = {
   "settings.updates.action.downloading": "Ներբեռնվում է...",
   "settings.updates.action.installing": "Տեղադրվում է...",
   "settings.updates.toast.latest.title": "Դուք արդի եք",
-  "settings.updates.toast.latest.description": "Դուք օգտագործում եք OpenCode-ի վերջին տարբերակը։",
+  "settings.updates.toast.latest.description": "Դուք օգտագործում եք AllCode-ի վերջին տարբերակը։",
   "sound.option.none": "Ոչ մեկը",
   "sound.option.alert01": "Alert 01",
   "sound.option.alert02": "Alert 02",
@@ -1294,11 +1294,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1396,7 +1396,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1408,14 +1408,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

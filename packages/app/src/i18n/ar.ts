@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "المشروع التالي",
   "desktop.menu.minimize": "تصغير النافذة",
   "desktop.menu.maximize": "تكبير النافذة",
-  "desktop.menu.documentation": "وثائق OpenCode",
+  "desktop.menu.documentation": "وثائق AllCode",
   "desktop.menu.supportForum": "منتدى الدعم",
   "desktop.menu.shareFeedback": "إرسال الملاحظات",
   "desktop.menu.reportBug": "الإبلاغ عن خلل",
-  "desktop.menu.ariaLabel": "قائمة OpenCode",
+  "desktop.menu.ariaLabel": "قائمة AllCode",
 
   "desktop.updater.dialog.checkFailed.message": "فشل التحقق من وجود تحديثات.",
   "desktop.updater.dialog.checkFailed.title": "خطأ في التحديث",
@@ -58,9 +58,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "تصدير السجلات",
   "desktop.recovery.action.keepWaiting": "متابعة الانتظار",
   "desktop.recovery.action.quit": "إنهاء",
-  "desktop.recovery.loadFailed": "فشل تحميل OpenCode",
-  "desktop.recovery.terminated": "توقفت نافذة OpenCode بشكل غير متوقع",
-  "desktop.recovery.unresponsive": "OpenCode لا يستجيب",
+  "desktop.recovery.loadFailed": "فشل تحميل AllCode",
+  "desktop.recovery.terminated": "توقفت نافذة AllCode بشكل غير متوقع",
+  "desktop.recovery.unresponsive": "AllCode لا يستجيب",
   "desktop.recovery.unresponsive.detail": "يمكنك إعادة تشغيل التطبيق أو فتح السجلات أو متابعة الانتظار.",
   "desktop.recovery.loadFailed.detail": "النافذة: {{window}}\nعنوان URL: {{url}}\nالخطأ: {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "النافذة: {{window}}\nالسبب: {{reason}}\nالرمز: {{code}}",
@@ -79,13 +79,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "تعذر تنفيذ الأوامر في التوزيعة",
   "desktop.wsl.error.installWsl": "فشل تثبيت WSL",
   "desktop.wsl.error.installDistro": "فشل تثبيت التوزيعة: {{distro}}",
-  "desktop.wsl.error.installOpencode": "فشل تثبيت OpenCode",
+  "desktop.wsl.error.installOpencode": "فشل تثبيت AllCode",
   "desktop.wsl.error.alreadyAdded": "تمت إضافة {{distro}} بالفعل",
   "desktop.wsl.error.opencodeMissing": "opencode غير مثبت في هذه التوزيعة",
   "desktop.wsl.error.opencodeCannotRun": "opencode مثبت، لكن تعذر تشغيله",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode غير مثبت في {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode غير مثبت في {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "اكتمل تحديث OpenCode، لكن {{distro}} ما زالت تعرض الإصدار {{installed}}؛ الإصدار المتوقع هو {{expected}}",
+    "اكتمل تحديث AllCode، لكن {{distro}} ما زالت تعرض الإصدار {{installed}}؛ الإصدار المتوقع هو {{expected}}",
   "desktop.wsl.error.noVersion": "لا يوجد إصدار",
   "desktop.wsl.error.serverExited": "خرج خادم WSL بعد بدء التشغيل (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -213,7 +213,7 @@ export const dict = {
   "dialog.model.manage": "إدارة النماذج",
   "dialog.model.manage.description": "تخصيص النماذج التي تظهر في محدد النماذج.",
   "dialog.model.manage.provider.toggle": "تبديل جميع نماذج {{provider}}",
-  "dialog.model.unpaid.freeModels.title": "نماذج مجانية مقدمة من OpenCode",
+  "dialog.model.unpaid.freeModels.title": "نماذج مجانية مقدمة من AllCode",
   "dialog.model.unpaid.addMore.title": "إضافة المزيد من النماذج من موفرين مشهورين",
   "dialog.model.unpaid.viewMoreProviders": "عرض أكثر من 70 موفرًا إضافيًا",
   "dialog.provider.viewAll": "عرض المزيد من الموفرين",
@@ -227,7 +227,7 @@ export const dict = {
   "provider.connect.status.waiting": "في انتظار التفويض...",
   "provider.connect.status.failed": "فشل التفويض: {{error}}",
   "provider.connect.apiKey.description":
-    "أدخل مفتاح API الخاص بـ {{provider}} لتوصيل حسابك واستخدام نماذج {{provider}} في OpenCode.",
+    "أدخل مفتاح API الخاص بـ {{provider}} لتوصيل حسابك واستخدام نماذج {{provider}} في AllCode.",
   "provider.connect.apiKey.label": "مفتاح API لـ {{provider}}",
   "provider.connect.apiKey.placeholder": "مفتاح API",
   "provider.connect.apiKey.required": "مفتاح API مطلوب",
@@ -241,7 +241,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "قم بزيارة ",
   "provider.connect.oauth.code.visit.link": "هذا الرابط",
   "provider.connect.oauth.code.visit.suffix":
-    " للحصول على رمز التفويض الخاص بك لتوصيل حسابك واستخدام نماذج {{provider}} في OpenCode.",
+    " للحصول على رمز التفويض الخاص بك لتوصيل حسابك واستخدام نماذج {{provider}} في AllCode.",
   "provider.connect.oauth.code.label": "رمز تفويض {{method}}",
   "provider.connect.oauth.code.placeholder": "رمز التفويض",
   "provider.connect.oauth.code.required": "رمز التفويض مطلوب",
@@ -249,7 +249,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "قم بزيارة ",
   "provider.connect.oauth.auto.visit.link": "هذا الرابط",
   "provider.connect.oauth.auto.visit.suffix":
-    " وأدخل الرمز أدناه لتوصيل حسابك واستخدام نماذج {{provider}} في OpenCode.",
+    " وأدخل الرمز أدناه لتوصيل حسابك واستخدام نماذج {{provider}} في AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "رمز التأكيد",
   "provider.connect.toast.connected.title": "تم توصيل {{provider}}",
   "provider.connect.toast.connected.description": "نماذج {{provider}} متاحة الآن للاستخدام.",
@@ -413,7 +413,7 @@ export const dict = {
   "dialog.directory.parent": "المجلد الأصل",
   "dialog.directory.readError": "تعذرت قراءة هذا المجلد",
   "dialog.server.title": "الخوادم",
-  "dialog.server.description": "تبديل خادم OpenCode الذي يتصل به هذا التطبيق.",
+  "dialog.server.description": "تبديل خادم AllCode الذي يتصل به هذا التطبيق.",
   "dialog.server.search.placeholder": "البحث في الخوادم",
   "dialog.server.empty": "لا توجد خوادم بعد",
   "dialog.server.add.title": "إضافة خادم",
@@ -450,7 +450,7 @@ export const dict = {
   "wsl.server.retryStart": "إعادة محاولة التشغيل",
   "wsl.server.updating": "جارٍ التحديث...",
   "wsl.onboarding.step.distro": "اختر توزيعة",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "جارٍ التحقق من WSL...",
   "wsl.onboarding.restartRequired": "يحتاج Windows إلى إعادة التشغيل لإكمال تثبيت WSL.",
   "wsl.onboarding.ready": "WSL جاهز.",
@@ -464,16 +464,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "افتح {{distro}} مرة واحدة لإكمال الإعداد.",
   "wsl.onboarding.finishingDistro": "جارٍ إكمال إعداد {{distro}}.",
   "wsl.onboarding.pickDistro": "اختر توزيعة أو ثبّت واحدة أدناه.",
-  "wsl.onboarding.checkingOpencode": "جارٍ التحقق من OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "جارٍ التحقق من OpenCode في {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "جارٍ تحديث OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "جارٍ تحديث OpenCode في {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "حدّث OpenCode في {{distro}}.",
-  "wsl.onboarding.updateOpencode": "تحديث OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode جاهز في {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode جاهز.",
-  "wsl.onboarding.installOpencodeIn": "ثبّت OpenCode في {{distro}}.",
-  "wsl.onboarding.installOpencode": "تثبيت OpenCode",
+  "wsl.onboarding.checkingOpencode": "جارٍ التحقق من AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "جارٍ التحقق من AllCode في {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "جارٍ تحديث AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "جارٍ تحديث AllCode في {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "حدّث AllCode في {{distro}}.",
+  "wsl.onboarding.updateOpencode": "تحديث AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode جاهز في {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode جاهز.",
+  "wsl.onboarding.installOpencodeIn": "ثبّت AllCode في {{distro}}.",
+  "wsl.onboarding.installOpencode": "تثبيت AllCode",
   "wsl.onboarding.chooseDistroFirst": "اختر توزيعة أولاً.",
   "wsl.onboarding.loadFailed": "فشل تحميل حالة WSL.",
   "wsl.onboarding.loading": "جارٍ التحميل...",
@@ -481,18 +481,18 @@ export const dict = {
   "wsl.onboarding.checkAgain": "تحقق مجددًا",
   "wsl.onboarding.distroStatus.ready": "جاهزة",
   "wsl.onboarding.distroStatus.checking": "جارٍ التحقق...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode غير مثبت",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode غير مثبت",
   "wsl.onboarding.distroStatus.missingTools": "bash و curl مفقودان",
   "wsl.onboarding.distroStatus.unsupported": "غير مدعومة · استخدم WSL 2",
   "wsl.onboarding.needAnotherDistro": "هل تحتاج إلى توزيعة أخرى؟",
   "wsl.onboarding.needAnotherDistroHint": "ثبّت توزيعة Linux من كتالوج WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL غير مثبت",
   "wsl.onboarding.wslNotInstalled.description":
-    "يلزم WSL (نظام Windows الفرعي لـ Linux) قبل أن يتمكن OpenCode من إضافة خادم WSL",
+    "يلزم WSL (نظام Windows الفرعي لـ Linux) قبل أن يتمكن AllCode من إضافة خادم WSL",
   "wsl.onboarding.wslUnavailable.title": "WSL غير متاح",
-  "wsl.onboarding.wslUnavailable.description": "تعذر على OpenCode التحقق من WSL على هذا الجهاز.",
+  "wsl.onboarding.wslUnavailable.description": "تعذر على AllCode التحقق من WSL على هذا الجهاز.",
   "wsl.onboarding.installWsl": "تثبيت WSL",
-  "wsl.onboarding.windowsRestartRequired": "أعد تشغيل Windows لإكمال تثبيت WSL، ثم أعد فتح OpenCode.",
+  "wsl.onboarding.windowsRestartRequired": "أعد تشغيل Windows لإكمال تثبيت WSL، ثم أعد فتح AllCode.",
   "wsl.onboarding.next": "التالي",
   "wsl.onboarding.refresh": "تحديث",
   "wsl.onboarding.allDistrosAdded": "تمت إضافة جميع التوزيعات المثبتة بالفعل.",
@@ -516,7 +516,7 @@ export const dict = {
   "help.tabs.title": "نقدّم علامات التبويب",
   "help.tabs.description": "نظّم عملك وجلساتك النشطة باستخدام علامات التبويب",
   "help.tabs.date": "14 يوليو",
-  "help.tabs.introduction": "أصبح OpenCode Desktop الآن قائمًا على علامات التبويب.",
+  "help.tabs.introduction": "أصبح AllCode Desktop الآن قائمًا على علامات التبويب.",
   "help.tabs.sessions":
     "ابدأ جلسة جديدة في علامة تبويب، أو افتح جلسة حالية من أي من مشاريعك. افتح علامة تبويب جديدة عندما تبدأ عملاً جديدًا، وأغلقها عند الانتهاء.",
   "help.tabs.organize":
@@ -623,7 +623,7 @@ export const dict = {
 
   "toast.session.listFailed.title": "فشل تحميل الجلسات لـ {{project}}",
   "toast.update.title": "تحديث متاح",
-  "toast.update.description": "يتوفر الآن إصدار جديد من OpenCode ({{version}}) للتثبيت.",
+  "toast.update.description": "يتوفر الآن إصدار جديد من AllCode ({{version}}) للتثبيت.",
   "toast.update.action.installRestart": "تثبيت وإعادة تشغيل",
   "toast.update.action.notYet": "ليس الآن",
   "error.page.title": "حدث خطأ ما",
@@ -637,7 +637,7 @@ export const dict = {
   "error.page.action.checking": "جارٍ التحقق...",
   "error.page.action.checkUpdates": "التحقق من وجود تحديثات",
   "error.page.action.updateTo": "تحديث إلى {{version}}",
-  "error.page.report.prefix": "يرجى الإبلاغ عن هذا الخطأ لفريق OpenCode",
+  "error.page.report.prefix": "يرجى الإبلاغ عن هذا الخطأ لفريق AllCode",
   "error.page.report.discord": "على Discord",
   "error.page.version": "الإصدار: {{version}}",
   "error.dev.rootNotFound":
@@ -653,7 +653,7 @@ export const dict = {
   "error.chain.didYouMean": "هل كنت تعني: {{suggestions}}",
   "error.chain.modelNotFound": "النموذج غير موجود: {{provider}}/{{model}}",
   "error.chain.checkConfig": "تحقق من أسماء الموفر/النموذج في التكوين (opencode.json)",
-  "error.chain.mcpFailed": 'فشل خادم MCP "{{name}}". لاحظ أن OpenCode لا يدعم مصادقة MCP بعد.',
+  "error.chain.mcpFailed": 'فشل خادم MCP "{{name}}". لاحظ أن AllCode لا يدعم مصادقة MCP بعد.',
   "error.chain.providerAuthFailed": "فشلت مصادقة الموفر ({{provider}}): {{message}}",
   "error.chain.providerInitFailed": 'فشل تهيئة الموفر "{{provider}}". تحقق من بيانات الاعتماد والتكوين.',
   "error.chain.configJsonInvalid": "ملف التكوين في {{path}} ليس JSON(C) صالحًا",
@@ -832,21 +832,21 @@ export const dict = {
   "sidebar.workspaces.enable": "تمكين مساحات العمل",
   "sidebar.workspaces.disable": "تعطيل مساحات العمل",
   "sidebar.gettingStarted.title": "البدء",
-  "sidebar.gettingStarted.line1": "يتضمن OpenCode نماذج مجانية حتى تتمكن من البدء فورًا.",
+  "sidebar.gettingStarted.line1": "يتضمن AllCode نماذج مجانية حتى تتمكن من البدء فورًا.",
   "sidebar.gettingStarted.line2": "قم بتوصيل أي موفر لاستخدام النماذج، بما في ذلك Claude و GPT و Gemini وما إلى ذلك.",
   "sidebar.project.recentSessions": "الجلسات الأخيرة",
   "sidebar.project.viewAllSessions": "عرض جميع الجلسات",
   "sidebar.project.clearNotifications": "مسح الإشعارات",
   "sidebar.empty.title": "لا توجد مشاريع مفتوحة",
   "sidebar.empty.description": "افتح مشروعًا للبدء",
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "سطح المكتب",
   "settings.section.server": "الخادم",
   "settings.tab.general": "عام",
   "settings.tab.shortcuts": "اختصارات",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "تكامل WSL",
-  "settings.desktop.wsl.description": "تشغيل خادم OpenCode داخل WSL على Windows.",
+  "settings.desktop.wsl.description": "تشغيل خادم AllCode داخل WSL على Windows.",
   "settings.general.section.appearance": "المظهر",
   "settings.general.section.advanced": "متقدم",
   "settings.general.section.notifications": "إشعارات النظام",
@@ -855,18 +855,18 @@ export const dict = {
   "settings.general.section.feed": "الخلاصة",
   "settings.general.section.display": "العرض",
   "settings.general.row.language.title": "اللغة",
-  "settings.general.row.language.description": "تغيير لغة العرض لـ OpenCode",
+  "settings.general.row.language.description": "تغيير لغة العرض لـ AllCode",
   "settings.general.row.shell.title": "Shell المحطة الطرفية",
   "settings.general.row.shell.description":
     "اختر shell المستخدم في المحطة الطرفية. تُستخدم واجهات shell المتوافقة أيضًا في استدعاءات أدوات الوكيل.",
   "settings.general.row.shell.autoDefault": "تلقائي (افتراضي)",
   "settings.general.row.shell.terminalOnly": "المحطة الطرفية فقط",
   "settings.general.row.appearance.title": "المظهر",
-  "settings.general.row.appearance.description": "تخصيص كيفية ظهور OpenCode على جهازك",
+  "settings.general.row.appearance.description": "تخصيص كيفية ظهور AllCode على جهازك",
   "settings.general.row.colorScheme.title": "مخطط الألوان",
-  "settings.general.row.colorScheme.description": "اختر ما إذا كان OpenCode يتبع سمة النظام أو الفاتح أو الداكن",
+  "settings.general.row.colorScheme.description": "اختر ما إذا كان AllCode يتبع سمة النظام أو الفاتح أو الداكن",
   "settings.general.row.theme.title": "السمة",
-  "settings.general.row.theme.description": "تخصيص سمة OpenCode.",
+  "settings.general.row.theme.description": "تخصيص سمة AllCode.",
   "settings.general.row.font.title": "خط الكود",
   "settings.general.row.font.description": "خصّص الخط المستخدم في كتل التعليمات البرمجية",
   "settings.general.row.terminalFont.title": "خط الطرفية",
@@ -918,7 +918,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "ملاحظات الإصدار",
   "settings.general.row.releaseNotes.description": 'عرض نوافذ "ما الجديد" المنبثقة بعد التحديثات',
   "settings.updates.row.startup.title": "التحقق من التحديثات عند بدء التشغيل",
-  "settings.updates.row.startup.description": "التحقق تلقائيًا من التحديثات عند تشغيل OpenCode",
+  "settings.updates.row.startup.description": "التحقق تلقائيًا من التحديثات عند تشغيل AllCode",
   "settings.updates.row.check.title": "التحقق من التحديثات",
   "settings.updates.row.check.description": "التحقق يدويًا من التحديثات وتثبيتها إذا كانت متاحة",
   "settings.updates.action.checkNow": "تحقق الآن",
@@ -926,7 +926,7 @@ export const dict = {
   "settings.updates.action.downloading": "جارٍ التنزيل...",
   "settings.updates.action.installing": "جارٍ التثبيت...",
   "settings.updates.toast.latest.title": "لديك أحدث إصدار",
-  "settings.updates.toast.latest.description": "أنت تستخدم أحدث إصدار من OpenCode.",
+  "settings.updates.toast.latest.description": "أنت تستخدم أحدث إصدار من AllCode.",
   "sound.option.none": "بلا",
   "sound.option.alert01": "تنبيه 01",
   "sound.option.alert02": "تنبيه 02",
@@ -1300,11 +1300,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1402,7 +1402,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1414,14 +1414,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

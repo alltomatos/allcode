@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Nākamais projekts",
   "desktop.menu.minimize": "Minimizēt",
   "desktop.menu.maximize": "Maksimizēt",
-  "desktop.menu.documentation": "OpenCode dokumentācija",
+  "desktop.menu.documentation": "AllCode dokumentācija",
   "desktop.menu.supportForum": "Atbalsta forums",
   "desktop.menu.shareFeedback": "Sniegt atsauksmi",
   "desktop.menu.reportBug": "Ziņot par kļūdu",
-  "desktop.menu.ariaLabel": "OpenCode izvēlne",
+  "desktop.menu.ariaLabel": "AllCode izvēlne",
   "desktop.updater.dialog.checkFailed.message": "Neizdevās pārbaudīt atjauninājumus.",
   "desktop.updater.dialog.checkFailed.title": "Atjaunināšanas kļūda",
   "desktop.updater.dialog.upToDate.message": "Jums ir jaunākā versija.",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Eksportēt žurnālus",
   "desktop.recovery.action.keepWaiting": "Turpināt gaidīt",
   "desktop.recovery.action.quit": "Iziet",
-  "desktop.recovery.loadFailed": "Neizdevās ielādēt OpenCode",
-  "desktop.recovery.terminated": "OpenCode logs negaidīti aizvērts",
-  "desktop.recovery.unresponsive": "OpenCode neatbild",
+  "desktop.recovery.loadFailed": "Neizdevās ielādēt AllCode",
+  "desktop.recovery.terminated": "AllCode logs negaidīti aizvērts",
+  "desktop.recovery.unresponsive": "AllCode neatbild",
   "desktop.recovery.unresponsive.detail": "Varat palaist lietotni no jauna, atvērt žurnālus vai turpināt gaidīt.",
   "desktop.recovery.loadFailed.detail": "Logs: {{window}}\nURL: {{url}}\nKļūda: {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "Logs: {{window}}\nIemesls: {{reason}}\nKods: {{code}}",
@@ -75,13 +75,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Nevar izpildīt komandas distribūcijā",
   "desktop.wsl.error.installWsl": "WSL instalēšana neizdevās",
   "desktop.wsl.error.installDistro": "Neizdevās instalēt distribūciju: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode instalēšana neizdevās",
+  "desktop.wsl.error.installOpencode": "AllCode instalēšana neizdevās",
   "desktop.wsl.error.alreadyAdded": "{{distro}} jau ir pievienota",
   "desktop.wsl.error.opencodeMissing": "opencode nav instalēts šajā distribūcijā",
   "desktop.wsl.error.opencodeCannotRun": "opencode ir instalēts, bet to nevar palaist",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode nav instalēts {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode nav instalēts {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "OpenCode atjaunināšana pabeigta, bet {{distro}} joprojām rāda {{installed}}; gaidīts {{expected}}",
+    "AllCode atjaunināšana pabeigta, bet {{distro}} joprojām rāda {{installed}}; gaidīts {{expected}}",
   "desktop.wsl.error.noVersion": "nav versijas",
   "desktop.wsl.error.serverExited": "WSL serveris izslēdzās pēc palaišanas (kods={{code}} signāls={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -206,7 +206,7 @@ export const dict = {
   "dialog.model.manage": "Pārvaldīt modeļus",
   "dialog.model.manage.description": "Pielāgojiet, kuri modeļi tiek rādīti modeļu atlasītājā.",
   "dialog.model.manage.provider.toggle": "Pārslēgt visus {{provider}} modeļus",
-  "dialog.model.unpaid.freeModels.title": "Bezmaksas modeļi no OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Bezmaksas modeļi no AllCode",
   "dialog.model.unpaid.addMore.title": "Pievienot vairāk modeļu no populāriem nodrošinātājiem",
   "dialog.model.unpaid.viewMoreProviders": "Skatīt vēl 70+ nodrošinātājus",
   "dialog.provider.viewAll": "Rādīt vairāk nodrošinātāju",
@@ -220,7 +220,7 @@ export const dict = {
   "provider.connect.status.waiting": "Gaida autorizāciju...",
   "provider.connect.status.failed": "Autorizācija neizdevās: {{error}}",
   "provider.connect.apiKey.description":
-    "Ievadiet savu {{provider}} API atslēgu, lai savienotu kontu un izmantotu {{provider}} modeļus OpenCode.",
+    "Ievadiet savu {{provider}} API atslēgu, lai savienotu kontu un izmantotu {{provider}} modeļus AllCode.",
   "provider.connect.apiKey.label": "{{provider}} API atslēga",
   "provider.connect.apiKey.placeholder": "API atslēga",
   "provider.connect.apiKey.required": "Nepieciešama API atslēga",
@@ -234,7 +234,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Apmeklējiet",
   "provider.connect.oauth.code.visit.link": "šo saiti",
   "provider.connect.oauth.code.visit.suffix":
-    ", lai saņemtu autorizācijas kodu, savienotu kontu un izmantotu {{provider}} modeļus OpenCode.",
+    ", lai saņemtu autorizācijas kodu, savienotu kontu un izmantotu {{provider}} modeļus AllCode.",
   "provider.connect.oauth.code.label": "{{method}} autorizācijas kods",
   "provider.connect.oauth.code.placeholder": "Autorizācijas kods",
   "provider.connect.oauth.code.required": "Nepieciešams autorizācijas kods",
@@ -242,7 +242,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Apmeklējiet",
   "provider.connect.oauth.auto.visit.link": "šo saiti",
   "provider.connect.oauth.auto.visit.suffix":
-    " un ievadiet zemāk redzamo kodu, lai savienotu kontu un izmantotu {{provider}} modeļus OpenCode.",
+    " un ievadiet zemāk redzamo kodu, lai savienotu kontu un izmantotu {{provider}} modeļus AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "Apstiprinājuma kods",
   "provider.connect.toast.connected.title": "{{provider}} savienots",
   "provider.connect.toast.connected.description": "{{provider}} modeļi tagad ir pieejami lietošanai.",
@@ -411,7 +411,7 @@ export const dict = {
   "app.server.retrying": "Automātiska atkārtota mēģināšana...",
   "app.server.otherServers": "Citi serveri",
   "dialog.server.title": "Serveri",
-  "dialog.server.description": "Mainiet, pie kura OpenCode servera šī lietotne pieslēdzas.",
+  "dialog.server.description": "Mainiet, pie kura AllCode servera šī lietotne pieslēdzas.",
   "dialog.server.search.placeholder": "Meklēt serverus",
   "dialog.server.empty": "Vēl nav serveru",
   "dialog.server.add.title": "Pievienot serveri",
@@ -450,7 +450,7 @@ export const dict = {
   "wsl.server.retryStart": "Mēģināt vēlreiz",
   "wsl.server.updating": "Atjaunina...",
   "wsl.onboarding.step.distro": "Izvēlieties distribūciju",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Pārbauda WSL...",
   "wsl.onboarding.restartRequired": "Lai pabeigtu WSL instalēšanu, nepieciešama Windows pārstartēšana.",
   "wsl.onboarding.ready": "WSL ir gatavs.",
@@ -464,16 +464,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Atveriet {{distro}} vienu reizi, lai pabeigtu iestatīšanu.",
   "wsl.onboarding.finishingDistro": "Pabeidzu {{distro}} iestatīšanu.",
   "wsl.onboarding.pickDistro": "Izvēlieties distribūciju vai instalējiet kādu no zemāk redzamajām.",
-  "wsl.onboarding.checkingOpencode": "Pārbaudu OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Pārbaudu OpenCode distribūcijā {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Atjauninu OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Atjauninu OpenCode distribūcijā {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Atjauniniet OpenCode distribūcijā {{distro}}.",
-  "wsl.onboarding.updateOpencode": "Atjauniniet OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode ir gatavs distribūcijā {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode ir gatavs.",
-  "wsl.onboarding.installOpencodeIn": "Instalējiet OpenCode distribūcijā {{distro}}.",
-  "wsl.onboarding.installOpencode": "Instalējiet OpenCode",
+  "wsl.onboarding.checkingOpencode": "Pārbaudu AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Pārbaudu AllCode distribūcijā {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Atjauninu AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Atjauninu AllCode distribūcijā {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Atjauniniet AllCode distribūcijā {{distro}}.",
+  "wsl.onboarding.updateOpencode": "Atjauniniet AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode ir gatavs distribūcijā {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode ir gatavs.",
+  "wsl.onboarding.installOpencodeIn": "Instalējiet AllCode distribūcijā {{distro}}.",
+  "wsl.onboarding.installOpencode": "Instalējiet AllCode",
   "wsl.onboarding.chooseDistroFirst": "Vispirms izvēlieties distribūciju.",
   "wsl.onboarding.loadFailed": "Neizdevās ielādēt WSL stāvokli.",
   "wsl.onboarding.loading": "Ielādē...",
@@ -481,19 +481,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Pārbaudīt vēlreiz",
   "wsl.onboarding.distroStatus.ready": "Gatavs",
   "wsl.onboarding.distroStatus.checking": "Pārbaudu...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode nav instalēts",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode nav instalēts",
   "wsl.onboarding.distroStatus.missingTools": "Trūkst bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "Nav atbalstīts · Izmantojiet WSL 2",
   "wsl.onboarding.needAnotherDistro": "Nepieciešama cita distribūcija?",
   "wsl.onboarding.needAnotherDistroHint": "Instalējiet Linux distribūciju no WSL kataloga",
   "wsl.onboarding.wslNotInstalled.title": "WSL nav instalēts",
   "wsl.onboarding.wslNotInstalled.description":
-    "Pirms OpenCode var pievienot WSL serveri, nepieciešams WSL (Windows Subsystem for Linux)",
+    "Pirms AllCode var pievienot WSL serveri, nepieciešams WSL (Windows Subsystem for Linux)",
   "wsl.onboarding.wslUnavailable.title": "WSL nav pieejams",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode neizdevās pārbaudīt WSL šajā datorā.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode neizdevās pārbaudīt WSL šajā datorā.",
   "wsl.onboarding.installWsl": "Instalēt WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Restartējiet Windows, lai pabeigtu WSL instalēšanu, pēc tam atveriet OpenCode no jauna.",
+    "Restartējiet Windows, lai pabeigtu WSL instalēšanu, pēc tam atveriet AllCode no jauna.",
   "wsl.onboarding.next": "Tālāk",
   "wsl.onboarding.refresh": "Atsvaidzināt",
   "wsl.onboarding.allDistrosAdded": "Visas instalētās distribūcijas jau ir pievienotas.",
@@ -517,7 +517,7 @@ export const dict = {
   "help.tabs.title": "Iepazīstinām ar cilnēm",
   "help.tabs.description": "Organizējiet darbu un aktīvās sesijas ar cilnēm",
   "help.tabs.date": "14. jūlijs",
-  "help.tabs.introduction": "OpenCode Desktop tagad balstās uz cilnēm.",
+  "help.tabs.introduction": "AllCode Desktop tagad balstās uz cilnēm.",
   "help.tabs.sessions":
     "Sāciet jaunu sesiju cilnē vai atveriet esošu sesiju no jebkura projekta. Atveriet jaunu cilni, uzsākot ko jaunu, un aizveriet to, kad esat pabeidzis.",
   "help.tabs.organize":
@@ -626,7 +626,7 @@ export const dict = {
   "toast.session.listFailed.title": "Neizdevās ielādēt sesijas projektam {{project}}",
   "toast.project.reloadFailed.title": "Neizdevās pārlādēt {{project}}",
   "toast.update.title": "Pieejams atjauninājums",
-  "toast.update.description": "Pieejama jauna OpenCode versija ({{version}}) instalēšanai.",
+  "toast.update.description": "Pieejama jauna AllCode versija ({{version}}) instalēšanai.",
   "toast.update.action.installRestart": "Instalēt un restartēt",
   "toast.update.action.notYet": "Vēlāk",
   "error.page.title": "Kaut kas nogāja greizi",
@@ -641,7 +641,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Pārbaudīt atjauninājumus",
   "error.page.action.updateTo": "Atjaunināt uz {{version}}",
   "error.page.circular": "[Ciklisks]",
-  "error.page.report.prefix": "Lūdzu, ziņojiet par šo kļūdu OpenCode komandai",
+  "error.page.report.prefix": "Lūdzu, ziņojiet par šo kļūdu AllCode komandai",
   "error.page.report.discord": "Discord",
   "error.page.version": "Versija: {{version}}",
   "error.dev.rootNotFound":
@@ -666,7 +666,7 @@ export const dict = {
   "error.chain.modelNotFound": "Modelis nav atrasts: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Pārbaudiet konfigurāciju (opencode.json) pakalpojuma/modela nosaukumus",
   "error.chain.mcpFailed":
-    'MCP serveris "{{name}}" neizdevās. Ņemiet vērā, OpenCode vēl neatbalsta MCP autentifikāciju.',
+    'MCP serveris "{{name}}" neizdevās. Ņemiet vērā, AllCode vēl neatbalsta MCP autentifikāciju.',
   "error.chain.providerAuthFailed": "Pakalpojuma autentifikācija neizdevās ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Neizdevās inicializēt pakalpojumu "{{provider}}". Pārbaudiet akreditācijas datus un konfigurāciju.',
@@ -886,7 +886,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Ieslēgt darba telpas",
   "sidebar.workspaces.disable": "Izslēgt darba telpas",
   "sidebar.gettingStarted.title": "Darba sākšana",
-  "sidebar.gettingStarted.line1": "OpenCode ietver bezmaksas modeļus, lai varētu sākt uzreiz.",
+  "sidebar.gettingStarted.line1": "AllCode ietver bezmaksas modeļus, lai varētu sākt uzreiz.",
   "sidebar.gettingStarted.line2":
     "Pievienojiet jebkuru nodrošinātāju, lai izmantotu modeļus, t.sk. Claude, GPT, Gemini u.c.",
   "sidebar.project.recentSessions": "Nesenās sesijas",
@@ -925,14 +925,14 @@ export const dict = {
   "debugBar.direction.tip": "Piespiedu kārtā lietot pilnu lietotnes izkārtojuma virzienu, nemainot izvēlēto valodu",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode darbvirsma",
+  "app.name.desktop": "AllCode darbvirsma",
   "settings.section.desktop": "Darbvirsma",
   "settings.section.server": "Serveris",
   "settings.tab.general": "Vispārīgi",
   "settings.tab.shortcuts": "Saīsnes",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL integrācija",
-  "settings.desktop.wsl.description": "Palaist OpenCode serveri WSL vidē uz Windows.",
+  "settings.desktop.wsl.description": "Palaist AllCode serveri WSL vidē uz Windows.",
   "settings.general.section.appearance": "Izskats",
   "settings.general.section.advanced": "Paplašināti",
   "settings.general.section.notifications": "Sistēmas paziņojumi",
@@ -941,18 +941,18 @@ export const dict = {
   "settings.general.section.feed": "Plūsma",
   "settings.general.section.display": "Displejs",
   "settings.general.row.language.title": "Valoda",
-  "settings.general.row.language.description": "Mainīt OpenCode saskarnes valodu",
+  "settings.general.row.language.description": "Mainīt AllCode saskarnes valodu",
   "settings.general.row.shell.title": "Termināļa čaula",
   "settings.general.row.shell.description": "Čaula, ko izmanto terminālis un aģenta rīki",
   "settings.general.row.shell.autoDefault": "Automātiski (noklusējums)",
   "settings.general.row.shell.terminalOnly": "tikai terminālis",
   "settings.general.row.appearance.title": "Izskats",
-  "settings.general.row.appearance.description": "Pielāgojiet, kā OpenCode izskatās jūsu ierīcē",
+  "settings.general.row.appearance.description": "Pielāgojiet, kā AllCode izskatās jūsu ierīcē",
   "settings.general.row.colorScheme.title": "Krāsu shēma",
   "settings.general.row.colorScheme.description":
-    "Izvēlieties, vai OpenCode sekos sistēmas, gaišajai vai tumšajai tēmai",
+    "Izvēlieties, vai AllCode sekos sistēmas, gaišajai vai tumšajai tēmai",
   "settings.general.row.theme.title": "Tēma",
-  "settings.general.row.theme.description": "Pielāgojiet OpenCode tēmu.",
+  "settings.general.row.theme.description": "Pielāgojiet AllCode tēmu.",
   "settings.general.row.font.title": "Koda fonts",
   "settings.general.row.font.description": "Pielāgojiet fontu, kas tiek izmantots koda blokos",
   "settings.general.row.terminalFont.title": "Termināļa fonts",
@@ -1003,7 +1003,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "Izlaiduma piezīmes",
   "settings.general.row.releaseNotes.description": "Rādīt Jaunumu logus pēc atjauninājumiem",
   "settings.updates.row.startup.title": "Pārbaudīt atjauninājumus startējot",
-  "settings.updates.row.startup.description": "Automātiski pārbaudīt atjauninājumus, palaižot OpenCode",
+  "settings.updates.row.startup.description": "Automātiski pārbaudīt atjauninājumus, palaižot AllCode",
   "settings.updates.row.check.title": "Pārbaudīt atjauninājumus",
   "settings.updates.row.check.description": "Manuāli pārbaudīt un instalēt atjauninājumus, ja pieejami",
   "settings.updates.action.checkNow": "Pārbaudīt tagad",
@@ -1011,7 +1011,7 @@ export const dict = {
   "settings.updates.action.downloading": "Lejupielādē...",
   "settings.updates.action.installing": "Instalē...",
   "settings.updates.toast.latest.title": "Jums ir jaunākā versija",
-  "settings.updates.toast.latest.description": "Jūs izmantojat jaunāko OpenCode versiju.",
+  "settings.updates.toast.latest.description": "Jūs izmantojat jaunāko AllCode versiju.",
   "sound.option.none": "Nav",
   "sound.option.alert01": "Brīdinājums 01",
   "sound.option.alert02": "Brīdinājums 02",
@@ -1291,11 +1291,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1393,7 +1393,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1405,14 +1405,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Επόμενο έργο",
   "desktop.menu.minimize": "Ελαχιστοποίηση",
   "desktop.menu.maximize": "Μεγιστοποίηση",
-  "desktop.menu.documentation": "OpenCode Τεκμηρίωση",
+  "desktop.menu.documentation": "AllCode Τεκμηρίωση",
   "desktop.menu.supportForum": "Φόρουμ υποστήριξης",
   "desktop.menu.shareFeedback": "Κοινή χρήση σχολίων",
   "desktop.menu.reportBug": "Αναφορά σφάλματος",
-  "desktop.menu.ariaLabel": "OpenCode μενού",
+  "desktop.menu.ariaLabel": "AllCode μενού",
   "desktop.updater.dialog.checkFailed.message": "Ο έλεγχος ενημέρωσης απέτυχε.",
   "desktop.updater.dialog.checkFailed.title": "Σφάλμα ενημέρωσης",
   "desktop.updater.dialog.upToDate.message": "Είστε ενημερωμένοι.",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Εξαγωγή αρχείων καταγραφής",
   "desktop.recovery.action.keepWaiting": "Συνεχίστε την αναμονή",
   "desktop.recovery.action.quit": "Τερματισμός",
-  "desktop.recovery.loadFailed": "OpenCode απέτυχε η φόρτωση",
-  "desktop.recovery.terminated": "OpenCode το παράθυρο τερματίστηκε απροσδόκητα",
-  "desktop.recovery.unresponsive": "OpenCode δεν αποκρίνεται",
+  "desktop.recovery.loadFailed": "AllCode απέτυχε η φόρτωση",
+  "desktop.recovery.terminated": "AllCode το παράθυρο τερματίστηκε απροσδόκητα",
+  "desktop.recovery.unresponsive": "AllCode δεν αποκρίνεται",
   "desktop.recovery.unresponsive.detail":
     "Μπορείτε να επανεκκινήσετε την εφαρμογή, να ανοίξετε τα αρχεία καταγραφής ή να συνεχίσετε να περιμένετε.",
   "desktop.recovery.loadFailed.detail": "Παράθυρο: {{window}}\nURL: {{url}}\nΣφάλμα: {{code}} {{description}}",
@@ -76,13 +76,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Δεν είναι δυνατή η εκτέλεση εντολών στη διανομή",
   "desktop.wsl.error.installWsl": "WSL η εγκατάσταση απέτυχε",
   "desktop.wsl.error.installDistro": "Αποτυχία εγκατάστασης διανομής: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode η εγκατάσταση απέτυχε",
+  "desktop.wsl.error.installOpencode": "AllCode η εγκατάσταση απέτυχε",
   "desktop.wsl.error.alreadyAdded": "{{distro}} έχει ήδη προστεθεί",
   "desktop.wsl.error.opencodeMissing": "ο ανοιχτός κώδικας δεν είναι εγκατεστημένος σε αυτήν τη διανομή",
   "desktop.wsl.error.opencodeCannotRun": "ο ανοιχτός κώδικας είναι εγκατεστημένος αλλά δεν ήταν δυνατή η εκτέλεση",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode δεν είναι εγκατεστημένο στο {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode δεν είναι εγκατεστημένο στο {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "OpenCode η ενημέρωση ολοκληρώθηκε αλλά το {{distro}} εξακολουθεί να αναφέρει {{installed}}; αναμενόμενο {{expected}}",
+    "AllCode η ενημέρωση ολοκληρώθηκε αλλά το {{distro}} εξακολουθεί να αναφέρει {{installed}}; αναμενόμενο {{expected}}",
   "desktop.wsl.error.noVersion": "χωρίς έκδοση",
   "desktop.wsl.error.serverExited": "WSL έξοδος διακομιστή μετά την εκκίνηση (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -207,7 +207,7 @@ export const dict = {
   "dialog.model.manage": "Διαχείριση μοντέλων",
   "dialog.model.manage.description": "Προσαρμογή των μοντέλων που εμφανίζονται στον επιλογέα μοντέλων.",
   "dialog.model.manage.provider.toggle": "Εναλλαγή όλων των {{provider}} μοντέλων",
-  "dialog.model.unpaid.freeModels.title": "Δωρεάν μοντέλα παρέχονται από OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Δωρεάν μοντέλα παρέχονται από AllCode",
   "dialog.model.unpaid.addMore.title": "Προσθήκη περισσότερων μοντέλων από δημοφιλείς παρόχους",
   "dialog.model.unpaid.viewMoreProviders": "Δείτε 70+ ακόμη παρόχους",
   "dialog.provider.viewAll": "Εμφάνιση περισσότερων παρόχων",
@@ -221,12 +221,12 @@ export const dict = {
   "provider.connect.status.waiting": "Αναμονή για εξουσιοδότηση...",
   "provider.connect.status.failed": "Η εξουσιοδότηση απέτυχε: {{error}}",
   "provider.connect.apiKey.description":
-    "Εισαγάγετε το κλειδί {{provider}} API για να συνδέσετε τον λογαριασμό σας και χρησιμοποιήστε μοντέλα {{provider}} στο OpenCode.",
+    "Εισαγάγετε το κλειδί {{provider}} API για να συνδέσετε τον λογαριασμό σας και χρησιμοποιήστε μοντέλα {{provider}} στο AllCode.",
   "provider.connect.apiKey.label": "{{provider}} API κλειδί",
   "provider.connect.apiKey.placeholder": "API κλειδί",
   "provider.connect.apiKey.required": "API απαιτείται κλειδί",
   "provider.connect.opencodeZen.line1":
-    "OpenCode Το Zen σάς δίνει πρόσβαση σε ένα επιμελημένο σύνολο αξιόπιστων βελτιστοποιημένων μοντέλων για πράκτορες κωδικοποίησης.",
+    "AllCode Το Zen σάς δίνει πρόσβαση σε ένα επιμελημένο σύνολο αξιόπιστων βελτιστοποιημένων μοντέλων για πράκτορες κωδικοποίησης.",
   "provider.connect.opencodeZen.line2":
     "Με ένα μόνο κλειδί API θα έχετε πρόσβαση σε μοντέλα όπως Claude, GPT, Gemini, GLM και άλλα.",
   "provider.connect.opencodeZen.visit.prefix": "Επίσκεψη ",
@@ -235,7 +235,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Επίσκεψη ",
   "provider.connect.oauth.code.visit.link": "αυτός ο σύνδεσμος",
   "provider.connect.oauth.code.visit.suffix":
-    " για να συλλέξετε τον κωδικό εξουσιοδότησης για να συνδέσετε τον λογαριασμό σας και να χρησιμοποιήσετε {{provider}} μοντέλα στο OpenCode.",
+    " για να συλλέξετε τον κωδικό εξουσιοδότησης για να συνδέσετε τον λογαριασμό σας και να χρησιμοποιήσετε {{provider}} μοντέλα στο AllCode.",
   "provider.connect.oauth.code.label": "{{method}} κωδικός εξουσιοδότησης",
   "provider.connect.oauth.code.placeholder": "Κωδικός εξουσιοδότησης",
   "provider.connect.oauth.code.required": "Απαιτείται κωδικός εξουσιοδότησης",
@@ -243,7 +243,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Επίσκεψη ",
   "provider.connect.oauth.auto.visit.link": "αυτός ο σύνδεσμος",
   "provider.connect.oauth.auto.visit.suffix":
-    " και εισαγάγετε τον παρακάτω κωδικό για να συνδέσετε τον λογαριασμό σας και να χρησιμοποιήσετε {{provider}} μοντέλα στο OpenCode.",
+    " και εισαγάγετε τον παρακάτω κωδικό για να συνδέσετε τον λογαριασμό σας και να χρησιμοποιήσετε {{provider}} μοντέλα στο AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "Κωδικός επιβεβαίωσης",
   "provider.connect.toast.connected.title": "{{provider}} συνδεδεμένο",
   "provider.connect.toast.connected.description": "{{provider}} μοντέλα είναι πλέον διαθέσιμα για χρήση.",
@@ -413,7 +413,7 @@ export const dict = {
   "app.server.retrying": "Αυτόματη προσπάθεια επανάληψης...",
   "app.server.otherServers": "Άλλοι διακομιστές",
   "dialog.server.title": "Διακομιστές",
-  "dialog.server.description": "Αλλαγή σε ποιον διακομιστή OpenCode συνδέεται αυτή η εφαρμογή.",
+  "dialog.server.description": "Αλλαγή σε ποιον διακομιστή AllCode συνδέεται αυτή η εφαρμογή.",
   "dialog.server.search.placeholder": "Αναζήτηση διακομιστών",
   "dialog.server.empty": "Δεν υπάρχουν ακόμη διακομιστές",
   "dialog.server.add.title": "Προσθήκη διακομιστή",
@@ -452,7 +452,7 @@ export const dict = {
   "wsl.server.retryStart": "Επανάληψη έναρξης",
   "wsl.server.updating": "Ενημέρωση...",
   "wsl.onboarding.step.distro": "Επιλογή διανομής",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Έλεγχος WSL...",
   "wsl.onboarding.restartRequired": "Windows χρειάζεται επανεκκίνηση για να ολοκληρωθεί η εγκατάσταση του WSL.",
   "wsl.onboarding.ready": "WSL είναι έτοιμο.",
@@ -466,16 +466,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Ανοίξτε το {{distro}} μία φορά για να ολοκληρώσετε τη ρύθμιση.",
   "wsl.onboarding.finishingDistro": "Ολοκλήρωση της ρύθμισης για το {{distro}}.",
   "wsl.onboarding.pickDistro": "Επιλέξτε μια διανομή ή εγκαταστήστε μία παρακάτω.",
-  "wsl.onboarding.checkingOpencode": "Έλεγχος OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Έλεγχος OpenCode σε {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Ενημέρωση OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Ενημέρωση OpenCode σε {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Ενημέρωση OpenCode σε {{distro}}.",
-  "wsl.onboarding.updateOpencode": "Ενημέρωση OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode είναι έτοιμο στο {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode είναι έτοιμο.",
-  "wsl.onboarding.installOpencodeIn": "Εγκατάσταση του OpenCode στο {{distro}}.",
-  "wsl.onboarding.installOpencode": "Εγκατάσταση OpenCode",
+  "wsl.onboarding.checkingOpencode": "Έλεγχος AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Έλεγχος AllCode σε {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Ενημέρωση AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Ενημέρωση AllCode σε {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Ενημέρωση AllCode σε {{distro}}.",
+  "wsl.onboarding.updateOpencode": "Ενημέρωση AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode είναι έτοιμο στο {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode είναι έτοιμο.",
+  "wsl.onboarding.installOpencodeIn": "Εγκατάσταση του AllCode στο {{distro}}.",
+  "wsl.onboarding.installOpencode": "Εγκατάσταση AllCode",
   "wsl.onboarding.chooseDistroFirst": "Επιλέξτε πρώτα μια διανομή.",
   "wsl.onboarding.loadFailed": "Απέτυχε η φόρτωση της κατάστασης WSL.",
   "wsl.onboarding.loading": "Φόρτωση...",
@@ -483,19 +483,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Έλεγχος ξανά",
   "wsl.onboarding.distroStatus.ready": "Έτοιμο",
   "wsl.onboarding.distroStatus.checking": "Έλεγχος...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode δεν έχει εγκατασταθεί",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode δεν έχει εγκατασταθεί",
   "wsl.onboarding.distroStatus.missingTools": "Λείπει το bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "Δεν υποστηρίζεται · Χρήση WSL 2",
   "wsl.onboarding.needAnotherDistro": "Χρειάζεστε άλλη διανομή;",
   "wsl.onboarding.needAnotherDistroHint": "Εγκαταστήστε μια διανομή Linux από τον κατάλογο WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL δεν έχει εγκατασταθεί",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Υποσύστημα για Linux) απαιτείται για να μπορέσει ο OpenCode να προσθέσει έναν διακομιστή WSL",
+    "WSL (Windows Υποσύστημα για Linux) απαιτείται για να μπορέσει ο AllCode να προσθέσει έναν διακομιστή WSL",
   "wsl.onboarding.wslUnavailable.title": "WSL μη διαθέσιμο",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode δεν μπόρεσε να επαληθεύσει το WSL σε αυτό το μηχάνημα.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode δεν μπόρεσε να επαληθεύσει το WSL σε αυτό το μηχάνημα.",
   "wsl.onboarding.installWsl": "Εγκατάσταση WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Επανεκκινήστε το Windows για να ολοκληρώσετε την εγκατάσταση του WSL και μετά ανοίξτε ξανά το OpenCode.",
+    "Επανεκκινήστε το Windows για να ολοκληρώσετε την εγκατάσταση του WSL και μετά ανοίξτε ξανά το AllCode.",
   "wsl.onboarding.next": "Επόμενο",
   "wsl.onboarding.refresh": "Ανανέωση",
   "wsl.onboarding.allDistrosAdded": "Όλες οι εγκατεστημένες διανομές έχουν ήδη προστεθεί.",
@@ -519,7 +519,7 @@ export const dict = {
   "help.tabs.title": "Εισαγωγή καρτελών",
   "help.tabs.description": "Οργανώστε την εργασία και τις ενεργές συνεδρίες σας με καρτέλες",
   "help.tabs.date": "14 Ιουλίου",
-  "help.tabs.introduction": "OpenCode Η επιφάνεια εργασίας είναι πλέον χτισμένη γύρω από καρτέλες.",
+  "help.tabs.introduction": "AllCode Η επιφάνεια εργασίας είναι πλέον χτισμένη γύρω από καρτέλες.",
   "help.tabs.sessions":
     "Ξεκινήστε μια νέα συνεδρία σε μια καρτέλα ή ανοίξτε μια υπάρχουσα περίοδο λειτουργίας από οποιοδήποτε από τα έργα σας. Ανοίξτε μια νέα καρτέλα όταν ξεκινάτε κάτι νέο και κλείστε την όταν τελειώσετε.",
   "help.tabs.organize":
@@ -630,7 +630,7 @@ export const dict = {
   "toast.session.listFailed.title": "Αποτυχία φόρτωσης συνεδριών για {{project}}",
   "toast.project.reloadFailed.title": "Αποτυχία επαναφόρτωσης του {{project}}",
   "toast.update.title": "Διαθέσιμη ενημέρωση",
-  "toast.update.description": "Μια νέα έκδοση του OpenCode ({{version}}) είναι τώρα διαθέσιμη για εγκατάσταση.",
+  "toast.update.description": "Μια νέα έκδοση του AllCode ({{version}}) είναι τώρα διαθέσιμη για εγκατάσταση.",
   "toast.update.action.installRestart": "Εγκατάσταση και επανεκκίνηση",
   "toast.update.action.notYet": "Όχι ακόμη",
   "error.page.title": "Κάτι πήγε στραβά",
@@ -645,7 +645,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Έλεγχος για ενημερώσεις",
   "error.page.action.updateTo": "Ενημέρωση σε {{version}}",
   "error.page.circular": "[Circular]",
-  "error.page.report.prefix": "Αναφέρετε αυτό το σφάλμα στην ομάδα OpenCode",
+  "error.page.report.prefix": "Αναφέρετε αυτό το σφάλμα στην ομάδα AllCode",
   "error.page.report.discord": "στο Discord",
   "error.page.version": "Έκδοση: {{version}}",
   "error.dev.rootNotFound":
@@ -670,7 +670,7 @@ export const dict = {
   "error.chain.modelNotFound": "Το μοντέλο δεν βρέθηκε: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Ελέγξτε τη διαμόρφωση (opencode.json) ονόματα παρόχου/μοντέλων",
   "error.chain.mcpFailed":
-    'MCP διακομιστής "{{name}}" απέτυχε. Σημείωση, το OpenCode δεν υποστηρίζει ακόμη έλεγχο ταυτότητας MCP.',
+    'MCP διακομιστής "{{name}}" απέτυχε. Σημείωση, το AllCode δεν υποστηρίζει ακόμη έλεγχο ταυτότητας MCP.',
   "error.chain.providerAuthFailed": "Ο έλεγχος ταυτότητας παρόχου απέτυχε ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Απέτυχε η προετοιμασία του παρόχου "{{provider}}". Ελέγξτε τα διαπιστευτήρια και τη διαμόρφωση.',
@@ -890,7 +890,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Ενεργοποίηση χώρων εργασίας",
   "sidebar.workspaces.disable": "Απενεργοποίηση χώρων εργασίας",
   "sidebar.gettingStarted.title": "Ξεκινώντας",
-  "sidebar.gettingStarted.line1": "OpenCode περιλαμβάνει δωρεάν μοντέλα, ώστε να μπορείτε να ξεκινήσετε αμέσως.",
+  "sidebar.gettingStarted.line1": "AllCode περιλαμβάνει δωρεάν μοντέλα, ώστε να μπορείτε να ξεκινήσετε αμέσως.",
   "sidebar.gettingStarted.line2": "Συνδέστε οποιονδήποτε πάροχο για χρήση μοντέλων, inc. Claude, GPT, Gemini κ.λπ.",
   "sidebar.project.recentSessions": "Πρόσφατες συνεδρίες",
   "sidebar.project.viewAllSessions": "Προβολή όλων των συνεδριών",
@@ -930,14 +930,14 @@ export const dict = {
     "Επιβολή της κατεύθυνσης της πλήρους διάταξης εφαρμογής χωρίς αλλαγή της επιλεγμένης γλώσσας",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode Επιτραπέζιος υπολογιστής",
+  "app.name.desktop": "AllCode Επιτραπέζιος υπολογιστής",
   "settings.section.desktop": "Επιτραπέζιος",
   "settings.section.server": "Διακομιστής",
   "settings.tab.general": "Γενικά",
   "settings.tab.shortcuts": "Συντομεύσεις",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL ενσωμάτωση",
-  "settings.desktop.wsl.description": "Εκτέλεση του διακομιστή OpenCode μέσα στο WSL στο Windows.",
+  "settings.desktop.wsl.description": "Εκτέλεση του διακομιστή AllCode μέσα στο WSL στο Windows.",
   "settings.general.section.appearance": "Εμφάνιση",
   "settings.general.section.advanced": "Για προχωρημένους",
   "settings.general.section.notifications": "Ειδοποιήσεις συστήματος",
@@ -946,18 +946,18 @@ export const dict = {
   "settings.general.section.feed": "Ροή",
   "settings.general.section.display": "Εμφάνιση",
   "settings.general.row.language.title": "Γλώσσα",
-  "settings.general.row.language.description": "Αλλαγή της γλώσσας εμφάνισης για το OpenCode",
+  "settings.general.row.language.description": "Αλλαγή της γλώσσας εμφάνισης για το AllCode",
   "settings.general.row.shell.title": "Τερματικό κέλυφος",
   "settings.general.row.shell.description": "Κέλυφος που χρησιμοποιείται από το τερματικό και τα εργαλεία του πράκτορα",
   "settings.general.row.shell.autoDefault": "Αυτόματο (Προεπιλογή)",
   "settings.general.row.shell.terminalOnly": "μόνο τερματικό",
   "settings.general.row.appearance.title": "Εμφάνιση",
-  "settings.general.row.appearance.description": "Προσαρμογή της εμφάνισης του OpenCode στη συσκευή σας",
+  "settings.general.row.appearance.description": "Προσαρμογή της εμφάνισης του AllCode στη συσκευή σας",
   "settings.general.row.colorScheme.title": "Χρωματικός συνδυασμός",
   "settings.general.row.colorScheme.description":
-    "Επιλέξτε εάν το OpenCode ακολουθεί το σύστημα, το ανοιχτό ή το σκοτεινό θέμα",
+    "Επιλέξτε εάν το AllCode ακολουθεί το σύστημα, το ανοιχτό ή το σκοτεινό θέμα",
   "settings.general.row.theme.title": "Θέμα",
-  "settings.general.row.theme.description": "Προσαρμογή του τρόπου με τον οποίο έχει θέμα το OpenCode.",
+  "settings.general.row.theme.description": "Προσαρμογή του τρόπου με τον οποίο έχει θέμα το AllCode.",
   "settings.general.row.font.title": "Γραμματοσειρά κώδικα",
   "settings.general.row.font.description": "Προσαρμογή της γραμματοσειράς που χρησιμοποιείται στα μπλοκ κώδικα",
   "settings.general.row.terminalFont.title": "Τερματική γραμματοσειρά",
@@ -1013,7 +1013,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "Σημειώσεις έκδοσης",
   "settings.general.row.releaseNotes.description": "Εμφάνιση αναδυόμενων παραθύρων για τα νέα μετά από ενημερώσεις",
   "settings.updates.row.startup.title": "Έλεγχος για ενημερώσεις κατά την εκκίνηση",
-  "settings.updates.row.startup.description": "Αυτόματος έλεγχος για ενημερώσεις κατά την εκκίνηση του OpenCode",
+  "settings.updates.row.startup.description": "Αυτόματος έλεγχος για ενημερώσεις κατά την εκκίνηση του AllCode",
   "settings.updates.row.check.title": "Έλεγχος για ενημερώσεις",
   "settings.updates.row.check.description": "Ελέγξτε μη αυτόματα για ενημερώσεις και εγκαταστήστε εάν είναι διαθέσιμες",
   "settings.updates.action.checkNow": "Έλεγχος τώρα",
@@ -1021,7 +1021,7 @@ export const dict = {
   "settings.updates.action.downloading": "Λήψη...",
   "settings.updates.action.installing": "Εγκατάσταση...",
   "settings.updates.toast.latest.title": "Είστε ενημερωμένοι",
-  "settings.updates.toast.latest.description": "Εκτελείτε την πιο πρόσφατη έκδοση του OpenCode.",
+  "settings.updates.toast.latest.description": "Εκτελείτε την πιο πρόσφατη έκδοση του AllCode.",
   "sound.option.none": "Κανένα",
   "sound.option.alert01": "Alert 01",
   "sound.option.alert02": "Alert 02",
@@ -1302,11 +1302,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1404,7 +1404,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1416,14 +1416,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

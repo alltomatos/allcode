@@ -39,11 +39,11 @@ export const dict = {
   "desktop.menu.nextProject": "Další projekt",
   "desktop.menu.minimize": "Minimalizovat",
   "desktop.menu.maximize": "Maximalizovat",
-  "desktop.menu.documentation": "OpenCode Dokumentace",
+  "desktop.menu.documentation": "AllCode Dokumentace",
   "desktop.menu.supportForum": "Fórum podpory",
   "desktop.menu.shareFeedback": "Sdílejte zpětnou vazbu",
   "desktop.menu.reportBug": "Nahlásit chybu",
-  "desktop.menu.ariaLabel": "Nabídka OpenCode",
+  "desktop.menu.ariaLabel": "Nabídka AllCode",
   "desktop.updater.dialog.checkFailed.message": "Kontrola aktualizace se nezdařila.",
   "desktop.updater.dialog.checkFailed.title": "Chyba aktualizace",
   "desktop.updater.dialog.upToDate.message": "Jste aktuální.",
@@ -56,9 +56,9 @@ export const dict = {
   "desktop.recovery.action.exportLogs": "Exportovat protokoly",
   "desktop.recovery.action.keepWaiting": "Čekej dál",
   "desktop.recovery.action.quit": "Konec",
-  "desktop.recovery.loadFailed": "OpenCode se nepodařilo načíst",
-  "desktop.recovery.terminated": "OpenCode okno bylo neočekávaně ukončeno",
-  "desktop.recovery.unresponsive": "OpenCode nereaguje",
+  "desktop.recovery.loadFailed": "AllCode se nepodařilo načíst",
+  "desktop.recovery.terminated": "AllCode okno bylo neočekávaně ukončeno",
+  "desktop.recovery.unresponsive": "AllCode nereaguje",
   "desktop.recovery.unresponsive.detail": "Můžete znovu spustit aplikaci, otevřít protokoly nebo čekat.",
   "desktop.recovery.loadFailed.detail": "Okno: {{window}}\nURL: {{url}}\nChyba: {{code}} {{description}}",
   "desktop.recovery.terminated.detail": "Okno: {{window}}\nDůvod: {{reason}}\nKód: {{code}}",
@@ -75,13 +75,13 @@ export const dict = {
   "desktop.wsl.error.executeDistro": "Nelze provádět příkazy v distro",
   "desktop.wsl.error.installWsl": "WSL instalace se nezdařila",
   "desktop.wsl.error.installDistro": "Nepodařilo se nainstalovat distribuci: {{distro}}",
-  "desktop.wsl.error.installOpencode": "OpenCode instalace se nezdařila",
+  "desktop.wsl.error.installOpencode": "AllCode instalace se nezdařila",
   "desktop.wsl.error.alreadyAdded": "{{distro}} je již přidáno",
   "desktop.wsl.error.opencodeMissing": "opencode není v této distribuci nainstalováno",
   "desktop.wsl.error.opencodeCannotRun": "opencode je nainstalován, ale nelze jej spustit",
-  "desktop.wsl.error.opencodeNotInstalled": "OpenCode není nainstalován v {{distro}}",
+  "desktop.wsl.error.opencodeNotInstalled": "AllCode není nainstalován v {{distro}}",
   "desktop.wsl.error.updateVersion":
-    "OpenCode aktualizace dokončena, ale {{distro}} stále hlásí {{installed}}; očekává se {{expected}}",
+    "AllCode aktualizace dokončena, ale {{distro}} stále hlásí {{installed}}; očekává se {{expected}}",
   "desktop.wsl.error.noVersion": "žádná verze",
   "desktop.wsl.error.serverExited": "Server WSL byl po spuštění ukončen (code={{code}} signal={{signal}})",
   "desktop.wsl.error.serverExitedBeforeHealthy":
@@ -206,7 +206,7 @@ export const dict = {
   "dialog.model.manage": "Správa modelů",
   "dialog.model.manage.description": "Upravte, které modely se zobrazí ve voliči modelů.",
   "dialog.model.manage.provider.toggle": "Přepnout všechny modely {{provider}}",
-  "dialog.model.unpaid.freeModels.title": "Bezplatné modely poskytované OpenCode",
+  "dialog.model.unpaid.freeModels.title": "Bezplatné modely poskytované AllCode",
   "dialog.model.unpaid.addMore.title": "Přidejte další modely od oblíbených poskytovatelů",
   "dialog.model.unpaid.viewMoreProviders": "Zobrazit více než 70 dalších poskytovatelů",
   "dialog.provider.viewAll": "Zobrazit další poskytovatele",
@@ -220,7 +220,7 @@ export const dict = {
   "provider.connect.status.waiting": "Čekání na autorizaci...",
   "provider.connect.status.failed": "Autorizace se nezdařila: {{error}}",
   "provider.connect.apiKey.description":
-    "Zadejte klíč API služby {{provider}}, připojte účet a používejte modely {{provider}} v OpenCode.",
+    "Zadejte klíč API služby {{provider}}, připojte účet a používejte modely {{provider}} v AllCode.",
   "provider.connect.apiKey.label": "{{provider}} API klíč",
   "provider.connect.apiKey.placeholder": "API klíč",
   "provider.connect.apiKey.required": "Je vyžadováno tlačítko API",
@@ -234,7 +234,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Návštěva ",
   "provider.connect.oauth.code.visit.link": "tento odkaz",
   "provider.connect.oauth.code.visit.suffix":
-    " k vyzvednutí autorizačního kódu pro připojení vašeho účtu a používání {{provider}} modelů v OpenCode.",
+    " k vyzvednutí autorizačního kódu pro připojení vašeho účtu a používání {{provider}} modelů v AllCode.",
   "provider.connect.oauth.code.label": "{{method}} autorizační kód",
   "provider.connect.oauth.code.placeholder": "Autorizační kód",
   "provider.connect.oauth.code.required": "Je vyžadován autorizační kód",
@@ -242,7 +242,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Návštěva ",
   "provider.connect.oauth.auto.visit.link": "tento odkaz",
   "provider.connect.oauth.auto.visit.suffix":
-    " a zadejte níže uvedený kód pro připojení svého účtu a používání {{provider}} modelů v OpenCode.",
+    " a zadejte níže uvedený kód pro připojení svého účtu a používání {{provider}} modelů v AllCode.",
   "provider.connect.oauth.auto.confirmationCode": "Potvrzovací kód",
   "provider.connect.toast.connected.title": "{{provider}} připojeno",
   "provider.connect.toast.connected.description": "Nyní jsou k dispozici modely {{provider}}.",
@@ -411,7 +411,7 @@ export const dict = {
   "app.server.retrying": "Automaticky opakování...",
   "app.server.otherServers": "Jiné servery",
   "dialog.server.title": "servery",
-  "dialog.server.description": "Přepněte, ke kterému OpenCode serveru se tato aplikace připojuje.",
+  "dialog.server.description": "Přepněte, ke kterému AllCode serveru se tato aplikace připojuje.",
   "dialog.server.search.placeholder": "Vyhledávací servery",
   "dialog.server.empty": "Zatím žádné servery",
   "dialog.server.add.title": "Přidat server",
@@ -450,7 +450,7 @@ export const dict = {
   "wsl.server.retryStart": "Zkuste spustit znovu",
   "wsl.server.updating": "Aktualizace...",
   "wsl.onboarding.step.distro": "Vyberte distro",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "Kontrola WSL...",
   "wsl.onboarding.restartRequired": "Windows vyžaduje restart k dokončení instalace WSL.",
   "wsl.onboarding.ready": "WSL je připraven.",
@@ -464,16 +464,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Pro dokončení nastavení jednou otevřete {{distro}}.",
   "wsl.onboarding.finishingDistro": "Dokončování nastavení pro {{distro}}.",
   "wsl.onboarding.pickDistro": "Vyberte distribuci nebo ji nainstalujte níže.",
-  "wsl.onboarding.checkingOpencode": "Kontrola OpenCode...",
-  "wsl.onboarding.checkingOpencodeIn": "Kontrola OpenCode v {{distro}}...",
-  "wsl.onboarding.updatingOpencode": "Aktualizace OpenCode...",
-  "wsl.onboarding.updatingOpencodeIn": "Aktualizace OpenCode v {{distro}}...",
-  "wsl.onboarding.updateOpencodeIn": "Aktualizace OpenCode v {{distro}}.",
-  "wsl.onboarding.updateOpencode": "Aktualizovat OpenCode",
-  "wsl.onboarding.opencodeReadyIn": "OpenCode je připraveno v {{distro}}.",
-  "wsl.onboarding.opencodeReady": "OpenCode je připraven.",
-  "wsl.onboarding.installOpencodeIn": "Nainstalujte OpenCode do {{distro}}.",
-  "wsl.onboarding.installOpencode": "Instalovat OpenCode",
+  "wsl.onboarding.checkingOpencode": "Kontrola AllCode...",
+  "wsl.onboarding.checkingOpencodeIn": "Kontrola AllCode v {{distro}}...",
+  "wsl.onboarding.updatingOpencode": "Aktualizace AllCode...",
+  "wsl.onboarding.updatingOpencodeIn": "Aktualizace AllCode v {{distro}}...",
+  "wsl.onboarding.updateOpencodeIn": "Aktualizace AllCode v {{distro}}.",
+  "wsl.onboarding.updateOpencode": "Aktualizovat AllCode",
+  "wsl.onboarding.opencodeReadyIn": "AllCode je připraveno v {{distro}}.",
+  "wsl.onboarding.opencodeReady": "AllCode je připraven.",
+  "wsl.onboarding.installOpencodeIn": "Nainstalujte AllCode do {{distro}}.",
+  "wsl.onboarding.installOpencode": "Instalovat AllCode",
   "wsl.onboarding.chooseDistroFirst": "Nejprve si vyberte distro.",
   "wsl.onboarding.loadFailed": "Nepodařilo se načíst stav WSL.",
   "wsl.onboarding.loading": "Načítání...",
@@ -481,19 +481,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Zkontrolujte znovu",
   "wsl.onboarding.distroStatus.ready": "Připraveno",
   "wsl.onboarding.distroStatus.checking": "Kontrola...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "OpenCode není nainstalováno",
+  "wsl.onboarding.distroStatus.opencodeMissing": "AllCode není nainstalováno",
   "wsl.onboarding.distroStatus.missingTools": "Chybí bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "Nepodporováno · Použijte WSL 2",
   "wsl.onboarding.needAnotherDistro": "Potřebujete další distribuci?",
   "wsl.onboarding.needAnotherDistroHint": "Nainstalujte distribuci Linux z katalogu WSL",
   "wsl.onboarding.wslNotInstalled.title": "WSL není nainstalováno",
   "wsl.onboarding.wslNotInstalled.description":
-    "WSL (Windows Subsystém pro Linux) je vyžadován předtím, než OpenCode může přidat server WSL",
+    "WSL (Windows Subsystém pro Linux) je vyžadován předtím, než AllCode může přidat server WSL",
   "wsl.onboarding.wslUnavailable.title": "WSL není k dispozici",
-  "wsl.onboarding.wslUnavailable.description": "OpenCode nemohl ověřit WSL na tomto počítači.",
+  "wsl.onboarding.wslUnavailable.description": "AllCode nemohl ověřit WSL na tomto počítači.",
   "wsl.onboarding.installWsl": "Instalovat WSL",
   "wsl.onboarding.windowsRestartRequired":
-    "Restartujte Windows pro dokončení instalace WSL a poté znovu otevřete OpenCode.",
+    "Restartujte Windows pro dokončení instalace WSL a poté znovu otevřete AllCode.",
   "wsl.onboarding.next": "Další",
   "wsl.onboarding.refresh": "Obnovit",
   "wsl.onboarding.allDistrosAdded": "Všechny nainstalované distribuce jsou již přidány.",
@@ -517,7 +517,7 @@ export const dict = {
   "help.tabs.title": "Představujeme karty",
   "help.tabs.description": "Uspořádejte si práci a aktivní relace pomocí karet",
   "help.tabs.date": "14. července",
-  "help.tabs.introduction": "OpenCode Plocha je nyní postavena na kartách.",
+  "help.tabs.introduction": "AllCode Plocha je nyní postavena na kartách.",
   "help.tabs.sessions":
     "Začněte novou relaci na kartě nebo otevřete existující relaci z libovolného z vašich projektů. Když začínáte s něčím novým, otevřete novou kartu a po dokončení ji zavřete.",
   "help.tabs.organize":
@@ -627,7 +627,7 @@ export const dict = {
   "toast.session.listFailed.title": "Nepodařilo se načíst relace pro {{project}}",
   "toast.project.reloadFailed.title": "Nepodařilo se znovu načíst {{project}}",
   "toast.update.title": "Aktualizace k dispozici",
-  "toast.update.description": "Nyní je k dispozici k instalaci nová verze OpenCode ({{version}}).",
+  "toast.update.description": "Nyní je k dispozici k instalaci nová verze AllCode ({{version}}).",
   "toast.update.action.installRestart": "Nainstalujte a restartujte",
   "toast.update.action.notYet": "Ještě ne",
   "error.page.title": "Něco se pokazilo",
@@ -642,7 +642,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Zkontrolujte aktualizace",
   "error.page.action.updateTo": "Aktualizovat na {{version}}",
   "error.page.circular": "[Kruhový]",
-  "error.page.report.prefix": "Nahlaste tuto chybu týmu OpenCode",
+  "error.page.report.prefix": "Nahlaste tuto chybu týmu AllCode",
   "error.page.report.discord": "dne Discord",
   "error.page.version": "Verze: {{version}}",
   "error.dev.rootNotFound":
@@ -665,7 +665,7 @@ export const dict = {
   "error.chain.didYouMean": "Měli jste na mysli: {{suggestions}}",
   "error.chain.modelNotFound": "Model nenalezen: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Zkontrolujte název poskytovatele/modelu konfigurace (opencode.json).",
-  "error.chain.mcpFailed": 'MCP server "{{name}}" selhal. Poznámka: OpenCode zatím nepodporuje ověřování MCP.',
+  "error.chain.mcpFailed": 'MCP server "{{name}}" selhal. Poznámka: AllCode zatím nepodporuje ověřování MCP.',
   "error.chain.providerAuthFailed": "Ověření poskytovatele se nezdařilo ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     'Nepodařilo se inicializovat poskytovatele "{{provider}}". Zkontrolujte přihlašovací údaje a konfiguraci.',
@@ -886,7 +886,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Povolit pracovní prostory",
   "sidebar.workspaces.disable": "Zakázat pracovní prostory",
   "sidebar.gettingStarted.title": "Začínáme",
-  "sidebar.gettingStarted.line1": "OpenCode obsahuje bezplatné modely, takže můžete začít okamžitě.",
+  "sidebar.gettingStarted.line1": "AllCode obsahuje bezplatné modely, takže můžete začít okamžitě.",
   "sidebar.gettingStarted.line2":
     "Připojte libovolného poskytovatele, abyste mohli používat modely, vč. Claude, GPT, Gemini atd.",
   "sidebar.project.recentSessions": "Nedávné relace",
@@ -925,14 +925,14 @@ export const dict = {
   "debugBar.direction.tip": "Vynutit úplný směr rozvržení aplikace bez změny vybraného jazyka",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode Desktop",
+  "app.name.desktop": "AllCode Desktop",
   "settings.section.desktop": "Desktop",
   "settings.section.server": "Server",
   "settings.tab.general": "Generál",
   "settings.tab.shortcuts": "Zkratky",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL integrace",
-  "settings.desktop.wsl.description": "Spusťte server OpenCode uvnitř WSL na Windows.",
+  "settings.desktop.wsl.description": "Spusťte server AllCode uvnitř WSL na Windows.",
   "settings.general.section.appearance": "Vzhled",
   "settings.general.section.advanced": "Pokročilé",
   "settings.general.section.notifications": "Systémová upozornění",
@@ -941,18 +941,18 @@ export const dict = {
   "settings.general.section.feed": "Krmivo",
   "settings.general.section.display": "Displej",
   "settings.general.row.language.title": "Jazyk",
-  "settings.general.row.language.description": "Změnit jazyk zobrazení pro OpenCode",
+  "settings.general.row.language.description": "Změnit jazyk zobrazení pro AllCode",
   "settings.general.row.shell.title": "Shell terminálu",
   "settings.general.row.shell.description": "Shell používaný terminálem a nástroji agenta",
   "settings.general.row.shell.autoDefault": "Auto (výchozí)",
   "settings.general.row.shell.terminalOnly": "pouze terminál",
   "settings.general.row.appearance.title": "Vzhled",
-  "settings.general.row.appearance.description": "Přizpůsobte si vzhled OpenCode na vašem zařízení",
+  "settings.general.row.appearance.description": "Přizpůsobte si vzhled AllCode na vašem zařízení",
   "settings.general.row.colorScheme.title": "Barevné schéma",
   "settings.general.row.colorScheme.description":
-    "Zvolte, zda bude OpenCode následovat systémové, světlé nebo tmavé téma",
+    "Zvolte, zda bude AllCode následovat systémové, světlé nebo tmavé téma",
   "settings.general.row.theme.title": "téma",
-  "settings.general.row.theme.description": "Přizpůsobte, jak je téma OpenCode.",
+  "settings.general.row.theme.description": "Přizpůsobte, jak je téma AllCode.",
   "settings.general.row.font.title": "Písmo kódu",
   "settings.general.row.font.description": "Přizpůsobte písmo používané v blocích kódu",
   "settings.general.row.terminalFont.title": "Terminálové písmo",
@@ -1003,7 +1003,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "Poznámky k vydání",
   "settings.general.row.releaseNotes.description": "Zobrazit vyskakovací okna Co je nového po aktualizacích",
   "settings.updates.row.startup.title": "Zkontrolujte aktualizace při spuštění",
-  "settings.updates.row.startup.description": "Automaticky kontrolovat aktualizace při spuštění OpenCode",
+  "settings.updates.row.startup.description": "Automaticky kontrolovat aktualizace při spuštění AllCode",
   "settings.updates.row.check.title": "Zkontrolujte aktualizace",
   "settings.updates.row.check.description": "Ručně zkontrolujte aktualizace a nainstalujte je, pokud jsou k dispozici",
   "settings.updates.action.checkNow": "Zkontrolujte nyní",
@@ -1011,7 +1011,7 @@ export const dict = {
   "settings.updates.action.downloading": "Stahování...",
   "settings.updates.action.installing": "Instalace...",
   "settings.updates.toast.latest.title": "Jste aktuální",
-  "settings.updates.toast.latest.description": "Používáte nejnovější verzi OpenCode.",
+  "settings.updates.toast.latest.description": "Používáte nejnovější verzi AllCode.",
   "sound.option.none": "žádný",
   "sound.option.alert01": "Upozornění 01",
   "sound.option.alert02": "Upozornění 02",
@@ -1292,11 +1292,11 @@ export const dict = {
   "settings.general.section.general": "General",
   "settings.general.section.experimental": "Experimental",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "Use 3D animations",
   "settings.general.row.use3dAnimations.description": "Render 3D visuals where available (like the Batuta activity scene) instead of the flat 2D fallback",
   "settings.general.row.devTools.title": "Developer tools",
@@ -1394,7 +1394,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1406,14 +1406,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)

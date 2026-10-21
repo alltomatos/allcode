@@ -1,7 +1,7 @@
 import { DESKTOP_NATIVE_KEYS } from "./desktop-native"
 
 const desktop = [
-  "OpenCode",
+  "AllCode",
   "Fájl",
   "Szerkesztés",
   "Nézet",
@@ -41,11 +41,11 @@ const desktop = [
   "Következő projekt",
   "Kis méret",
   "Teljes méret",
-  "OpenCode dokumentáció",
+  "AllCode dokumentáció",
   "Támogatási fórum",
   "Visszajelzés küldése",
   "Hiba jelentése",
-  "OpenCode menü",
+  "AllCode menü",
   "A frissítések keresése sikertelen.",
   "Frissítési hiba",
   "A legfrissebb verziót használja.",
@@ -58,9 +58,9 @@ const desktop = [
   "Naplók exportálása",
   "Várakozás folytatása",
   "Kilépés",
-  "Az OpenCode betöltése sikertelen",
-  "Az OpenCode ablaka váratlanul leállt",
-  "Az OpenCode nem válaszol",
+  "Az AllCode betöltése sikertelen",
+  "Az AllCode ablaka váratlanul leállt",
+  "Az AllCode nem válaszol",
   "Újraindíthatja az alkalmazást, megnyithatja a naplókat, vagy folytathatja a várakozást.",
   "Ablak: {{window}}\nURL: {{url}}\nHiba: {{code}} {{description}}",
   "Ablak: {{window}}\nOk: {{reason}}\nKód: {{code}}",
@@ -77,12 +77,12 @@ const desktop = [
   "Nem hajthatók végre parancsok a disztribúcióban",
   "A WSL telepítése sikertelen",
   "A disztribúció telepítése sikertelen: {{distro}}",
-  "Az OpenCode telepítése sikertelen",
+  "Az AllCode telepítése sikertelen",
   "A(z) {{distro}} már hozzá van adva",
   "Az opencode nincs telepítve ebben a disztribúcióban",
   "Az opencode telepítve van, de nem futtatható",
-  "Az OpenCode nincs telepítve ebben: {{distro}}",
-  "Az OpenCode frissítése befejeződött, de a(z) {{distro}} továbbra is ezt jelenti: {{installed}}; a várt érték: {{expected}}",
+  "Az AllCode nincs telepítve ebben: {{distro}}",
+  "Az AllCode frissítése befejeződött, de a(z) {{distro}} továbbra is ezt jelenti: {{installed}}; a várt érték: {{expected}}",
   "nincs verzió",
   "A WSL-kiszolgáló indítás után kilépett (code={{code}} signal={{signal}})",
   "A WSL-kiszolgáló azelőtt kilépett, hogy üzemkésszé vált volna (code={{code}} signal={{signal}}){{output}}",
@@ -210,7 +210,7 @@ export const dict = {
   "dialog.model.manage": "Modellek kezelése",
   "dialog.model.manage.description": "Testreszabhatja, hogy mely modellek jelenjenek meg a modellválasztóban.",
   "dialog.model.manage.provider.toggle": "Kapcsolja be az összes {{provider}} modellt",
-  "dialog.model.unpaid.freeModels.title": "A OpenCode ingyenes modelljei",
+  "dialog.model.unpaid.freeModels.title": "A AllCode ingyenes modelljei",
   "dialog.model.unpaid.addMore.title": "Adjon hozzá további modelleket a népszerű szolgáltatóktól",
   "dialog.model.unpaid.viewMoreProviders": "További 70+ szolgáltató megtekintése",
   "dialog.provider.viewAll": "További szolgáltatók megjelenítése",
@@ -224,7 +224,7 @@ export const dict = {
   "provider.connect.status.waiting": "Várakozás az engedélyezésre...",
   "provider.connect.status.failed": "Az engedélyezés sikertelen: {{error}}",
   "provider.connect.apiKey.description":
-    "Enter az Ön {{provider}} API kulcsa fiókja összekapcsolásához és a {{provider}} modellek használatához a OpenCode-ben.",
+    "Enter az Ön {{provider}} API kulcsa fiókja összekapcsolásához és a {{provider}} modellek használatához a AllCode-ben.",
   "provider.connect.apiKey.label": "{{provider}} API kulcs",
   "provider.connect.apiKey.placeholder": "API kulcs",
   "provider.connect.apiKey.required": "API kulcs szükséges",
@@ -238,7 +238,7 @@ export const dict = {
   "provider.connect.oauth.code.visit.prefix": "Látogatás",
   "provider.connect.oauth.code.visit.link": "ezt a linket",
   "provider.connect.oauth.code.visit.suffix":
-    "az engedélyezési kód összegyűjtéséhez fiókja összekapcsolásához és a {{provider}} modellek használatához a OpenCode-ben.",
+    "az engedélyezési kód összegyűjtéséhez fiókja összekapcsolásához és a {{provider}} modellek használatához a AllCode-ben.",
   "provider.connect.oauth.code.label": "{{method}} engedélyezési kód",
   "provider.connect.oauth.code.placeholder": "Engedélyezési kód",
   "provider.connect.oauth.code.required": "Engedélyezési kód szükséges",
@@ -246,7 +246,7 @@ export const dict = {
   "provider.connect.oauth.auto.visit.prefix": "Látogatás",
   "provider.connect.oauth.auto.visit.link": "ezt a linket",
   "provider.connect.oauth.auto.visit.suffix":
-    "és írja be az alábbi kódot fiókja összekapcsolásához, és használja a {{provider}} modelleket a OpenCode-ben.",
+    "és írja be az alábbi kódot fiókja összekapcsolásához, és használja a {{provider}} modelleket a AllCode-ben.",
   "provider.connect.oauth.auto.confirmationCode": "Megerősítő kód",
   "provider.connect.toast.connected.title": "{{provider}} csatlakoztatva",
   "provider.connect.toast.connected.description": "A {{provider}} modellek már használhatók.",
@@ -415,7 +415,7 @@ export const dict = {
   "app.server.retrying": "Automatikus újrapróbálkozás...",
   "app.server.otherServers": "Egyéb szerverek",
   "dialog.server.title": "Szerverek",
-  "dialog.server.description": "Állítsa be, hogy ez az alkalmazás melyik OpenCode szerverhez csatlakozzon.",
+  "dialog.server.description": "Állítsa be, hogy ez az alkalmazás melyik AllCode szerverhez csatlakozzon.",
   "dialog.server.search.placeholder": "Szerverek keresése",
   "dialog.server.empty": "Még nincsenek szerverek",
   "dialog.server.add.title": "Szerver hozzáadása",
@@ -454,7 +454,7 @@ export const dict = {
   "wsl.server.retryStart": "Próbálja újra az indítást",
   "wsl.server.updating": "Frissítés...",
   "wsl.onboarding.step.distro": "Válasszon disztrót",
-  "wsl.onboarding.step.opencode": "OpenCode",
+  "wsl.onboarding.step.opencode": "AllCode",
   "wsl.onboarding.checkingRuntime": "WSL ellenőrzése...",
   "wsl.onboarding.restartRequired": "A Windows készüléket újra kell indítani a WSL telepítésének befejezéséhez.",
   "wsl.onboarding.ready": "A WSL készen áll.",
@@ -468,16 +468,16 @@ export const dict = {
   "wsl.onboarding.openDistroOnce": "Nyissa meg egyszer a {{distro}}-t a beállítás befejezéséhez.",
   "wsl.onboarding.finishingDistro": "A {{distro}} befejező beállítása.",
   "wsl.onboarding.pickDistro": "Válasszon disztrót vagy telepítsen egyet alább.",
-  "wsl.onboarding.checkingOpencode": "OpenCode ellenőrzése...",
-  "wsl.onboarding.checkingOpencodeIn": "OpenCode ellenőrzése a {{distro}}-ben...",
-  "wsl.onboarding.updatingOpencode": "OpenCode frissítése...",
-  "wsl.onboarding.updatingOpencodeIn": "OpenCode frissítése a {{distro}}-ben...",
-  "wsl.onboarding.updateOpencodeIn": "Frissítse a OpenCode-t a {{distro}}-ben.",
-  "wsl.onboarding.updateOpencode": "Frissítse a OpenCode-t",
-  "wsl.onboarding.opencodeReadyIn": "A OpenCode készen áll a {{distro}}-ben.",
-  "wsl.onboarding.opencodeReady": "A OpenCode készen áll.",
-  "wsl.onboarding.installOpencodeIn": "Telepítse a OpenCode-t a {{distro}}-be.",
-  "wsl.onboarding.installOpencode": "Telepítse a OpenCode-t",
+  "wsl.onboarding.checkingOpencode": "AllCode ellenőrzése...",
+  "wsl.onboarding.checkingOpencodeIn": "AllCode ellenőrzése a {{distro}}-ben...",
+  "wsl.onboarding.updatingOpencode": "AllCode frissítése...",
+  "wsl.onboarding.updatingOpencodeIn": "AllCode frissítése a {{distro}}-ben...",
+  "wsl.onboarding.updateOpencodeIn": "Frissítse a AllCode-t a {{distro}}-ben.",
+  "wsl.onboarding.updateOpencode": "Frissítse a AllCode-t",
+  "wsl.onboarding.opencodeReadyIn": "A AllCode készen áll a {{distro}}-ben.",
+  "wsl.onboarding.opencodeReady": "A AllCode készen áll.",
+  "wsl.onboarding.installOpencodeIn": "Telepítse a AllCode-t a {{distro}}-be.",
+  "wsl.onboarding.installOpencode": "Telepítse a AllCode-t",
   "wsl.onboarding.chooseDistroFirst": "Először válasszon disztrót.",
   "wsl.onboarding.loadFailed": "Nem sikerült betölteni a WSL állapotot.",
   "wsl.onboarding.loading": "Betöltés...",
@@ -485,19 +485,19 @@ export const dict = {
   "wsl.onboarding.checkAgain": "Ellenőrizze újra",
   "wsl.onboarding.distroStatus.ready": "Kész",
   "wsl.onboarding.distroStatus.checking": "Ellenőrzés...",
-  "wsl.onboarding.distroStatus.opencodeMissing": "A OpenCode nincs telepítve",
+  "wsl.onboarding.distroStatus.opencodeMissing": "A AllCode nincs telepítve",
   "wsl.onboarding.distroStatus.missingTools": "Hiányzik a bash, curl",
   "wsl.onboarding.distroStatus.unsupported": "Nem támogatott · Használja a WSL 2-t",
   "wsl.onboarding.needAnotherDistro": "Kell még egy disztró?",
   "wsl.onboarding.needAnotherDistroHint": "Telepítsen egy Linux disztribúciót a WSL katalógusból",
   "wsl.onboarding.wslNotInstalled.title": "A WSL nincs telepítve",
   "wsl.onboarding.wslNotInstalled.description":
-    "A WSL (Windows alrendszer a Linux számára) szükséges ahhoz, hogy a OpenCode hozzáadhasson egy WSL szervert",
+    "A WSL (Windows alrendszer a Linux számára) szükséges ahhoz, hogy a AllCode hozzáadhasson egy WSL szervert",
   "wsl.onboarding.wslUnavailable.title": "A WSL nem elérhető",
-  "wsl.onboarding.wslUnavailable.description": "A OpenCode nem tudta ellenőrizni a WSL jelet ezen a gépen.",
+  "wsl.onboarding.wslUnavailable.description": "A AllCode nem tudta ellenőrizni a WSL jelet ezen a gépen.",
   "wsl.onboarding.installWsl": "Telepítse a WSL-t",
   "wsl.onboarding.windowsRestartRequired":
-    "Indítsa újra a Windows programot a WSL telepítésének befejezéséhez, majd nyissa meg újra a OpenCode programot.",
+    "Indítsa újra a Windows programot a WSL telepítésének befejezéséhez, majd nyissa meg újra a AllCode programot.",
   "wsl.onboarding.next": "Következő",
   "wsl.onboarding.refresh": "Frissítés",
   "wsl.onboarding.allDistrosAdded": "Az összes telepített disztribúció már hozzáadva van.",
@@ -521,7 +521,7 @@ export const dict = {
   "help.tabs.title": "Bemutatjuk a Tab-ket",
   "help.tabs.description": "A lapokkal megszervezheti munkáját és aktív munkameneteit",
   "help.tabs.date": "július 14",
-  "help.tabs.introduction": "A OpenCode Desktop mostantól lapokra épül.",
+  "help.tabs.introduction": "A AllCode Desktop mostantól lapokra épül.",
   "help.tabs.sessions":
     "Indítson új munkamenetet egy lapon, vagy nyisson meg egy meglévő munkamenetet bármelyik projektből. Nyisson meg egy új lapot, amikor valami újat kezd, és zárja be, ha végzett.",
   "help.tabs.organize":
@@ -631,7 +631,7 @@ export const dict = {
   "toast.session.listFailed.title": "Nem sikerült betölteni a {{project}} munkameneteit",
   "toast.project.reloadFailed.title": "A {{project}} újratöltése nem sikerült",
   "toast.update.title": "Frissítés elérhető",
-  "toast.update.description": "A OpenCode ({{version}}) új verziója már telepíthető.",
+  "toast.update.description": "A AllCode ({{version}}) új verziója már telepíthető.",
   "toast.update.action.installRestart": "Telepítse és indítsa újra",
   "toast.update.action.notYet": "Még nem",
   "error.page.title": "Valami elromlott",
@@ -646,7 +646,7 @@ export const dict = {
   "error.page.action.checkUpdates": "Ellenőrizze a frissítéseket",
   "error.page.action.updateTo": "Frissítés a {{version}}-re",
   "error.page.circular": "[Kör alakú]",
-  "error.page.report.prefix": "Kérjük, jelentse ezt a hibát a OpenCode csapatának",
+  "error.page.report.prefix": "Kérjük, jelentse ezt a hibát a AllCode csapatának",
   "error.page.report.discord": "a Discord-n",
   "error.page.version": "Kivitel: {{version}}",
   "error.dev.rootNotFound":
@@ -670,7 +670,7 @@ export const dict = {
   "error.chain.modelNotFound": "A modell nem található: {{provider}}/{{model}}",
   "error.chain.checkConfig": "Ellenőrizze a konfigurációs (opencode.json) szolgáltató/modell nevét",
   "error.chain.mcpFailed":
-    'A "{{name}}" MCP szerver meghibásodott. Megjegyzés: a OpenCode még nem támogatja a MCP hitelesítést.',
+    'A "{{name}}" MCP szerver meghibásodott. Megjegyzés: a AllCode még nem támogatja a MCP hitelesítést.',
   "error.chain.providerAuthFailed": "A szolgáltató hitelesítése nem sikerült ({{provider}}): {{message}}",
   "error.chain.providerInitFailed":
     "Nem sikerült inicializálni a „{{provider}}” szolgáltatót. Ellenőrizze a hitelesítő adatokat és a konfigurációt.",
@@ -888,7 +888,7 @@ export const dict = {
   "sidebar.workspaces.enable": "Munkaterületek engedélyezése",
   "sidebar.workspaces.disable": "Munkaterületek letiltása",
   "sidebar.gettingStarted.title": "Kezdő lépések",
-  "sidebar.gettingStarted.line1": "A OpenCode ingyenes modelleket tartalmaz, így azonnal elkezdheti.",
+  "sidebar.gettingStarted.line1": "A AllCode ingyenes modelleket tartalmaz, így azonnal elkezdheti.",
   "sidebar.gettingStarted.line2":
     "Csatlakozzon bármely szolgáltatóhoz a modellek használatához, pl. Claude, GPT, Gemini stb.",
   "sidebar.project.recentSessions": "Legutóbbi munkamenetek",
@@ -928,14 +928,14 @@ export const dict = {
     "A teljes alkalmazáselrendezési irány kényszerítése a kiválasztott nyelv megváltoztatása nélkül",
   "debugBar.direction.ltr": "LTR",
   "debugBar.direction.rtl": "RTL",
-  "app.name.desktop": "OpenCode asztali számítógép",
+  "app.name.desktop": "AllCode asztali számítógép",
   "settings.section.desktop": "Asztali",
   "settings.section.server": "Kiszolgáló",
   "settings.tab.general": "Általános",
   "settings.tab.shortcuts": "Parancsikonok",
   "settings.desktop.section.wsl": "WSL",
   "settings.desktop.wsl.title": "WSL integráció",
-  "settings.desktop.wsl.description": "Futtassa a OpenCode szervert a WSL belsejében a Windows rendszeren.",
+  "settings.desktop.wsl.description": "Futtassa a AllCode szervert a WSL belsejében a Windows rendszeren.",
   "settings.general.section.appearance": "Megjelenés",
   "settings.general.section.advanced": "Fejlett",
   "settings.general.section.notifications": "Rendszerértesítések",
@@ -944,18 +944,18 @@ export const dict = {
   "settings.general.section.feed": "Takarmány",
   "settings.general.section.display": "Kijelző",
   "settings.general.row.language.title": "Nyelv",
-  "settings.general.row.language.description": "Módosítsa a OpenCode kijelző nyelvét",
+  "settings.general.row.language.description": "Módosítsa a AllCode kijelző nyelvét",
   "settings.general.row.shell.title": "Terminál shellje",
   "settings.general.row.shell.description": "A terminál és az ügynökeszközök által használt shell",
   "settings.general.row.shell.autoDefault": "Automatikus (alapértelmezett)",
   "settings.general.row.shell.terminalOnly": "csak terminál",
   "settings.general.row.appearance.title": "Megjelenés",
-  "settings.general.row.appearance.description": "Szabja személyre, hogyan néz ki a OpenCode az eszközén",
+  "settings.general.row.appearance.description": "Szabja személyre, hogyan néz ki a AllCode az eszközén",
   "settings.general.row.colorScheme.title": "Színséma",
   "settings.general.row.colorScheme.description":
-    "Válassza ki, hogy a OpenCode a rendszer, a világos vagy a sötét témát követi-e",
+    "Válassza ki, hogy a AllCode a rendszer, a világos vagy a sötét témát követi-e",
   "settings.general.row.theme.title": "Téma",
-  "settings.general.row.theme.description": "Szabja személyre a OpenCode témáját.",
+  "settings.general.row.theme.description": "Szabja személyre a AllCode témáját.",
   "settings.general.row.font.title": "Kód betűtípus",
   "settings.general.row.font.description": "Testreszabhatja a kódblokkban használt betűtípust",
   "settings.general.row.terminalFont.title": "Terminal betűtípus",
@@ -1008,7 +1008,7 @@ export const dict = {
   "settings.general.row.releaseNotes.title": "Kiadási megjegyzések",
   "settings.general.row.releaseNotes.description": "Az Újdonságok előugró ablakok megjelenítése a frissítések után",
   "settings.updates.row.startup.title": "Indításkor ellenőrizze a frissítéseket",
-  "settings.updates.row.startup.description": "A OpenCode indításakor automatikusan ellenőrizze a frissítéseket",
+  "settings.updates.row.startup.description": "A AllCode indításakor automatikusan ellenőrizze a frissítéseket",
   "settings.updates.row.check.title": "Ellenőrizze a frissítéseket",
   "settings.updates.row.check.description": "Manuálisan ellenőrizze a frissítéseket, és telepítse, ha elérhető",
   "settings.updates.action.checkNow": "Ellenőrizze most",
@@ -1016,7 +1016,7 @@ export const dict = {
   "settings.updates.action.downloading": "Letöltés...",
   "settings.updates.action.installing": "Telepítés...",
   "settings.updates.toast.latest.title": "Ön naprakész",
-  "settings.updates.toast.latest.description": "Ön a OpenCode legújabb verzióját futtatja.",
+  "settings.updates.toast.latest.description": "Ön a AllCode legújabb verzióját futtatja.",
   "sound.option.none": "Egyik sem",
   "sound.option.alert01": "Figyelmeztetés 01",
   "sound.option.alert02": "Figyelmeztetés 02",
@@ -1299,11 +1299,11 @@ export const dict = {
   "settings.general.section.general": "Általános",
   "settings.general.section.experimental": "Kísérleti",
     "settings.general.row.startAtLogin.title": "Start on system boot",
-  "settings.general.row.startAtLogin.description": "Automatically start OpenCode when your computer starts or logs in",
+  "settings.general.row.startAtLogin.description": "Automatically start AllCode when your computer starts or logs in",
   "settings.general.row.startHidden.title": "Start in background",
   "settings.general.row.startHidden.description": "Start minimized to the system tray on startup",
   "settings.general.row.closeToTray.title": "Close to system tray",
-  "settings.general.row.closeToTray.description": "Keep OpenCode running in the background in the system tray when closing the window",
+  "settings.general.row.closeToTray.description": "Keep AllCode running in the background in the system tray when closing the window",
 "settings.general.row.use3dAnimations.title": "3D animációk használata",
   "settings.general.row.use3dAnimations.description": "3D vizualizáció megjelenítése, ahol elérhető (mint a Batuta tevékenység jelenete), a lapos 2D tartalék helyett",
   "settings.general.row.devTools.title": "Fejlesztői eszközök",
@@ -1401,7 +1401,7 @@ export const dict = {
   "sshTunnel.progress.title": "SSH Connection Status", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.connecting": "Connecting to server...", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.testSsh": "SSH Authentication", // TODO: translate (auto-filled from en)
-  "sshTunnel.progress.step.checkInstall": "Check / Install OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.progress.step.checkInstall": "Check / Install AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.startService": "Start Remote Service", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.step.tunnel": "Establish Local Tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.progress.logs": "Live Logs", // TODO: translate (auto-filled from en)
@@ -1413,14 +1413,14 @@ export const dict = {
   "sshTunnel.add.certDefault": "Default (SSH agent)", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sshPassword": "SSH password", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetup": "Auto-install opencode on the server", // TODO: translate (auto-filled from en)
-  "sshTunnel.server.update": "Update OpenCode", // TODO: translate (auto-filled from en)
+  "sshTunnel.server.update": "Update AllCode", // TODO: translate (auto-filled from en)
   "sshTunnel.server.qrCode": "View QR code", // TODO: translate (auto-filled from en)
   "sshTunnel.server.add": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.label": "SSH", // TODO: translate (auto-filled from en)
   "sshTunnel.server.menu.label": "SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.server.retryStart": "Retry connect", // TODO: translate (auto-filled from en)
   "sshTunnel.add.sectionSsh": "1. VPS SSH Access", // TODO: translate (auto-filled from en)
-  "sshTunnel.add.sectionOpencode": "2. Remote OpenCode Server", // TODO: translate (auto-filled from en)
+  "sshTunnel.add.sectionOpencode": "2. Remote AllCode Server", // TODO: translate (auto-filled from en)
   "sshTunnel.add.autoSetupHint": "Auto-installs and launches the server process on the VPS if needed", // TODO: translate (auto-filled from en)
   "sshTunnel.add.title": "Add SSH tunnel", // TODO: translate (auto-filled from en)
   "sshTunnel.add.host": "VPS host", // TODO: translate (auto-filled from en)
