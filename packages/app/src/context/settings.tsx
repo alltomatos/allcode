@@ -36,6 +36,7 @@ export interface Settings {
     use3dAnimations: boolean
     showCustomAgents: boolean
     mobileTitlebarPosition: "top" | "bottom"
+    promptEnhancerModel?: string
     newLayoutDesigns?: boolean
     layoutTransitionEligible?: boolean
     agentVisibilityInitialized?: boolean
@@ -199,6 +200,7 @@ const defaultSettings: Settings = {
     use3dAnimations: false,
     showCustomAgents: false,
     mobileTitlebarPosition: "top",
+    promptEnhancerModel: "",
   },
   appearance: {
     fontSize: 14,
@@ -442,6 +444,13 @@ export const { use: useSettings, provider: SettingsProvider } = createSimpleCont
         ),
         setMobileTitlebarPosition(value: "top" | "bottom") {
           setStore("general", "mobileTitlebarPosition", value)
+        },
+        promptEnhancerModel: withFallback(
+          () => store.general?.promptEnhancerModel,
+          defaultSettings.general.promptEnhancerModel ?? "",
+        ),
+        setPromptEnhancerModel(value: string | undefined) {
+          setStore("general", "promptEnhancerModel", value ?? "")
         },
         newLayoutDesigns,
         setNewLayoutDesigns(value: boolean) {

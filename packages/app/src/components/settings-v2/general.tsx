@@ -1,4 +1,4 @@
-import { Component, Show, createMemo, createResource, createSignal, onCleanup, onMount } from "solid-js"
+import { Component, Show, createMemo, createResource, createSignal, onCleanup, onMount, type Accessor } from "solid-js"
 import { createMediaQuery } from "@solid-primitives/media"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Icon } from "@allcode/ui/icon"
@@ -18,6 +18,7 @@ import { LayoutRetirementNotice, LayoutTransitionToggle } from "./interface-tran
 import { useMaintenance } from "@/context/maintenance"
 import { showToast } from "@/utils/toast"
 import { Tag } from "@allcode/ui/tag"
+import { ModelPickerV2 } from "@/components/model-picker-v2"
 import {
   createAppearanceSettingsController,
   createPermissionScopeController,
@@ -312,8 +313,34 @@ const CustomSystemPromptSetting = () => {
   )
 }
 
+const PromptEnhancerModelSetting: Component<{ directory?: string }> = (props) => {
+  const language = useLanguage()
+  const settings = useSettings()
+
+  return (
+    <SettingsRowV2
+      title={
+        <span class="flex items-center gap-2">
+          <Icon name="sparkles" class="size-3.5 shrink-0 text-text-weak" />
+          {language.t("settings.general.row.promptEnhancerModel.title")}
+        </span>
+      }
+      description={language.t("settings.general.row.promptEnhancerModel.description")}
+    >
+      <div class="w-full sm:w-[320px]">
+        <ModelPickerV2
+          value={settings.general.promptEnhancerModel() ?? ""}
+          onChange={(value) => settings.general.setPromptEnhancerModel(value || "")}
+          directory={props.directory}
+        />
+      </div>
+    </SettingsRowV2>
+  )
+}
+
 export const SettingsGeneralV2: Component<{
   sessionID?: string
+  directory?: Accessor<string | undefined>
 }> = (props) => {
   const language = useLanguage()
   const platform = usePlatform()
@@ -463,6 +490,8 @@ export const SettingsGeneralV2: Component<{
         <LanguageSetting />
 
         <CustomSystemPromptSetting />
+
+        <PromptEnhancerModelSetting directory={props.directory?.()} />
 
         <PermissionScopeSetting controller={permissionScope} />
 

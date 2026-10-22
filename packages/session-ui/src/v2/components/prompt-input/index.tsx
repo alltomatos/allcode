@@ -42,6 +42,9 @@ export type PromptInputV2Props = {
   class?: string
   modeControl?: JSX.Element
   modelControl?: JSX.Element
+  enhanceControl?: JSX.Element
+  submitBusy?: boolean
+  submitBusyLabel?: string
   variantControlVisible?: boolean
   attachKeybind?: string[]
   attachShortcut?: string
@@ -118,7 +121,7 @@ export function PromptInputV2(props: PromptInputV2Props) {
         }}
         onSubmit={(event) => {
           event.preventDefault()
-          if (!props.disabled) props.controller.submit()
+          if (!props.disabled && !props.submitBusy) props.controller.submit()
         }}
         onDragEnter={props.controller.onDragEnter}
         onDragOver={props.controller.onDragOver}
@@ -174,7 +177,7 @@ export function PromptInputV2(props: PromptInputV2Props) {
               if (props.controller.onKeyDown(event)) return
               if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
                 event.preventDefault()
-                if (event.repeat) return
+                if (event.repeat || props.submitBusy) return
                 props.controller.submit()
               }
             }}
@@ -263,15 +266,20 @@ export function PromptInputV2(props: PromptInputV2Props) {
               )}
             </Show>
           </div>
-          <PromptInputV2SubmitButton
-            mode={state.mode}
-            stopping={view.submit.stopping()}
-            disabled={!props.controller.canSubmit()}
-            sendLabel={i18n.t("ui.promptInput.send")}
-            stopLabel={i18n.t("ui.promptInput.stop")}
-            onSubmit={props.controller.submit}
-            onStop={props.controller.stop}
-          />
+          <div class="flex items-center gap-1">
+            {props.enhanceControl}
+            <PromptInputV2SubmitButton
+              mode={state.mode}
+              stopping={view.submit.stopping()}
+              disabled={!props.controller.canSubmit()}
+              busy={props.submitBusy ?? false}
+              busyLabel={props.submitBusyLabel ?? i18n.t("ui.promptInput.enhancing")}
+              sendLabel={i18n.t("ui.promptInput.send")}
+              stopLabel={i18n.t("ui.promptInput.stop")}
+              onSubmit={props.controller.submit}
+              onStop={props.controller.stop}
+            />
+          </div>
         </div>
       </form>
     </div>
@@ -682,32 +690,34 @@ export function PromptInputV2SubmitButton(props: {
   mode: PromptInputV2Mode
   stopping: boolean
   disabled: boolean
+  busy?: boolean
+  busyLabel?: string
   sendLabel: string
   stopLabel: string
   onSubmit: () => void
   onStop: () => void
 }) {
   let isClickLocked = false
+  const label = () => (props.stopping ? props.stopLabel : props.busy ? (props.busyLabel ?? props.sendLabel) : props.sendLabel)
 
   return (
-    <TooltipV2
-      placement="top"
-      inactive={!props.stopping && props.disabled}
-      value={props.stopping ? props.stopLabel : props.sendLabel}
-    >
+    <TooltipV2 placement="top" inactive={!props.stopping && !props.busy && props.disabled} value={label()}>
       <IconButton
         data-action="prompt-submit"
         type="button"
-        disabled={!props.stopping && props.disabled}
+        disabled={!props.stopping && (props.disabled || props.busy)}
         tabIndex={props.mode === "normal" ? undefined : -1}
         icon={props.stopping ? "stop" : props.mode === "shell" ? "arrow-undo-down" : "arrow-up"}
+        loading={Boolean(props.busy) && !props.stopping}
         variant="primary"
         class="size-7 rounded-md p-[6px] text-v2-icon-icon-muted shadow-[var(--v2-elevation-button-contrast)] disabled:opacity-50"
+        classList={{ "animate-pulse": Boolean(props.busy) && !props.stopping }}
         style={{
           "background-image":
             "linear-gradient(180deg,var(--v2-alpha-light-20) 0%,var(--v2-alpha-light-0) 100%),linear-gradient(90deg,var(--v2-background-bg-contrast) 0%,var(--v2-background-bg-contrast) 100%)",
         }}
-        aria-label={props.stopping ? props.stopLabel : props.sendLabel}
+        aria-label={label()}
+        aria-busy={Boolean(props.busy) && !props.stopping}
         onClick={(event) => {
           event.preventDefault()
           event.stopPropagation()
@@ -715,12 +725,45 @@ export function PromptInputV2SubmitButton(props: {
             props.onStop()
             return
           }
-          if (props.disabled || isClickLocked) return
+          if (props.disabled || props.busy || isClickLocked) return
           isClickLocked = true
           setTimeout(() => {
             isClickLocked = false
           }, 600)
           props.onSubmit()
+        }}
+      />
+    </TooltipV2>
+  )
+}
+
+export function PromptInputV2EnhanceButton(props: {
+  disabled: boolean
+  loading: boolean
+  label: string
+  loadingLabel: string
+  onClick: () => void
+}) {
+  return (
+    <TooltipV2
+      placement="top"
+      inactive={props.disabled}
+      value={props.loading ? props.loadingLabel : props.label}
+    >
+      <IconButton
+        data-action="prompt-enhance"
+        type="button"
+        disabled={props.disabled || props.loading}
+        icon="sparkles"
+        variant="ghost"
+        class="size-7 rounded-md p-[6px] text-v2-icon-icon-muted hover:text-v2-icon-icon-primary hover:bg-v2-surface-action-hover disabled:opacity-40 transition-colors"
+        classList={{ "animate-spin": props.loading }}
+        aria-label={props.loading ? props.loadingLabel : props.label}
+        onClick={(event) => {
+          event.preventDefault()
+          event.stopPropagation()
+          if (props.disabled || props.loading) return
+          props.onClick()
         }}
       />
     </TooltipV2>

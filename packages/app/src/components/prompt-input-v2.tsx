@@ -6,7 +6,7 @@ import { Icon } from "@allcode/ui/v2/icon"
 import { KeybindV2 } from "@allcode/ui/v2/keybind-v2"
 import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import type { ReferenceInfo } from "@allcode/sdk/v2/client"
-import { createEffect, createMemo, on, Show } from "solid-js"
+import { createEffect, createMemo, createSignal, on, Show } from "solid-js"
 import { ModelProviderSelectorV2, ModelSelectorPopoverV2 } from "@/components/dialog-select-model"
 import { DialogSelectModelUnpaidV2 } from "@/components/dialog-select-model-unpaid-v2"
 import { PromptInputV2ModeControl } from "@/components/prompt-input-mode"
@@ -27,10 +27,11 @@ import { type ImageAttachmentPart, usePrompt } from "@/context/prompt"
 import { usePlatform } from "@/context/platform"
 import { useSDK } from "@/context/sdk"
 import { useSync } from "@/context/sync"
+import { useSettings } from "@/context/settings"
 import { createSessionTabs } from "@/pages/session/helpers"
 import { decode64 } from "@/utils/base64"
 import { showToast } from "@/utils/toast"
-import { PromptInputV2, type PromptInputV2Suggestion } from "@allcode/session-ui/v2/prompt-input"
+import { PromptInputV2, PromptInputV2EnhanceButton, type PromptInputV2Suggestion } from "@allcode/session-ui/v2/prompt-input"
 import {
   createPromptInputV2Controller,
   createPromptInputV2State,
@@ -56,6 +57,96 @@ export function PromptInputV2Composer(props: PromptInputV2ComposerProps) {
   const language = useLanguage()
   const sdk = useSDK()
   const permission = usePermission()
+  const platform = usePlatform()
+  const settings = useSettings()
+  const [enhancing, setEnhancing] = createSignal(false)
+
+  const handleEnhance = async () => {
+    if (enhancing()) return
+    const parts = props.controller.parts()
+    const promptText = parts
+      .filter((part): part is Extract<typeof part, { type: "text" }> => part.type === "text")
+      .map((part) => part.content)
+      .join("")
+      .trim()
+
+    if (!promptText) {
+      showToast({
+        title: language.t("prompt.toast.enhanceEmpty.title"),
+      })
+      return
+    }
+
+    const configuredModel = settings.general.promptEnhancerModel()?.trim()
+    const currentModel = props.controller.model.selection.current()
+    const fallbackModel = currentModel ? `${currentModel.provider.id}/${currentModel.id}` : undefined
+    const modelToUse = configuredModel || fallbackModel
+
+    setEnhancing(true)
+    try {
+      const res = await sdk().client.experimental.prompt.enhance({
+        directory: sdk().directory,
+        enhancePromptPayload: {
+          prompt: promptText,
+          sessionID: props.controller.sessionID,
+          directory: sdk().directory,
+          model: modelToUse,
+        },
+      })
+
+      if (res.data?.enhancedPrompt) {
+        props.controller.setText(res.data.enhancedPrompt)
+        showToast({
+          variant: "success",
+          icon: "circle-check",
+          title: language.t("prompt.toast.enhanced.title"),
+        })
+        return
+      }
+
+      const rawError = (res as { error?: unknown }).error
+      if (rawError) {
+        let errorMsg = "Request failed"
+        if (typeof rawError === "object" && rawError !== null) {
+          const rec = rawError as Record<string, any>
+          errorMsg = rec.message || rec.data?.message || rec.error || JSON.stringify(rawError)
+        } else if (typeof rawError === "string") {
+          errorMsg = rawError
+        }
+        throw new Error(errorMsg)
+      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      const isMissingEndpoint =
+        message.includes("<!doctype") ||
+        message.includes("is not valid JSON") ||
+        message.includes("404") ||
+        message.includes("Failed to fetch")
+
+      if (isMissingEndpoint && platform.restart) {
+        showToast({
+          icon: "warning",
+          title: language.t("prompt.toast.enhanceRestartRequired.title"),
+          description: language.t("prompt.toast.enhanceRestartRequired.description"),
+          actions: [
+            {
+              label: language.t("settings.general.row.debugMode.restart"),
+              onClick: () => void platform.restart?.(),
+            },
+          ],
+        })
+        return
+      }
+
+      showToast({
+        variant: "error",
+        title: language.t("prompt.toast.enhanceFailed.title"),
+        description: message,
+      })
+    } finally {
+      setEnhancing(false)
+    }
+  }
 
   return (
     <div class="flex flex-col gap-3">
@@ -66,6 +157,17 @@ export function PromptInputV2Composer(props: PromptInputV2ComposerProps) {
         variantControlVisible={!props.controller.model.loading}
         attachKeybind={command.keybindParts("file.attach")}
         attachShortcut={command.keybind("file.attach")}
+        submitBusy={enhancing()}
+        submitBusyLabel={language.t("ui.promptInput.enhancing")}
+        enhanceControl={
+          <PromptInputV2EnhanceButton
+            disabled={props.controller.state.mode === "shell"}
+            loading={enhancing()}
+            label={language.t("ui.promptInput.enhance")}
+            loadingLabel={language.t("ui.promptInput.enhancing")}
+            onClick={() => void handleEnhance()}
+          />
+        }
         modeControl={
           <div class="flex items-center gap-1">
             <PromptInputV2ModeControl

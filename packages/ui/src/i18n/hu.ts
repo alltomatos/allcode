@@ -204,5 +204,7 @@ export const dict: Record<string, string> = {
   "ui.backgroundTasks.status.completed": "Kész",
   "ui.backgroundTasks.status.error": "Sikertelen",
   "ui.backgroundTasks.status.cancelled": "Megszakítva",
-  "ui.tool.skill.triggered": "Skill triggered: {{name}}", // TODO: translate (auto-filled from en)
+  "ui.tool.skill.triggered": "Skill triggered: {{name}}", // TODO: translate (auto-filled from en),
+  "ui.promptInput.enhance": "Enhance with AI", // TODO: translate (auto-filled from en)
+  "ui.promptInput.enhancing": "Enhancing...", // TODO: translate (auto-filled from en)
 }

@@ -1,5 +1,6 @@
 import { Button as Kobalte } from "@kobalte/core/button"
 import { type ComponentProps, splitProps } from "solid-js"
+import { LoaderV2 } from "../v2/components/loader-v2"
 import { Icon, IconProps } from "./icon"
 
 export interface IconButtonProps extends ComponentProps<typeof Kobalte> {
@@ -7,10 +8,11 @@ export interface IconButtonProps extends ComponentProps<typeof Kobalte> {
   size?: "small" | "normal" | "large"
   iconSize?: IconProps["size"]
   variant?: "primary" | "secondary" | "ghost"
+  loading?: boolean
 }
 
 export function IconButton(props: ComponentProps<"button"> & IconButtonProps) {
-  const [split, rest] = splitProps(props, ["variant", "size", "iconSize", "class", "classList"])
+  const [split, rest] = splitProps(props, ["variant", "size", "iconSize", "class", "classList", "loading"])
   return (
     <Kobalte
       {...rest}
@@ -23,7 +25,11 @@ export function IconButton(props: ComponentProps<"button"> & IconButtonProps) {
         [split.class ?? ""]: !!split.class,
       }}
     >
-      <Icon name={props.icon} size={split.iconSize ?? (split.size === "large" ? "normal" : "small")} />
+      {props.loading ? (
+        <LoaderV2 width={split.size === "large" ? 18 : 14} height={split.size === "large" ? 18 : 14} />
+      ) : (
+        <Icon name={props.icon} size={split.iconSize ?? (split.size === "large" ? "normal" : "small")} />
+      )}
     </Kobalte>
   )
 }

@@ -2467,6 +2467,17 @@ export type McpResource = {
   client: string
 }
 
+export type EnhancePromptPayload = {
+  prompt: string
+  sessionID?: string
+  directory?: string
+  model?: string
+}
+
+export type EnhancePromptResponse = {
+  enhancedPrompt: string
+}
+
 export type Symbol = {
   name: string
   kind: number
@@ -8981,6 +8992,39 @@ export type ExperimentalResourceListResponses = {
 
 export type ExperimentalResourceListResponse =
   ExperimentalResourceListResponses[keyof ExperimentalResourceListResponses]
+
+export type ExperimentalPromptEnhanceData = {
+  body?: EnhancePromptPayload
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/experimental/prompt/enhance"
+}
+
+export type ExperimentalPromptEnhanceErrors = {
+  /**
+   * BadRequest | InvalidRequestError
+   */
+  400: EffectHttpApiErrorBadRequest | InvalidRequestError
+  /**
+   * InternalServerError
+   */
+  500: EffectHttpApiErrorInternalServerError
+}
+
+export type ExperimentalPromptEnhanceError = ExperimentalPromptEnhanceErrors[keyof ExperimentalPromptEnhanceErrors]
+
+export type ExperimentalPromptEnhanceResponses = {
+  /**
+   * Enhanced prompt result
+   */
+  200: EnhancePromptResponse
+}
+
+export type ExperimentalPromptEnhanceResponse =
+  ExperimentalPromptEnhanceResponses[keyof ExperimentalPromptEnhanceResponses]
 
 export type ExternalAgentDetectData = {
   body?: never

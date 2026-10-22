@@ -1885,5 +1885,12 @@ export const dict = {
   "settings.mcp.mail.field.id.placeholder": "gmail-principal", // TODO: translate (auto-filled from en)
   "settings.mcp.mail.field.id.hint": "Stable identifier used by the mail tools.", // TODO: translate (auto-filled from en)
   "settings.mcp.mail.field.id.hint.edit": "Changing the ID recreates the account with the new identifier.", // TODO: translate (auto-filled from en)
-  "settings.mcp.mail.section.advanced": "Advanced options", // TODO: translate (auto-filled from en)
+  "settings.mcp.mail.section.advanced": "Advanced options", // TODO: translate (auto-filled from en),
+  "prompt.toast.enhanced.title": "Prompt enhanced with AI", // TODO: translate (auto-filled from en)
+  "prompt.toast.enhanceEmpty.title": "Type something in the prompt before enhancing", // TODO: translate (auto-filled from en)
+  "prompt.toast.enhanceFailed.title": "Failed to enhance prompt", // TODO: translate (auto-filled from en)
+  "prompt.toast.enhanceRestartRequired.title": "Restart required", // TODO: translate (auto-filled from en)
+  "prompt.toast.enhanceRestartRequired.description": "The prompt enhancement service was compiled. Please restart the app to activate the new endpoint.", // TODO: translate (auto-filled from en)
+  "settings.general.row.promptEnhancerModel.title": "AI Prompt Enhancement", // TODO: translate (auto-filled from en)
+  "settings.general.row.promptEnhancerModel.description": "Model used to refine prompts with AI in chat. If not configured, uses the current session's model.", // TODO: translate (auto-filled from en)
 }

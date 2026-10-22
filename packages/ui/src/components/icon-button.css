@@ -11,6 +11,10 @@
   &[data-variant="primary"] {
     background-color: var(--icon-strong-base);
 
+    [data-component="loader-v2"] {
+      color: var(--icon-invert-base);
+    }
+
     [data-slot="icon-svg"] {
       /* color: var(--icon-weak-base); */
       color: var(--icon-invert-base);

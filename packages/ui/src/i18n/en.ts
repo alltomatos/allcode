@@ -147,6 +147,8 @@ export const dict: Record<string, string> = {
   "ui.promptInput.chooseVariant": "Choose model variant",
   "ui.promptInput.send": "Send",
   "ui.promptInput.stop": "Stop",
+  "ui.promptInput.enhance": "Enhance with AI",
+  "ui.promptInput.enhancing": "Enhancing...",
 
   "ui.tabs.close": "Close tab",
 

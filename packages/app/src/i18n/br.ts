@@ -418,6 +418,12 @@ export const dict = {
   "prompt.toast.pasteUnsupported.title": "Anexo não suportado",
   "prompt.toast.attachmentDuplicate.title": "Este arquivo já foi enviado",
   "prompt.toast.pasteUnsupported.description": "Apenas imagens, PDFs ou arquivos de texto podem ser anexados aqui.",
+  "prompt.toast.enhanced.title": "Prompt melhorado com IA",
+  "prompt.toast.enhanceEmpty.title": "Digite algo no prompt antes de melhorar com IA",
+  "prompt.toast.enhanceFailed.title": "Falha ao melhorar prompt com IA",
+  "prompt.toast.enhanceRestartRequired.title": "Reinicialização necessária",
+  "prompt.toast.enhanceRestartRequired.description":
+    "O novo serviço de melhoria de prompt foi compilado. Reinicie o aplicativo para ativar o endpoint.",
   "prompt.toast.modelAgentRequired.title": "Selecione um agente e modelo",
   "prompt.toast.modelAgentRequired.description": "Escolha um agente e modelo antes de enviar um prompt.",
   "prompt.toast.worktreeCreateFailed.title": "Falha ao criar worktree",
@@ -1227,6 +1233,9 @@ export const dict = {
     "Instruções globais enviadas com cada prompt para orientar o comportamento e as respostas do assistente",
   "settings.general.row.customSystemPrompt.placeholder":
     "ex.: Sempre sugerir melhorias no código quando adequado, monitorar PRs, manter respostas concisas...",
+  "settings.general.row.promptEnhancerModel.title": "Melhoria de prompt com IA",
+  "settings.general.row.promptEnhancerModel.description":
+    "Modelo usado para refinar prompts com IA no chat. Se não for configurado, usará o mesmo modelo da sessão atual.",
   "settings.general.row.shell.title": "Shell do terminal",
   "settings.general.row.shell.description":
     "Escolha o shell usado no terminal. Os shells compatíveis também são usados nas chamadas de ferramentas do agente.",

@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.23.0",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Chat: Melhoria de Prompt com IA",
+              "description": "O compositor ganhou um botão de melhoria de prompt que reescreve o rascunho com base no histórico da conversa, na memória do projeto e em um modelo configurável, preservando comandos e menções."
+            },
+            {
+              "title": "Chat: Envio Bloqueado Durante a Melhoria",
+              "description": "Enquanto a melhoria está em andamento, o botão de enviar fica desativado com spinner, pulsação, tooltip e aria-busy, e os atalhos de clique e Enter aguardam a conclusão para evitar envios parciais."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.22.1",
       "highlights": [
         {

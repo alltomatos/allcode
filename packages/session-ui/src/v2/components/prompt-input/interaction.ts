@@ -426,6 +426,10 @@ export function createPromptInputV2Controller(input: {
     addAttachments(files: File[]) {
       if (attachments) void attachments.addAttachments(files)
     },
+    setText(content: string) {
+      draft.setText(content)
+      dispatch({ type: "input.changed", value: content, persist: false })
+    },
     setQuery(value: string) {
       dispatch({ type: "popover.query", value })
     },

@@ -16,6 +16,7 @@ import {
 } from "../middleware/workspace-routing"
 import { described } from "./metadata"
 import { QueryBoolean } from "./query"
+import { InvalidRequestError } from "../errors"
 import { ProviderV2 } from "@allcode/core/provider"
 import { ModelV2 } from "@allcode/core/model"
 
@@ -106,6 +107,17 @@ const BackgroundJobInfo = Schema.Struct({
 const BackgroundJobList = Schema.Array(BackgroundJobInfo).annotate({ identifier: "BackgroundJobList" })
 export const BackgroundJobID = Schema.String
 
+export const EnhancePromptPayload = Schema.Struct({
+  prompt: Schema.String,
+  sessionID: Schema.optional(SessionID),
+  directory: Schema.optional(Schema.String),
+  model: Schema.optional(Schema.String),
+}).annotate({ identifier: "EnhancePromptPayload" })
+
+export const EnhancePromptResponse = Schema.Struct({
+  enhancedPrompt: Schema.String,
+}).annotate({ identifier: "EnhancePromptResponse" })
+
 export const ExperimentalPaths = {
   capabilities: "/experimental/capabilities",
   console: "/experimental/console",
@@ -120,6 +132,7 @@ export const ExperimentalPaths = {
   backgroundJob: "/experimental/background-job",
   backgroundJobCancel: "/experimental/background-job/:id/cancel",
   resource: "/experimental/resource",
+  enhancePrompt: "/experimental/prompt/enhance",
 } as const
 
 export const ExperimentalApi = HttpApi.make("experimental")
@@ -295,6 +308,18 @@ export const ExperimentalApi = HttpApi.make("experimental")
             identifier: "experimental.resource.list",
             summary: "Get MCP resources",
             description: "Get all available MCP resources from connected servers. Optionally filter by name.",
+          }),
+        ),
+        HttpApiEndpoint.post("enhancePrompt", ExperimentalPaths.enhancePrompt, {
+          query: WorkspaceRoutingQuery,
+          payload: EnhancePromptPayload,
+          success: described(EnhancePromptResponse, "Enhanced prompt result"),
+          error: [HttpApiError.BadRequest, InvalidRequestError, HttpApiError.InternalServerError],
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "experimental.prompt.enhance",
+            summary: "Enhance draft prompt with AI",
+            description: "Uses session context, memory, and the configured or fallback model to rewrite and optimize a draft prompt.",
           }),
         ),
       )

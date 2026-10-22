@@ -59,6 +59,7 @@ import type {
   ConfigUpdateErrors,
   ConfigUpdateResponses,
   CredentialCreateInput,
+  EnhancePromptPayload,
   EventSubscribeResponses,
   EventTuiCommandExecute,
   EventTuiPromptAppend,
@@ -79,6 +80,8 @@ import type {
   ExperimentalControlPlaneMoveSessionResponses,
   ExperimentalProjectCopyGenerateNameErrors,
   ExperimentalProjectCopyGenerateNameResponses,
+  ExperimentalPromptEnhanceErrors,
+  ExperimentalPromptEnhanceResponses,
   ExperimentalResourceListErrors,
   ExperimentalResourceListResponses,
   ExperimentalSessionBackgroundErrors,
@@ -1128,6 +1131,49 @@ export class Resource extends HeyApiClient {
   }
 }
 
+export class Prompt extends HeyApiClient {
+  /**
+   * Enhance draft prompt with AI
+   *
+   * Uses session context, memory, and the configured or fallback model to rewrite and optimize a draft prompt.
+   */
+  public enhance<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      enhancePromptPayload?: EnhancePromptPayload
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { key: "enhancePromptPayload", map: "body" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<
+      ExperimentalPromptEnhanceResponses,
+      ExperimentalPromptEnhanceErrors,
+      ThrowOnError
+    >({
+      url: "/experimental/prompt/enhance",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+}
+
 export class ProjectCopy extends HeyApiClient {
   /**
    * Generate project copy name
@@ -1477,6 +1523,11 @@ export class Experimental extends HeyApiClient {
   private _resource?: Resource
   get resource(): Resource {
     return (this._resource ??= new Resource({ client: this.client }))
+  }
+
+  private _prompt?: Prompt
+  get prompt(): Prompt {
+    return (this._prompt ??= new Prompt({ client: this.client }))
   }
 
   private _projectCopy?: ProjectCopy
