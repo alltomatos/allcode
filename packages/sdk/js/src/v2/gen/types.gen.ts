@@ -2616,6 +2616,7 @@ export type MailAccountSummary = {
     port: number
     secure: boolean
   }
+  sentFolder?: string
 }
 
 export type MailTestResult = {
@@ -9688,6 +9689,7 @@ export type MailAccountsAddData = {
       port: number
       secure: boolean
     }
+    sentFolder?: string
   }
   path?: never
   query?: {
@@ -9730,6 +9732,7 @@ export type MailAccountsTestData = {
       port: number
       secure: boolean
     }
+    sentFolder?: string
   }
   path?: never
   query?: {

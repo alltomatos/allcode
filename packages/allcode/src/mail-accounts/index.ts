@@ -107,6 +107,7 @@ export class Account extends Schema.Class<Account>("MailAccount")({
   user: Schema.String,
   appPassword: Schema.String,
   smtp: Schema.optional(SmtpConfig),
+  sentFolder: Schema.optional(Schema.String),
 }) {}
 
 // Same shape as `Account` minus the secret, for anything returned to the frontend.
@@ -119,6 +120,7 @@ export class AccountSummary extends Schema.Class<AccountSummary>("MailAccountSum
   secure: Schema.Boolean,
   user: Schema.String,
   smtp: Schema.optional(SmtpConfig),
+  sentFolder: Schema.optional(Schema.String),
 }) {}
 
 const toSummary = (account: Account): AccountSummary =>
@@ -131,6 +133,7 @@ const toSummary = (account: Account): AccountSummary =>
     secure: account.secure,
     user: account.user,
     smtp: account.smtp,
+    sentFolder: account.sentFolder,
   })
 
 export class TestResult extends Schema.Class<TestResult>("MailTestResult")({
@@ -221,6 +224,9 @@ const layer = Layer.effect(
       const imapRes = yield* Effect.promise(async () => {
         try {
           const { ImapFlow } = await import("imapflow")
+          // Options mirror the mcpmail runtime client (packages/mcpmail/src/services/imap-client.ts)
+          // so the test does not fail where the MCP server would connect successfully.
+          const forceTls12 = account.provider === "speedmail"
           const client = new ImapFlow({
             host: account.host,
             port: account.port,
@@ -230,6 +236,14 @@ const layer = Layer.effect(
               pass: account.appPassword,
             },
             logger: false,
+            tls: {
+              servername: account.host,
+              rejectUnauthorized: false,
+              ...(forceTls12 ? { minVersion: "TLSv1.2", maxVersion: "TLSv1.2" } : {}),
+            },
+            connectionTimeout: 20_000,
+            greetingTimeout: 20_000,
+            socketTimeout: 30_000,
           })
           await client.connect()
           const mailboxes = await client.list()
@@ -254,6 +268,8 @@ const layer = Layer.effect(
         smtpRes = yield* Effect.promise(async () => {
           try {
             const { createTransport } = await import("nodemailer")
+            // Same TLS/auth options as the mcpmail runtime client.
+            const forceTls12 = account.provider === "speedmail"
             const transporter = createTransport({
               host: account.smtp!.host,
               port: account.smtp!.port,
@@ -261,6 +277,11 @@ const layer = Layer.effect(
               auth: {
                 user: account.user,
                 pass: account.appPassword,
+              },
+              tls: {
+                servername: account.smtp!.host,
+                rejectUnauthorized: false,
+                ...(forceTls12 ? { minVersion: "TLSv1.2", maxVersion: "TLSv1.2" } : {}),
               },
             })
             await transporter.verify()

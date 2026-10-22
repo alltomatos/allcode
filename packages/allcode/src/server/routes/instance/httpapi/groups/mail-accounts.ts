@@ -7,22 +7,25 @@ import { InstanceContextMiddleware } from "../middleware/instance-context"
 import { WorkspaceRoutingMiddleware, WorkspaceRoutingQuery } from "../middleware/workspace-routing"
 import { described } from "./metadata"
 
+const NonEmptyString = Schema.String.check(Schema.isMinLength(1))
+
 export const SmtpPayload = Schema.Struct({
-  host: Schema.String,
+  host: NonEmptyString,
   port: PositiveInt,
   secure: Schema.Boolean,
 })
 
 export const UpsertPayload = Schema.Struct({
-  id: Schema.String,
-  label: Schema.String,
+  id: NonEmptyString,
+  label: NonEmptyString,
   provider: Schema.String,
-  host: Schema.String,
+  host: NonEmptyString,
   port: PositiveInt,
   secure: Schema.Boolean,
-  user: Schema.String,
-  appPassword: Schema.String,
+  user: NonEmptyString,
+  appPassword: NonEmptyString,
   smtp: Schema.optional(SmtpPayload),
+  sentFolder: Schema.optional(Schema.String),
 })
 
 export const AccountList = Schema.Array(MailAccounts.AccountSummary)

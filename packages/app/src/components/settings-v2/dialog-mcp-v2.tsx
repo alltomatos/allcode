@@ -391,9 +391,6 @@ export const DialogMcpAddV2: Component<{
               <Show when={KNOWN_SERVERS.some((s) => s.name === form.name && s.oauth)}>
                 <span class="settings-v2-server-dialog-hint">{language.t("settings.mcp.add.known.oauthHint")}</span>
               </Show>
-              <Show when={form.name === "MailMCP"}>
-                <span class="settings-v2-server-dialog-hint">{language.t("settings.mcp.add.known.localHint")}</span>
-              </Show>
             </div>
           </Show>
 

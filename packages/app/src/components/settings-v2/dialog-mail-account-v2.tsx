@@ -3,387 +3,155 @@ import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@al
 import { DividerV2 } from "@allcode/ui/v2/divider-v2"
 import { Icon } from "@allcode/ui/icon"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
-import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
-import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation } from "@tanstack/solid-query"
 import { createResource, createSignal, For, Show, type Component } from "solid-js"
-import { createStore } from "solid-js/store"
-import { usePlatform } from "@/context/platform"
+import type { MailAccountSummary } from "@allcode/sdk/v2/types"
+import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
 import { showToast } from "@/utils/toast"
+import { MailAccountForm } from "./mail-account-form"
 import "./settings-v2.css"
-
-const inferProvider = (host: string): "gmail" | "speedmail" | "outlook" | "generic-imap" => {
-  const h = host.toLowerCase()
-  if (h.includes("gmail") || h.includes("google")) return "gmail"
-  if (h.includes("speedmail")) return "speedmail"
-  if (h.includes("outlook") || h.includes("office365") || h.includes("live.com") || h.includes("hotmail")) return "outlook"
-  return "generic-imap"
-}
 
 export const DialogMailAccountV2: Component<{ onAdded?: () => void }> = (props) => {
   const dialog = useDialog()
-  const platform = usePlatform()
+  const language = useLanguage()
   const serverSDK = useServerSDK()
-  const [showDebug, setShowDebug] = createSignal(false)
-  const [debugLog, setDebugLog] = createSignal<string>("")
+  const [editor, setEditor] = createSignal<{ account?: MailAccountSummary }>()
 
   const [accounts, { refetch }] = createResource(async () => {
     const result = await serverSDK().client.mailAccounts.list()
     return result.data ?? []
   })
 
-  const [form, setForm] = createStore({
-    id: "",
-    label: "",
-    provider: "",
-    host: "",
-    port: "993",
-    secure: true,
-    user: "",
-    appPassword: "",
-    smtpEnabled: false,
-    smtpHost: "",
-    smtpPort: "587",
-    smtpSecure: false,
-    err: {} as { label?: string; host?: string; user?: string; appPassword?: string },
-  })
-
-  const resetForm = () =>
-    setForm({
-      id: "",
-      label: "",
-      provider: "",
-      host: "",
-      port: "993",
-      secure: true,
-      user: "",
-      appPassword: "",
-      smtpEnabled: false,
-      smtpHost: "",
-      smtpPort: "587",
-      smtpSecure: false,
-      err: {},
-    })
-
-  const validate = () => {
-    const label = form.label.trim()
-    const host = form.host.trim()
-    const user = form.user.trim()
-    const appPassword = form.appPassword.trim()
-    const err = {
-      label: !label ? "Obrigatório" : undefined,
-      host: !host ? "Obrigatório" : undefined,
-      user: !user ? "Obrigatório" : undefined,
-      appPassword: !appPassword ? "Obrigatório" : undefined,
-    }
-    setForm("err", err)
-    if (err.label || err.host || err.user || err.appPassword) return
-    const inferred = inferProvider(host)
-    return {
-      id: form.id.trim() || user.toLowerCase(),
-      label,
-      provider: form.provider.trim() || inferred,
-      host,
-      port: Math.max(1, Number(form.port) || 993),
-      secure: form.secure,
-      user,
-      appPassword,
-      smtp: form.smtpEnabled
-        ? { host: form.smtpHost.trim(), port: Math.max(1, Number(form.smtpPort) || 587), secure: form.smtpSecure }
-        : undefined,
-    }
-  }
-
-  const testMutation = useMutation(() => ({
-    mutationFn: async (input: NonNullable<ReturnType<typeof validate>>) => {
-      const res = await serverSDK().client.mailAccounts.test(input)
-      return res.data
-    },
-    onSuccess: (data) => {
-      if (!data) return
-      let logs = `[${new Date().toLocaleTimeString()}] Resultado do Teste:\n`
-      logs += `IMAP (${data.imap.ok ? "SUCESSO" : "ERRO"}): ${data.imap.message}\n`
-      if (data.imap.log) logs += `  Detalhes: ${data.imap.log}\n`
-      if (data.smtp) {
-        logs += `SMTP (${data.smtp.ok ? "SUCESSO" : "ERRO"}): ${data.smtp.message}\n`
-        if (data.smtp.log) logs += `  Detalhes: ${data.smtp.log}\n`
-      }
-      setDebugLog(logs)
-
-      if (data.ok) {
-        let msg = "IMAP: Conectado com sucesso."
-        if (data.smtp) {
-          msg += " | SMTP: Conectado com sucesso."
-        }
-        showToast({ variant: "success", icon: "circle-check", title: "Conexão estabelecida com sucesso!", description: msg })
-      } else {
-        const errors: string[] = []
-        if (!data.imap.ok) errors.push(`IMAP: ${data.imap.message}`)
-        if (data.smtp && !data.smtp.ok) errors.push(`SMTP: ${data.smtp.message}`)
-        showToast({ title: "Falha no teste de conexão", description: errors.join(" — ") })
-      }
-    },
-    onError: (err) => {
-      const message = err instanceof Error ? err.message : String(err)
-      setDebugLog(`[${new Date().toLocaleTimeString()}] Erro na requisição de teste:\n${message}`)
-      showToast({ title: "Erro ao testar conexão", description: message })
-    },
-  }))
-
-  const addMutation = useMutation(() => ({
-    mutationFn: async (input: NonNullable<ReturnType<typeof validate>>) => {
-      await serverSDK().client.mailAccounts.add(input)
+  const removeMutation = useMutation(() => ({
+    mutationFn: async (id: string) => {
+      await serverSDK().client.mailAccounts.remove({ id })
     },
     onSuccess: () => {
-      showToast({ variant: "success", icon: "circle-check", title: "Conta de email salva" })
-      resetForm()
+      showToast({ variant: "success", icon: "circle-check", title: language.t("settings.mcp.mail.toast.removed") })
       void refetch()
       props.onAdded?.()
     },
     onError: (err) => {
       const message = err instanceof Error ? err.message : String(err)
-      showToast({ title: "Não foi possível salvar a conta", description: message })
+      showToast({ title: language.t("common.requestFailed"), description: message })
     },
   }))
 
-  const removeMutation = useMutation(() => ({
-    mutationFn: async (id: string) => {
-      await serverSDK().client.mailAccounts.remove({ id })
-    },
-    onSuccess: () => void refetch(),
-    onError: (err) => {
-      const message = err instanceof Error ? err.message : String(err)
-      showToast({ title: "Não foi possível remover a conta", description: message })
-    },
-  }))
-
-  const submit = () => {
-    if (addMutation.isPending || testMutation.isPending) return
-    const result = validate()
-    if (!result) return
-    addMutation.mutate(result)
-  }
-
-  const handleTest = () => {
-    if (addMutation.isPending || testMutation.isPending) return
-    const result = validate()
-    if (!result) return
-    testMutation.mutate(result)
+  const confirmRemove = (account: MailAccountSummary) => {
+    dialog.push(() => (
+      <Dialog fit>
+        <DialogHeader hideClose={true}>
+          <DialogTitle>{language.t("settings.mcp.mail.remove.confirm.title")}</DialogTitle>
+        </DialogHeader>
+        <DialogBody class="px-4 pt-2 pb-4">
+          <span class="text-13-regular text-text-weak">
+            {language.t("settings.mcp.mail.remove.confirm.description", { name: account.label })}
+          </span>
+        </DialogBody>
+        <DialogFooter>
+          <ButtonV2 variant="neutral" onClick={() => dialog.close()}>
+            {language.t("common.cancel")}
+          </ButtonV2>
+          <ButtonV2
+            variant="danger"
+            onClick={() => {
+              dialog.close()
+              removeMutation.mutate(account.id)
+            }}
+          >
+            {language.t("common.remove")}
+          </ButtonV2>
+        </DialogFooter>
+      </Dialog>
+    ))
   }
 
   return (
-    <Dialog fit class="settings-v2-server-dialog">
-      <DialogHeader hideClose={true}>
-        <DialogTitle>Conectar email</DialogTitle>
+    <Dialog fit class="settings-v2-mail-dialog">
+      <DialogHeader>
+        <DialogTitle>
+          {editor()?.account
+            ? language.t("settings.mcp.mail.edit.title")
+            : editor()
+              ? language.t("settings.mcp.mail.add.title")
+              : language.t("settings.mcp.mail.title")}
+        </DialogTitle>
       </DialogHeader>
       <DividerV2 />
-      <DialogBody class="flex w-full min-w-0 flex-1 flex-col px-4 pt-4 pb-2 overflow-y-auto max-h-[60vh]">
-        <div class="flex w-full min-w-0 flex-col gap-6">
-          <Show when={(accounts() ?? []).length > 0}>
-            <div class="flex w-full min-w-0 flex-col gap-2">
-              <label class="settings-v2-server-dialog-label">Contas conectadas</label>
-              <div class="flex flex-col gap-1.5">
-                <For each={accounts()}>
-                  {(account) => (
-                    <div class="flex items-center justify-between gap-2 rounded-md bg-v2-background-bg-layer-01 px-2.5 py-1.5">
-                      <span class="truncate text-13-regular">
-                        {account.label} — {account.user}
-                      </span>
-                      <IconButtonV2
-                        variant="ghost-muted"
-                        aria-label="Remover conta"
-                        onClick={() => removeMutation.mutate(account.id)}
-                        icon={<Icon name="close" size="small" />}
-                      />
+      <Show
+        when={editor()}
+        keyed
+        fallback={
+          <>
+            <DialogBody class="flex w-full min-w-0 flex-1 flex-col overflow-y-auto">
+              <div class="flex w-full min-w-0 flex-col gap-4 px-6 py-5">
+                <p class="text-12-regular text-text-weak">{language.t("settings.mcp.mail.subtitle")}</p>
+                <div class="flex w-full min-w-0 flex-col gap-2">
+                  <label class="settings-v2-server-dialog-label">{language.t("settings.mcp.mail.connected")}</label>
+                  <Show
+                    when={(accounts() ?? []).length > 0}
+                    fallback={<span class="settings-v2-server-dialog-hint">{language.t("settings.mcp.mail.empty")}</span>}
+                  >
+                    <div class="flex flex-col gap-1.5">
+                      <For each={accounts()}>
+                        {(account) => (
+                          <div class="flex items-center justify-between gap-2 rounded-md bg-v2-background-bg-layer-01 px-2.5 py-1.5">
+                            <div class="flex min-w-0 flex-col">
+                              <span class="truncate text-13-regular">{account.label}</span>
+                              <span class="truncate text-11-regular text-text-weak">
+                                {account.user} · {account.host}
+                              </span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                              <IconButtonV2
+                                variant="ghost-muted"
+                                aria-label={language.t("common.edit")}
+                                onClick={() => setEditor({ account })}
+                                icon={<Icon name="edit" size="small" />}
+                              />
+                              <IconButtonV2
+                                variant="ghost-muted"
+                                class="hover:text-v2-state-fg-danger focus-visible:text-v2-state-fg-danger"
+                                aria-label={language.t("common.remove")}
+                                onClick={() => confirmRemove(account)}
+                                icon={<Icon name="trash" size="small" />}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </For>
                     </div>
-                  )}
-                </For>
-              </div>
-            </div>
-          </Show>
-
-          <div class="flex w-full min-w-0 flex-col gap-2">
-            <label class="settings-v2-server-dialog-label">Nome da conta</label>
-            <TextInputV2
-              type="text"
-              appearance="large"
-              class="!w-full self-stretch"
-              value={form.label}
-              placeholder="Ex: Gmail Pessoal"
-              invalid={!!form.err.label}
-              onInput={(e) => setForm("label", e.currentTarget.value)}
-            />
-            <Show when={form.err.label}>
-              <span class="settings-v2-server-dialog-error">{form.err.label}</span>
-            </Show>
-          </div>
-
-          <div class="flex w-full min-w-0 gap-2">
-            <div class="flex flex-1 min-w-0 flex-col gap-2">
-              <label class="settings-v2-server-dialog-label">Servidor IMAP (host)</label>
-              <TextInputV2
-                type="text"
-                appearance="large"
-                class="!w-full self-stretch"
-                value={form.host}
-                placeholder="imap.gmail.com"
-                invalid={!!form.err.host}
-                onInput={(e) => setForm("host", e.currentTarget.value)}
-              />
-              <Show when={form.err.host}>
-                <span class="settings-v2-server-dialog-error">{form.err.host}</span>
-              </Show>
-            </div>
-            <div class="flex w-[100px] flex-col gap-2">
-              <label class="settings-v2-server-dialog-label">Porta</label>
-              <TextInputV2
-                type="text"
-                inputmode="numeric"
-                appearance="large"
-                class="!w-full self-stretch"
-                value={form.port}
-                onInput={(e) => setForm("port", e.currentTarget.value.replace(/\D/g, ""))}
-              />
-            </div>
-          </div>
-
-          <label class="flex items-center gap-2 text-12-regular text-text-weak">
-            <SwitchV2 checked={form.secure} onChange={(checked) => setForm("secure", checked)} />
-            Conexão segura (TLS)
-          </label>
-
-          <div class="flex w-full min-w-0 flex-col gap-2">
-            <label class="settings-v2-server-dialog-label">Usuário</label>
-            <TextInputV2
-              type="text"
-              appearance="large"
-              class="!w-full self-stretch"
-              value={form.user}
-              placeholder="voce@gmail.com"
-              invalid={!!form.err.user}
-              onInput={(e) => setForm("user", e.currentTarget.value)}
-            />
-            <Show when={form.err.user}>
-              <span class="settings-v2-server-dialog-error">{form.err.user}</span>
-            </Show>
-          </div>
-
-          <div class="flex w-full min-w-0 flex-col gap-2">
-            <div class="flex items-center justify-between">
-              <label class="settings-v2-server-dialog-label">Senha de app</label>
-              <button
-                type="button"
-                class="text-11-medium text-text-interactive hover:underline cursor-pointer bg-transparent border-0 p-0 flex items-center gap-1"
-                onClick={() => platform.openExternal("https://myaccount.google.com/apppasswords")}
-              >
-                <span>Gerar senha no Google</span>
-                <Icon name="link" size="small" />
-              </button>
-            </div>
-            <TextInputV2
-              type="password"
-              appearance="large"
-              class="!w-full self-stretch"
-              value={form.appPassword}
-              placeholder="16 caracteres (ex: abcd efgh ijkl mnop)"
-              invalid={!!form.err.appPassword}
-              onInput={(e) => setForm("appPassword", e.currentTarget.value)}
-            />
-            <Show when={form.err.appPassword}>
-              <span class="settings-v2-server-dialog-error">{form.err.appPassword}</span>
-            </Show>
-            <div class="rounded-md bg-v2-background-bg-layer-02 p-2.5 text-12-regular text-text-weak flex flex-col gap-1 border border-v2-border-subtle">
-              <span class="font-medium text-text-base">Como gerar para o Gmail:</span>
-              <ol class="list-decimal pl-4 flex flex-col gap-0.5">
-                <li>Acesse <button type="button" class="text-text-interactive underline bg-transparent border-0 p-0 cursor-pointer inline" onClick={() => platform.openExternal("https://myaccount.google.com/apppasswords")}>myaccount.google.com/apppasswords</button> (exige autenticação em 2 etapas ativa).</li>
-                <li>Dê um nome (ex: <i>OpenCode</i>) e clique em <b>Criar</b>.</li>
-                <li>Copie a senha gerada de 16 letras e cole no campo acima (não use sua senha normal da conta).</li>
-              </ol>
-            </div>
-          </div>
-
-          <label class="flex items-center gap-2 text-12-regular text-text-weak">
-            <SwitchV2 checked={form.smtpEnabled} onChange={(checked) => setForm("smtpEnabled", checked)} />
-            Também enviar emails por essa conta (SMTP)
-          </label>
-
-          <Show when={form.smtpEnabled}>
-            <div class="flex w-full min-w-0 gap-2">
-              <div class="flex flex-1 min-w-0 flex-col gap-2">
-                <label class="settings-v2-server-dialog-label">Servidor SMTP (host)</label>
-                <TextInputV2
-                  type="text"
-                  appearance="large"
-                  class="!w-full self-stretch"
-                  value={form.smtpHost}
-                  placeholder="smtp.gmail.com"
-                  onInput={(e) => setForm("smtpHost", e.currentTarget.value)}
-                />
-              </div>
-              <div class="flex w-[100px] flex-col gap-2">
-                <label class="settings-v2-server-dialog-label">Porta</label>
-                <TextInputV2
-                  type="text"
-                  inputmode="numeric"
-                  appearance="large"
-                  class="!w-full self-stretch"
-                  value={form.smtpPort}
-                  onInput={(e) => {
-                    const portStr = e.currentTarget.value.replace(/\D/g, "")
-                    setForm("smtpPort", portStr)
-                    if (portStr === "465") setForm("smtpSecure", true)
-                    else if (portStr === "587") setForm("smtpSecure", false)
-                  }}
-                />
-              </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label class="flex items-center gap-2 text-12-regular text-text-weak">
-                <SwitchV2 checked={form.smtpSecure} onChange={(checked) => setForm("smtpSecure", checked)} />
-                Conexão segura (SSL implícito — porta 465)
-              </label>
-              <span class="settings-v2-server-dialog-hint">
-                Para porta 587 (STARTTLS), mantenha desmarcado.
-              </span>
-            </div>
-          </Show>
-
-          <div class="flex flex-col gap-2 pt-2 border-t border-v2-border-subtle">
-            <label class="flex items-center justify-between text-12-regular text-text-weak cursor-pointer select-none">
-              <span class="font-medium text-text-base">Modo Debug (Logs de conexão)</span>
-              <SwitchV2 checked={showDebug()} onChange={(checked) => setShowDebug(checked)} />
-            </label>
-
-            <Show when={showDebug()}>
-              <div class="flex flex-col gap-1 mt-1">
-                <div class="rounded bg-v2-background-bg-layer-02 p-2.5 font-mono text-11-regular text-text-weak whitespace-pre-wrap break-all max-h-[160px] overflow-y-auto border border-v2-border-subtle">
-                  {debugLog() || "Nenhum teste executado ainda. Clique em 'Testar conexão' para visualizar os detalhes."}
+                  </Show>
                 </div>
               </div>
-            </Show>
-          </div>
-        </div>
-      </DialogBody>
-      <DialogFooter>
-        <ButtonV2 variant="neutral" disabled={addMutation.isPending || testMutation.isPending} onClick={() => dialog.close()}>
-          Fechar
-        </ButtonV2>
-        <div class="flex items-center gap-2">
-          <ButtonV2
-            variant="neutral"
-            disabled={addMutation.isPending || testMutation.isPending}
-            onClick={handleTest}
-          >
-            {testMutation.isPending ? "Testando…" : "Testar conexão"}
-          </ButtonV2>
-          <ButtonV2 variant="contrast" disabled={addMutation.isPending || testMutation.isPending} onClick={submit}>
-            {addMutation.isPending ? "Salvando…" : "Adicionar conta"}
-          </ButtonV2>
-        </div>
-      </DialogFooter>
+            </DialogBody>
+            <DialogFooter>
+              <div class="flex w-full items-center justify-between">
+                <ButtonV2 variant="neutral" onClick={() => dialog.close()}>
+                  {language.t("common.close")}
+                </ButtonV2>
+                <ButtonV2 variant="contrast" icon="plus" onClick={() => setEditor({})}>
+                  {language.t("settings.mcp.mail.add")}
+                </ButtonV2>
+              </div>
+            </DialogFooter>
+          </>
+        }
+      >
+        {(state) => (
+          <MailAccountForm
+            account={state.account}
+            onCancel={() => setEditor(undefined)}
+            onSaved={() => {
+              setEditor(undefined)
+              void refetch()
+              props.onAdded?.()
+            }}
+          />
+        )}
+      </Show>
     </Dialog>
   )
 }
-

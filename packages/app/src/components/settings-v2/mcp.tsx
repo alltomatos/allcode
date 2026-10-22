@@ -27,6 +27,13 @@ const statusLabels = {
   disabled: "mcp.status.disabled",
 } as const
 
+const MAIL_MCP_SERVER = "mcpmail"
+
+function displayName(name: string) {
+  if (name === MAIL_MCP_SERVER) return "MailMCP"
+  return name
+}
+
 function McpServerCatalog(props: { name: string }) {
   const language = useLanguage()
   const serverSDK = useServerSDK()
@@ -205,7 +212,7 @@ export const SettingsMcpV2: Component = () => {
   }
 
   const openEdit = (name: string) => {
-    if (name === "mcpmail") {
+    if (name === MAIL_MCP_SERVER) {
       dialog.push(() => <DialogMailAccountV2 onAdded={() => void refetch()} />)
       return
     }
@@ -303,7 +310,7 @@ export const SettingsMcpV2: Component = () => {
                       title={
                         <span class="flex items-center gap-2">
                           <Icon name="link" class="size-3.5 shrink-0 text-text-weak" />
-                          {item.name}
+                          {displayName(item.name)}
                         </span>
                       }
                       description={

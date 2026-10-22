@@ -3235,6 +3235,7 @@ export class MailAccounts extends HeyApiClient {
         port: number
         secure: boolean
       }
+      sentFolder?: string
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -3254,6 +3255,7 @@ export class MailAccounts extends HeyApiClient {
             { in: "body", key: "user" },
             { in: "body", key: "appPassword" },
             { in: "body", key: "smtp" },
+            { in: "body", key: "sentFolder" },
           ],
         },
       ],
@@ -3292,6 +3294,7 @@ export class MailAccounts extends HeyApiClient {
         port: number
         secure: boolean
       }
+      sentFolder?: string
     },
     options?: Options<never, ThrowOnError>,
   ) {
@@ -3311,6 +3314,7 @@ export class MailAccounts extends HeyApiClient {
             { in: "body", key: "user" },
             { in: "body", key: "appPassword" },
             { in: "body", key: "smtp" },
+            { in: "body", key: "sentFolder" },
           ],
         },
       ],
