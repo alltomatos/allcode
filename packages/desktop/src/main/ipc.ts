@@ -40,6 +40,7 @@ const pickedFiles = createPickedFileAuthorizations()
 
 type Deps = {
   killSidecar: () => Promise<void> | void
+  isSidecarRunning: () => boolean
   relaunch: () => void
   awaitInitialization: () => Promise<ServerReadyData>
   consumeInitialDeepLinks: () => Promise<string[]> | string[]
@@ -109,8 +110,10 @@ export function registerIpcHandlers(deps: Deps) {
   ipcMain.handle("set-background-color", (_event: IpcMainInvokeEvent, color: string) => deps.setBackgroundColor(color))
   ipcMain.handle("export-debug-logs", () => deps.exportDebugLogs())
   ipcMain.handle("maintenance-status", () => getSystemMaintenanceStatus())
-  ipcMain.handle("maintenance-run", (_event, options?: { purgeOldSessions?: boolean; maxAgeDays?: number; fullVacuum?: boolean }) =>
-    runSystemMaintenance(options),
+  ipcMain.handle(
+    "maintenance-run",
+    (_event, options?: { purgeOldSessions?: boolean; maxAgeDays?: number; fullVacuum?: boolean }) =>
+      runSystemMaintenance({ ...options, serverRunning: deps.isSidecarRunning() }),
   )
   ipcMain.handle("legacy-installations-detect", () => detectLegacyInstallations())
   ipcMain.handle("legacy-sessions-list", (_event, sourceDbPath: string, targetDirectory?: string) =>

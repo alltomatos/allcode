@@ -24,16 +24,16 @@ export type SystemMaintenanceResult = {
 const LAST_MAINTENANCE_TIME_KEY = "lastMaintenanceTime"
 const LAST_FREED_BYTES_KEY = "lastMaintenanceFreedBytes"
 const LAST_PURGED_EVENTS_KEY = "lastMaintenancePurgedEvents"
+const PENDING_VACUUM_KEY = "pendingVacuum"
 
 export async function getSystemMaintenanceStatus(): Promise<SystemMaintenanceStatus> {
   const userDataPath = app.getPath("userData")
-  const dbPath = process.env.ALLCODE_DB ?? process.env.OPENCODE_DB ?? join(userDataPath, "allcode.db")
+  const dbPath = process.env.ALLCODE_DB ?? join(userDataPath, "allcode.db")
   const walPath = `${dbPath}-wal`
 
   let dbSizeBytes = 0
   let walSizeBytes = 0
   let eventCount = 0
-  let largeEventCount = 0
   let freeBytesInDb = 0
 
   try {
@@ -49,20 +49,20 @@ export async function getSystemMaintenanceStatus(): Promise<SystemMaintenanceSta
   try {
     const native = new DatabaseSync(dbPath, { readOnly: true })
     try {
+      native.exec("PRAGMA busy_timeout = 30000;")
       const countRow = native.prepare("SELECT count(*) as cnt FROM event").get() as { cnt: number } | undefined
       if (countRow) eventCount = countRow.cnt
-
-      const largeRow = native
-        .prepare("SELECT count(*) as cnt FROM event WHERE length(data) > 1000000")
-        .get() as { cnt: number } | undefined
-      if (largeRow) largeEventCount = largeRow.cnt
-
       const fl = native.prepare("SELECT freelist_count, page_size FROM pragma_freelist_count(), pragma_page_size()").get() as { freelist_count: number; page_size: number } | undefined
       if (fl) freeBytesInDb = (fl.freelist_count ?? 0) * (fl.page_size ?? 4096)
     } finally {
       native.close()
     }
   } catch {}
+
+  // Scanning `length(data)` over a multi-GB event table stalls the main
+  // process for tens of seconds. Size and event count already gate
+  // maintenance, so this stays a cheap informational zero.
+  const largeEventCount = 0
 
   const store = getStore()
   const lastMaintenanceTime = store.get(LAST_MAINTENANCE_TIME_KEY) as number | undefined
@@ -98,10 +98,11 @@ export async function runSystemMaintenance(options?: {
   purgeOldSessions?: boolean
   maxAgeDays?: number
   fullVacuum?: boolean
+  serverRunning?: boolean
 }): Promise<SystemMaintenanceResult> {
   const start = Date.now()
   const userDataPath = app.getPath("userData")
-  const dbPath = process.env.ALLCODE_DB ?? process.env.OPENCODE_DB ?? join(userDataPath, "allcode.db")
+  const dbPath = process.env.ALLCODE_DB ?? join(userDataPath, "allcode.db")
   const walPath = `${dbPath}-wal`
 
   let beforeBytes = 0
@@ -116,18 +117,17 @@ export async function runSystemMaintenance(options?: {
   // Abre conexão para manutenção (executa checkpoint, purge de eventos antigos e otimização)
   const native = new DatabaseSync(dbPath)
   try {
-    // 1. Trunca o WAL trazendo todas as transações para o arquivo principal
-    native.exec("PRAGMA wal_checkpoint(TRUNCATE);")
+    native.exec("PRAGMA busy_timeout = 30000;")
+
+    // 1. Checkpoint PASSIVE não toma lock exclusivo e não derruba o sidecar,
+    // que continua lendo/escrevendo no mesmo arquivo.
+    native.exec("PRAGMA wal_checkpoint(PASSIVE);")
 
     // 2. Remove eventos antigos órfãos de mensagens com diffs enormes (> 1MB)
-    // Esses eventos 'message.updated.1' contêm históricos duplicados com centenas de megas
+    // Esses eventos 'message.updated.1' contêm históricos duplicados com centenas de megas.
+    // Feito em lotes para não segurar o write lock por minutos e derrubar o sidecar.
     try {
-      const deleteResult = native
-        .prepare(
-          "DELETE FROM event WHERE length(data) > 1000000 AND type = 'message.updated.1'",
-        )
-        .run()
-      purgedEvents += Number(deleteResult.changes)
+      purgedEvents += await purgeLargeMessageEvents(native)
     } catch {}
 
     // 3. Expurgo de sessões antigas (padrão: 30 dias se solicitado)
@@ -160,10 +160,7 @@ export async function runSystemMaintenance(options?: {
       
       for (const s of oldEventSessions) {
         try {
-          const res = native
-            .prepare("DELETE FROM event WHERE aggregate_id = ? AND type LIKE '%.updated.%'")
-            .run(s.id)
-          purgedEvents += Number(res.changes)
+          purgedEvents += await purgeStreamingEvents(native, s.id)
         } catch {}
       }
     } catch {}
@@ -172,17 +169,24 @@ export async function runSystemMaintenance(options?: {
     native.exec("PRAGMA optimize;")
 
     // 6. Checkpoint final antes do vacuum
-    native.exec("PRAGMA wal_checkpoint(TRUNCATE);")
+    native.exec("PRAGMA wal_checkpoint(PASSIVE);")
 
     // 7. VACUUM completo (libera o espaço físico no disco)
-    // Se o banco tiver mais de 100MB de espaço livre ou fullVacuum for solicitado, roda sempre VACUUM
+    // VACUUM reescreve o arquivo inteiro e exige lock exclusivo por minutos
+    // num banco grande. Com o sidecar rodando isso vira SQLITE_BUSY nas
+    // requisições do app, então só roda com o servidor parado.
     const freelistRow = native.prepare("SELECT freelist_count, page_size FROM pragma_freelist_count(), pragma_page_size()").get() as { freelist_count: number; page_size: number } | undefined
     const freeBytesInFile = (freelistRow?.freelist_count ?? 0) * (freelistRow?.page_size ?? 4096)
     if (options?.fullVacuum || freeBytesInFile > 50 * 1024 * 1024) {
-      try {
-        native.exec("PRAGMA busy_timeout = 5000;")
-        native.exec("VACUUM;")
-      } catch {}
+      if (options?.serverRunning) {
+        try {
+          getStore().set(PENDING_VACUUM_KEY, true)
+        } catch {}
+      } else {
+        try {
+          native.exec("VACUUM;")
+        } catch {}
+      }
     }
   } finally {
     native.close()
@@ -210,5 +214,81 @@ export async function runSystemMaintenance(options?: {
     freedBytes,
     purgedEvents,
     durationMs,
+  }
+}
+
+const DELETE_BATCH_SIZE = 100
+const DELETE_BATCH_PAUSE_MS = 25
+
+async function purgeLargeMessageEvents(native: DatabaseSync): Promise<number> {
+  const select = native.prepare(
+    "SELECT id FROM event WHERE id > ? AND type = 'message.updated.1' AND length(data) > 1000000 ORDER BY id LIMIT ?",
+  )
+  let purged = 0
+  let cursor = ""
+  while (true) {
+    const rows = select.all(cursor, DELETE_BATCH_SIZE) as Array<{ id: string }>
+    if (rows.length === 0) return purged
+    cursor = rows[rows.length - 1].id
+    purged += deleteEventBatch(
+      native,
+      rows.map((row) => row.id),
+    )
+    await new Promise((resolve) => setTimeout(resolve, DELETE_BATCH_PAUSE_MS))
+  }
+}
+
+async function purgeStreamingEvents(native: DatabaseSync, aggregateID: string): Promise<number> {
+  const select = native.prepare(
+    "SELECT id, seq FROM event WHERE aggregate_id = ? AND type LIKE '%.updated.%' AND seq > ? ORDER BY seq LIMIT ?",
+  )
+  let purged = 0
+  let cursor = -1
+  while (true) {
+    const rows = select.all(aggregateID, cursor, DELETE_BATCH_SIZE) as Array<{ id: string; seq: number }>
+    if (rows.length === 0) return purged
+    cursor = rows[rows.length - 1].seq
+    purged += deleteEventBatch(
+      native,
+      rows.map((row) => row.id),
+    )
+    await new Promise((resolve) => setTimeout(resolve, DELETE_BATCH_PAUSE_MS))
+  }
+}
+
+function deleteEventBatch(native: DatabaseSync, ids: string[]): number {
+  const remove = native.prepare("DELETE FROM event WHERE id = ?")
+  native.exec("BEGIN")
+  try {
+    for (const id of ids) remove.run(id)
+    native.exec("COMMIT")
+  } catch (error) {
+    native.exec("ROLLBACK")
+    throw error
+  }
+  return ids.length
+}
+
+export async function runPendingVacuum(): Promise<boolean> {
+  let pending = false
+  try {
+    pending = Boolean(getStore().get(PENDING_VACUUM_KEY))
+  } catch {}
+  if (!pending) return false
+
+  const dbPath = process.env.ALLCODE_DB ?? join(app.getPath("userData"), "allcode.db")
+  const native = new DatabaseSync(dbPath)
+  try {
+    native.exec("PRAGMA busy_timeout = 30000;")
+    native.exec("PRAGMA wal_checkpoint(PASSIVE);")
+    native.exec("VACUUM;")
+    try {
+      getStore().set(PENDING_VACUUM_KEY, false)
+    } catch {}
+    return true
+  } catch {
+    return false
+  } finally {
+    native.close()
   }
 }

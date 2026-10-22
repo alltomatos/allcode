@@ -59,6 +59,7 @@ import { registerTailscaleIpcHandlers } from "./tailscale/ipc"
 import { migrate } from "./migrate"
 import { cleanupStoreFiles } from "./store-cleanup"
 import { startBackgroundCli } from "./background-cli"
+import { runPendingVacuum } from "./maintenance"
 import { setNativeTranslations } from "./native-translations"
 import { getCloseToTray } from "./auto-start"
 import { createOrUpdateTray, destroyTray, updateTrayMenu } from "./tray"
@@ -357,6 +358,7 @@ const main = Effect.gen(function* () {
   }
   registerIpcHandlers({
     killSidecar: () => killSidecar(),
+    isSidecarRunning: () => server !== null,
     relaunch,
     awaitInitialization: Effect.fnUntraced(
       function* () {
@@ -456,6 +458,9 @@ const main = Effect.gen(function* () {
     // inválida mesmo que a porta bata.
     const password = getPersistedSidecarPassword() ?? randomUUID()
     setPersistedSidecarPassword(password)
+
+    const vacuumed = yield* Effect.promise(() => runPendingVacuum())
+    if (vacuumed) logger.log("ran pending vacuum before spawning sidecar")
 
     logger.log("spawning sidecar", { url, bindHostname })
     const { listener, health } = yield* Effect.promise(() =>

@@ -1,5 +1,5 @@
 import { stat } from "node:fs/promises"
-import { existsSync } from "node:fs"
+import { existsSync, mkdirSync } from "node:fs"
 import { homedir } from "node:os"
 import { join } from "node:path"
 import { DatabaseSync } from "node:sqlite"
@@ -29,6 +29,12 @@ export interface LegacyMigrationResult {
   migratedEvents: number
 }
 
+function appDataRoot(): string {
+  if (process.env.XDG_DATA_HOME) return process.env.XDG_DATA_HOME
+  if (process.platform === "win32") return process.env.LOCALAPPDATA ?? join(homedir(), "AppData", "Local")
+  return join(homedir(), ".local", "share")
+}
+
 function directoryToWorkspaceHash(directory: string): string {
   const normalized = process.platform === "win32" ? directory.replace(/\\/g, "/").toLowerCase() : directory
   return createHash("sha256").update(normalized).digest("hex").slice(0, 16)
@@ -38,14 +44,14 @@ function directoryToWorkspaceHash(directory: string): string {
  * Procura bancos de dados allcode.db / opencode.db em instalações padrão do Electron e CLI
  */
 export async function detectLegacyInstallations(): Promise<LegacyInstallationSource[]> {
-  const currentDbPath = process.env.ALLCODE_DB ?? process.env.OPENCODE_DB ?? join(app.getPath("userData"), "opencode.db")
+  const currentDbPath = process.env.ALLCODE_DB ?? join(app.getPath("userData"), "allcode.db")
 
   const candidates: { id: string; name: string; path: string }[] = []
 
   if (process.platform === "win32") {
     const appData = process.env.APPDATA ?? join(homedir(), "AppData", "Roaming")
     candidates.push(
-      { id: "desktop-allcode", name: "AllCode Desktop", path: join(appData, "ai.allcode.desktop", "opencode.db") },
+      { id: "desktop-allcode", name: "AllCode Desktop", path: join(appData, "ai.allcode.desktop", "allcode.db") },
       { id: "desktop-prod", name: "OpenCode Desktop (Oficial)", path: join(appData, "ai.opencode.desktop", "opencode.db") },
       { id: "desktop-dev", name: "OpenCode Desktop (Dev)", path: join(appData, "ai.opencode.desktop.dev", "opencode.db") },
       { id: "desktop-beta", name: "OpenCode Desktop (Beta)", path: join(appData, "ai.opencode.desktop.beta", "opencode.db") },
@@ -53,7 +59,7 @@ export async function detectLegacyInstallations(): Promise<LegacyInstallationSou
   } else if (process.platform === "darwin") {
     const appSupport = join(homedir(), "Library", "Application Support")
     candidates.push(
-      { id: "desktop-allcode", name: "AllCode Desktop", path: join(appSupport, "ai.allcode.desktop", "opencode.db") },
+      { id: "desktop-allcode", name: "AllCode Desktop", path: join(appSupport, "ai.allcode.desktop", "allcode.db") },
       { id: "desktop-prod", name: "OpenCode Desktop (Oficial)", path: join(appSupport, "ai.opencode.desktop", "opencode.db") },
       { id: "desktop-dev", name: "OpenCode Desktop (Dev)", path: join(appSupport, "ai.opencode.desktop.dev", "opencode.db") },
       { id: "desktop-beta", name: "OpenCode Desktop (Beta)", path: join(appSupport, "ai.opencode.desktop.beta", "opencode.db") },
@@ -61,18 +67,18 @@ export async function detectLegacyInstallations(): Promise<LegacyInstallationSou
   } else {
     const xdgConfig = process.env.XDG_CONFIG_HOME ?? join(homedir(), ".config")
     candidates.push(
-      { id: "desktop-allcode", name: "AllCode Desktop", path: join(xdgConfig, "ai.allcode.desktop", "opencode.db") },
+      { id: "desktop-allcode", name: "AllCode Desktop", path: join(xdgConfig, "ai.allcode.desktop", "allcode.db") },
       { id: "desktop-prod", name: "OpenCode Desktop", path: join(xdgConfig, "ai.opencode.desktop", "opencode.db") },
     )
   }
 
   // CLI / Global path
-  const xdgData = process.env.XDG_DATA_HOME ?? join(homedir(), ".local", "share")
+  const xdgData = appDataRoot()
   candidates.push(
     {
       id: "cli-allcode",
       name: "AllCode CLI (~/.local/share/allcode)",
-      path: join(xdgData, "allcode", "opencode.db"),
+      path: join(xdgData, "allcode", "allcode.db"),
     },
     {
       id: "cli-opencode",
@@ -174,11 +180,11 @@ export async function importLegacySessions(
   }
 
   const workspaceHash = directoryToWorkspaceHash(targetDirectory)
-  const xdgData = process.env.XDG_DATA_HOME ?? join(homedir(), ".local", "share")
-  const targetDbDir = join(xdgData, "opencode", "workspaces", workspaceHash)
+  const targetDbDir = join(appDataRoot(), "allcode", "workspaces", workspaceHash)
   const targetDbPath = join(targetDbDir, "project.db")
-  const globalDbPath = process.env.ALLCODE_DB ?? process.env.OPENCODE_DB ?? join(app.getPath("userData"), "opencode.db")
+  const globalDbPath = process.env.ALLCODE_DB ?? join(app.getPath("userData"), "allcode.db")
 
+  mkdirSync(targetDbDir, { recursive: true })
   const source = new DatabaseSync(sourceDbPath, { readOnly: true })
   const target = new DatabaseSync(targetDbPath)
   const globalDb = new DatabaseSync(globalDbPath)
