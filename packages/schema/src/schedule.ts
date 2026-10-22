@@ -141,3 +141,28 @@ export const TestResult = Schema.Struct({
   error: optional(Schema.String),
   sessionId: optional(Schema.String),
 }).annotate({ identifier: "Schedule.TestResult" })
+
+export const RunID = Schema.String.pipe(
+  Schema.brand("Schedule.RunID"),
+  statics((schema) => ({ create: () => schema.make("run_" + ascending()) })),
+)
+export type RunID = typeof RunID.Type
+
+export interface RunInfo extends Schema.Schema.Type<typeof RunInfo> {}
+export const RunInfo = Schema.Struct({
+  id: RunID,
+  scheduleId: ID,
+  startedAt: Schema.Number,
+  durationMs: Schema.Number,
+  status: Schema.Literals(["success", "error"]),
+  error: optional(Schema.String),
+  sessionId: optional(Schema.String),
+}).annotate({ identifier: "Schedule.RunInfo" })
+
+export interface DaemonHeartbeat extends Schema.Schema.Type<typeof DaemonHeartbeat> {}
+export const DaemonHeartbeat = Schema.Struct({
+  instanceId: Schema.String,
+  pid: Schema.Number,
+  processTitle: Schema.String,
+  lastSeen: Schema.Number,
+}).annotate({ identifier: "Schedule.DaemonHeartbeat" })

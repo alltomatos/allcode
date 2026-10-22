@@ -46,5 +46,6 @@ export const migrations = (
     import("./migration/20261013180000_add_credential_disabled"),
     import("./migration/20261017150000_add_session_location_index"),
     import("./migration/20261017234719_broad_jane_foster"),
+    import("./migration/20261021120000_add_schedule_resilience_tables"),
   ])
 ).map((module) => module.default) satisfies DatabaseMigration.Migration[]

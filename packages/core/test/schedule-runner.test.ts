@@ -152,4 +152,72 @@ describe("ScheduleRunner execution and timeout", () => {
       expect(executed.lastError).toBe("timeout after 50ms")
     }),
   )
+
+  it.live("records execution in schedule_run and truncates large errors", () =>
+    Effect.gen(function* () {
+      const schedules = yield* Schedule.Service
+      const { db } = yield* Database.Service
+      const longMessage = "A".repeat(10_000)
+      const created = yield* schedules.create({
+        trigger: { kind: "manual" },
+        action: {
+          kind: "shell",
+          command: `node -e "console.error('${longMessage}'); process.exit(1)"`,
+        },
+        enabled: true,
+      })
+
+      const executed = yield* ScheduleRunner.runOne(created.id)
+      expect(executed.lastStatus).toBe("error")
+      expect(executed.lastError).toBeDefined()
+      expect(executed.lastError!.length).toBeLessThanOrEqual(8_192 + 50)
+
+      // Verificar que foi gravado na tabela schedule_run
+      const runs = yield* db.select().from(ScheduleRunner.ScheduleRunTable).all().pipe(Effect.orDie)
+      expect(runs.length).toBeGreaterThan(0)
+      const lastRun = runs.find((r) => r.schedule_id === created.id)
+      expect(lastRun).toBeDefined()
+      expect(lastRun?.status).toBe("error")
+      expect(lastRun?.error?.length).toBeLessThanOrEqual(8_192 + 50)
+    }),
+  )
+
+  it.live("purges runs older than retention window", () =>
+    Effect.gen(function* () {
+      const schedules = yield* Schedule.Service
+      const { db } = yield* Database.Service
+      const created = yield* schedules.create({
+        trigger: { kind: "manual" },
+        action: { kind: "shell", command: 'node -e "process.exit(0)"' },
+        enabled: true,
+      })
+
+      // Inserir registro antigo simulado (8 dias atrás)
+      const oldTimestamp = Date.now() - (8 * 24 * 60 * 60 * 1000)
+      yield* db
+        .insert(ScheduleRunner.ScheduleRunTable)
+        .values({
+          id: "run_old_test",
+          schedule_id: created.id,
+          started_at: oldTimestamp,
+          duration_ms: 100,
+          status: "success",
+        })
+        .run()
+        .pipe(Effect.orDie)
+
+      // Executa o purge
+      yield* ScheduleRunner.purgeOldRuns()
+
+      // Confirma que o registro antigo foi deletado
+      const foundOld = yield* db
+        .select()
+        .from(ScheduleRunner.ScheduleRunTable)
+        .where(ScheduleRunner.eq(ScheduleRunner.ScheduleRunTable.id, "run_old_test"))
+        .get()
+        .pipe(Effect.orDie)
+
+      expect(foundOld).toBeUndefined()
+    }),
+  )
 })

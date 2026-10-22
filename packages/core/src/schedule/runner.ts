@@ -1,14 +1,123 @@
 export * as ScheduleRunner from "./runner"
 
 import { spawn } from "node:child_process"
-import { Context, Duration, Effect, Layer, Schema, Schedule as EffectSchedule } from "effect"
+import { randomUUID } from "node:crypto"
+import { Context, Duration, Effect, Layer, Schema, Schedule as EffectSchedule, Semaphore } from "effect"
+import { desc, eq, lt } from "drizzle-orm"
 import { Schedule } from "../schedule"
 import { Database } from "../database/database"
+import { DaemonHeartbeatTable, ScheduleRunTable } from "./sql"
 import { makeGlobalNode } from "../effect/app-node"
 
 export class NotFoundError extends Schema.TaggedErrorClass<NotFoundError>()("Schedule.NotFoundError", {
   id: Schedule.ID,
 }) {}
+
+export { DaemonHeartbeatTable, ScheduleRunTable } from "./sql"
+export { eq, lt } from "drizzle-orm"
+
+export const PROCESS_INSTANCE_ID = randomUUID()
+export const LEADER_TIMEOUT_MS = 45_000
+export const MAX_PAYLOAD_CHARS = 8_192 // Teto de 8 KB para campos textuais
+export const RETENTION_DAYS_MS = 7 * 24 * 60 * 60 * 1000 // 7 dias
+
+export function truncatePayload(value: string | undefined): string | undefined {
+  if (!value) return undefined
+  if (value.length <= MAX_PAYLOAD_CHARS) return value
+  return value.slice(0, MAX_PAYLOAD_CHARS) + `... [truncated at ${MAX_PAYLOAD_CHARS} chars]`
+}
+
+export const purgeOldRuns = Effect.fn("v2.Schedule.purgeOldRuns")(function* () {
+  const { db } = yield* Database.Service
+  const threshold = Date.now() - RETENTION_DAYS_MS
+  yield* db
+    .delete(ScheduleRunTable)
+    .where(lt(ScheduleRunTable.started_at, threshold))
+    .run()
+    .pipe(Effect.orDie)
+})
+
+// Semáforos para segregação de concorrência por tipo de ação
+export const shellSemaphore = Semaphore.makeUnsafe(2)
+export const skillSemaphore = Semaphore.makeUnsafe(3)
+
+function withActionPermit<A, E, R>(action: Schedule.Action, effect: Effect.Effect<A, E, R>): Effect.Effect<A, E, R> {
+  if (action.kind === "shell") {
+    return shellSemaphore.withPermits(1)(effect)
+  }
+  if (action.kind === "skill" || action.kind === "agentui") {
+    return skillSemaphore.withPermits(1)(effect)
+  }
+  // reminder e mcp_tool têm despacho livre
+  return effect
+}
+
+export const isLeader = Effect.fn("v2.Schedule.isLeader")(function* () {
+  const { db } = yield* Database.Service
+  const now = Date.now()
+
+  const existing = yield* db
+    .select()
+    .from(DaemonHeartbeatTable)
+    .where(eq(DaemonHeartbeatTable.instance_id, PROCESS_INSTANCE_ID))
+    .get()
+    .pipe(Effect.orDie)
+
+  if (existing) {
+    yield* db
+      .update(DaemonHeartbeatTable)
+      .set({ last_seen: now })
+      .where(eq(DaemonHeartbeatTable.instance_id, PROCESS_INSTANCE_ID))
+      .run()
+      .pipe(Effect.orDie)
+    return true
+  }
+
+  // Verificar se há outro líder ativo
+  const threshold = now - LEADER_TIMEOUT_MS
+  const staleLeaders = yield* db
+    .select()
+    .from(DaemonHeartbeatTable)
+    .where(lt(DaemonHeartbeatTable.last_seen, threshold))
+    .all()
+    .pipe(Effect.orDie)
+
+  // Limpar líderes antigos e inativos
+  if (staleLeaders.length > 0) {
+    yield* db
+      .delete(DaemonHeartbeatTable)
+      .where(lt(DaemonHeartbeatTable.last_seen, threshold))
+      .run()
+      .pipe(Effect.orDie)
+  }
+
+  const currentLeaders = yield* db.select().from(DaemonHeartbeatTable).all().pipe(Effect.orDie)
+  if (currentLeaders.length === 0) {
+    // Reivindicar liderança atomicamente
+    yield* db
+      .insert(DaemonHeartbeatTable)
+      .values({
+        instance_id: PROCESS_INSTANCE_ID,
+        pid: process.pid,
+        process_title: process.title || "allcode",
+        last_seen: now,
+      })
+      .run()
+      .pipe(Effect.orDie)
+    return true
+  }
+
+  return false
+})
+
+export const releaseLeader = Effect.fn("v2.Schedule.releaseLeader")(function* () {
+  const { db } = yield* Database.Service
+  yield* db
+    .delete(DaemonHeartbeatTable)
+    .where(eq(DaemonHeartbeatTable.instance_id, PROCESS_INSTANCE_ID))
+    .run()
+    .pipe(Effect.orDie)
+})
 
 export interface SkillCallResult {
   readonly success: boolean
@@ -271,6 +380,21 @@ function runAction(action: Schedule.Action, workspace: string | undefined, sessi
   })
 }
 
+/** Runs an action with 1 immediate courtesy retry on failure. */
+function runActionWithRetry(action: Schedule.Action, workspace: string | undefined, sessionId?: string) {
+  return Effect.gen(function* () {
+    const firstAttempt = yield* runAction(action, workspace, sessionId)
+    if (firstAttempt.exitCode === 0) {
+      return firstAttempt
+    }
+
+    // 1 Retry imediato de cortesia para absorver falhas transientes
+    yield* Effect.logWarning(`[Schedule] Action failed, performing 1 courtesy retry... (${firstAttempt.error})`)
+    const secondAttempt = yield* runAction(action, workspace, sessionId)
+    return secondAttempt
+  })
+}
+
 /** Executes an action directly as a dry-run test/validation without needing a saved Schedule ID */
 export const testAction = Effect.fn("v2.Schedule.testAction")(function* (
   action: Schedule.Action,
@@ -287,24 +411,51 @@ export const testAction = Effect.fn("v2.Schedule.testAction")(function* (
 /** Runs one schedule's action immediately, regardless of trigger/enabled state, and records the result. */
 export const runOne = Effect.fn("v2.Schedule.runOne")(function* (id: Schedule.ID) {
   const schedules = yield* Schedule.Service
+  const { db } = yield* Database.Service
   const schedule = yield* schedules.get(id)
   if (!schedule) return yield* Effect.fail(new NotFoundError({ id }))
 
-  const result = yield* runAction(schedule.action, schedule.workspace, schedule.lastSessionId)
+  const startTime = Date.now()
+  const result = yield* runActionWithRetry(schedule.action, schedule.workspace, schedule.lastSessionId)
+  const durationMs = Date.now() - startTime
   const isSuccess = result.exitCode === 0
+  const truncatedError = truncatePayload(result.error)
+
+  // Gravar histórico de execução na tabela schedule_run
+  yield* db
+    .insert(ScheduleRunTable)
+    .values({
+      id: "run_" + randomUUID(),
+      schedule_id: schedule.id,
+      started_at: startTime,
+      duration_ms: durationMs,
+      status: isSuccess ? "success" : "error",
+      error: truncatedError,
+      session_id: result.sessionId ?? schedule.lastSessionId,
+    })
+    .run()
+    .pipe(Effect.orDie)
+
   const updated = yield* schedules.update(schedule.id, {
-    lastRunAt: Date.now(),
+    lastRunAt: startTime,
     lastStatus: isSuccess ? "success" : "error",
-    lastError: isSuccess ? null : (result.error ?? null),
+    lastError: isSuccess ? null : (truncatedError ?? null),
     lastSessionId: result.sessionId ?? schedule.lastSessionId,
   })
   return updated!
 })
 
 const tick = Effect.fn("v2.Schedule.tick")(function* () {
+  const leader = yield* isLeader()
+  if (!leader) {
+    return
+  }
+
   const schedules = yield* Schedule.Service
   const now = new Date()
   const nowMs = now.getTime()
+
+  const eligibleSchedules: Schedule.Info[] = []
 
   for (const schedule of yield* schedules.list()) {
     if (!schedule.enabled) continue
@@ -329,19 +480,55 @@ const tick = Effect.fn("v2.Schedule.tick")(function* () {
       }
     }
 
-    const result = yield* runAction(schedule.action, schedule.workspace, schedule.lastSessionId)
-    const isSuccess = result.exitCode === 0
-    yield* schedules.update(schedule.id, {
-      lastRunAt: nowMs,
-      enabled: schedule.trigger.kind === "once" ? false : schedule.enabled,
-      lastStatus: isSuccess ? "success" : "error",
-      lastError: isSuccess ? null : (result.error ?? null),
-      lastSessionId: result.sessionId ?? schedule.lastSessionId,
-    })
-
-    if (result.exitCode === 0) yield* Effect.logInfo(`[Schedule] Task ${schedule.id} completed successfully`)
-    else yield* Effect.logWarning(`[Schedule] Task ${schedule.id} failed: ${result.error}`)
+    eligibleSchedules.push(schedule)
   }
+
+  // Disparo concorrente controlado por semáforos por tipo de ação
+  yield* Effect.forEach(
+    eligibleSchedules,
+    (schedule) =>
+      withActionPermit(
+        schedule.action,
+        Effect.gen(function* () {
+          const { db } = yield* Database.Service
+          const startTime = Date.now()
+          const result = yield* runActionWithRetry(schedule.action, schedule.workspace, schedule.lastSessionId)
+          const durationMs = Date.now() - startTime
+          const isSuccess = result.exitCode === 0
+          const truncatedError = truncatePayload(result.error)
+
+          // Gravar histórico de execução na tabela schedule_run
+          yield* db
+            .insert(ScheduleRunTable)
+            .values({
+              id: "run_" + randomUUID(),
+              schedule_id: schedule.id,
+              started_at: startTime,
+              duration_ms: durationMs,
+              status: isSuccess ? "success" : "error",
+              error: truncatedError,
+              session_id: result.sessionId ?? schedule.lastSessionId,
+            })
+            .run()
+            .pipe(Effect.orDie)
+
+          yield* schedules.update(schedule.id, {
+            lastRunAt: startTime,
+            enabled: schedule.trigger.kind === "once" ? false : schedule.enabled,
+            lastStatus: isSuccess ? "success" : "error",
+            lastError: isSuccess ? null : (truncatedError ?? null),
+            lastSessionId: result.sessionId ?? schedule.lastSessionId,
+          })
+
+          if (result.exitCode === 0) yield* Effect.logInfo(`[Schedule] Task ${schedule.id} completed successfully`)
+          else yield* Effect.logWarning(`[Schedule] Task ${schedule.id} failed: ${result.error}`)
+        }),
+      ),
+    { concurrency: "unbounded" },
+  )
+
+  // Auto-purge de histórico com mais de 7 dias
+  yield* purgeOldRuns().pipe(Effect.ignore)
 })
 
 const STARTUP_DELAY_SECONDS = 60
@@ -350,7 +537,12 @@ const tickLayer = Layer.effectDiscard(
   Effect.sleep(Duration.seconds(STARTUP_DELAY_SECONDS)).pipe(
     Effect.flatMap(() =>
       tick().pipe(
-        Effect.catch(() => Effect.void),
+        Effect.catch(() =>
+          Effect.gen(function* () {
+            yield* Effect.logWarning(`[Schedule] Tick loop encountered unexpected error, recovering...`)
+            yield* Effect.sleep(Duration.seconds(5))
+          }),
+        ),
         Effect.repeat(EffectSchedule.spaced(Duration.seconds(30))),
       ),
     ),
@@ -361,5 +553,5 @@ const tickLayer = Layer.effectDiscard(
 export const tickNode = makeGlobalNode({
   name: "schedule-tick",
   layer: Layer.merge(Schedule.layer, tickLayer.pipe(Layer.provide(Schedule.layer))),
-  deps: [Database.node, mcpCallerNode, skillCallerNode, agentUICallerNode, reminderCallerNode],
+  deps: [Database.node, Database.globalNode, mcpCallerNode, skillCallerNode, agentUICallerNode, reminderCallerNode],
 })
