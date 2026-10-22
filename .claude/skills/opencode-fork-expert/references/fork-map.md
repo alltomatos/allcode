@@ -1,6 +1,6 @@
 # Mapa do fork alltomatos/opencode
 
-**Última verificação:** 2026-09-15 (versões: fork `1.18.21`, upstream `1.18.30` — ver achados da sincronização em `upstream-sync.md`). Este arquivo é um cache leve — os fatos abaixo (versões, quem está à frente de quem) mudam com o tempo. Se a pergunta depender de um número exato e atual (versão publicada agora, quantos commits de diferença), confirme ao vivo (ver seção final) antes de responder como definitivo.
+**Última verificação:** 2026-10-21 (versões: fork `1.22.1` — prod e dev promoteados em `175e80df7`; upstream `1.18.30` — ver achados da sincronização em `upstream-sync.md`). Este arquivo é um cache leve — os fatos abaixo (versões, quem está à frente de quem) mudam com o tempo. Se a pergunta depender de um número exato e atual (versão publicada agora, quantos commits de diferença), confirme ao vivo (ver seção final) antes de responder como definitivo.
 
 ## Remotes
 
@@ -34,16 +34,18 @@ Nem sempre já configurados: em clones frescos (ex.: sessões remotas/cloud, con
 
 Isto substitui qualquer nota antiga dizendo que o build/publish é manual — **não é mais**, desde que `.github/workflows/release-desktop.yml` foi criado neste fork:
 
-1. Version bump em `packages/desktop/package.json` e `packages/app/package.json` (manter os dois sincronizados).
+1. Version bump em `packages/desktop/package.json`, `packages/app/package.json` e `packages/allcode/package.json` (os três andam juntos no fork; `packages/cli`, `packages/sdk/js` e `packages/codemode` seguem o versionamento do upstream em `1.18.21`).
 2. Entrada nova no topo de `changelog.json` (formato: array `releases`, cada um com `tag` e `highlights[].items[]`, em português).
-3. Commit + push pra `prod` (via merge/cherry-pick de `dev`, nunca trabalho direto em `prod`).
-4. O push dispara `release-desktop.yml` sozinho — builda os 3 SOs em paralelo, ~10-15min.
-5. Verificar com `gh run list --repo alltomatos/opencode --workflow=release-desktop.yml --branch=prod --limit=1`.
-6. O release sai como **draft** — publicar com `gh release edit v<versão> --repo alltomatos/opencode --draft=false`.
+3. Commit + push em `dev` (o push já dispara `release-desktop-dev.yml`, que publica o canal `dev` como `<versão>-dev.<run_number>`).
+4. Promoção: `git push origin dev:prod` — `prod` não é protegido e o histórico é linear, então o push é fast-forward e **cria o release sozinho** (sem merge commit manual).
+5. O push em `prod` dispara `release-desktop.yml`: builda os 3 SOs em paralelo (~10min) e o job final `publish-release` **tira o release do draft e marca como `latest` automaticamente** — não precisa mais `gh release edit --draft=false` na mão (o workflow faz isso desde que o job `publish-release` foi adicionado).
+6. Verificar com `gh run list --repo alltomatos/allcode --workflow=release-desktop --branch=prod --limit=1` e `gh release view v<versão> --repo alltomatos/allcode`.
 
 **Antes de fazer push em qualquer branch**, o hook de pre-push roda `bun turbo typecheck` no monorepo inteiro — não pule isso, é rápido (~10-50s com cache) e pega erro de tipo entre pacotes que só aparece na integração.
 
 **Se for propagar pra um worktree novo** (`git worktree add /tmp/xxx <branch>`), lembre que ele não vem com `node_modules` — rode `bun install` lá antes do push (senão o hook de typecheck falha por falta de dependências, não por erro real).
+
+**Falhas pré-existentes (não são regressão):** o workflow `notify-discord` está falhando em todo push (webhook do Discord quebrado/ausente), e `packages/core` tem 4 testes falhando na branch `dev` (migração de config v1→v2 com `failover.strategy: "priority-round-robin"`, `ModelsDev` exigindo rede, resolução de `/usr/bin/bash` no Git Bash e `cross-spawn` capturando stdout).
 
 ## Convenções de commit e branch neste fork
 
