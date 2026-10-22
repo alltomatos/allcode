@@ -65,6 +65,7 @@ function stat(file: string) {
 
 function full(file: string) {
   if (process.platform !== "win32") return file
+  if (name(file) === "bash" && /^\/(?:usr\/)?bin\/bash$/.test(file)) return gitbash() || file
   const shell = FSUtil.windowsPath(file)
   if (path.win32.dirname(shell) !== ".") {
     if (shell.startsWith("/") && name(shell) === "bash") return gitbash() || shell
