@@ -1,6 +1,28 @@
 {
   "releases": [
     {
+      "tag": "v1.22.1",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "E-mail: Botões de Provedor e Novo Modal de Contas",
+              "description": "O modal de contas de e-mail agora tem botões de provedor (Gmail, Outlook, cPanel, Speedmail e Zimbra) que preenchem os servidores automaticamente nos provedores conhecidos e deixam os campos livres nos servidores personalizados, com dicas específicas para cada um."
+            },
+            {
+              "title": "E-mail: Edição, Remoção e Opções Avançadas",
+              "description": "Contas conectadas podem ser editadas e removidas com confirmação e aviso de resultado, expõem o identificador e a pasta de enviados em opções avançadas, validam o servidor SMTP antes de salvar e o teste de conexão usa as mesmas opções de TLS do servidor MCP em execução."
+            },
+            {
+              "title": "Desktop: Manutenção de Banco sem Travar o Sidecar",
+              "description": "A manutenção do banco agora usa checkpoint passivo e exclusões em lotes, executa o vacuum pendente antes de iniciar o sidecar e amplia o tempo de espera de lock, evitando travamentos e quedas do servidor durante a limpeza."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.21.91",
       "highlights": [
         {
