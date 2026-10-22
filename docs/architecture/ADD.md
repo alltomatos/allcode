@@ -23,6 +23,13 @@ A infraestrutura subjacente de rotinas (`packages/core/src/schedule/` e `@allcod
   1. **Desktop Native (OS Notification):** Notificação via Electron/Web Notification API com som e ação de clique que redireciona à sessão/agente correspondente.
   2. **AgentUI (Conversational Injection):** Injeção de mensagem proativa na sessão/chat de onde o lembrete foi originado ou no canal ativo (Telegram/WhatsApp).
 
+### Decisão 4: Resiliência, Coordenação Multi-Instância e Anti-Inchaço (ADR 0006)
+- **Concorrência Segregada:** Uso de semáforos Effect dedicados para evitar bloqueio serial no `tick()`: `shell` (máx. 2), `skill`/`agentui` (máx. 3) e `reminder` (concorrência livre).
+- **Eleição de Líder por Heartbeat (`daemon_heartbeat`):** Previne execução duplicada quando servidor CLI e app desktop coexistem; renovação a cada 15s com failover em 45s.
+- **Tolerância a Falhas com Cortesia:** 1 retry imediato de cortesia em falhas transientes antes de registrar erro e aguardar próximo ciclo agendado.
+- **Histórico Segregado com Retenção de 7 Dias (`schedule_run`):** Registra cada disparo com payloads de erro/stdout truncados em no máximo 8 KB, acompanhado de auto-purge periódico para registros com mais de 7 dias, blindando o SQLite contra inchaço.
+- **Supervisão Contínua:** Fibra do daemon supervisionada com auto-restart e degradação suave.
+
 ---
 
 ## 3. Diagrama C4 & Fluxo de Dados
