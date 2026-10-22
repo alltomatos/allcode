@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http"
 import { randomBytes } from "node:crypto"
+import { BrowserWindow } from "electron"
 import { write as writeLog } from "./logging"
 import {
   captureScreenshot,
@@ -9,6 +10,41 @@ import {
   computerScroll,
   computerType,
 } from "./computer-control"
+import { showComputerOverlay, hideComputerOverlay } from "./computer-overlay"
+import { enterComputerUseCompactMode, exitComputerUseCompactMode } from "./windows"
+
+let sessionResetTimer: NodeJS.Timeout | null = null
+const INACTIVITY_TIMEOUT_MS = 25_000 // Volta ao normal se passar 25 segundos sem novas ações
+
+function getActiveWindow(): BrowserWindow | null {
+  return BrowserWindow.getFocusedWindow() ?? BrowserWindow.getAllWindows()[0] ?? null
+}
+
+function notifySessionActivity() {
+  const win = getActiveWindow()
+  if (win) {
+    enterComputerUseCompactMode(win)
+  }
+  showComputerOverlay()
+
+  if (sessionResetTimer) {
+    clearTimeout(sessionResetTimer)
+  }
+  sessionResetTimer = setTimeout(() => {
+    endSession()
+  }, INACTIVITY_TIMEOUT_MS)
+}
+
+function endSession() {
+  if (sessionResetTimer) {
+    clearTimeout(sessionResetTimer)
+    sessionResetTimer = null
+  }
+  hideComputerOverlay()
+  for (const win of BrowserWindow.getAllWindows()) {
+    exitComputerUseCompactMode(win)
+  }
+}
 
 function readJson(req: IncomingMessage): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -57,13 +93,21 @@ export function startComputerBridge(): Promise<ComputerBridge> {
 
       const url = new URL(req.url ?? "/", "http://127.0.0.1")
 
+      if (url.pathname === "/release" && req.method === "POST") {
+        endSession()
+        sendJson(res, 200, { ok: true })
+        return
+      }
+
       if (url.pathname === "/screenshot" && req.method === "GET") {
+        notifySessionActivity()
         const png = await captureScreenshot()
         res.writeHead(200, { "Content-Type": "image/png", "Content-Length": png.length })
         res.end(png)
         return
       }
       if (url.pathname === "/click" && req.method === "POST") {
+        notifySessionActivity()
         const body = await readJson(req)
         if (typeof body.x !== "number" || typeof body.y !== "number") throw new Error("x and y are required")
         await computerClick(body.x, body.y)
@@ -71,6 +115,7 @@ export function startComputerBridge(): Promise<ComputerBridge> {
         return
       }
       if (url.pathname === "/move" && req.method === "POST") {
+        notifySessionActivity()
         const body = await readJson(req)
         if (typeof body.x !== "number" || typeof body.y !== "number") throw new Error("x and y are required")
         await computerMove(body.x, body.y)
@@ -78,6 +123,7 @@ export function startComputerBridge(): Promise<ComputerBridge> {
         return
       }
       if (url.pathname === "/type" && req.method === "POST") {
+        notifySessionActivity()
         const body = await readJson(req)
         if (typeof body.text !== "string") throw new Error("text is required")
         await computerType(body.text)
@@ -85,6 +131,7 @@ export function startComputerBridge(): Promise<ComputerBridge> {
         return
       }
       if (url.pathname === "/key" && req.method === "POST") {
+        notifySessionActivity()
         const body = await readJson(req)
         if (typeof body.key !== "string") throw new Error("key is required")
         await computerKey(body.key)
@@ -92,6 +139,7 @@ export function startComputerBridge(): Promise<ComputerBridge> {
         return
       }
       if (url.pathname === "/scroll" && req.method === "POST") {
+        notifySessionActivity()
         const body = await readJson(req)
         await computerScroll(Number(body.deltaX ?? 0), Number(body.deltaY ?? 0))
         sendJson(res, 200, { ok: true })
@@ -116,7 +164,10 @@ export function startComputerBridge(): Promise<ComputerBridge> {
       resolve({
         port: address.port,
         token,
-        stop: () => server.close(),
+        stop: () => {
+          endSession()
+          server.close()
+        },
       })
     })
   })

@@ -46,10 +46,49 @@ const WIN32_SENDINPUT_HELPER = `
 Add-Type @"
 using System;
 using System.Runtime.InteropServices;
+using System.Threading;
+
 public class Win32Input {
+  [StructLayout(LayoutKind.Sequential)]
+  public struct POINT {
+    public int X;
+    public int Y;
+  }
+
+  [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT lpPoint);
   [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
   [DllImport("user32.dll")] public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint dwData, int dwExtraInfo);
   [DllImport("user32.dll")] public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
+
+  // Movimento humano do mouse a ~60 FPS com interpolação cúbica (1 - (1 - t)^3), igual ao Claude Desktop
+  public static void MoveSmooth(int targetX, int targetY, int durationMs = 280) {
+    POINT cur;
+    if (!GetCursorPos(out cur)) {
+      SetCursorPos(targetX, targetY);
+      return;
+    }
+
+    int deltaX = targetX - cur.X;
+    int deltaY = targetY - cur.Y;
+    double dist = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
+    if (dist < 4) {
+      SetCursorPos(targetX, targetY);
+      return;
+    }
+
+    int frames = Math.Max(6, Math.Min(30, (int)(durationMs / 16.666)));
+    for (int frame = 1; frame <= frames; frame++) {
+      double t = (double)frame / frames;
+      double progress = 1.0 - Math.Pow(1.0 - t, 3);
+      int x = (int)Math.Round(cur.X + deltaX * progress);
+      int y = (int)Math.Round(cur.Y + deltaY * progress);
+      SetCursorPos(x, y);
+      if (frame < frames) {
+        Thread.Sleep(16);
+      }
+    }
+    SetCursorPos(targetX, targetY);
+  }
 }
 "@
 `
@@ -57,10 +96,10 @@ public class Win32Input {
 async function winClick(x: number, y: number) {
   await runWindowsScript(`
     ${WIN32_SENDINPUT_HELPER}
-    [Win32Input]::SetCursorPos(${Math.round(x)}, ${Math.round(y)})
-    Start-Sleep -Milliseconds 30
+    [Win32Input]::MoveSmooth(${Math.round(x)}, ${Math.round(y)})
+    Start-Sleep -Milliseconds 40
     [Win32Input]::mouse_event(0x0002, 0, 0, 0, 0)
-    Start-Sleep -Milliseconds 30
+    Start-Sleep -Milliseconds 40
     [Win32Input]::mouse_event(0x0004, 0, 0, 0, 0)
   `)
 }
@@ -68,7 +107,7 @@ async function winClick(x: number, y: number) {
 async function winMove(x: number, y: number) {
   await runWindowsScript(`
     ${WIN32_SENDINPUT_HELPER}
-    [Win32Input]::SetCursorPos(${Math.round(x)}, ${Math.round(y)})
+    [Win32Input]::MoveSmooth(${Math.round(x)}, ${Math.round(y)})
   `)
 }
 

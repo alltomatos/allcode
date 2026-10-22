@@ -4,7 +4,7 @@ import type { DesktopTheme } from "@allcode/ui/theme/types"
 import oc2ThemeJson from "../../../ui/src/theme/themes/oc-2.json"
 import { randomUUID } from "node:crypto"
 import { existsSync, rmSync } from "node:fs"
-import { app, BrowserWindow, dialog, net, nativeImage, nativeTheme, protocol, session, shell } from "electron"
+import { app, BrowserWindow, dialog, net, nativeImage, nativeTheme, protocol, screen, session, shell } from "electron"
 import { dirname, isAbsolute, join, relative, resolve } from "node:path"
 import { fileURLToPath, pathToFileURL } from "node:url"
 import type { TitlebarTheme } from "../preload/types"
@@ -652,3 +652,68 @@ function upsertKeyValue(obj: Record<string, any>, keyToChange: string, value: an
   // Insert at end instead
   obj[keyToChange] = value
 }
+
+interface SavedWindowState {
+  bounds: Electron.Rectangle
+  isMaximized: boolean
+}
+
+const savedWindowStates = new WeakMap<BrowserWindow, SavedWindowState>()
+
+/**
+ * Entra no modo PiP compacto no canto superior direito para o modo Computer Use,
+ * mantendo o chat visível enquanto o agente interage com o restante da tela.
+ */
+export function enterComputerUseCompactMode(win: BrowserWindow) {
+  if (win.isDestroyed()) return
+  if (savedWindowStates.has(win)) return // já está em modo compacto
+
+  const isMaximized = win.isMaximized()
+  const bounds = win.getBounds()
+  savedWindowStates.set(win, { bounds, isMaximized })
+
+  const display = screen.getDisplayNearestPoint({ x: bounds.x, y: bounds.y })
+  const workArea = display.workArea
+
+  const compactWidth = 420
+  const compactHeight = Math.min(680, Math.round(workArea.height * 0.75))
+  const margin = 16
+
+  const targetX = workArea.x + workArea.width - compactWidth - margin
+  const targetY = workArea.y + margin
+
+  if (isMaximized) {
+    win.unmaximize()
+  }
+
+  win.setBounds({
+    x: targetX,
+    y: targetY,
+    width: compactWidth,
+    height: compactHeight,
+  })
+
+  win.setAlwaysOnTop(true, "floating")
+  win.webContents.send("computer-use-compact-mode-changed", true)
+}
+
+/**
+ * Restaura a janela para o tamanho e estado original após o término da sessão do Computer Use.
+ */
+export function exitComputerUseCompactMode(win: BrowserWindow) {
+  if (win.isDestroyed()) return
+  const saved = savedWindowStates.get(win)
+  if (!saved) return
+
+  savedWindowStates.delete(win)
+  win.setAlwaysOnTop(false)
+
+  if (saved.isMaximized) {
+    win.maximize()
+  } else {
+    win.setBounds(saved.bounds)
+  }
+
+  win.webContents.send("computer-use-compact-mode-changed", false)
+}
+
