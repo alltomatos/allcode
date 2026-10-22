@@ -24,6 +24,16 @@ export default {
         );
       `)
       yield* tx.run(`
+        CREATE TABLE \`session_location\` (
+          \`session_id\` text PRIMARY KEY,
+          \`directory\` text NOT NULL,
+          \`workspace_id\` text,
+          \`workspace_hash\` text NOT NULL,
+          \`time_created\` integer NOT NULL,
+          \`time_updated\` integer NOT NULL
+        );
+      `)
+      yield* tx.run(`
         CREATE TABLE \`account_state\` (
           \`id\` integer PRIMARY KEY,
           \`active_account_id\` text,
@@ -123,6 +133,26 @@ export default {
           \`time_initialized\` integer,
           \`sandboxes\` text NOT NULL,
           \`commands\` text
+        );
+      `)
+      yield* tx.run(`
+        CREATE TABLE \`daemon_heartbeat\` (
+          \`instance_id\` text PRIMARY KEY,
+          \`pid\` integer NOT NULL,
+          \`process_title\` text NOT NULL,
+          \`last_seen\` integer NOT NULL
+        );
+      `)
+      yield* tx.run(`
+        CREATE TABLE \`schedule_run\` (
+          \`id\` text PRIMARY KEY,
+          \`schedule_id\` text NOT NULL,
+          \`started_at\` integer NOT NULL,
+          \`duration_ms\` integer NOT NULL,
+          \`status\` text NOT NULL,
+          \`error\` text,
+          \`session_id\` text,
+          CONSTRAINT \`fk_schedule_run_schedule_id_schedule_id_fk\` FOREIGN KEY (\`schedule_id\`) REFERENCES \`schedule\`(\`id\`) ON DELETE CASCADE
         );
       `)
       yield* tx.run(`
@@ -226,7 +256,8 @@ export default {
           \`time_created\` integer NOT NULL,
           \`time_updated\` integer NOT NULL,
           \`time_compacting\` integer,
-          \`time_archived\` integer
+          \`time_archived\` integer,
+          CONSTRAINT \`fk_session_project_id_project_id_fk\` FOREIGN KEY (\`project_id\`) REFERENCES \`project\`(\`id\`) ON DELETE CASCADE
         );
       `)
       yield* tx.run(`
@@ -253,10 +284,18 @@ export default {
           CONSTRAINT \`fk_session_share_session_id_session_id_fk\` FOREIGN KEY (\`session_id\`) REFERENCES \`session\`(\`id\`) ON DELETE CASCADE
         );
       `)
+      yield* tx.run(`CREATE INDEX \`session_location_directory_idx\` ON \`session_location\` (\`directory\`);`)
+      yield* tx.run(`CREATE INDEX \`session_location_workspace_id_idx\` ON \`session_location\` (\`workspace_id\`);`)
+      yield* tx.run(
+        `CREATE INDEX \`session_location_workspace_hash_idx\` ON \`session_location\` (\`workspace_hash\`);`,
+      )
       yield* tx.run(`CREATE UNIQUE INDEX \`event_aggregate_seq_idx\` ON \`event\` (\`aggregate_id\`,\`seq\`);`)
       yield* tx.run(`CREATE INDEX \`event_aggregate_type_seq_idx\` ON \`event\` (\`aggregate_id\`,\`type\`,\`seq\`);`)
       yield* tx.run(
         `CREATE UNIQUE INDEX \`permission_project_action_resource_idx\` ON \`permission\` (\`project_id\`,\`action\`,\`resource\`);`,
+      )
+      yield* tx.run(
+        `CREATE INDEX \`schedule_run_schedule_started_idx\` ON \`schedule_run\` (\`schedule_id\`,\`started_at\`);`,
       )
       yield* tx.run(
         `CREATE INDEX \`message_session_time_created_id_idx\` ON \`message\` (\`session_id\`,\`time_created\`,\`id\`);`,
@@ -289,42 +328,6 @@ export default {
         `CREATE INDEX \`session_directory_time_created_id_idx\` ON \`session\` (\`directory\`,\`time_created\`,\`id\`);`,
       )
       yield* tx.run(`CREATE INDEX \`todo_session_idx\` ON \`todo\` (\`session_id\`);`)
-      yield* tx.run(`
-        CREATE TABLE IF NOT EXISTS \`session_location\` (
-          \`session_id\` text PRIMARY KEY,
-          \`directory\` text NOT NULL,
-          \`workspace_id\` text,
-          \`workspace_hash\` text NOT NULL,
-          \`time_created\` integer NOT NULL,
-          \`time_updated\` integer NOT NULL
-        );
-      `)
-      yield* tx.run(`CREATE INDEX IF NOT EXISTS \`session_location_directory_idx\` ON \`session_location\` (\`directory\`);`)
-      yield* tx.run(`CREATE INDEX IF NOT EXISTS \`session_location_workspace_id_idx\` ON \`session_location\` (\`workspace_id\`);`)
-      yield* tx.run(`CREATE INDEX IF NOT EXISTS \`session_location_workspace_hash_idx\` ON \`session_location\` (\`workspace_hash\`);`)
-      yield* tx.run(`
-        CREATE TABLE IF NOT EXISTS \`daemon_heartbeat\` (
-          \`instance_id\` text PRIMARY KEY,
-          \`pid\` integer NOT NULL,
-          \`process_title\` text NOT NULL,
-          \`last_seen\` integer NOT NULL
-        );
-      `)
-      yield* tx.run(`
-        CREATE TABLE IF NOT EXISTS \`schedule_run\` (
-          \`id\` text PRIMARY KEY,
-          \`schedule_id\` text NOT NULL,
-          \`started_at\` integer NOT NULL,
-          \`duration_ms\` integer NOT NULL,
-          \`status\` text NOT NULL,
-          \`error\` text,
-          \`session_id\` text,
-          CONSTRAINT \`fk_schedule_run_schedule_id\` FOREIGN KEY (\`schedule_id\`) REFERENCES \`schedule\`(\`id\`) ON DELETE CASCADE
-        );
-      `)
-      yield* tx.run(`
-        CREATE INDEX IF NOT EXISTS \`schedule_run_schedule_started_idx\` ON \`schedule_run\` (\`schedule_id\`, \`started_at\`);
-      `)
     })
   },
 } satisfies Omit<DatabaseMigration.Migration, "id">
