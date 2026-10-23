@@ -2,6 +2,7 @@ import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
 import { DividerV2 } from "@allcode/ui/v2/divider-v2"
 import { Icon } from "@allcode/ui/icon"
+import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
 import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { useMutation } from "@tanstack/solid-query"
@@ -256,6 +257,23 @@ export const DialogMcpAddV2: Component<{
     setForm("err", key, undefined)
   }
 
+  // Atalho específico do MCP izapia: o servidor sobe em modo read por padrão
+  // e bloqueia POST/PUT/DELETE. Este toggle apenas mantém a env
+  // IZAPIA_MCP_MODE em sincronia com o formulário; o MCP.add já reconecta o
+  // servidor com o novo ambiente ao salvar.
+  const isIzapia = () =>
+    form.type === "local" &&
+    (form.name.trim().toLowerCase() === "izapia" || form.command.toLowerCase().includes("izapia-mcp"))
+  const izapiaWriteMode = () =>
+    form.environment.some(
+      (row) => row.key.trim() === "IZAPIA_MCP_MODE" && row.value.trim().toLowerCase() === "write",
+    )
+  const setIzapiaWriteMode = (enabled: boolean) => {
+    const rows = form.environment.filter((row) => row.key.trim() !== "IZAPIA_MCP_MODE")
+    if (enabled) rows.push({ key: "IZAPIA_MCP_MODE", value: "write" })
+    setForm("environment", rows.length ? rows : [{ key: "", value: "" }])
+  }
+
   const validate = () => {
     const name = form.name.trim()
     const command = form.command.trim()
@@ -471,6 +489,38 @@ export const DialogMcpAddV2: Component<{
               rows={form.environment}
               onChange={(rows) => setForm("environment", rows)}
             />
+            <Show when={isIzapia()}>
+              <div class="flex w-full min-w-0 flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-02 p-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex min-w-0 flex-col gap-0.5">
+                    <span class="text-12-medium text-v2-text-text-base">Ativar modo write</span>
+                    <span class="text-11-regular text-v2-text-text-muted leading-relaxed">
+                      Define{" "}
+                      <span class="font-mono text-v2-text-text-base">IZAPIA_MCP_MODE=write</span> para permitir
+                      envio de mensagens e demais operações de escrita. Sem isso o MCP izapia fica somente leitura.
+                    </span>
+                  </div>
+                  <SwitchV2
+                    checked={izapiaWriteMode()}
+                    onChange={(checked) => setIzapiaWriteMode(checked)}
+                    hideLabel
+                  >
+                    IZAPIA_MCP_MODE
+                  </SwitchV2>
+                </div>
+                <Show when={izapiaWriteMode()}>
+                  <span class="text-11-regular text-v2-text-text-muted leading-relaxed">
+                    Operações destrutivas (logout/delete) continuam bloqueadas. Para habilitá-las, adicione
+                    manualmente{" "}
+                    <span class="font-mono text-v2-text-text-base">IZAPIA_MCP_ALLOW_DESTRUCTIVE=true</span> nas
+                    variáveis de ambiente acima.
+                  </span>
+                </Show>
+                <span class="text-11-regular text-v2-text-text-muted">
+                  Salve para aplicar — o servidor MCP será reconectado automaticamente.
+                </span>
+              </div>
+            </Show>
           </Show>
 
           <Show when={form.type === "remote"}>
