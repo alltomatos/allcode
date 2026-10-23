@@ -2,6 +2,7 @@ import { afterEach, describe, expect, test } from "bun:test"
 import net from "node:net"
 import path from "node:path"
 import { pathToFileURL } from "node:url"
+import { Branding } from "@allcode/core/branding"
 import { Flag } from "@allcode/core/flag/flag"
 import { Server } from "../../src/server/server"
 import { PtyPaths } from "../../src/server/routes/instance/httpapi/groups/pty"
@@ -353,23 +354,23 @@ describe("HttpApi Server.listen", () => {
     }
   })
 
-  test("port 0 prefers 4096 when free", async () => {
-    if (!(await isPortFree(4096))) return
+  test("port 0 prefers the branding default port when free", async () => {
+    if (!(await isPortFree(Branding.defaultPort))) return
     const listener = await startListener()
     try {
-      expect(listener.port).toBe(4096)
+      expect(listener.port).toBe(Branding.defaultPort)
     } finally {
-      await stop(listener, "timed out cleaning up port-0 prefers-4096 listener")
+      await stop(listener, "timed out cleaning up port-0 prefers-default listener")
     }
   })
 
-  test("port 0 falls back when 4096 is taken", async () => {
-    const blocker = await occupyPort(4096)
+  test("port 0 falls back when the branding default port is taken", async () => {
+    const blocker = await occupyPort(Branding.defaultPort)
     if (!blocker) return
     try {
       const listener = await startListener()
       try {
-        expect(listener.port).not.toBe(4096)
+        expect(listener.port).not.toBe(Branding.defaultPort)
         expect(listener.port).toBeGreaterThan(0)
       } finally {
         await stop(listener, "timed out cleaning up port-0 fallback listener")

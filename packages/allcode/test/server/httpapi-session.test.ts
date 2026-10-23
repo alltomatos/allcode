@@ -26,8 +26,9 @@ import { SessionPaths } from "../../src/server/routes/instance/httpapi/groups/se
 import { Session } from "@/session/session"
 import { MessageID, PartID, SessionID, type SessionID as SessionIDType } from "../../src/session/schema"
 import { Database } from "@allcode/core/database/database"
-import { SessionInputTable, SessionMessageTable, SessionTable } from "@allcode/core/session/sql"
+import { SessionMessageTable, SessionTable } from "@allcode/core/session/sql"
 import { SessionMessage } from "@allcode/core/session/message"
+import { WorkspaceMigration } from "@allcode/core/database/workspace-migration"
 import { ModelV2 } from "@allcode/core/model"
 import { ProviderV2 } from "@allcode/core/provider"
 import * as DateTime from "effect/DateTime"
@@ -568,6 +569,9 @@ describe("session HttpApi", () => {
         const test = yield* TestInstance
         const headers = { "x-opencode-directory": test.directory }
         const session = yield* createSession({ title: "v2 prompt recording" })
+        const dbPath = yield* WorkspaceMigration.ensureWorkspaceDatabaseDir(
+          WorkspaceMigration.directoryToWorkspaceHash(session.directory),
+        )
 
         const recordPrompt = () =>
           request(`/api/session/${session.id}/prompt`, {
@@ -591,14 +595,19 @@ describe("session HttpApi", () => {
           headers,
         })
         expect(messages.data).toHaveLength(0)
-        const admitted = yield* Database.Service.use(({ db }) =>
-          db
-            .select()
-            .from(SessionInputTable)
-            .where(eq(SessionInputTable.id, SessionMessage.ID.make("msg_http_prompt")))
-            .get()
-            .pipe(Effect.orDie),
-        )
+        const admitted = yield* Effect.promise(async () => {
+          const sqlite = await import("bun:sqlite")
+          const file = new sqlite.Database(dbPath)
+          try {
+            return file
+              .query<{ id: string; session_id: string; delivery: string; promoted_seq: number | null }, [string]>(
+                "select * from session_input where id = ?",
+              )
+              .get("msg_http_prompt")
+          } finally {
+            file.close()
+          }
+        })
         expect(admitted).toMatchObject({
           id: "msg_http_prompt",
           session_id: session.id,

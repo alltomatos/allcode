@@ -33,6 +33,7 @@ import { LocationServiceMap } from "./location-service-map"
 import { MessageDecodeError } from "./session/error"
 import { SessionEvent } from "./session/event"
 import { SessionInput } from "./session/input"
+import { SessionHistory } from "./session/history"
 import { Snapshot } from "./snapshot"
 import { SessionRevert } from "./session/revert"
 import { Revert } from "@allcode/schema/revert"
@@ -164,7 +165,7 @@ export interface Interface {
     skill: string
     resume?: boolean
   }) => Effect.Effect<void, OperationUnavailableError>
-  readonly compact: (input: CompactInput) => Effect.Effect<void, NotFoundError | SessionRunner.RunError>
+  readonly compact: (input: CompactInput) => Effect.Effect<void, NotFoundError | OperationUnavailableError>
   readonly wait: (id: SessionSchema.ID) => Effect.Effect<void, NotFoundError | OperationUnavailableError>
   readonly active: Effect.Effect<ReadonlySet<SessionSchema.ID>>
   readonly resume: (sessionID: SessionSchema.ID) => Effect.Effect<void, NotFoundError | SessionRunner.RunError>
@@ -205,6 +206,30 @@ const layer = Layer.effect(
             }),
         ),
       )
+    const locate = (session: SessionSchema.Info) =>
+      Effect.gen(function* () {
+        const workspace = yield* Database.Service
+        const events = yield* EventV2.Service
+        const row = yield* database.db
+          .select()
+          .from(SessionTable)
+          .where(eq(SessionTable.id, session.id))
+          .get()
+          .pipe(Effect.orDie)
+        if (row) {
+          const project = yield* database.db
+            .select()
+            .from(ProjectTable)
+            .where(eq(ProjectTable.id, row.project_id))
+            .get()
+            .pipe(Effect.orDie)
+          if (project) {
+            yield* workspace.db.insert(ProjectTable).values(project).onConflictDoNothing().run().pipe(Effect.orDie)
+          }
+          yield* workspace.db.insert(SessionTable).values(row).onConflictDoNothing().run().pipe(Effect.orDie)
+        }
+        return { db: workspace.db, events }
+      }).pipe(Effect.provide(locations.get(session.location)))
 
     const result = Service.of({
       create: Effect.fn("V2Session.create")(function* (input) {
@@ -323,52 +348,75 @@ const layer = Layer.effect(
         return (direction === "previous" ? rows.toReversed() : rows).map((row) => fromRow(row))
       }),
       messages: Effect.fn("V2Session.messages")(function* (input) {
-        yield* result.get(input.sessionID)
+        const session = yield* result.get(input.sessionID)
+        const workspace = yield* locate(session)
         const direction = input.cursor?.direction ?? "next"
         const requestedOrder = input.order ?? "desc"
         const order = direction === "previous" ? (requestedOrder === "asc" ? "desc" : "asc") : requestedOrder
-        const anchor = input.cursor
-          ? yield* db
-              .select({ seq: SessionMessageTable.seq })
+        const read = (db: Database.Interface["db"]) =>
+          Effect.gen(function* () {
+            const anchor = input.cursor
+              ? yield* db
+                  .select({ seq: SessionMessageTable.seq })
+                  .from(SessionMessageTable)
+                  .where(
+                    and(
+                      eq(SessionMessageTable.session_id, input.sessionID),
+                      eq(SessionMessageTable.id, input.cursor.id),
+                    ),
+                  )
+                  .get()
+                  .pipe(Effect.orDie)
+              : undefined
+            if (input.cursor && !anchor) return []
+            const boundary = anchor
+              ? order === "asc"
+                ? gt(SessionMessageTable.seq, anchor.seq)
+                : lt(SessionMessageTable.seq, anchor.seq)
+              : undefined
+            const where = boundary
+              ? and(eq(SessionMessageTable.session_id, input.sessionID), boundary)
+              : eq(SessionMessageTable.session_id, input.sessionID)
+            const query = db
+              .select()
               .from(SessionMessageTable)
-              .where(
-                and(eq(SessionMessageTable.session_id, input.sessionID), eq(SessionMessageTable.id, input.cursor.id)),
-              )
-              .get()
-              .pipe(Effect.orDie)
-          : undefined
-        if (input.cursor && !anchor) return []
-        const boundary = anchor
-          ? order === "asc"
-            ? gt(SessionMessageTable.seq, anchor.seq)
-            : lt(SessionMessageTable.seq, anchor.seq)
-          : undefined
-        const where = boundary
-          ? and(eq(SessionMessageTable.session_id, input.sessionID), boundary)
-          : eq(SessionMessageTable.session_id, input.sessionID)
-        const query = db
-          .select()
-          .from(SessionMessageTable)
-          .where(where)
-          .orderBy(order === "asc" ? asc(SessionMessageTable.seq) : desc(SessionMessageTable.seq))
-        const rows = yield* (input.limit === undefined ? query.all() : query.limit(input.limit).all()).pipe(
-          Effect.orDie,
-        )
+              .where(where)
+              .orderBy(order === "asc" ? asc(SessionMessageTable.seq) : desc(SessionMessageTable.seq))
+            return yield* (input.limit === undefined ? query.all() : query.limit(input.limit).all()).pipe(Effect.orDie)
+          })
+        const located = yield* read(workspace.db)
+        const rows = located.length > 0 ? located : yield* read(database.db)
         return yield* Effect.forEach(direction === "previous" ? rows.toReversed() : rows, decode)
       }),
       message: Effect.fn("V2Session.message")(function* (input) {
-        const stored = yield* store.message(input.messageID)
-        return stored?.sessionID === input.sessionID ? stored.message : undefined
+        const session = yield* store.get(input.sessionID)
+        if (!session) return undefined
+        const workspace = yield* locate(session)
+        const find = (db: Database.Interface["db"]) =>
+          db
+            .select()
+            .from(SessionMessageTable)
+            .where(
+              and(eq(SessionMessageTable.session_id, input.sessionID), eq(SessionMessageTable.id, input.messageID)),
+            )
+            .get()
+            .pipe(Effect.orDie)
+        const row = (yield* find(workspace.db)) ?? (yield* find(database.db))
+        return row ? yield* decode(row).pipe(Effect.orDie) : undefined
       }),
       context: Effect.fn("V2Session.context")(function* (sessionID) {
-        yield* result.get(sessionID)
-        return yield* store.context(sessionID)
+        const session = yield* result.get(sessionID)
+        const workspace = yield* locate(session)
+        const located = yield* SessionHistory.load(workspace.db, sessionID)
+        return located.length > 0 ? located : yield* SessionHistory.load(database.db, sessionID)
       }),
       events: (input) =>
         Stream.unwrap(
-          result
-            .get(input.sessionID)
-            .pipe(Effect.as(events.durable({ aggregateID: input.sessionID, after: input.after }))),
+          Effect.gen(function* () {
+            const session = yield* result.get(input.sessionID)
+            const workspace = yield* locate(session)
+            return workspace.events.durable({ aggregateID: input.sessionID, after: input.after })
+          }),
         ).pipe(Stream.filter((event): event is SessionEvent.DurableEvent => isDurableSessionEvent(event))),
       history: Effect.fn("V2Session.history")(function* (input) {
         const session = yield* result.get(input.sessionID)
@@ -382,12 +430,13 @@ const layer = Layer.effect(
       prompt: Effect.fn("V2Session.prompt")((input) =>
         Effect.uninterruptible(
           Effect.gen(function* () {
-            yield* result.get(input.sessionID)
+            const session = yield* result.get(input.sessionID)
+            const workspace = yield* locate(session)
             const prompt = resolvePrompt(input.prompt)
             const messageID = input.id ?? SessionMessage.ID.create()
             const delivery = input.delivery ?? "steer"
             const expected = { sessionID: input.sessionID, messageID, prompt, delivery }
-            const admitted = yield* SessionInput.admit(db, events, {
+            const admitted = yield* SessionInput.admit(workspace.db, workspace.events, {
               id: messageID,
               sessionID: input.sessionID,
               prompt,
@@ -413,8 +462,9 @@ const layer = Layer.effect(
         return yield* new OperationUnavailableError({ operation: "skill" })
       }),
       switchAgent: Effect.fn("V2Session.switchAgent")(function* (input) {
-        yield* result.get(input.sessionID)
-        yield* events.publish(SessionEvent.AgentSwitched, {
+        const session = yield* result.get(input.sessionID)
+        const workspace = yield* locate(session)
+        yield* workspace.events.publish(SessionEvent.AgentSwitched, {
           sessionID: input.sessionID,
           messageID: SessionMessage.ID.create(),
           timestamp: yield* DateTime.now,
@@ -429,7 +479,8 @@ const layer = Layer.effect(
           (session.model.variant ?? "default") === (input.model.variant ?? "default")
         )
           return
-        yield* events.publish(SessionEvent.ModelSwitched, {
+        const workspace = yield* locate(session)
+        yield* workspace.events.publish(SessionEvent.ModelSwitched, {
           sessionID: input.sessionID,
           messageID: SessionMessage.ID.create(),
           timestamp: yield* DateTime.now,
@@ -438,7 +489,7 @@ const layer = Layer.effect(
       }),
       compact: Effect.fn("V2Session.compact")(function* (input) {
         yield* result.get(input.sessionID)
-        yield* execution.compact(input.sessionID)
+        return yield* new OperationUnavailableError({ operation: "compact" })
       }),
       wait: Effect.fn("V2Session.wait")(function* (sessionID) {
         yield* result.get(sessionID)

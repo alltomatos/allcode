@@ -6,7 +6,7 @@ import { Database } from "../database/database"
 import { makeGlobalNode } from "../effect/app-node"
 import { AbsolutePath, optional } from "../schema"
 import { ProjectSchema } from "./schema"
-import { ProjectDirectoryTable } from "./sql"
+import { ProjectDirectoryTable, ProjectTable } from "./sql"
 import type { EffectDrizzleSqlite } from "@allcode/effect-drizzle-sqlite"
 
 export interface Directory {
@@ -61,29 +61,57 @@ const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
     const db = (yield* Database.Service).db
+    const globalDbOption = yield* Effect.serviceOption(Database.GlobalService)
+
+    type TargetDatabase = DatabaseClient | Transaction
+
+    const ensureProjectInTarget = (targetDb: TargetDatabase, projectID: ProjectSchema.ID) =>
+      Effect.gen(function* () {
+        if (globalDbOption._tag === "None") return
+        const globalDb = globalDbOption.value.db
+        if (targetDb === globalDb) return
+        const project = yield* globalDb
+          .select()
+          .from(ProjectTable)
+          .where(eq(ProjectTable.id, projectID))
+          .get()
+          .pipe(Effect.orDie)
+        if (project) {
+          yield* targetDb.insert(ProjectTable).values(project).onConflictDoNothing().run().pipe(Effect.orDie)
+        }
+      })
 
     const create = Effect.fn("ProjectDirectories.create")(function* (input: CreateInput, tx?: Transaction) {
-      const insert = (tx ?? db)
-        .insert(ProjectDirectoryTable)
-        .values({ project_id: input.projectID, directory: input.directory, strategy: input.strategy })
-      const query =
-        input.behavior === "replace"
-          ? insert.onConflictDoUpdate({
+      const targetDb: TargetDatabase = tx ?? db
+      yield* ensureProjectInTarget(targetDb, input.projectID)
+      const insert = (target: TargetDatabase) => {
+        const ins = target
+          .insert(ProjectDirectoryTable)
+          .values({ project_id: input.projectID, directory: input.directory, strategy: input.strategy })
+        return input.behavior === "replace"
+          ? ins.onConflictDoUpdate({
               target: [ProjectDirectoryTable.project_id, ProjectDirectoryTable.directory],
               set: { strategy: input.strategy ?? null },
               setWhere: input.strategy
                 ? or(isNull(ProjectDirectoryTable.strategy), ne(ProjectDirectoryTable.strategy, input.strategy))
                 : isNotNull(ProjectDirectoryTable.strategy),
             })
-          : insert.onConflictDoNothing()
+          : ins.onConflictDoNothing()
+      }
+
+      if (globalDbOption._tag === "Some" && targetDb !== globalDbOption.value.db) {
+        yield* insert(globalDbOption.value.db).run().pipe(Effect.orDie)
+      }
+
       return (
-        (yield* query.returning({ directory: ProjectDirectoryTable.directory }).get().pipe(Effect.orDie)) !== undefined
+        (yield* insert(targetDb).returning({ directory: ProjectDirectoryTable.directory }).get().pipe(Effect.orDie)) !== undefined
       )
     })
 
     const remove = Effect.fn("ProjectDirectories.remove")(function* (input: RemoveInput, tx?: Transaction) {
-      return (
-        (yield* (tx ?? db)
+      const targetDb: TargetDatabase = tx ?? db
+      const del = (target: TargetDatabase) =>
+        target
           .delete(ProjectDirectoryTable)
           .where(
             and(
@@ -91,21 +119,35 @@ const layer = Layer.effect(
               eq(ProjectDirectoryTable.directory, input.directory),
             ),
           )
+
+      if (globalDbOption._tag === "Some" && targetDb !== globalDbOption.value.db) {
+        yield* del(globalDbOption.value.db).run().pipe(Effect.orDie)
+      }
+
+      return (
+        (yield* del(targetDb)
           .returning({ directory: ProjectDirectoryTable.directory })
           .get()
           .pipe(Effect.orDie)) !== undefined
       )
     })
 
-    const list = Effect.fn("ProjectDirectories.list")(function* (projectID: ProjectSchema.ID) {
-      const rows = yield* db
+    const queryTarget = (targetDb: TargetDatabase, projectID: ProjectSchema.ID) =>
+      targetDb
         .select({ directory: ProjectDirectoryTable.directory, strategy: ProjectDirectoryTable.strategy })
         .from(ProjectDirectoryTable)
         .where(eq(ProjectDirectoryTable.project_id, projectID))
         .orderBy(desc(ProjectDirectoryTable.time_created), asc(ProjectDirectoryTable.directory))
         .all()
         .pipe(Effect.orDie)
-      return rows.map((row) => ({ directory: row.directory, strategy: row.strategy ?? undefined }))
+
+    const list = Effect.fn("ProjectDirectories.list")(function* (projectID: ProjectSchema.ID) {
+      const rows = yield* queryTarget(db, projectID)
+      if (rows.length > 0 || globalDbOption._tag === "None" || db === globalDbOption.value.db) {
+        return rows.map((row) => ({ directory: row.directory, strategy: row.strategy ?? undefined }))
+      }
+      const globalRows = yield* queryTarget(globalDbOption.value.db, projectID)
+      return globalRows.map((row) => ({ directory: row.directory, strategy: row.strategy ?? undefined }))
     })
 
     const contains = Effect.fn("ProjectDirectories.contains")(function* (input: {
@@ -155,4 +197,4 @@ const layer = Layer.effect(
   }),
 )
 
-export const node = makeGlobalNode({ service: Service, layer: layer, deps: [Database.node] })
+export const node = makeGlobalNode({ service: Service, layer: layer, deps: [Database.node, Database.globalNode] })
