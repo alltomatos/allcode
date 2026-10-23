@@ -2,11 +2,20 @@ export * as ScheduleRunner from "./runner"
 
 import { spawn } from "node:child_process"
 import { randomUUID } from "node:crypto"
-import { Context, Duration, Effect, Layer, Schema, Schedule as EffectSchedule, Semaphore } from "effect"
-import { desc, eq, lt } from "drizzle-orm"
-import { Schedule } from "../schedule"
+import {
+  Cause,
+  Context,
+  Duration,
+  Effect,
+  Exit,
+  Layer,
+  Schedule as EffectSchedule,
+  Schema,
+  Scope,
+  Semaphore,
+} from "effect"
 import { Database } from "../database/database"
-import { DaemonHeartbeatTable, ScheduleRunTable } from "./sql"
+import { Schedule } from "../schedule"
 import { makeGlobalNode } from "../effect/app-node"
 
 export class NotFoundError extends Schema.TaggedErrorClass<NotFoundError>()("Schedule.NotFoundError", {
@@ -18,6 +27,10 @@ export { eq, lt } from "drizzle-orm"
 
 export const PROCESS_INSTANCE_ID = randomUUID()
 export const LEADER_TIMEOUT_MS = 45_000
+export const HEARTBEAT_INTERVAL_MS = 15_000
+export const TICK_INTERVAL_MS = 30_000
+export const STARTUP_DELAY_SECONDS = 60
+export const RUN_LEASE_GRACE_MS = 300_000
 export const MAX_PAYLOAD_CHARS = 8_192 // Teto de 8 KB para campos textuais
 export const RETENTION_DAYS_MS = 7 * 24 * 60 * 60 * 1000 // 7 dias
 
@@ -28,13 +41,8 @@ export function truncatePayload(value: string | undefined): string | undefined {
 }
 
 export const purgeOldRuns = Effect.fn("v2.Schedule.purgeOldRuns")(function* () {
-  const { db } = yield* Database.Service
-  const threshold = Date.now() - RETENTION_DAYS_MS
-  yield* db
-    .delete(ScheduleRunTable)
-    .where(lt(ScheduleRunTable.started_at, threshold))
-    .run()
-    .pipe(Effect.orDie)
+  const schedules = yield* Schedule.Service
+  yield* schedules.purgeRuns(Date.now() - RETENTION_DAYS_MS)
 })
 
 // Semáforos para segregação de concorrência por tipo de ação
@@ -52,71 +60,24 @@ function withActionPermit<A, E, R>(action: Schedule.Action, effect: Effect.Effec
   return effect
 }
 
+function leaseInput(ttlMs: number): Schedule.LeaseInput {
+  return {
+    ownerId: PROCESS_INSTANCE_ID,
+    pid: process.pid,
+    processTitle: process.title || "allcode",
+    ttlMs,
+  }
+}
+
 export const isLeader = Effect.fn("v2.Schedule.isLeader")(function* () {
-  const { db } = yield* Database.Service
-  const now = Date.now()
-
-  const existing = yield* db
-    .select()
-    .from(DaemonHeartbeatTable)
-    .where(eq(DaemonHeartbeatTable.instance_id, PROCESS_INSTANCE_ID))
-    .get()
-    .pipe(Effect.orDie)
-
-  if (existing) {
-    yield* db
-      .update(DaemonHeartbeatTable)
-      .set({ last_seen: now })
-      .where(eq(DaemonHeartbeatTable.instance_id, PROCESS_INSTANCE_ID))
-      .run()
-      .pipe(Effect.orDie)
-    return true
-  }
-
-  // Verificar se há outro líder ativo
-  const threshold = now - LEADER_TIMEOUT_MS
-  const staleLeaders = yield* db
-    .select()
-    .from(DaemonHeartbeatTable)
-    .where(lt(DaemonHeartbeatTable.last_seen, threshold))
-    .all()
-    .pipe(Effect.orDie)
-
-  // Limpar líderes antigos e inativos
-  if (staleLeaders.length > 0) {
-    yield* db
-      .delete(DaemonHeartbeatTable)
-      .where(lt(DaemonHeartbeatTable.last_seen, threshold))
-      .run()
-      .pipe(Effect.orDie)
-  }
-
-  const currentLeaders = yield* db.select().from(DaemonHeartbeatTable).all().pipe(Effect.orDie)
-  if (currentLeaders.length === 0) {
-    // Reivindicar liderança atomicamente
-    yield* db
-      .insert(DaemonHeartbeatTable)
-      .values({
-        instance_id: PROCESS_INSTANCE_ID,
-        pid: process.pid,
-        process_title: process.title || "allcode",
-        last_seen: now,
-      })
-      .run()
-      .pipe(Effect.orDie)
-    return true
-  }
-
-  return false
+  const schedules = yield* Schedule.Service
+  if (yield* schedules.renewLease(leaseInput(LEADER_TIMEOUT_MS))) return true
+  return yield* schedules.claimLease(leaseInput(LEADER_TIMEOUT_MS))
 })
 
 export const releaseLeader = Effect.fn("v2.Schedule.releaseLeader")(function* () {
-  const { db } = yield* Database.Service
-  yield* db
-    .delete(DaemonHeartbeatTable)
-    .where(eq(DaemonHeartbeatTable.instance_id, PROCESS_INSTANCE_ID))
-    .run()
-    .pipe(Effect.orDie)
+  const schedules = yield* Schedule.Service
+  yield* schedules.releaseLease(PROCESS_INSTANCE_ID)
 })
 
 export interface SkillCallResult {
@@ -246,11 +207,24 @@ export const mcpCallerNode = makeGlobalNode({ service: McpCaller, layer: mcpCall
 
 const DEFAULT_TIMEOUT_MS = 1_800_000 // 30 minutos
 
+interface ActionResult {
+  readonly exitCode: number
+  readonly error?: string
+  readonly sessionId?: string
+  readonly timedOut?: boolean
+}
+
+function resolveTimeoutMs(action: Schedule.Action): number {
+  return "timeoutMs" in action && typeof action.timeoutMs === "number" && action.timeoutMs > 0
+    ? action.timeoutMs
+    : DEFAULT_TIMEOUT_MS
+}
+
 function executeCommand(
   command: string,
   cwd?: string,
   timeoutMs: number = DEFAULT_TIMEOUT_MS,
-): Promise<{ exitCode: number; error?: string }> {
+): Promise<{ exitCode: number; error?: string; timedOut?: boolean }> {
   return new Promise((resolve) => {
     try {
       const proc = spawn(command, {
@@ -276,7 +250,7 @@ function executeCommand(
           } catch {
             // ignore kill errors
           }
-          resolve({ exitCode: 1, error: `timeout after ${timeoutMs}ms` })
+          resolve({ exitCode: 1, error: `timeout after ${timeoutMs}ms`, timedOut: true })
         }, timeoutMs)
         timer.unref?.()
       }
@@ -315,76 +289,84 @@ function executeCommand(
  * the swappable McpCaller dependency above.
  */
 function runAction(action: Schedule.Action, workspace: string | undefined, sessionId?: string) {
-  const timeoutMs =
-    "timeoutMs" in action && typeof action.timeoutMs === "number" && action.timeoutMs > 0
-      ? action.timeoutMs
-      : DEFAULT_TIMEOUT_MS
+  const timeoutMs = resolveTimeoutMs(action)
 
   if (action.kind === "shell") {
     return Effect.promise(() => executeCommand(action.command, workspace, timeoutMs)).pipe(
-      Effect.map((res) => ({ exitCode: res.exitCode, error: res.error, sessionId: undefined })),
+      Effect.map((res) => ({
+        exitCode: res.exitCode,
+        error: res.error,
+        sessionId: undefined,
+        timedOut: res.timedOut,
+      })),
     )
   }
   if (action.kind === "mcp_tool") {
     return Effect.gen(function* () {
       const caller = yield* McpCaller
-      const result: McpCallResult = yield* caller.callTool(action.server, action.tool, action.args).pipe(
+      const result: McpCallResult & { timedOut?: boolean } = yield* caller.callTool(action.server, action.tool, action.args).pipe(
         Effect.timeoutOrElse({
           duration: Duration.millis(timeoutMs),
-          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms` }),
+          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms`, timedOut: true }),
         }),
       )
-      return { exitCode: result.success ? 0 : 1, error: result.error, sessionId: undefined }
+      return { exitCode: result.success ? 0 : 1, error: result.error, sessionId: undefined, timedOut: result.timedOut }
     })
   }
   if (action.kind === "skill") {
     return Effect.gen(function* () {
       const caller = yield* SkillCaller
-      const result: SkillCallResult = yield* caller.runSkill(action, workspace, sessionId).pipe(
+      const result: SkillCallResult & { timedOut?: boolean } = yield* caller.runSkill(action, workspace, sessionId).pipe(
         Effect.timeoutOrElse({
           duration: Duration.millis(timeoutMs),
-          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms`, sessionId }),
+          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms`, sessionId, timedOut: true }),
         }),
       )
-      return { exitCode: result.success ? 0 : 1, error: result.error, sessionId: result.sessionId ?? sessionId }
+      return {
+        exitCode: result.success ? 0 : 1,
+        error: result.error,
+        sessionId: result.sessionId ?? sessionId,
+        timedOut: result.timedOut,
+      }
     })
   }
   if (action.kind === "agentui") {
     return Effect.gen(function* () {
       const caller = yield* AgentUICaller
-      const result: AgentUICallResult = yield* caller.runAgent(action, workspace).pipe(
+      const result: AgentUICallResult & { timedOut?: boolean } = yield* caller.runAgent(action, workspace).pipe(
         Effect.timeoutOrElse({
           duration: Duration.millis(timeoutMs),
-          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms` }),
+          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms`, timedOut: true }),
         }),
       )
-      return { exitCode: result.success ? 0 : 1, error: result.error, sessionId: undefined }
+      return { exitCode: result.success ? 0 : 1, error: result.error, sessionId: undefined, timedOut: result.timedOut }
     })
   }
   if (action.kind === "reminder") {
     return Effect.gen(function* () {
       const caller = yield* ReminderCaller
-      const result: ReminderCallResult = yield* caller.notifyReminder(action, workspace).pipe(
+      const result: ReminderCallResult & { timedOut?: boolean } = yield* caller.notifyReminder(action, workspace).pipe(
         Effect.timeoutOrElse({
           duration: Duration.millis(timeoutMs),
-          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms` }),
+          orElse: () => Effect.succeed({ success: false, error: `timeout after ${timeoutMs}ms`, timedOut: true }),
         }),
       )
-      return { exitCode: result.success ? 0 : 1, error: result.error, sessionId: undefined }
+      return { exitCode: result.success ? 0 : 1, error: result.error, sessionId: undefined, timedOut: result.timedOut }
     })
   }
   return Effect.succeed({
     exitCode: 1,
-    error: `Action kind "${(action as any).kind}" is not yet supported by the schedule runner.`,
+    error: `Action kind "${(action as { readonly kind: string }).kind}" is not yet supported by the schedule runner.`,
     sessionId: undefined,
+    timedOut: false,
   })
 }
 
-/** Runs an action with 1 immediate courtesy retry on failure. */
+/** Runs an action with 1 immediate courtesy retry on failure. Timeouts are not retried. */
 function runActionWithRetry(action: Schedule.Action, workspace: string | undefined, sessionId?: string) {
   return Effect.gen(function* () {
     const firstAttempt = yield* runAction(action, workspace, sessionId)
-    if (firstAttempt.exitCode === 0) {
+    if (firstAttempt.exitCode === 0 || firstAttempt.timedOut) {
       return firstAttempt
     }
 
@@ -408,54 +390,108 @@ export const testAction = Effect.fn("v2.Schedule.testAction")(function* (
   }
 })
 
+interface RunOutcome {
+  readonly status: Schedule.RunStatus
+  readonly error?: string
+  readonly sessionId?: string
+}
+
+function classify(exit: Exit.Exit<ActionResult>, fallbackSessionId?: string): RunOutcome {
+  if (Exit.isSuccess(exit)) {
+    const result = exit.value
+    const status: Schedule.RunStatus = result.timedOut ? "timeout" : result.exitCode === 0 ? "success" : "error"
+    return { status, error: result.error, sessionId: result.sessionId ?? fallbackSessionId }
+  }
+  if (Cause.hasInterruptsOnly(exit.cause)) {
+    return {
+      status: "cancelled",
+      error: "Execução cancelada (interrupção do scheduler)",
+      sessionId: fallbackSessionId,
+    }
+  }
+  return { status: "error", error: Cause.pretty(exit.cause), sessionId: fallbackSessionId }
+}
+
+const executeAndFinalize = Effect.fnUntraced(function* (
+  schedule: Schedule.Info,
+  run: Schedule.StartRunResult,
+  trigger: Schedule.RunTrigger,
+) {
+  const schedules = yield* Schedule.Service
+  const exit = yield* Effect.exit(runActionWithRetry(schedule.action, schedule.workspace, schedule.lastSessionId))
+  const outcome = classify(exit, schedule.lastSessionId)
+  const durationMs = Date.now() - run.startedAt
+
+  yield* schedules.finishRun({
+    runId: run.id,
+    scheduleId: schedule.id,
+    startedAt: run.startedAt,
+    status: outcome.status,
+    error: truncatePayload(outcome.error),
+    sessionId: outcome.sessionId,
+    durationMs,
+  })
+
+  if (outcome.status === "success") {
+    yield* Effect.logInfo(`[Schedule] Task ${schedule.id} completed successfully`, {
+      runId: run.id,
+      trigger,
+      durationMs,
+    })
+  } else {
+    yield* Effect.logWarning(`[Schedule] Task ${schedule.id} finished with ${outcome.status}`, {
+      runId: run.id,
+      trigger,
+      error: outcome.error,
+      durationMs,
+    })
+  }
+
+  return outcome
+})
+
 /** Runs one schedule's action immediately, regardless of trigger/enabled state, and records the result. */
 export const runOne = Effect.fn("v2.Schedule.runOne")(function* (id: Schedule.ID) {
   const schedules = yield* Schedule.Service
-  const { db } = yield* Database.Service
   const schedule = yield* schedules.get(id)
   if (!schedule) return yield* Effect.fail(new NotFoundError({ id }))
 
-  const startTime = Date.now()
-  const result = yield* runActionWithRetry(schedule.action, schedule.workspace, schedule.lastSessionId)
-  const durationMs = Date.now() - startTime
-  const isSuccess = result.exitCode === 0
-  const truncatedError = truncatePayload(result.error)
-
-  // Gravar histórico de execução na tabela schedule_run
-  yield* db
-    .insert(ScheduleRunTable)
-    .values({
-      id: "run_" + randomUUID(),
-      schedule_id: schedule.id,
-      started_at: startTime,
-      duration_ms: durationMs,
-      status: isSuccess ? "success" : "error",
-      error: truncatedError,
-      session_id: result.sessionId ?? schedule.lastSessionId,
-    })
-    .run()
-    .pipe(Effect.orDie)
-
-  const updated = yield* schedules.update(schedule.id, {
-    lastRunAt: startTime,
-    lastStatus: isSuccess ? "success" : "error",
-    lastError: isSuccess ? null : (truncatedError ?? null),
-    lastSessionId: result.sessionId ?? schedule.lastSessionId,
+  const startedAt = Date.now()
+  const timeoutMs = resolveTimeoutMs(schedule.action)
+  const run = yield* schedules.startRun({
+    scheduleId: id,
+    trigger: "manual",
+    scheduledFor: startedAt,
+    claimedBy: PROCESS_INSTANCE_ID,
+    leaseUntil: startedAt + timeoutMs * 2 + RUN_LEASE_GRACE_MS,
+    disableSchedule: schedule.trigger.kind === "once",
   })
-  return updated!
-})
-
-const tick = Effect.fn("v2.Schedule.tick")(function* () {
-  const leader = yield* isLeader()
-  if (!leader) {
-    return
+  if (!run) {
+    yield* Effect.logWarning(`[Schedule] Task ${id} already running, skipping manual trigger`)
+    return (yield* schedules.get(id))!
   }
 
+  yield* executeAndFinalize(schedule, run, "manual")
+  return (yield* schedules.get(id))!
+})
+
+export const tick = Effect.fn("v2.Schedule.tick")(function* (scope: Scope.Scope) {
   const schedules = yield* Schedule.Service
+  if (!(yield* isLeader())) return
+
   const now = new Date()
   const nowMs = now.getTime()
 
-  const eligibleSchedules: Schedule.Info[] = []
+  yield* schedules.failStaleRuns(nowMs, "Execução interrompida (lease expirado ou scheduler reiniciado)").pipe(
+    Effect.tap((count) =>
+      count > 0
+        ? Effect.logWarning(`[Schedule] ${count} execução(ões) órfã(s) marcada(s) como erro`)
+        : Effect.void,
+    ),
+    Effect.ignore,
+  )
+
+  const due: Array<{ schedule: Schedule.Info; trigger: Schedule.RunTrigger }> = []
 
   for (const schedule of yield* schedules.list()) {
     if (!schedule.enabled) continue
@@ -463,95 +499,99 @@ const tick = Effect.fn("v2.Schedule.tick")(function* () {
 
     if (schedule.trigger.kind === "once") {
       if (schedule.lastRunAt || nowMs < schedule.trigger.timestamp) continue
-    } else if (schedule.trigger.kind === "interval") {
-      if (schedule.lastRunAt && nowMs - schedule.lastRunAt < schedule.trigger.ms) continue
-    } else {
-      if (schedule.lastRunAt && nowMs - schedule.lastRunAt < 59_000) continue
-
-      const matchesNow = Schedule.matchesCron(schedule.trigger.expr, now)
-      const missedWhileOffline =
-        schedule.lastRunAt != null && Schedule.hasCronRunBetween(schedule.trigger.expr, schedule.lastRunAt, nowMs)
-
-      if (!matchesNow && !missedWhileOffline) continue
-      if (missedWhileOffline && !matchesNow) {
-        yield* Effect.logInfo(
-          `[Schedule] Task ${schedule.id} catching up missed execution (scheduled between last run and now)`,
-        )
-      }
+      due.push({ schedule, trigger: "once" })
+      continue
     }
 
-    eligibleSchedules.push(schedule)
+    if (schedule.trigger.kind === "interval") {
+      if (schedule.lastRunAt && nowMs - schedule.lastRunAt < schedule.trigger.ms) continue
+      due.push({ schedule, trigger: "interval" })
+      continue
+    }
+
+    if (schedule.lastRunAt && nowMs - schedule.lastRunAt < 59_000) continue
+
+    const matchesNow = Schedule.matchesCron(schedule.trigger.expr, now)
+    const missedWhileOffline =
+      schedule.lastRunAt != null && Schedule.hasCronRunBetween(schedule.trigger.expr, schedule.lastRunAt, nowMs)
+
+    if (!matchesNow && !missedWhileOffline) continue
+    if (missedWhileOffline && !matchesNow) {
+      yield* Effect.logInfo(
+        `[Schedule] Task ${schedule.id} catching up missed execution (scheduled between last run and now)`,
+      )
+    }
+    due.push({ schedule, trigger: missedWhileOffline && !matchesNow ? "catchup" : "cron" })
   }
 
-  // Disparo concorrente controlado por semáforos por tipo de ação
+  // Claim rápido (sequencial) e disparo da ação em fiber própria. O tick nunca
+  // espera a ação terminar, então heartbeat e outras rotinas continuam vivos.
   yield* Effect.forEach(
-    eligibleSchedules,
-    (schedule) =>
-      withActionPermit(
-        schedule.action,
-        Effect.gen(function* () {
-          const { db } = yield* Database.Service
-          const startTime = Date.now()
-          const result = yield* runActionWithRetry(schedule.action, schedule.workspace, schedule.lastSessionId)
-          const durationMs = Date.now() - startTime
-          const isSuccess = result.exitCode === 0
-          const truncatedError = truncatePayload(result.error)
+    due,
+    ({ schedule, trigger }) =>
+      Effect.gen(function* () {
+        const startedAt = Date.now()
+        const timeoutMs = resolveTimeoutMs(schedule.action)
+        const run = yield* schedules.startRun({
+          scheduleId: schedule.id,
+          trigger,
+          scheduledFor: startedAt,
+          claimedBy: PROCESS_INSTANCE_ID,
+          leaseUntil: startedAt + timeoutMs * 2 + RUN_LEASE_GRACE_MS,
+          disableSchedule: schedule.trigger.kind === "once",
+        })
+        if (!run) {
+          yield* Effect.logInfo(`[Schedule] Task ${schedule.id} already running, skipping`, { trigger })
+          return
+        }
 
-          // Gravar histórico de execução na tabela schedule_run
-          yield* db
-            .insert(ScheduleRunTable)
-            .values({
-              id: "run_" + randomUUID(),
-              schedule_id: schedule.id,
-              started_at: startTime,
-              duration_ms: durationMs,
-              status: isSuccess ? "success" : "error",
-              error: truncatedError,
-              session_id: result.sessionId ?? schedule.lastSessionId,
-            })
-            .run()
-            .pipe(Effect.orDie)
-
-          yield* schedules.update(schedule.id, {
-            lastRunAt: startTime,
-            enabled: schedule.trigger.kind === "once" ? false : schedule.enabled,
-            lastStatus: isSuccess ? "success" : "error",
-            lastError: isSuccess ? null : (truncatedError ?? null),
-            lastSessionId: result.sessionId ?? schedule.lastSessionId,
-          })
-
-          if (result.exitCode === 0) yield* Effect.logInfo(`[Schedule] Task ${schedule.id} completed successfully`)
-          else yield* Effect.logWarning(`[Schedule] Task ${schedule.id} failed: ${result.error}`)
-        }),
-      ),
-    { concurrency: "unbounded" },
+        yield* withActionPermit(schedule.action, executeAndFinalize(schedule, run, trigger)).pipe(
+          Effect.catchCause((cause) =>
+            Effect.logError(`[Schedule] Unhandled execution failure for ${schedule.id}`, {
+              runId: run.id,
+              cause,
+            }),
+          ),
+          Effect.forkIn(scope),
+        )
+      }),
+    { concurrency: 1 },
   )
 
   // Auto-purge de histórico com mais de 7 dias
   yield* purgeOldRuns().pipe(Effect.ignore)
 })
 
-const STARTUP_DELAY_SECONDS = 60
+const heartbeatLoop = isLeader().pipe(
+  Effect.catchCause((cause) => Effect.logWarning(`[Schedule] Heartbeat failed, retrying...`, { cause })),
+  Effect.repeat(EffectSchedule.spaced(Duration.millis(HEARTBEAT_INTERVAL_MS))),
+)
+
+const tickLoop = (scope: Scope.Scope) =>
+  tick(scope).pipe(
+    Effect.catchCause((cause) =>
+      Effect.gen(function* () {
+        yield* Effect.logWarning(`[Schedule] Tick loop encountered unexpected error, recovering...`, { cause })
+        yield* Effect.sleep(Duration.seconds(5))
+      }),
+    ),
+    Effect.repeat(EffectSchedule.spaced(Duration.millis(TICK_INTERVAL_MS))),
+  )
 
 const tickLayer = Layer.effectDiscard(
-  Effect.sleep(Duration.seconds(STARTUP_DELAY_SECONDS)).pipe(
-    Effect.flatMap(() =>
-      tick().pipe(
-        Effect.catch(() =>
-          Effect.gen(function* () {
-            yield* Effect.logWarning(`[Schedule] Tick loop encountered unexpected error, recovering...`)
-            yield* Effect.sleep(Duration.seconds(5))
-          }),
-        ),
-        Effect.repeat(EffectSchedule.spaced(Duration.seconds(30))),
-      ),
-    ),
-    Effect.forkScoped,
-  ),
+  Effect.gen(function* () {
+    const scope = yield* Effect.scope
+
+    // Heartbeat independente do tick: mantém a liderança mesmo com ações longas.
+    yield* heartbeatLoop.pipe(Effect.forkIn(scope))
+
+    yield* Effect.sleep(Duration.seconds(STARTUP_DELAY_SECONDS))
+    yield* tickLoop(scope).pipe(Effect.forkIn(scope))
+  }),
 )
 
 export const tickNode = makeGlobalNode({
   name: "schedule-tick",
   layer: Layer.merge(Schedule.layer, tickLayer.pipe(Layer.provide(Schedule.layer))),
-  deps: [Database.node, Database.globalNode, mcpCallerNode, skillCallerNode, agentUICallerNode, reminderCallerNode],
+  deps: [Database.node, Schedule.node, mcpCallerNode, skillCallerNode, agentUICallerNode, reminderCallerNode],
 })

@@ -1,9 +1,9 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "a84dd586-8132-4e44-be0e-c866a77f09e3",
+  "id": "367dc0f9-34d9-458a-9a02-257295a09e0f",
   "prevIds": [
-    "3c0c7032-350f-46e8-8bd7-280916ba7b54"
+    "a84dd586-8132-4e44-be0e-c866a77f09e3"
   ],
   "ddl": [
     {
@@ -904,6 +904,26 @@
       "autoincrement": false,
       "default": null,
       "generated": null,
+      "name": "owner_id",
+      "entityType": "columns",
+      "table": "daemon_heartbeat"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lease_until",
+      "entityType": "columns",
+      "table": "daemon_heartbeat"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
       "name": "id",
       "entityType": "columns",
       "table": "schedule_run"
@@ -965,6 +985,66 @@
       "default": null,
       "generated": null,
       "name": "session_id",
+      "entityType": "columns",
+      "table": "schedule_run"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "finished_at",
+      "entityType": "columns",
+      "table": "schedule_run"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "trigger_source",
+      "entityType": "columns",
+      "table": "schedule_run"
+    },
+    {
+      "type": "integer",
+      "notNull": true,
+      "autoincrement": false,
+      "default": "1",
+      "generated": null,
+      "name": "attempt",
+      "entityType": "columns",
+      "table": "schedule_run"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "scheduled_for",
+      "entityType": "columns",
+      "table": "schedule_run"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "claimed_by",
+      "entityType": "columns",
+      "table": "schedule_run"
+    },
+    {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "lease_until",
       "entityType": "columns",
       "table": "schedule_run"
     },
@@ -2347,6 +2427,24 @@
       "where": null,
       "origin": "manual",
       "name": "schedule_run_schedule_started_idx",
+      "entityType": "indexes",
+      "table": "schedule_run"
+    },
+    {
+      "columns": [
+        {
+          "value": "status",
+          "isExpression": false
+        },
+        {
+          "value": "started_at",
+          "isExpression": false
+        }
+      ],
+      "isUnique": false,
+      "where": null,
+      "origin": "manual",
+      "name": "schedule_run_status_started_idx",
       "entityType": "indexes",
       "table": "schedule_run"
     },

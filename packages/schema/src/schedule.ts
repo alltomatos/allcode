@@ -148,15 +148,26 @@ export const RunID = Schema.String.pipe(
 )
 export type RunID = typeof RunID.Type
 
+export const RunStatus = Schema.Literals(["running", "success", "error", "timeout", "cancelled", "skipped"])
+export type RunStatus = typeof RunStatus.Type
+
+export const RunTrigger = Schema.Literals(["cron", "interval", "once", "manual", "test", "catchup"])
+export type RunTrigger = typeof RunTrigger.Type
+
 export interface RunInfo extends Schema.Schema.Type<typeof RunInfo> {}
 export const RunInfo = Schema.Struct({
   id: RunID,
   scheduleId: ID,
   startedAt: Schema.Number,
   durationMs: Schema.Number,
-  status: Schema.Literals(["success", "error"]),
+  status: RunStatus,
+  trigger: RunTrigger,
+  attempt: Schema.Number,
   error: optional(Schema.String),
   sessionId: optional(Schema.String),
+  finishedAt: optional(Schema.Number),
+  scheduledFor: optional(Schema.Number),
+  claimedBy: optional(Schema.String),
 }).annotate({ identifier: "Schedule.RunInfo" })
 
 export interface DaemonHeartbeat extends Schema.Schema.Type<typeof DaemonHeartbeat> {}
@@ -165,4 +176,6 @@ export const DaemonHeartbeat = Schema.Struct({
   pid: Schema.Number,
   processTitle: Schema.String,
   lastSeen: Schema.Number,
+  ownerId: optional(Schema.String),
+  leaseUntil: optional(Schema.Number),
 }).annotate({ identifier: "Schedule.DaemonHeartbeat" })

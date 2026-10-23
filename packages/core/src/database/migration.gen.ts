@@ -47,5 +47,6 @@ export const migrations = (
     import("./migration/20261017150000_add_session_location_index"),
     import("./migration/20261017234719_broad_jane_foster"),
     import("./migration/20261021120000_add_schedule_resilience_tables"),
+    import("./migration/20261023181319_schedule_run_lifecycle"),
   ])
 ).map((module) => module.default) satisfies DatabaseMigration.Migration[]
