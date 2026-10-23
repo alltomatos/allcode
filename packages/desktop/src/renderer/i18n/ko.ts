@@ -27,4 +27,20 @@ export const dict = {
 
   "desktop.error.dev.rootNotFound":
     "루트 요소를 찾을 수 없습니다. index.html에 추가하는 것을 잊으셨나요? 또는 id 속성의 철자가 틀렸을 수 있습니다.",
+  "desktop.startup.title": "Starting AllCode",
+  "desktop.startup.progress": "{{completed}} of {{total}} services ready",
+  "desktop.startup.starting": "Starting {{service}}...",
+  "desktop.startup.error.title": "AllCode could not start",
+  "desktop.startup.error.description": "These services did not become ready. Retry to try again.",
+  "desktop.startup.error.details": "Details",
+  "desktop.startup.retry": "Try again",
+  "desktop.startup.logs": "Export diagnostic logs",
+  "desktop.startup.optional": "optional",
+  "desktop.startup.optional.warning": "Optional service unavailable: {{service}}",
+  "desktop.startup.serverUnhealthy": "The local server did not pass its health check",
+  "desktop.startup.service.server": "Local server",
+  "desktop.startup.service.settings": "Settings",
+  "desktop.startup.service.locale": "Language",
+  "desktop.startup.service.wsl": "WSL servers",
+  "desktop.startup.service.ssh": "SSH servers",
 }

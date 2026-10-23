@@ -323,7 +323,7 @@ const main = Effect.gen(function* () {
     })
   }
 
-  const serverReady = Deferred.makeUnsafe<ServerReadyData, unknown>()
+  let activeServerReady = Deferred.makeUnsafe<ServerReadyData, unknown>()
 
   yield* Effect.promise(() => app.whenReady())
 
@@ -356,14 +356,29 @@ const main = Effect.gen(function* () {
     checkForUpdates: () => void showUpdaterDialog(updater, true),
     relaunch,
   }
+  let retrying: Promise<void> | undefined
+  const retryInitialization = () => {
+    if (retrying) return retrying
+    logger.log("retrying server initialization")
+    retrying = (async () => {
+      await killSidecar()
+      const ready = Deferred.makeUnsafe<ServerReadyData, unknown>()
+      activeServerReady = ready
+      await Effect.runPromise(startLoadingTask(ready).pipe(forwardInitializationFailure(ready)))
+    })().finally(() => {
+      retrying = undefined
+    })
+    return retrying
+  }
   registerIpcHandlers({
     killSidecar: () => killSidecar(),
     isSidecarRunning: () => server !== null,
     relaunch,
+    retryInitialization,
     awaitInitialization: Effect.fnUntraced(
       function* () {
         logger.log("awaiting server ready")
-        const res = yield* Deferred.await(serverReady)
+        const res = yield* Deferred.await(activeServerReady)
         logger.log("server ready", { url: res.url })
         return res
       },
@@ -406,98 +421,105 @@ const main = Effect.gen(function* () {
     ),
   )
 
-  const loadingTask = yield* Effect.gen(function* () {
-    logger.log("sidecar connection started", { version: SIDECAR_VERSION })
+  function startLoadingTask(serverReady: Deferred.Deferred<ServerReadyData, unknown>) {
+    return Effect.gen(function* () {
+      logger.log("sidecar connection started", { version: SIDECAR_VERSION })
 
-    ensureLoopbackNoProxy()
-    useEnvProxy()
+      ensureLoopbackNoProxy()
+      useEnvProxy()
 
-    if (SIDECAR_VERSION === "v2") {
-      logger.log("spawning v2 sidecar")
-      const sidecar = yield* Effect.promise(() => startBackgroundCli(logger, shellEnv?.XDG_STATE_HOME))
+      if (SIDECAR_VERSION === "v2") {
+        logger.log("spawning v2 sidecar")
+        const sidecar = yield* Effect.promise(() => startBackgroundCli(logger, shellEnv?.XDG_STATE_HOME))
+        yield* Deferred.succeed(serverReady, {
+          url: sidecar.url,
+          username: sidecar.username,
+          password: sidecar.password,
+        })
+
+        if (process.platform === "win32") {
+          void wslServers.initialize().catch((error) => logger.error("wsl server initialization failed", error))
+          void sshServers.initialize().catch((error) => logger.error("ssh server initialization failed", error))
+        }
+
+        logger.log("loading task finished")
+        return
+      }
+
+      const port = yield* Effect.gen(function* () {
+        const fromEnv = process.env.OPENCODE_PORT
+        if (fromEnv) {
+          const parsed = Number.parseInt(fromEnv, 10)
+          if (!Number.isNaN(parsed)) return parsed
+        }
+
+        // Tenta reocupar a mesma porta do start anterior antes de sortear
+        // uma nova — ver comentário em store-keys.ts sobre por que isso
+        // importa pro pareamento QR sobreviver a um restart do desktop.
+        const resolved = yield* Effect.promise(() => reserveLocalPort(getPersistedSidecarPort()))
+        setPersistedSidecarPort(resolved)
+        return resolved
+      })
+      // `bindHostname` é o que o sidecar de fato escuta — "0.0.0.0" cobre
+      // loopback + rede local + a interface do Tailscale, então o celular
+      // (via QR em Configurações > Servidores) consegue alcançar esse
+      // mesmo servidor local, não só a VPS. `url`/tudo mais no desktop
+      // continua em 127.0.0.1 propositalmente: nenhum comportamento
+      // interno do app muda, isso só adiciona alcance de rede.
+      const bindHostname = "0.0.0.0"
+      const hostname = "127.0.0.1"
+      const url = `http://${hostname}:${port}`
+      // Idem porta: reusa a senha persistida em vez de sortear uma nova a
+      // cada start, senão um pareamento QR anterior fica com credencial
+      // inválida mesmo que a porta bata.
+      const password = getPersistedSidecarPassword() ?? randomUUID()
+      setPersistedSidecarPassword(password)
+
+      const vacuumed = yield* Effect.promise(() => runPendingVacuum())
+      if (vacuumed) logger.log("ran pending vacuum before spawning sidecar")
+
+      logger.log("spawning sidecar", { url, bindHostname })
+      const { listener, health } = yield* Effect.promise(() =>
+        spawnLocalServer(bindHostname, port, password, {
+          userDataPath: app.getPath("userData"),
+          onStdout: (message) => writeLog("server", "stdout", { message }),
+          onStderr: (message) => writeLog("server", "stderr", { message }, "warn"),
+          onExit: (code) => writeLog("utility", "sidecar exited", { code }, "warn"),
+        }),
+      )
+      server = listener
+
+      // Don't tell the renderer the server is ready until it's actually
+      // healthy — resolving serverReady up front regardless of health check
+      // outcome meant a sidecar that spawned but never became healthy (port
+      // race, blocked loopback, etc) still got reported as "ready", leaving
+      // the UI stuck with no real diagnostic. A health check failure now
+      // fails this effect, which forwardInitializationFailure below routes
+      // into the same error-surfacing path as any other startup failure.
+      yield* Effect.promise(() => health.wait).pipe(
+        Effect.timeout("60 seconds"),
+        Effect.catch((e) => Effect.fail(new Error(`Sidecar failed to become healthy within 60s: ${String(e)}`))),
+      )
+
       yield* Deferred.succeed(serverReady, {
-        url: sidecar.url,
-        username: sidecar.username,
-        password: sidecar.password,
+        url,
+        username: "allcode",
+        password,
       })
 
       if (process.platform === "win32") {
         void wslServers.initialize().catch((error) => logger.error("wsl server initialization failed", error))
-      void sshServers.initialize().catch((error) => logger.error("ssh server initialization failed", error))
+        void sshServers.initialize().catch((error) => logger.error("ssh server initialization failed", error))
       }
 
       logger.log("loading task finished")
-      return
-    }
-
-    const port = yield* Effect.gen(function* () {
-      const fromEnv = process.env.OPENCODE_PORT
-      if (fromEnv) {
-        const parsed = Number.parseInt(fromEnv, 10)
-        if (!Number.isNaN(parsed)) return parsed
-      }
-
-      // Tenta reocupar a mesma porta do start anterior antes de sortear
-      // uma nova — ver comentário em store-keys.ts sobre por que isso
-      // importa pro pareamento QR sobreviver a um restart do desktop.
-      const resolved = yield* Effect.promise(() => reserveLocalPort(getPersistedSidecarPort()))
-      setPersistedSidecarPort(resolved)
-      return resolved
     })
-    // `bindHostname` é o que o sidecar de fato escuta — "0.0.0.0" cobre
-    // loopback + rede local + a interface do Tailscale, então o celular
-    // (via QR em Configurações > Servidores) consegue alcançar esse
-    // mesmo servidor local, não só a VPS. `url`/tudo mais no desktop
-    // continua em 127.0.0.1 propositalmente: nenhum comportamento
-    // interno do app muda, isso só adiciona alcance de rede.
-    const bindHostname = "0.0.0.0"
-    const hostname = "127.0.0.1"
-    const url = `http://${hostname}:${port}`
-    // Idem porta: reusa a senha persistida em vez de sortear uma nova a
-    // cada start, senão um pareamento QR anterior fica com credencial
-    // inválida mesmo que a porta bata.
-    const password = getPersistedSidecarPassword() ?? randomUUID()
-    setPersistedSidecarPassword(password)
+  }
 
-    const vacuumed = yield* Effect.promise(() => runPendingVacuum())
-    if (vacuumed) logger.log("ran pending vacuum before spawning sidecar")
-
-    logger.log("spawning sidecar", { url, bindHostname })
-    const { listener, health } = yield* Effect.promise(() =>
-      spawnLocalServer(bindHostname, port, password, {
-        userDataPath: app.getPath("userData"),
-        onStdout: (message) => writeLog("server", "stdout", { message }),
-        onStderr: (message) => writeLog("server", "stderr", { message }, "warn"),
-        onExit: (code) => writeLog("utility", "sidecar exited", { code }, "warn"),
-      }),
-    )
-    server = listener
-
-    // Don't tell the renderer the server is ready until it's actually
-    // healthy — resolving serverReady up front regardless of health check
-    // outcome meant a sidecar that spawned but never became healthy (port
-    // race, blocked loopback, etc) still got reported as "ready", leaving
-    // the UI stuck with no real diagnostic. A health check failure now
-    // fails this effect, which forwardInitializationFailure below routes
-    // into the same error-surfacing path as any other startup failure.
-    yield* Effect.promise(() => health.wait).pipe(
-      Effect.timeout("60 seconds"),
-      Effect.catch((e) => Effect.fail(new Error(`Sidecar failed to become healthy within 60s: ${String(e)}`))),
-    )
-
-    yield* Deferred.succeed(serverReady, {
-      url,
-      username: "allcode",
-      password,
-    })
-
-    if (process.platform === "win32") {
-      void wslServers.initialize().catch((error) => logger.error("wsl server initialization failed", error))
-      void sshServers.initialize().catch((error) => logger.error("ssh server initialization failed", error))
-    }
-
-    logger.log("loading task finished")
-  }).pipe(forwardInitializationFailure(serverReady), Effect.forkChild)
+  const loadingTask = yield* startLoadingTask(activeServerReady).pipe(
+    forwardInitializationFailure(activeServerReady),
+    Effect.forkChild,
+  )
 
   yield* Fiber.await(loadingTask)
 

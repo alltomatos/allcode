@@ -5,7 +5,6 @@ import { DialogProvider } from "@allcode/ui/context/dialog"
 import { FileComponentProvider } from "@allcode/ui/context/file"
 import { File } from "@allcode/session-ui/file"
 import { Font } from "@allcode/ui/font"
-import { Splash } from "@allcode/ui/logo"
 import { ThemeProvider } from "@allcode/ui/theme/context"
 import { MetaProvider } from "@solidjs/meta"
 import {
@@ -19,20 +18,18 @@ import {
   useSearchParams,
 } from "@solidjs/router"
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
-import { Effect } from "effect"
 import { base64Encode } from "@allcode/core/util/encode"
 import {
   type Component,
   createEffect,
   createMemo,
   createRenderEffect,
-  createResource,
-  createSignal,
   ErrorBoundary,
   For,
   type JSX,
   lazy,
   onCleanup,
+  onMount,
   type ParentProps,
   Show,
 } from "solid-js"
@@ -64,8 +61,16 @@ import { GlobalLoading } from "@/components/global-loading"
 import LegacyLayout from "@/pages/layout"
 import NewLayout from "@/pages/layout-new"
 import { ErrorPage } from "./pages/error"
-import { useCheckServerHealth } from "./utils/server-health"
-import { legacySessionHref, legacySessionServer, parseServerKey, requireServerKey, sessionHref } from "./utils/session-route"
+import { checkServerHealth } from "./utils/server-health"
+import { createReadinessManager } from "./startup/readiness"
+import { StartupSplash, type StartupSplashCopy } from "./components/startup-splash"
+import {
+  legacySessionHref,
+  legacySessionServer,
+  parseServerKey,
+  requireServerKey,
+  sessionHref,
+} from "./utils/session-route"
 import { createSessionLineage } from "@/pages/session/session-lineage"
 
 import { SessionPage, SessionRouteErrorBoundary, TargetSessionRouteContent } from "@/pages/session"
@@ -485,120 +490,119 @@ export function AppBaseProviders(
 
 function ConnectionGate(props: ParentProps<{ disableHealthCheck?: boolean; startup?: Promise<void> }>) {
   const server = useServer()
-  const checkServerHealth = useCheckServerHealth()
+  const platform = usePlatform()
+  const language = useLanguage()
+  const fetcher = platform.fetch ?? globalThis.fetch
 
-  const [checkMode, setCheckMode] = createSignal<"blocking" | "background">("blocking")
+  const readiness = createReadinessManager([
+    {
+      id: "server",
+      label: language.t("startup.service.server"),
+      timeoutMs: 30_000,
+      ready: async (signal) => {
+        if (props.disableHealthCheck) return
+        if (!server.current) return
+        const { http, type } = server.current
 
-  // performs repeated health check with a grace period for
-  // non-http connections, otherwise fails instantly
-  const [startupHealthCheck, healthCheckActions] = createResource(() =>
-    props.disableHealthCheck
-      ? true
-      : Effect.gen(function* () {
-          if (!server.current) return true
-          const { http, type } = server.current
+        while (!signal.aborted) {
+          const health = await checkServerHealth(http, fetcher, { signal, timeoutMs: 5_000, retryCount: 0 })
+          if (health.healthy) return
+          if (type === "http") throw new Error(language.t("startup.server.unhealthy"))
+          await wait(250, signal)
+        }
+        throw new Error(language.t("startup.server.unhealthy"))
+      },
+    },
+    {
+      id: "startup",
+      label: language.t("startup.service.onboarding"),
+      optional: true,
+      ready: () => props.startup,
+    },
+  ])
 
-          while (true) {
-            const res = yield* Effect.promise(() => checkServerHealth(http))
-            if (res.healthy) return true
-            if (checkMode() === "background" || type === "http") return false
-          }
-        }).pipe(
-          Effect.timeoutOrElse({ duration: "10 seconds", orElse: () => Effect.succeed(false) }),
-          Effect.ensuring(Effect.sync(() => setCheckMode("background"))),
-          Effect.runPromise,
-        ),
-  )
-  const checking = createMemo(
-    () => checkMode() === "blocking" && ["unresolved", "pending"].includes(startupHealthCheck.state),
-  )
-  const [startup] = createResource(async () => {
-    if (!props.startup) return true
-    await props.startup.catch((error) => {
-      console.error("[startup] startup gate failed", error)
-    })
-    return true
-  })
-  const startupChecking = createMemo(
-    () => startupHealthCheck.latest === true && ["unresolved", "pending"].includes(startup.state),
-  )
-  const loading = createMemo(() => checking() || startupChecking())
+  onMount(() => void readiness.start())
+  onCleanup(() => readiness.dispose())
+
+  const copy: StartupSplashCopy = {
+    title: language.t("startup.title"),
+    progress: (completed, total) => language.t("startup.progress", { completed, total }),
+    starting: (service) => language.t("startup.starting", { service }),
+    errorTitle: language.t("startup.error.title"),
+    errorDescription: language.t("startup.error.description"),
+    details: language.t("startup.error.details"),
+    retry: language.t("startup.retry"),
+    logs: language.t("startup.logs"),
+    optional: language.t("startup.optional"),
+    optionalWarning: (service) => language.t("startup.optional.warning", { service }),
+  }
 
   return (
     <>
-      <Show when={!checking()}>
-        <Show
-          when={startupHealthCheck.latest}
-          fallback={
-            <ConnectionError
-              onRetry={() => {
-                if (checkMode() === "background") void healthCheckActions.refetch()
-              }}
-              onServerSelected={(key) => {
-                setCheckMode("blocking")
-                server.setActive(key)
-                void healthCheckActions.refetch()
-              }}
-            />
-          }
-        >
-          {props.children}
-        </Show>
-      </Show>
-      <Show when={loading()}>
-        <div class="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background-base">
-          <Splash class="w-16 h-20 opacity-50 animate-pulse" />
-        </div>
-      </Show>
+      <Show when={readiness.allReady()}>{props.children}</Show>
+      <StartupSplash
+        readiness={readiness}
+        copy={copy}
+        onExportLogs={platform.exportDebugLogs ? () => platform.exportDebugLogs?.() : undefined}
+        errorExtra={
+          <ServerAlternatives
+            onServerSelected={(key) => {
+              server.setActive(key)
+              void readiness.retryFailed()
+            }}
+          />
+        }
+      />
     </>
   )
 }
 
-function ConnectionError(props: { onRetry?: () => void; onServerSelected?: (key: ServerConnection.Key) => void }) {
+function ServerAlternatives(props: { onServerSelected?: (key: ServerConnection.Key) => void }) {
   const language = useLanguage()
   const server = useServer()
-  const others = () => server.list.filter((s) => ServerConnection.key(s) !== server.key)
-  const name = createMemo(() => server.name || server.key)
-  const serverToken = "\u0000server\u0000"
-  const unreachable = createMemo(() => language.t("app.server.unreachable", { server: serverToken }).split(serverToken))
-
-  const timer = setInterval(() => props.onRetry?.(), 1000)
-  onCleanup(() => clearInterval(timer))
+  const others = () => server.list.filter((item) => ServerConnection.key(item) !== server.key)
 
   return (
-    <div class="h-dvh w-screen flex flex-col items-center justify-center bg-background-base gap-6 p-6">
-      <div class="flex flex-col items-center max-w-md text-center">
-        <Splash class="w-12 h-15 mb-4" />
-        <p class="text-14-regular text-text-base">
-          {unreachable()[0]}
-          <span class="text-text-strong font-medium">{name()}</span>
-          {unreachable()[1]}
-        </p>
-        <p class="mt-1 text-12-regular text-text-weak">{language.t("app.server.retrying")}</p>
-      </div>
-      <Show when={others().length > 0}>
-        <div class="flex flex-col gap-2 w-full max-w-sm">
-          <span class="text-12-regular text-text-base text-center">{language.t("app.server.otherServers")}</span>
-          <div class="flex flex-col gap-1 bg-surface-base rounded-lg p-2">
-            <For each={others()}>
-              {(conn) => {
-                const key = ServerConnection.key(conn)
-                return (
-                  <button
-                    type="button"
-                    class="flex items-center gap-3 w-full px-3 py-2 rounded-md hover:bg-surface-raised-base-hover transition-colors text-left"
-                    onClick={() => props.onServerSelected?.(key)}
-                  >
-                    <span class="text-14-regular text-text-strong truncate">{serverName(conn)}</span>
-                  </button>
-                )
-              }}
-            </For>
-          </div>
+    <Show when={others().length > 0}>
+      <div class="flex w-full flex-col gap-2">
+        <span class="text-center text-11-regular text-text-weak">{language.t("app.server.otherServers")}</span>
+        <div class="flex flex-col gap-1 rounded-lg bg-surface-base p-2">
+          <For each={others()}>
+            {(conn) => {
+              const key = ServerConnection.key(conn)
+              return (
+                <button
+                  type="button"
+                  class="flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors hover:bg-surface-raised-base-hover"
+                  onClick={() => props.onServerSelected?.(key)}
+                >
+                  <span class="truncate text-12-regular text-text-strong">{serverName(conn)}</span>
+                </button>
+              )
+            }}
+          </For>
         </div>
-      </Show>
-    </div>
+      </div>
+    </Show>
   )
+}
+
+function wait(ms: number, signal: AbortSignal) {
+  return new Promise<void>((resolve, reject) => {
+    if (signal.aborted) {
+      reject(signal.reason)
+      return
+    }
+    const onAbort = () => {
+      clearTimeout(timer)
+      reject(signal.reason)
+    }
+    const timer = setTimeout(() => {
+      signal.removeEventListener("abort", onAbort)
+      resolve()
+    }, ms)
+    signal.addEventListener("abort", onAbort, { once: true })
+  })
 }
 
 function ServerKey(props: ParentProps) {
@@ -641,28 +645,28 @@ export function AppInterface(props: {
       <GlobalProvider>
         <SettingsProvider>
           <MaintenanceProvider>
-          <ConnectionGate disableHealthCheck={props.disableHealthCheck} startup={props.startup}>
-            <Show when={useSettings().general.newLayoutDesigns().toString()} keyed>
-              <Dynamic
-                component={props.router ?? Router}
-                root={(routerProps) => (
-                  <TabsProvider>
-                    <PermissionProvider>
-                      <NotificationProvider>
-                        <ServerShell>
-                          <Show when={useSettings().general.newLayoutDesigns()} fallback={routerProps.children}>
-                            <NewAppLayout serverScoped={props.serverScoped}>{routerProps.children}</NewAppLayout>
-                          </Show>
-                        </ServerShell>
-                      </NotificationProvider>
-                    </PermissionProvider>
-                  </TabsProvider>
-                )}
-              >
-                <Routes serverScoped={props.serverScoped} />
-              </Dynamic>
-            </Show>
-          </ConnectionGate>
+            <ConnectionGate disableHealthCheck={props.disableHealthCheck} startup={props.startup}>
+              <Show when={useSettings().general.newLayoutDesigns().toString()} keyed>
+                <Dynamic
+                  component={props.router ?? Router}
+                  root={(routerProps) => (
+                    <TabsProvider>
+                      <PermissionProvider>
+                        <NotificationProvider>
+                          <ServerShell>
+                            <Show when={useSettings().general.newLayoutDesigns()} fallback={routerProps.children}>
+                              <NewAppLayout serverScoped={props.serverScoped}>{routerProps.children}</NewAppLayout>
+                            </Show>
+                          </ServerShell>
+                        </NotificationProvider>
+                      </PermissionProvider>
+                    </TabsProvider>
+                  )}
+                >
+                  <Routes serverScoped={props.serverScoped} />
+                </Dynamic>
+              </Show>
+            </ConnectionGate>
           </MaintenanceProvider>
         </SettingsProvider>
       </GlobalProvider>
@@ -757,4 +761,3 @@ function LegacyNewSessionRoute() {
     </Show>
   )
 }
-

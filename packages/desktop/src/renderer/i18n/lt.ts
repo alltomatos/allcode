@@ -25,4 +25,20 @@ export const dict = {
 
   "desktop.error.dev.rootNotFound":
     "Šakninis elementas nerastas. Ar pamiršote jį įtraukti į index.html? O gal id atributas buvo neteisingai parašytas?",
+  "desktop.startup.title": "Starting AllCode",
+  "desktop.startup.progress": "{{completed}} of {{total}} services ready",
+  "desktop.startup.starting": "Starting {{service}}...",
+  "desktop.startup.error.title": "AllCode could not start",
+  "desktop.startup.error.description": "These services did not become ready. Retry to try again.",
+  "desktop.startup.error.details": "Details",
+  "desktop.startup.retry": "Try again",
+  "desktop.startup.logs": "Export diagnostic logs",
+  "desktop.startup.optional": "optional",
+  "desktop.startup.optional.warning": "Optional service unavailable: {{service}}",
+  "desktop.startup.serverUnhealthy": "The local server did not pass its health check",
+  "desktop.startup.service.server": "Local server",
+  "desktop.startup.service.settings": "Settings",
+  "desktop.startup.service.locale": "Language",
+  "desktop.startup.service.wsl": "WSL servers",
+  "desktop.startup.service.ssh": "SSH servers",
 }

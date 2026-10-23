@@ -4,6 +4,7 @@ import {
   ACCEPTED_FILE_EXTENSIONS,
   AppBaseProviders,
   AppInterface,
+  createReadinessManager,
   loadLocaleDict,
   normalizeLocale,
   type Locale,
@@ -12,6 +13,8 @@ import {
   PlatformProvider,
   createDraftStore,
   ServerConnection,
+  StartupSplash,
+  type StartupSplashCopy,
   useCommand,
   useWslServers,
   useSshServers,
@@ -22,11 +25,10 @@ import type { UpdaterState } from "@allcode/app/updater"
 import * as Sentry from "@sentry/solid"
 import type { AsyncStorage } from "@solid-primitives/storage"
 import { createMemoryHistory, MemoryRouter, type BaseRouterProps } from "@solidjs/router"
-import { createEffect, createMemo, createResource, createSignal, onCleanup, Show } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, onCleanup, onMount, Show } from "solid-js"
 import { render } from "solid-js/web"
 import pkg from "../../package.json"
 import { t } from "./i18n"
-import { initializationData } from "./initialization"
 import { DesktopFirstLaunchOnboarding } from "./onboarding"
 import { resetZoom, setPinchZoomEnabled, webviewZoom, zoomIn, zoomOut } from "./webview-zoom"
 import { windowFullscreen } from "./window-fullscreen"
@@ -389,15 +391,96 @@ function DesktopRoot(props: { windowState: DesktopWindowState }) {
     return next satisfies Locale
   }
 
-  // Fetch sidecar credentials (available immediately, before health check)
-  const [sidecar] = createResource(() => window.api.awaitInitialization())
+  type SidecarData = Awaited<ReturnType<typeof window.api.awaitInitialization>>
+  const [sidecarData, setSidecarData] = createSignal<SidecarData>()
+  const [defaultServer, setDefaultServer] = createSignal<ServerConnection.Key | null>()
+  const [locale, setLocale] = createSignal<Locale>()
+  let sidecarAttempts = 0
 
-  const [defaultServer] = createResource(() => platform.getDefaultServer?.())
-  const [locale] = createResource(loadLocale)
+  const waitForServer = async () => {
+    const current = sidecarData()
+    if (current) return current
+    sidecarAttempts += 1
+    if (sidecarAttempts > 1) await window.api.retryInitialization()
+    const data = await window.api.awaitInitialization()
+    setSidecarData(data)
+    return data
+  }
+
+  const wslServersApi = platform.wslServers
+  const sshServersApi = platform.sshServers
+  const readiness = createReadinessManager([
+    {
+      id: "server",
+      label: t("desktop.startup.service.server"),
+      // The main process already bounds the sidecar spawn (60s) and its health
+      // check (60s); keep the outer readiness timer above both so a retry does
+      // not race a still-running startup.
+      timeoutMs: 130_000,
+      // `awaitInitialization` only resolves after the sidecar spawn, database
+      // migration and the main-process health check all succeed.
+      ready: () => waitForServer(),
+    },
+    {
+      id: "settings",
+      label: t("desktop.startup.service.settings"),
+      ready: async () => {
+        const value = await (platform.getDefaultServer?.() ?? null)
+        setDefaultServer(value)
+        return value
+      },
+    },
+    {
+      id: "locale",
+      label: t("desktop.startup.service.locale"),
+      ready: async () => {
+        const value = await loadLocale()
+        setLocale(value)
+        return value
+      },
+    },
+    ...(wslServersApi
+      ? [
+          {
+            id: "wsl",
+            label: t("desktop.startup.service.wsl"),
+            optional: true,
+            ready: () => wslServersApi.getState(),
+          },
+        ]
+      : []),
+    ...(sshServersApi
+      ? [
+          {
+            id: "ssh",
+            label: t("desktop.startup.service.ssh"),
+            optional: true,
+            ready: () => sshServersApi.getState(),
+          },
+        ]
+      : []),
+  ])
+
+  onMount(() => void readiness.start())
+  onCleanup(() => readiness.dispose())
+
   const router = (props: BaseRouterProps) => (
     <DesktopMemoryRouter {...props} windowID={platform.windowID ?? "browser"} />
   )
   const onboarding = Promise.withResolvers<void>()
+
+  const splashCopy: StartupSplashCopy = {
+    title: t("desktop.startup.title"),
+    progress: (completed, total) => t("desktop.startup.progress", { completed, total }),
+    starting: (service) => t("desktop.startup.starting", { service }),
+    errorTitle: t("desktop.startup.error.title"),
+    errorDescription: t("desktop.startup.error.description"),
+    details: t("desktop.startup.error.details"),
+    retry: t("desktop.startup.retry"),
+    logs: t("desktop.startup.logs"),
+    optional: t("desktop.startup.optional"),
+    optionalWarning: (service) => t("desktop.startup.optional.warning", { service }),
+  }
 
   function Inner() {
     const cmd = useCommand()
@@ -421,16 +504,8 @@ function DesktopRoot(props: { windowState: DesktopWindowState }) {
     const wslServers = useWslServers()
     const sshServers = useSshServers()
     const language = useLanguage()
-    const isWslDefault = () => defaultServer.latest?.startsWith("wsl:")
-    const ready = createMemo(
-      () =>
-        !defaultServer.loading &&
-        !sidecar.loading &&
-        !locale.loading &&
-        (!isWslDefault() || !wslServers.isLoading),
-    )
     const servers = createMemo(() => {
-      const data = initializationData(sidecar)
+      const data = sidecarData()
       const list: ServerConnection.Any[] = []
       if (data) {
         list.push({
@@ -449,40 +524,41 @@ function DesktopRoot(props: { windowState: DesktopWindowState }) {
       return list
     })
     const effectiveDefaultServer = createMemo(() =>
-      ServerConnection.Key.make(availableStartupServer(defaultServer.latest, wslServers.data)),
+      ServerConnection.Key.make(availableStartupServer(defaultServer(), wslServers.data)),
     )
     return (
-      <Show when={ready()} fallback={<LoadingSplash />}>
-        <Show when={effectiveDefaultServer()} keyed>
-          {(key) => (
-            <AppInterface
-              defaultServer={key}
-              servers={servers()}
-              router={router}
-              startup={onboarding.promise}
-              serverScoped={
-                <DesktopFirstLaunchOnboarding
-                  initialUrl={getLastActiveUrl(platform.windowID ?? "browser")}
-                  onLoaded={onboarding.resolve}
-                />
-              }
-            >
-              <Inner />
-            </AppInterface>
-          )}
-        </Show>
+      <Show when={effectiveDefaultServer()} keyed>
+        {(key) => (
+          <AppInterface
+            defaultServer={key}
+            servers={servers()}
+            router={router}
+            startup={onboarding.promise}
+            serverScoped={
+              <DesktopFirstLaunchOnboarding
+                initialUrl={getLastActiveUrl(platform.windowID ?? "browser")}
+                onLoaded={onboarding.resolve}
+              />
+            }
+          >
+            <Inner />
+          </AppInterface>
+        )}
       </Show>
     )
   }
 
   return (
     <PlatformProvider value={platform}>
-      <AppBaseProviders
-        locale={locale.latest}
-        onNativeTranslations={(bundle) => void window.api.setNativeTranslations(bundle).catch(() => undefined)}
-      >
-        <Show when={true}>{(_) => <App />}</Show>
-      </AppBaseProviders>
+      <Show when={readiness.allReady()}>
+        <AppBaseProviders
+          locale={locale()}
+          onNativeTranslations={(bundle) => void window.api.setNativeTranslations(bundle).catch(() => undefined)}
+        >
+          <Show when={true}>{(_) => <App />}</Show>
+        </AppBaseProviders>
+      </Show>
+      <StartupSplash readiness={readiness} copy={splashCopy} onExportLogs={() => platform.exportDebugLogs?.()} />
     </PlatformProvider>
   )
 }

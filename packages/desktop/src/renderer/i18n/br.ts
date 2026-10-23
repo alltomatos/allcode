@@ -27,4 +27,21 @@ export const dict = {
 
   "desktop.error.dev.rootNotFound":
     "Elemento raiz não encontrado. Você esqueceu de adicioná-lo ao seu index.html? Ou talvez o atributo id foi escrito incorretamente?",
+
+  "desktop.startup.title": "Iniciando o AllCode",
+  "desktop.startup.progress": "{{completed}} de {{total}} serviços prontos",
+  "desktop.startup.starting": "Iniciando {{service}}...",
+  "desktop.startup.error.title": "Não foi possível iniciar o AllCode",
+  "desktop.startup.error.description": "Estes serviços não ficaram prontos. Tente novamente para repetir a inicialização.",
+  "desktop.startup.error.details": "Detalhes",
+  "desktop.startup.retry": "Tentar novamente",
+  "desktop.startup.logs": "Exportar logs de diagnóstico",
+  "desktop.startup.optional": "opcional",
+  "desktop.startup.optional.warning": "Serviço opcional indisponível: {{service}}",
+  "desktop.startup.serverUnhealthy": "O servidor local não passou na verificação de saúde",
+  "desktop.startup.service.server": "Servidor local",
+  "desktop.startup.service.settings": "Configurações",
+  "desktop.startup.service.locale": "Idioma",
+  "desktop.startup.service.wsl": "Servidores WSL",
+  "desktop.startup.service.ssh": "Servidores SSH",
 }

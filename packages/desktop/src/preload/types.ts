@@ -72,6 +72,7 @@ export type ElectronAPI = {
   killSidecar: () => Promise<void>
   installCli: () => Promise<string>
   awaitInitialization: () => Promise<ServerReadyData>
+  retryInitialization: () => Promise<void>
   wslServers: WslServersAPI
   sshServers: SshServersAPI
   checkTailscale: () => Promise<TailscaleStatus>
