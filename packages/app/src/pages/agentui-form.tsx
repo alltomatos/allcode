@@ -1255,6 +1255,7 @@ export function AgentUIFormPage() {
                           <Switch
                             checked={izapiaWriteEnabled()}
                             disabled={izapiaWriteSaving()}
+                            aria-label="Ativar modo write no MCP izapia"
                             onChange={(checked) => void toggleIzapiaWrite(checked)}
                           />
                         </div>

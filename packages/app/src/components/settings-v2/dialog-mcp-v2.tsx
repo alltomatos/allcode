@@ -1,3 +1,4 @@
+import { Tag } from "@allcode/ui/v2/badge-v2"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Dialog, DialogBody, DialogFooter, DialogHeader, DialogTitle } from "@allcode/ui/v2/dialog-v2"
 import { DividerV2 } from "@allcode/ui/v2/divider-v2"
@@ -365,9 +366,10 @@ export const DialogMcpAddV2: Component<{
                   {(server) => (
                     <ButtonV2
                       type="button"
-                      variant="neutral"
+                      variant={form.name === server.name ? "contrast" : "neutral"}
                       size="normal"
                       class="!w-full !justify-start gap-1.5 overflow-hidden"
+                      aria-pressed={form.name === server.name}
                       onClick={() => {
                         if (server.id === "mcpmail") {
                           dialog.close()
@@ -427,7 +429,7 @@ export const DialogMcpAddV2: Component<{
               onKeyDown={keyDown}
             />
             <Show when={form.err.name}>
-              <span class="settings-v2-server-dialog-error">{form.err.name}</span>
+              <span class="settings-v2-server-dialog-error" role="alert">{form.err.name}</span>
             </Show>
           </div>
 
@@ -453,6 +455,40 @@ export const DialogMcpAddV2: Component<{
             </div>
           </div>
 
+          <Show when={isIzapia()}>
+            <div class="flex w-full min-w-0 flex-col gap-2.5 rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-02 p-3.5">
+              <div class="flex items-center justify-between gap-3">
+                <div class="flex min-w-0 flex-wrap items-center gap-2">
+                  <span class="text-12-medium font-semibold text-v2-text-text-base">Modo de escrita</span>
+                  <Tag variant={izapiaWriteMode() ? "accent" : "neutral"}>
+                    {izapiaWriteMode() ? "Escrita habilitada" : "Somente leitura"}
+                  </Tag>
+                </div>
+                <SwitchV2
+                  checked={izapiaWriteMode()}
+                  onChange={(checked) => setIzapiaWriteMode(checked)}
+                  hideLabel
+                >
+                  Ativar modo de escrita
+                </SwitchV2>
+              </div>
+              <p class="text-11-regular leading-relaxed text-v2-text-text-muted">
+                Permite que o agente envie mensagens e execute ações de escrita no WhatsApp.
+              </p>
+              <Show when={izapiaWriteMode()}>
+                <p class="border-t border-v2-border-border-base pt-2 text-11-regular leading-relaxed text-v2-text-text-muted">
+                  Operações destrutivas (logout/delete) continuam bloqueadas. Use{" "}
+                  <span class="font-mono text-v2-text-text-base">IZAPIA_MCP_ALLOW_DESTRUCTIVE=true</span> apenas se
+                  precisar delas.
+                </p>
+              </Show>
+              <p class="text-11-regular text-v2-text-text-faint">
+                Salvar aplica <span class="font-mono text-v2-text-text-muted">IZAPIA_MCP_MODE=write</span> e
+                reconecta o servidor.
+              </p>
+            </div>
+          </Show>
+
           <Show when={form.type === "local"}>
             <div class="flex w-full min-w-0 flex-col gap-2">
               <label class="settings-v2-server-dialog-label">
@@ -469,7 +505,7 @@ export const DialogMcpAddV2: Component<{
                 onKeyDown={keyDown}
               />
               <Show when={form.err.command}>
-                <span class="settings-v2-server-dialog-error">{form.err.command}</span>
+                <span class="settings-v2-server-dialog-error" role="alert">{form.err.command}</span>
               </Show>
             </div>
             <div class="flex w-full min-w-0 flex-col gap-2">
@@ -489,38 +525,6 @@ export const DialogMcpAddV2: Component<{
               rows={form.environment}
               onChange={(rows) => setForm("environment", rows)}
             />
-            <Show when={isIzapia()}>
-              <div class="flex w-full min-w-0 flex-col gap-2 rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-02 p-3">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="flex min-w-0 flex-col gap-0.5">
-                    <span class="text-12-medium text-v2-text-text-base">Ativar modo write</span>
-                    <span class="text-11-regular text-v2-text-text-muted leading-relaxed">
-                      Define{" "}
-                      <span class="font-mono text-v2-text-text-base">IZAPIA_MCP_MODE=write</span> para permitir
-                      envio de mensagens e demais operações de escrita. Sem isso o MCP izapia fica somente leitura.
-                    </span>
-                  </div>
-                  <SwitchV2
-                    checked={izapiaWriteMode()}
-                    onChange={(checked) => setIzapiaWriteMode(checked)}
-                    hideLabel
-                  >
-                    IZAPIA_MCP_MODE
-                  </SwitchV2>
-                </div>
-                <Show when={izapiaWriteMode()}>
-                  <span class="text-11-regular text-v2-text-text-muted leading-relaxed">
-                    Operações destrutivas (logout/delete) continuam bloqueadas. Para habilitá-las, adicione
-                    manualmente{" "}
-                    <span class="font-mono text-v2-text-text-base">IZAPIA_MCP_ALLOW_DESTRUCTIVE=true</span> nas
-                    variáveis de ambiente acima.
-                  </span>
-                </Show>
-                <span class="text-11-regular text-v2-text-text-muted">
-                  Salve para aplicar — o servidor MCP será reconectado automaticamente.
-                </span>
-              </div>
-            </Show>
           </Show>
 
           <Show when={form.type === "remote"}>
@@ -537,7 +541,7 @@ export const DialogMcpAddV2: Component<{
                 onKeyDown={keyDown}
               />
               <Show when={form.err.url}>
-                <span class="settings-v2-server-dialog-error">{form.err.url}</span>
+                <span class="settings-v2-server-dialog-error" role="alert">{form.err.url}</span>
               </Show>
             </div>
             <KeyValueEditor
