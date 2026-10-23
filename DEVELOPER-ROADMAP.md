@@ -1,6 +1,9 @@
 # Developer Roadmap
 
-GitHub (`alltomatos/opencode`, branch default `dev`) é a fonte persistente de rastreamento e governança; este arquivo é a bússola estratégica do projeto.
+GitHub é a fonte persistente de rastreamento e governança; este arquivo é a bússola estratégica do projeto.
+
+- **E01–E22:** `alltomatos/allcode` é o tracker atual; os links continuam apontando para `alltomatos/opencode`, repositório histórico onde essas issues foram publicadas.
+- **E23 em diante:** `alltomatos/allcode`.
 
 ---
 
@@ -30,6 +33,7 @@ GitHub (`alltomatos/opencode`, branch default `dev`) é a fonte persistente de r
 | [**[E20] Higienização de Eventos Transientes, Tombstones e Memória**](https://github.com/alltomatos/opencode/issues/268) | Prevenção de inchaço do event log por streams SSE e tombstones transientes com replay idempotente | done | [#268](https://github.com/alltomatos/opencode/issues/268) |
 | [**[E21] Particionamento SQLite por Workspace e Rollout de PRAGMAs**](https://github.com/alltomatos/opencode/issues/279) | Particionamento estrutural em global.db e project.db, isolamento de concorrência e rollout seguro de WAL | in_progress | [#279](https://github.com/alltomatos/opencode/issues/279) |
 | [**[E22] Resiliência, Coordenação Multi-Instância e Anti-Inchaço no Daemon de Rotinas**](https://github.com/alltomatos/opencode/issues/286) | Eleição de líder por heartbeat no SQLite, concorrência segregada (semáforos Effect), 1 retry de cortesia e histórico de 7 dias | done | [#286](https://github.com/alltomatos/opencode/issues/286) |
+| [**[E23] WhatsApp Nativo no AgentUI (zapo)**](https://github.com/alltomatos/allcode/issues/2) | Conexão de conta WhatsApp por QR Code, sessão persistida e tools reais para o assistente sem gateway externo | todo | [#2](https://github.com/alltomatos/allcode/issues/2) |
 
 ---
 
@@ -58,6 +62,7 @@ GitHub (`alltomatos/opencode`, branch default `dev`) é a fonte persistente de r
   - [**[E08] Mobile VPS API e Pareamento Remoto**](https://github.com/alltomatos/opencode/issues/59) (`done`)
   - [**[E09] Server Remoto e Gestão de Hosts**](https://github.com/alltomatos/opencode/issues/78) (`done`)
   - [**[E10] Integração com Telegram Bot**](https://github.com/alltomatos/opencode/issues/127) (`in_progress`)
+  - [**[E23] WhatsApp Nativo no AgentUI (zapo)**](https://github.com/alltomatos/allcode/issues/2) (`todo`)
 - **Estado:** `in_progress`
 
 ### M4: Design System v2 & Legacy Sunset
