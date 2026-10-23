@@ -1,6 +1,6 @@
 # Orchestrator Roadmap
 
-GitHub (alltomatos/opencode, branch default `dev`) é a fonte persistente de rastreamento; este arquivo é a visão estratégica. Branch `prod` só recebe promoções de release do app desktop.
+GitHub (alltomatos/allcode, branch default `prod`, trabalho em `dev`) é a fonte persistente de rastreamento; este arquivo é a visão estratégica. Branch `prod` só recebe promoções de release do app desktop. Links de issues de E01–E16 apontam para o repositório histórico `alltomatos/opencode`, onde foram publicadas.
 
 ## Epics ativos e backlog
 
@@ -27,7 +27,7 @@ GitHub (alltomatos/opencode, branch default `dev`) é a fonte persistente de ras
 
 **Status:** Em andamento
 **Owner:** Ronaldo Davi
-**Repositório:** alltomatos/opencode (branch `dev`)
+**Repositório:** alltomatos/allcode (branch `dev`)
 **Origem:** Auditoria feita via agentes Explore (skill `ui-ux-pro-max`) em 2026-08-19, cobrindo menus/dropdowns e telas inteiras do app desktop.
 
 ### Contexto

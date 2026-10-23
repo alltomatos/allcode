@@ -1,6 +1,6 @@
 // Client for the bug-relay service (bugrepcode.alltomatos.com.br), which
 // turns bug reports — manual (user-triggered) or auto (uncaught error) —
-// into deduped GitHub issues on alltomatos/opencode. The relay holds the
+// into deduped GitHub issues on alltomatos/allcode. The relay holds the
 // only GitHub credential in this flow; this module never touches GitHub
 // directly, and works whether or not the machine running the fork has
 // `gh` installed or is authenticated.

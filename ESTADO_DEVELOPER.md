@@ -10,7 +10,7 @@
 - **iniciado_em**: `2026-09-16 17:15:00`
 - **atualizado_em**: `2026-09-17 12:30:00`
 - **fase_atual**: `Fase 4 (Execução)`
-- **repositorio**: `alltomatos/opencode`
+- **repositorio**: `alltomatos/allcode`
 - **epic_github**: `https://github.com/alltomatos/opencode/issues/248`
 - **branch_trabalho**: `dev` (promovido a `prod` em `2026-09-17`, commit `2cc744ff83`)
 

@@ -1,6 +1,6 @@
 # Batuta — Agentes Externos
 
-Contexto estruturado para agentes trabalhando nas issues #73-#77 (GitHub, repo `alltomatos/opencode`, label `batuta`).
+Contexto estruturado para agentes trabalhando nas issues #73-#77 (publicadas no repositório histórico `alltomatos/opencode`; o tracker atual é `alltomatos/allcode`, label `batuta`).
 
 ## Responsabilidades
 

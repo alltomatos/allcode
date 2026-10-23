@@ -231,7 +231,7 @@ export async function spawnSshTunnel(config: SshServerConfig, opts: SshTunnelOpt
       const installCmd = [
         pathPrefix,
         "mkdir -p ~/.npm-global && npm config set prefix ~/.npm-global 2>/dev/null",
-        "(command -v npm >/dev/null 2>&1 && npm install -g @alltomatos/opencode@latest) || (command -v bun >/dev/null 2>&1 && bun add -g @alltomatos/opencode@latest) || echo 'INSTALL_FAILED'",
+        "(command -v npm >/dev/null 2>&1 && npm install -g @alltomatos/allcode@latest) || (command -v bun >/dev/null 2>&1 && bun add -g @alltomatos/allcode@latest) || echo 'INSTALL_FAILED'",
       ].join(" && ")
 
       const installResult = await runRemoteCommand(config, installCmd, 120_000, (chunk, stream) => {
@@ -459,10 +459,10 @@ export async function updateRemoteOpencode(config: SshServerConfig, opts: SshTun
 
   // 2. Atualizar OpenCode
   setStep("check_install", "running")
-  log("info", `[2/3] Verificando e atualizando pacote @alltomatos/opencode@latest na VPS...`)
+  log("info", `[2/3] Verificando e atualizando pacote @alltomatos/allcode@latest na VPS...`)
 
   const pathPrefix = 'export PATH="$HOME/.npm-global/bin:$HOME/.local/bin:$HOME/.bun/bin:/usr/local/bin:/usr/bin:/bin:$PATH"'
-  const updateNpmCmd = `${pathPrefix}; (command -v npm >/dev/null 2>&1 && npm install -g @alltomatos/opencode@latest) || (command -v bun >/dev/null 2>&1 && bun add -g @alltomatos/opencode@latest) 2>&1`
+  const updateNpmCmd = `${pathPrefix}; (command -v npm >/dev/null 2>&1 && npm install -g @alltomatos/allcode@latest) || (command -v bun >/dev/null 2>&1 && bun add -g @alltomatos/allcode@latest) 2>&1`
   await runRemoteCommand(config, updateNpmCmd, 120_000, (chunk, stream) => {
     chunk
       .split("\n")
@@ -470,7 +470,7 @@ export async function updateRemoteOpencode(config: SshServerConfig, opts: SshTun
       .filter(Boolean)
       .forEach((l) => log(stream, l))
   })
-  log("success", `[2/3] Pacote @alltomatos/opencode atualizado com sucesso.`)
+  log("success", `[2/3] Pacote @alltomatos/allcode atualizado com sucesso.`)
   setStep("check_install", "done")
 
   // 3. Reiniciar Serviço

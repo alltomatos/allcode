@@ -18,7 +18,7 @@
 
 **Responsabilidade**: reduzir arquivos monolíticos de `packages/app/src` em módulos menores por responsabilidade, sem alterar comportamento.
 
-**Rastreamento**: issues rotuladas `tech-debt` no GitHub (alltomatos/opencode) — #13, #14, #15, #16, #17, #18, #19. Trabalho sequencial, uma issue por vez/PR.
+**Rastreamento**: issues rotuladas `tech-debt` no repositório histórico `alltomatos/opencode` (#13, #14, #15, #16, #17, #18, #19); o tracker atual é `alltomatos/allcode`. Trabalho sequencial, uma issue por vez/PR.
 
 **Invariantes**:
 - `pages/layout.tsx` (#13) e `context/layout.tsx` (#18) NÃO devem ser divididos antes do épico #25 (descontinuação do layout legado / `newLayoutDesigns()`) avançar — dividir agora é trabalho descartável, pois o épico planeja deletar/reescrever esses arquivos por completo. Priorizar as fatias independentes do épico #25 primeiro: #19, #17, #16, #15, #14.

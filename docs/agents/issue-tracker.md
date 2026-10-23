@@ -2,7 +2,7 @@
 
 Issues and PRDs for this repo live as GitHub issues. Use the `gh` CLI for all operations.
 
-- Repo: `alltomatos/opencode` (remote `origin`)
+- Repo: `alltomatos/allcode` (remote `origin`)
 - Default branch: `dev`
 - GitHub é a fonte persistente de escopo, critérios de aceite, dependências e status.
 

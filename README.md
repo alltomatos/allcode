@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://github.com/alltomatos/opencode">
+  <a href="https://github.com/alltomatos/allcode">
     <picture>
       <source srcset="packages/console/app/src/asset/logo-ornate-dark.svg" media="(prefers-color-scheme: dark)">
       <source srcset="packages/console/app/src/asset/logo-ornate-light.svg" media="(prefers-color-scheme: light)">
@@ -11,11 +11,11 @@
 <p align="center">Grupo de Apoio: https://chat.whatsapp.com/DOLzfQ4aPZ12R7ZRbLabNh</p>
 
 <p align="center">
-  <a href="https://github.com/alltomatos/opencode/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/alltomatos/opencode?style=flat-square" /></a>
-  <a href="https://github.com/alltomatos/opencode/actions"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alltomatos/opencode/publish.yml?style=flat-square&branch=dev" /></a>
+  <a href="https://github.com/alltomatos/allcode/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/alltomatos/allcode?style=flat-square" /></a>
+  <a href="https://github.com/alltomatos/allcode/actions"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/alltomatos/allcode/publish.yml?style=flat-square&branch=dev" /></a>
 </p>
 
-[![OpenCode Desktop](packages/web/src/assets/lander/screenshot-splash.png)](https://github.com/alltomatos/opencode)
+[![OpenCode Desktop](packages/web/src/assets/lander/screenshot-splash.png)](https://github.com/alltomatos/allcode)
 
 ---
 
@@ -28,7 +28,7 @@
 
 ---
 
-Este é um fork pessoal do [OpenCode](https://github.com/anomalyco/opencode), mantido por [Alltomatos](https://github.com/alltomatos), com o foco no app desktop para Windows e ajustes de UI/UX específicos deste fork (sidebar de projetos, terminal e browser embutidos no cabeçalho da sessão, seed de skills padrão, entre outros — veja o [changelog](./changelog.json) e as [releases](https://github.com/alltomatos/opencode/releases) para o histórico completo).
+Este é um fork pessoal do [OpenCode](https://github.com/anomalyco/opencode), mantido por [Alltomatos](https://github.com/alltomatos), com o foco no app desktop para Windows e ajustes de UI/UX específicos deste fork (sidebar de projetos, terminal e browser embutidos no cabeçalho da sessão, seed de skills padrão, entre outros — veja o [changelog](./changelog.json) e as [releases](https://github.com/alltomatos/allcode/releases) para o histórico completo).
 
 ### Branches
 
@@ -39,7 +39,7 @@ Este fork trabalha com duas branches:
 
 ### App Desktop (produção)
 
-Baixe o instalador direto na [página de releases](https://github.com/alltomatos/opencode/releases/latest) — sempre gerado a partir da branch `prod`.
+Baixe o instalador direto na [página de releases](https://github.com/alltomatos/allcode/releases/latest) — sempre gerado a partir da branch `prod`.
 
 | Plataforma       | Download                                  |
 | ---------------- | ------------------------------------------ |
@@ -53,15 +53,15 @@ No Windows, baixe e rode o `opencode-desktop-win-x64.exe` (instalador NSIS) — 
 
 > **Nota (macOS):** os builds de Mac não são assinados/notarizados por este fork (não temos uma conta Apple Developer configurada). Na primeira abertura o Gatekeeper vai avisar que o app "não pode ser verificado" — clique com o botão direito no app → **Abrir** para liberar manualmente.
 
-O app verifica atualizações automaticamente contra este repositório (`alltomatos/opencode`), não contra o projeto original.
+O app verifica atualizações automaticamente contra este repositório (`alltomatos/allcode`), não contra o projeto original.
 
 ### Rodando em desenvolvimento
 
 Pra validar mudanças antes de promover `dev` pra `prod`, rode o app desktop localmente a partir da branch `dev`:
 
 ```bash
-git clone https://github.com/alltomatos/opencode.git
-cd opencode
+git clone https://github.com/alltomatos/allcode.git
+cd allcode
 git checkout dev
 bun install
 cd packages/desktop
@@ -87,8 +87,8 @@ O instalador gerado fica em `packages/desktop/dist/`.
 Além do app desktop, o CLI deste fork é publicado direto no npm sob o escopo `@alltomatos`, separado dos pacotes `opencode-ai`/`@opencode-ai/*` do projeto original — instala com canal via a sintaxe `@tag` do próprio npm:
 
 ```bash
-npm install -g @alltomatos/opencode@dev     # última publicada a cada push em dev
-npm install -g @alltomatos/opencode@latest  # última publicada a cada push em prod
+npm install -g @alltomatos/allcode@dev     # última publicada a cada push em dev
+npm install -g @alltomatos/allcode@latest  # última publicada a cada push em prod
 ```
 
 Publicação é automática pelo workflow [`release-npm-fork.yml`](./.github/workflows/release-npm-fork.yml): builda os binários (cross-compilados num único runner) e publica com a tag correspondente à branch. Útil pra testar mudanças de `dev` via CLI/servidor sem precisar instalar o app desktop.

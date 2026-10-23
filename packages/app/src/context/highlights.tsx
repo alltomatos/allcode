@@ -14,7 +14,7 @@ import { DialogReleaseNotes, type Highlight } from "@/components/dialog-release-
 // `dev`'s changelog.json — the previous behavior — showed prod users
 // highlights for a version that isn't the one they're running.
 const CHANGELOG_BRANCH = ["prod", "beta", "latest"].includes(import.meta.env.VITE_OPENCODE_CHANNEL ?? "") ? "prod" : "dev"
-const CHANGELOG_URL = `https://raw.githubusercontent.com/alltomatos/opencode/${CHANGELOG_BRANCH}/changelog.json`
+const CHANGELOG_URL = `https://raw.githubusercontent.com/alltomatos/allcode/${CHANGELOG_BRANCH}/changelog.json`
 
 type Store = {
   version?: string

@@ -4,7 +4,7 @@ Map between this repo's domain concepts and the code that implements them. Extra
 
 ## Projeto
 
-OpenCode — AI-powered development tool. Fork `alltomatos/opencode` (upstream `anomalyco/opencode`), com extensões próprias: Batuta (orquestração de subagentes), provider nativo OmniRoute, app desktop Electron e mobile (ver `docs/prd/`).
+AllCode — AI-powered development tool. Repositório `alltomatos/allcode` (base histórica: fork `alltomatos/opencode` do upstream `anomalyco/opencode`), com extensões próprias: Batuta (orquestração de subagentes), provider nativo OmniRoute, app desktop Electron e mobile (ver `docs/prd/`).
 
 ## Linguagem de domínio (fonte: CONTEXT.md)
 
