@@ -245,6 +245,46 @@ export function AgentUIFormPage() {
   const toggleMcpServer = (name: string, checked: boolean) =>
     setForm("mcpServers", (list) => (checked ? [...list, name] : list.filter((item) => item !== name)))
 
+  // Atalho do MCP izapia dentro da configuração do agente: o servidor sobe em
+  // modo read por padrão e bloqueia POST/PUT/DELETE (envio de WhatsApp incluso).
+  // O toggle abaixo grava IZAPIA_MCP_MODE no config do MCP e o MCP.add
+  // reconecta o servidor com o novo ambiente.
+  const izapiaMcpConfig = () => {
+    const config = serverSync().data.config.mcp?.izapia
+    if (!config || !("type" in config) || config.type !== "local") return undefined
+    return config
+  }
+  const izapiaWriteEnabled = () => izapiaMcpConfig()?.environment?.IZAPIA_MCP_MODE === "write"
+  const [izapiaWriteSaving, setIzapiaWriteSaving] = createSignal(false)
+  const toggleIzapiaWrite = async (enabled: boolean) => {
+    const config = izapiaMcpConfig()
+    if (!config || izapiaWriteSaving()) return
+    setIzapiaWriteSaving(true)
+    try {
+      const environment = { ...config.environment }
+      if (enabled) environment.IZAPIA_MCP_MODE = "write"
+      else delete environment.IZAPIA_MCP_MODE
+      const updated = { ...config, environment }
+      await serverSDK().client.mcp.add({ name: "izapia", config: updated, directory: directory() })
+      serverSync().set("config", "mcp", (prev) => (prev ? { ...prev, izapia: updated } : prev))
+      showToast({
+        variant: "success",
+        icon: "circle-check",
+        title: enabled ? "MCP izapia: modo write ativado" : "MCP izapia: modo write desativado",
+        description: enabled
+          ? "Agora o agente pode enviar mensagens e executar ações de escrita."
+          : "O MCP voltou ao modo somente leitura.",
+      })
+    } catch (cause) {
+      showToast({
+        title: language.t("common.requestFailed"),
+        description: cause instanceof Error ? cause.message : String(cause),
+      })
+    } finally {
+      setIzapiaWriteSaving(false)
+    }
+  }
+
   // izapia-only: fetches the tenant's existing WhatsApp sessions for the
   // API key already typed in, so the person can pick one instead of going
   // to find and paste a sid by hand from the izapia dashboard.
@@ -1349,6 +1389,25 @@ export function AgentUIFormPage() {
                             </For>
                           </div>
                         </Show>
+                      </Show>
+                      <Show when={(mcpServers() ?? []).includes("izapia") && izapiaMcpConfig()}>
+                        <div class="flex items-center justify-between gap-3 rounded-lg border border-v2-border-border-base bg-v2-background-bg-base p-3.5 shadow-sm">
+                          <div class="flex min-w-0 flex-col gap-0.5">
+                            <span class="text-13-regular font-medium text-v2-text-text-base">
+                              MCP izapia — modo write
+                            </span>
+                            <p class="text-11-regular text-v2-text-text-muted leading-relaxed">
+                              Permite enviar mensagens e executar ações de escrita. Sem isso, o MCP izapia fica
+                              somente leitura.
+                            </p>
+                          </div>
+                          <Switch
+                            checked={izapiaWriteEnabled()}
+                            disabled={izapiaWriteSaving()}
+                            aria-label="Ativar modo write no MCP izapia"
+                            onChange={(checked) => void toggleIzapiaWrite(checked)}
+                          />
+                        </div>
                       </Show>
                     </div>
 

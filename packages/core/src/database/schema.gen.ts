@@ -140,7 +140,9 @@ export default {
           \`instance_id\` text PRIMARY KEY,
           \`pid\` integer NOT NULL,
           \`process_title\` text NOT NULL,
-          \`last_seen\` integer NOT NULL
+          \`last_seen\` integer NOT NULL,
+          \`owner_id\` text,
+          \`lease_until\` integer
         );
       `)
       yield* tx.run(`
@@ -152,6 +154,12 @@ export default {
           \`status\` text NOT NULL,
           \`error\` text,
           \`session_id\` text,
+          \`finished_at\` integer,
+          \`trigger_source\` text,
+          \`attempt\` integer DEFAULT 1 NOT NULL,
+          \`scheduled_for\` integer,
+          \`claimed_by\` text,
+          \`lease_until\` integer,
           CONSTRAINT \`fk_schedule_run_schedule_id_schedule_id_fk\` FOREIGN KEY (\`schedule_id\`) REFERENCES \`schedule\`(\`id\`) ON DELETE CASCADE
         );
       `)
@@ -297,6 +305,7 @@ export default {
       yield* tx.run(
         `CREATE INDEX \`schedule_run_schedule_started_idx\` ON \`schedule_run\` (\`schedule_id\`,\`started_at\`);`,
       )
+      yield* tx.run(`CREATE INDEX \`schedule_run_status_started_idx\` ON \`schedule_run\` (\`status\`,\`started_at\`);`)
       yield* tx.run(
         `CREATE INDEX \`message_session_time_created_id_idx\` ON \`message\` (\`session_id\`,\`time_created\`,\`id\`);`,
       )

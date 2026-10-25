@@ -15,24 +15,26 @@ import { SessionID } from "@/session/schema"
 
 import { Combo } from "@/combo"
 
+const AUTONOMOUS_INSTRUCTION =
+  "Você está executando uma rotina automática, sem usuário presente. Nunca faça perguntas nem aguarde input humano. Se faltar informação, credencial ou permissão, registre o bloqueio no relatório final e encerre a execução."
+
 function buildPermissions(
   mcpTools: readonly { server: string; tool: string }[] | undefined,
   permissionMode?: "auto" | "bypass" | "default",
 ): PermissionV1.Ruleset {
-  if (permissionMode === "bypass" || permissionMode === "auto") {
-    return [{ permission: "*", pattern: "*", action: "allow" }]
-  }
+  const rules: PermissionV1.Rule[] = []
 
-  // If specific MCP tools are specified:
-  if (mcpTools && mcpTools.length > 0) {
-    const rules: PermissionV1.Rule[] = [
-      // Standard built-in tools allowed for general inspection/reasoning
+  if (permissionMode === "bypass" || permissionMode === "auto") {
+    rules.push({ permission: "*", pattern: "*", action: "allow" })
+  } else if (mcpTools && mcpTools.length > 0) {
+    // Standard built-in tools allowed for general inspection/reasoning
+    rules.push(
       { permission: "read", pattern: "*", action: "allow" },
       { permission: "glob", pattern: "*", action: "allow" },
       { permission: "grep", pattern: "*", action: "allow" },
       { permission: "webfetch", pattern: "*", action: "allow" },
       { permission: "todowrite", pattern: "*", action: "allow" },
-    ]
+    )
     for (const tool of mcpTools) {
       rules.push({
         permission: `${McpCatalog.sanitize(tool.server)}_${tool.tool}`,
@@ -46,13 +48,15 @@ function buildPermissions(
         action: "allow",
       })
     }
-    return rules
+  } else {
+    // Default: allow safe tools + all MCP tools
+    rules.push({ permission: "*", pattern: "*", action: "allow" })
   }
 
-  // Default: allow safe tools + all MCP tools
-  return [
-    { permission: "*", pattern: "*", action: "allow" },
-  ]
+  // Rotinas não têm usuário presente: a tool `question` bloquearia o loop até
+  // o timeout. Regra negada por último vence (findLast), inclusive sobre `*`.
+  rules.push({ permission: "question", pattern: "*", action: "deny" })
+  return rules
 }
 
 /** Wires the Schedule engine's skill action to OpenCode's real Session execution loop. */
@@ -105,7 +109,7 @@ export const layer = Layer.effect(
 
             const permissionRules = buildPermissions(action.mcpTools, action.permission)
 
-            let effectivePrompt = action.instructions
+            let effectivePrompt = `${AUTONOMOUS_INSTRUCTION}\n\n${action.instructions}`
             if (action.workspaces && action.workspaces.length > 0) {
               effectivePrompt += `\n\nPastas / Repositórios de trabalho adicionais configurados:\n` +
                 action.workspaces.map((w, idx) => `- Pasta ${idx + 1}: ${w}`).join("\n")

@@ -22,6 +22,8 @@ export const DaemonHeartbeatTable = sqliteTable("daemon_heartbeat", {
   pid: integer().notNull(),
   process_title: text().notNull(),
   last_seen: integer().notNull(),
+  owner_id: text(),
+  lease_until: integer(),
 })
 
 export const ScheduleRunTable = sqliteTable(
@@ -33,10 +35,19 @@ export const ScheduleRunTable = sqliteTable(
       .references(() => ScheduleTable.id, { onDelete: "cascade" }),
     started_at: integer().notNull(),
     duration_ms: integer().notNull(),
-    status: text().$type<"success" | "error">().notNull(),
+    status: text().$type<Schedule.RunStatus>().notNull(),
     error: text(),
     session_id: text(),
+    finished_at: integer(),
+    trigger_source: text().$type<Schedule.RunTrigger>(),
+    attempt: integer().notNull().default(1),
+    scheduled_for: integer(),
+    claimed_by: text(),
+    lease_until: integer(),
   },
-  (table) => [index("schedule_run_schedule_started_idx").on(table.schedule_id, table.started_at)],
+  (table) => [
+    index("schedule_run_schedule_started_idx").on(table.schedule_id, table.started_at),
+    index("schedule_run_status_started_idx").on(table.status, table.started_at),
+  ],
 )
 

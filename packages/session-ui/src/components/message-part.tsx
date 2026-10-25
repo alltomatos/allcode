@@ -1496,7 +1496,12 @@ export const ToolRegistry = {
   render: getTool,
 }
 
-function ToolFileAccordion(props: { path: string; actions?: JSX.Element; children: JSX.Element }) {
+function ToolFileAccordion(props: {
+  path: string
+  defaultOpen?: boolean
+  actions?: JSX.Element
+  children: JSX.Element
+}) {
   const value = createMemo(() => props.path || "tool-file")
 
   return (
@@ -1504,7 +1509,7 @@ function ToolFileAccordion(props: { path: string; actions?: JSX.Element; childre
       multiple
       data-scope="apply-patch"
       style={{ "--sticky-accordion-offset": "calc(32px + var(--tool-content-gap))" }}
-      defaultValue={[value()]}
+      defaultValue={props.defaultOpen === false ? [] : [value()]}
     >
       <Accordion.Item value={value()}>
         <StickyAccordionHeader>
@@ -2291,6 +2296,7 @@ ToolRegistry.register({
       const k = mediaKind()
       return k === "image" || k === "svg"
     })
+    const isSvg = createMemo(() => mediaKind() === "svg")
 
     const imageSource = createMemo(() => {
       if (!isImageOrSvg() || !props.input.content) return undefined
@@ -2353,7 +2359,7 @@ ToolRegistry.register({
             )}
           </Show>
           <Show when={props.input.content && path()}>
-            <ToolFileAccordion path={path()}>
+            <ToolFileAccordion path={path()} defaultOpen={!isSvg()}>
               <div data-component="write-content">
                 <Dynamic
                   component={fileComponent}

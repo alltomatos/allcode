@@ -208,34 +208,61 @@ export const SettingsMcpV2: Component = () => {
   }))
 
   const openAdd = () => {
-    dialog.push(() => <DialogMcpAddV2 onAdded={() => void refetch()} />)
+    void dialog.push(() => <DialogMcpAddV2 onAdded={() => void refetch()} />)
   }
 
-  const openEdit = (name: string) => {
-    if (name === MAIL_MCP_SERVER) {
-      dialog.push(() => <DialogMailAccountV2 onAdded={() => void refetch()} />)
-      return
+  const [editing, setEditing] = createSignal<string | undefined>()
+  const openEdit = async (name: string) => {
+    setEditing(name)
+    try {
+      if (name === MAIL_MCP_SERVER) {
+        void dialog.push(() => <DialogMailAccountV2 onAdded={() => void refetch()} />)
+        return
+      }
+
+      // `serverSync().data.config` is the global store, which is empty on v2
+      // servers (loadGlobalConfigQuery intentionally skips v2). Fall back to the
+      // instance config endpoint so the edit action always has something to open.
+      let config = configs()[name]
+      if (!config) {
+        try {
+          const result = await serverSDK().client.config.get()
+          const fetched = result.data?.mcp?.[name]
+          if (fetched) config = fetched
+        } catch {
+          // handled by the toast below
+        }
+      }
+
+      if (!config || !("type" in config)) {
+        showToast({
+          title: language.t("common.requestFailed"),
+          description: `Não foi possível carregar a configuração do MCP "${name}".`,
+        })
+        return
+      }
+
+      const existing: McpExistingServer = {
+        name,
+        config: {
+          type: config.type,
+          command: config.type === "local" ? config.command : undefined,
+          cwd: config.type === "local" ? config.cwd : undefined,
+          environment: config.type === "local" ? config.environment : undefined,
+          url: config.type === "remote" ? config.url : undefined,
+          headers: config.type === "remote" ? config.headers : undefined,
+          timeout: config.timeout,
+          oauth: config.type === "remote" ? config.oauth : undefined,
+        },
+      }
+      void dialog.push(() => <DialogMcpAddV2 existing={existing} onAdded={() => void refetch()} />)
+    } finally {
+      setEditing(undefined)
     }
-    const config = configs()[name]
-    if (!config || !("type" in config)) return
-    const existing: McpExistingServer = {
-      name,
-      config: {
-        type: config.type,
-        command: config.type === "local" ? config.command : undefined,
-        cwd: config.type === "local" ? config.cwd : undefined,
-        environment: config.type === "local" ? config.environment : undefined,
-        url: config.type === "remote" ? config.url : undefined,
-        headers: config.type === "remote" ? config.headers : undefined,
-        timeout: config.timeout,
-        oauth: config.type === "remote" ? config.oauth : undefined,
-      },
-    }
-    dialog.push(() => <DialogMcpAddV2 existing={existing} onAdded={() => void refetch()} />)
   }
 
   const confirmRemove = (name: string) => {
-    dialog.show(() => (
+    void dialog.show(() => (
       <Dialog fit>
         <DialogHeader hideClose={true}>
           <DialogTitle>{language.t("settings.mcp.remove.confirm.title")}</DialogTitle>
@@ -347,8 +374,9 @@ export const SettingsMcpV2: Component = () => {
                         </Show>
                         <IconButtonV2
                           variant="ghost-muted"
+                          disabled={editing() === item.name}
                           aria-label={language.t("common.edit")}
-                          onClick={() => openEdit(item.name)}
+                          onClick={() => void openEdit(item.name)}
                           icon={<IconV2 name="edit" size="small" />}
                         />
                         <IconButtonV2

@@ -1,14 +1,23 @@
 export * as Schedule from "./schedule"
 
-import { asc, eq } from "drizzle-orm"
+import { and, asc, eq, gt, lt, sql } from "drizzle-orm"
 import { Context, Effect, Layer, Schema } from "effect"
 import { Schedule } from "@allcode/schema/schedule"
 import { Database } from "./database/database"
 import { makeGlobalNode } from "./effect/app-node"
-import { ScheduleTable } from "./schedule/sql"
+import { DaemonHeartbeatTable, ScheduleRunTable, ScheduleTable } from "./schedule/sql"
 
 export const ID = Schedule.ID
 export type ID = Schedule.ID
+
+export const RunID = Schedule.RunID
+export type RunID = Schedule.RunID
+
+export const RunStatus = Schedule.RunStatus
+export type RunStatus = Schedule.RunStatus
+
+export const RunTrigger = Schedule.RunTrigger
+export type RunTrigger = Schedule.RunTrigger
 
 export const Trigger = Schedule.Trigger
 export type Trigger = Schedule.Trigger
@@ -69,6 +78,42 @@ export interface UpdateInput {
   readonly lastError?: string | null
   readonly lastSessionId?: string
 }
+
+export interface StartRunInput {
+  readonly scheduleId: ID
+  readonly trigger: RunTrigger
+  readonly scheduledFor?: number
+  readonly attempt?: number
+  readonly claimedBy: string
+  readonly leaseUntil?: number
+  readonly disableSchedule?: boolean
+}
+
+export interface StartRunResult {
+  readonly id: RunID
+  readonly startedAt: number
+}
+
+export interface FinishRunInput {
+  readonly runId: RunID
+  readonly scheduleId: ID
+  readonly startedAt: number
+  readonly status: RunStatus
+  readonly error?: string
+  readonly sessionId?: string
+  readonly durationMs: number
+  readonly finishedAt?: number
+}
+
+export interface LeaseInput {
+  readonly ownerId: string
+  readonly pid: number
+  readonly processTitle: string
+  readonly ttlMs: number
+}
+
+export const LEASE_ROW_ID = "scheduler"
+const DEFAULT_RUN_LEASE_MS = 31 * 60_000
 
 export class InvalidCronError extends Schema.TaggedErrorClass<InvalidCronError>()("Schedule.InvalidCronError", {
   message: Schema.String,
@@ -196,6 +241,13 @@ export interface Interface {
   readonly create: (input: CreateInput) => Effect.Effect<Info, InvalidCronError | InvalidCommandError>
   readonly update: (id: ID, updates: UpdateInput) => Effect.Effect<Info | undefined>
   readonly remove: (id: ID) => Effect.Effect<void>
+  readonly startRun: (input: StartRunInput) => Effect.Effect<StartRunResult | undefined>
+  readonly finishRun: (input: FinishRunInput) => Effect.Effect<void>
+  readonly failStaleRuns: (now: number, message: string) => Effect.Effect<number>
+  readonly claimLease: (input: LeaseInput) => Effect.Effect<boolean>
+  readonly renewLease: (input: LeaseInput) => Effect.Effect<boolean>
+  readonly releaseLease: (ownerId: string) => Effect.Effect<void>
+  readonly purgeRuns: (before: number) => Effect.Effect<void>
 }
 
 export class Service extends Context.Service<Service, Interface>()("@opencode/v2/Schedule") {}
@@ -300,6 +352,188 @@ export const layer = Layer.effect(
       }),
       remove: Effect.fn("v2.Schedule.remove")(function* (id) {
         yield* db.delete(ScheduleTable).where(eq(ScheduleTable.id, id)).run().pipe(Effect.orDie)
+      }),
+      startRun: Effect.fn("v2.Schedule.startRun")(function* (input) {
+        const startedAt = Date.now()
+        const runID = Schedule.RunID.create()
+        const leaseUntil = input.leaseUntil ?? startedAt + DEFAULT_RUN_LEASE_MS
+        return yield* db
+          .transaction((tx) =>
+            Effect.gen(function* () {
+              // Uma rotina só pode ter uma execução ativa por vez. A transação
+              // serializa o claim para evitar sobreposição entre tick e "Rodar agora".
+              const active = yield* tx
+                .select({ id: ScheduleRunTable.id })
+                .from(ScheduleRunTable)
+                .where(
+                  and(
+                    eq(ScheduleRunTable.schedule_id, input.scheduleId),
+                    eq(ScheduleRunTable.status, "running"),
+                    gt(ScheduleRunTable.lease_until, startedAt),
+                  ),
+                )
+                .get()
+              if (active) return undefined
+
+              yield* tx
+                .insert(ScheduleRunTable)
+                .values({
+                  id: runID,
+                  schedule_id: input.scheduleId,
+                  started_at: startedAt,
+                  duration_ms: 0,
+                  status: "running",
+                  error: null,
+                  session_id: null,
+                  finished_at: null,
+                  trigger_source: input.trigger,
+                  attempt: input.attempt ?? 1,
+                  scheduled_for: input.scheduledFor ?? null,
+                  claimed_by: input.claimedBy,
+                  lease_until: leaseUntil,
+                })
+                .run()
+
+              // Marca last_run_at já no claim: evita que o próximo tick
+              // selecione novamente a mesma rotina enquanto ela executa.
+              // Update cru para não bumpar time_updated (edição do usuário).
+              yield* tx.run(sql`
+                UPDATE schedule
+                SET last_run_at = ${startedAt},
+                    enabled = CASE WHEN ${input.disableSchedule ? 1 : 0} = 1 THEN 0 ELSE enabled END
+                WHERE id = ${input.scheduleId}
+              `)
+
+              return { id: runID, startedAt }
+            }),
+          )
+          .pipe(Effect.orDie)
+      }),
+      finishRun: Effect.fn("v2.Schedule.finishRun")(function* (input) {
+        const finishedAt = input.finishedAt ?? Date.now()
+        yield* db
+          .update(ScheduleRunTable)
+          .set({
+            status: input.status,
+            error: input.error ?? null,
+            session_id: input.sessionId ?? null,
+            duration_ms: input.durationMs,
+            finished_at: finishedAt,
+            lease_until: null,
+          })
+          .where(eq(ScheduleRunTable.id, input.runId))
+          .run()
+          .pipe(Effect.orDie)
+
+        // Cache denormalizado para a UI. timeout/cancelled/skipped viram "error".
+        yield* db.run(sql`
+          UPDATE schedule
+          SET last_run_at = ${input.startedAt},
+              last_status = ${input.status === "success" ? "success" : "error"},
+              last_error = ${input.error ?? null},
+              last_session_id = ${input.sessionId ?? null}
+          WHERE id = ${input.scheduleId}
+        `).pipe(Effect.orDie)
+      }),
+      failStaleRuns: Effect.fn("v2.Schedule.failStaleRuns")(function* (now, message) {
+        const stale = yield* db
+          .select({ id: ScheduleRunTable.id, schedule_id: ScheduleRunTable.schedule_id })
+          .from(ScheduleRunTable)
+          .where(
+            and(
+              eq(ScheduleRunTable.status, "running"),
+              lt(ScheduleRunTable.lease_until, now),
+            ),
+          )
+          .all()
+          .pipe(Effect.orDie)
+        if (stale.length === 0) return 0
+
+        yield* db.run(sql`
+          UPDATE schedule_run
+          SET status = 'error',
+              error = ${message},
+              finished_at = ${now},
+              duration_ms = ${now} - started_at,
+              lease_until = NULL
+          WHERE status = 'running'
+            AND lease_until IS NOT NULL
+            AND lease_until < ${now}
+        `).pipe(Effect.orDie)
+
+        // Atualiza o cache denormalizado exibido pela UI sem tocar time_updated.
+        for (const scheduleId of new Set(stale.map((row) => row.schedule_id))) {
+          yield* db.run(sql`
+            UPDATE schedule
+            SET last_status = 'error',
+                last_error = ${message}
+            WHERE id = ${scheduleId}
+          `).pipe(Effect.orDie)
+        }
+        return stale.length
+      }),
+      claimLease: Effect.fn("v2.Schedule.claimLease")(function* (input) {
+        const now = Date.now()
+        const leaseUntil = now + input.ttlMs
+        yield* db.run(sql`
+          INSERT INTO daemon_heartbeat (instance_id, pid, process_title, last_seen, owner_id, lease_until)
+          VALUES (${LEASE_ROW_ID}, ${input.pid}, ${input.processTitle}, ${now}, ${input.ownerId}, ${leaseUntil})
+          ON CONFLICT(instance_id) DO UPDATE SET
+            owner_id = excluded.owner_id,
+            pid = excluded.pid,
+            process_title = excluded.process_title,
+            last_seen = excluded.last_seen,
+            lease_until = excluded.lease_until
+          WHERE daemon_heartbeat.owner_id IS NULL
+             OR daemon_heartbeat.owner_id = excluded.owner_id
+             OR daemon_heartbeat.lease_until IS NULL
+             OR daemon_heartbeat.lease_until < ${now}
+        `).pipe(Effect.orDie)
+
+        const row = yield* db
+          .select()
+          .from(DaemonHeartbeatTable)
+          .where(eq(DaemonHeartbeatTable.instance_id, LEASE_ROW_ID))
+          .get()
+          .pipe(Effect.orDie)
+        return row?.owner_id === input.ownerId
+      }),
+      renewLease: Effect.fn("v2.Schedule.renewLease")(function* (input) {
+        const now = Date.now()
+        const leaseUntil = now + input.ttlMs
+        yield* db.run(sql`
+          UPDATE daemon_heartbeat
+          SET last_seen = ${now},
+              lease_until = ${leaseUntil},
+              pid = ${input.pid},
+              process_title = ${input.processTitle}
+          WHERE instance_id = ${LEASE_ROW_ID}
+            AND owner_id = ${input.ownerId}
+        `).pipe(Effect.orDie)
+
+        const row = yield* db
+          .select()
+          .from(DaemonHeartbeatTable)
+          .where(eq(DaemonHeartbeatTable.instance_id, LEASE_ROW_ID))
+          .get()
+          .pipe(Effect.orDie)
+        return row?.owner_id === input.ownerId
+      }),
+      releaseLease: Effect.fn("v2.Schedule.releaseLease")(function* (ownerId) {
+        yield* db.run(sql`
+          UPDATE daemon_heartbeat
+          SET owner_id = NULL,
+              lease_until = NULL
+          WHERE instance_id = ${LEASE_ROW_ID}
+            AND owner_id = ${ownerId}
+        `).pipe(Effect.orDie)
+      }),
+      purgeRuns: Effect.fn("v2.Schedule.purgeRuns")(function* (before) {
+        yield* db
+          .delete(ScheduleRunTable)
+          .where(lt(ScheduleRunTable.started_at, before))
+          .run()
+          .pipe(Effect.orDie)
       }),
     })
   }),
