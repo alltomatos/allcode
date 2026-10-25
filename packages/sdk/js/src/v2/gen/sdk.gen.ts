@@ -529,6 +529,16 @@ import type {
   WhatsappIzapiaGroupsResponses,
   WhatsappIzapiaSessionsErrors,
   WhatsappIzapiaSessionsResponses,
+  WhatsappNativeConnectErrors,
+  WhatsappNativeConnectResponses,
+  WhatsappNativeEventsErrors,
+  WhatsappNativeEventsResponses,
+  WhatsappNativeGroupsErrors,
+  WhatsappNativeGroupsResponses,
+  WhatsappNativeLogoutErrors,
+  WhatsappNativeLogoutResponses,
+  WhatsappNativeStatusErrors,
+  WhatsappNativeStatusResponses,
   WhatsappWebhookErrors,
   WhatsappWebhookResponses,
   WorkspaceSource,
@@ -6729,6 +6739,121 @@ export class Tui extends HeyApiClient {
 }
 
 export class Whatsapp extends HeyApiClient {
+  /**
+   * Get native WhatsApp connection status
+   *
+   * Returns connection state, connected phone number, and errors for the given agent.
+   */
+  public nativeStatus<ThrowOnError extends boolean = false>(
+    parameters: {
+      agentId: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "path", key: "agentId" }] }])
+    return (options?.client ?? this.client).get<
+      WhatsappNativeStatusResponses,
+      WhatsappNativeStatusErrors,
+      ThrowOnError
+    >({
+      url: "/whatsapp/native/{agentId}",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Initiate native WhatsApp pairing/connection
+   *
+   * Starts WaClient pairing (emitting QR) or connects existing session for this agent.
+   */
+  public nativeConnect<ThrowOnError extends boolean = false>(
+    parameters: {
+      agentId: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "path", key: "agentId" }] }])
+    return (options?.client ?? this.client).post<
+      WhatsappNativeConnectResponses,
+      WhatsappNativeConnectErrors,
+      ThrowOnError
+    >({
+      url: "/whatsapp/native/{agentId}/connect",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Disconnect native WhatsApp session
+   *
+   * Logs out the native WhatsApp session and removes credentials.
+   */
+  public nativeLogout<ThrowOnError extends boolean = false>(
+    parameters: {
+      agentId: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "path", key: "agentId" }] }])
+    return (options?.client ?? this.client).post<
+      WhatsappNativeLogoutResponses,
+      WhatsappNativeLogoutErrors,
+      ThrowOnError
+    >({
+      url: "/whatsapp/native/{agentId}/logout",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * Subscribe to native WhatsApp events (SSE)
+   *
+   * Receives QR codes and connection state changes in real time.
+   */
+  public nativeEvents<ThrowOnError extends boolean = false>(
+    parameters: {
+      agentId: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "path", key: "agentId" }] }])
+    return (options?.client ?? this.client).sse.get<
+      WhatsappNativeEventsResponses,
+      WhatsappNativeEventsErrors,
+      ThrowOnError
+    >({
+      url: "/whatsapp/native/{agentId}/events",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * List WhatsApp groups
+   *
+   * Lists all WhatsApp groups the account belongs to, identifying if it is an admin.
+   */
+  public nativeGroups<ThrowOnError extends boolean = false>(
+    parameters: {
+      agentId: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams([parameters], [{ args: [{ in: "path", key: "agentId" }] }])
+    return (options?.client ?? this.client).get<
+      WhatsappNativeGroupsResponses,
+      WhatsappNativeGroupsErrors,
+      ThrowOnError
+    >({
+      url: "/whatsapp/native/{agentId}/groups",
+      ...options,
+      ...params,
+    })
+  }
+
   /**
    * Receive a WhatsApp webhook for an AgentUI agent
    *

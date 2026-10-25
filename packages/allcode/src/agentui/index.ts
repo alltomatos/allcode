@@ -22,7 +22,7 @@ import { type LanguageModelV3 } from "@ai-sdk/provider"
 import { McpCatalog } from "@/mcp/catalog"
 import { Global } from "@allcode/core/global"
 import { createConnector } from "waconector"
-import { buildAdapter } from "@/whatsapp/adapter"
+import { buildExternalAdapter } from "@/whatsapp/adapter"
 import path from "node:path"
 import fs from "node:fs/promises"
 
@@ -148,6 +148,7 @@ export interface Interface {
     memoryEnabled?: boolean,
     filesystemEnabled?: boolean,
     terminalEnabled?: boolean,
+    whatsappEnabled?: boolean,
   ) => PermissionV1.Ruleset
   // Resolves an agent's `model` field ("providerID/modelID" or
   // "combo:<id>", same encoding ModelPickerV2 uses) to a concrete pair.
@@ -379,6 +380,7 @@ const layer = Layer.effect(
       memoryEnabled?: boolean,
       filesystemEnabled?: boolean,
       terminalEnabled?: boolean,
+      whatsappEnabled?: boolean,
     ): PermissionV1.Ruleset => [
       // Wildcard deny-everything, not a per-category list: anything not
       // covered by an explicit rule below falls through to the *default*
@@ -427,10 +429,15 @@ const layer = Layer.effect(
             { permission: "external_directory", pattern: "*", action: "allow" },
           ] as PermissionV1.Rule[])
         : []),
-      ...(terminalEnabled
+        ...(terminalEnabled
         ? ([
             { permission: "bash", pattern: "*", action: "allow" },
             { permission: "external_directory", pattern: "*", action: "allow" },
+          ] as PermissionV1.Rule[])
+        : []),
+      ...(whatsappEnabled
+        ? ([
+            { permission: "whatsapp", pattern: "*", action: "allow" },
           ] as PermissionV1.Rule[])
         : []),
     ]
@@ -527,7 +534,11 @@ const layer = Layer.effect(
         return { reply, blocked: true }
       }
 
-      const targetDirectory = input.directory || (yield* getProjectDirectory())
+      // `input.directory` vem de um canal externo (WhatsApp/Telegram) e pode ser
+      // vazio ou um rótulo não-absoluto (ex.: "default"). O InstanceStore exige
+      // caminho absoluto — nesse caso caímos no diretório central do AgentUI.
+      const targetDirectory =
+        input.directory && path.isAbsolute(input.directory) ? input.directory : yield* getProjectDirectory()
       const ctx = yield* instanceStore.load({ directory: targetDirectory })
       const sessionKey = `${input.id}:${input.chatKey}`
       const permissions = sessionPermission(
@@ -537,6 +548,7 @@ const layer = Layer.effect(
         agent.memoryEnabled,
         agent.filesystemEnabled,
         agent.terminalEnabled,
+        agent.whatsappEnabled,
       )
       const sessionID = yield* Effect.gen(function* () {
         const existing = channelSessions.get(sessionKey)
@@ -587,25 +599,44 @@ const layer = Layer.effect(
         })),
       ]
 
-      const promptResult = yield* promptSvc
-        .prompt({
-          sessionID: SessionID.make(sessionID),
-          model,
-          system,
-          parts: promptParts,
-        })
-        .pipe(
-          Effect.provideService(InstanceRef, ctx),
-          Effect.catchCause((cause) => {
-            const err = Cause.squash(cause)
-            const message = err instanceof Error ? err.message : String(err)
-            return Effect.logError("agentui channel prompt failed", { id: input.id, chatKey: input.chatKey, cause: message }).pipe(
-              Effect.as(undefined),
-            )
-          }),
-        )
+      // Em canal (WhatsApp/Telegram) não existe UI para reescolher modelo: se o
+      // catálogo v2 ainda não sincronizou o modelo (cold start, primeira
+      // mensagem logo após subir), a chamada falha com "Model not found" e o
+      // usuário fica sem resposta. Reexecutamos algumas vezes com backoff —
+      // o mesmo pedido força o syncFromCatalog do SessionPrompt a cada tentativa.
+      const runPrompt = (attempt: number): Effect.Effect<SessionV1.WithParts | undefined> =>
+        promptSvc
+          .prompt({
+            sessionID: SessionID.make(sessionID),
+            model: model ? { providerID: model.providerID, modelID: model.modelID } : undefined,
+            system,
+            parts: promptParts,
+          })
+          .pipe(
+            Effect.provideService(InstanceRef, ctx),
+            Effect.catchCause((cause) => {
+              const err = Cause.squash(cause)
+              const message = err instanceof Error ? err.message : String(err)
+              const retryable = /Model not found/i.test(message)
+              if (retryable && attempt > 0) {
+                console.log(
+                  `[AgentUI Prompt Retry] ${message} — tentando novamente (${attempt} restantes)`,
+                )
+                return Effect.sleep("3 seconds").pipe(Effect.andThen(runPrompt(attempt - 1)))
+              }
+              console.error(`[AgentUI Prompt Error] id=${input.id} chatKey=${input.chatKey}:`, message, cause)
+              return Effect.logError("agentui channel prompt failed", {
+                id: input.id,
+                chatKey: input.chatKey,
+                cause: message,
+              }).pipe(Effect.as(undefined))
+            }),
+          )
+
+      const promptResult = yield* runPrompt(4)
 
       let reply = promptResult ? extractText(promptResult) : ""
+      console.log(`[AgentUI Prompt Result Direct Text] "${reply}" (parts count: ${promptResult?.parts?.length ?? 0})`)
       if (!reply) {
         // Se a chamada direta não retornou texto (ou teve erro capturado), busca a última mensagem de assistente persistida na sessão
         const history = yield* sessions.messages({ sessionID: SessionID.make(sessionID), limit: 5 }).pipe(
@@ -614,6 +645,7 @@ const layer = Layer.effect(
         const lastAsst = history.findLast((m) => m.info.role === "assistant")
         if (lastAsst) {
           reply = extractText(lastAsst)
+          console.log(`[AgentUI Fallback History Text] "${reply}"`)
           if (!reply && "error" in lastAsst.info && lastAsst.info.error) {
             const errObj = lastAsst.info.error as { message?: string }
             if (errObj.message) reply = `⚠️ ${errObj.message}`
@@ -621,6 +653,7 @@ const layer = Layer.effect(
         }
       }
       if (!reply) reply = "(sem resposta)"
+      console.log(`[AgentUI Final Outgoing Reply] "${reply}"`)
       yield* logAudit(input.id, { channel, chatKey: input.chatKey, incoming: input.message, outgoing: reply, blocked: false })
       return { reply, blocked: false }
     })
@@ -758,13 +791,33 @@ const layer = Layer.effect(
         const modelCheck = yield* Effect.gen(function* () {
           const targetDir = agent.channels.find((c) => c.directory)?.directory || (yield* getProjectDirectory())
           const ctx = yield* instanceStore.load({ directory: targetDir })
-          return yield* provider.getModel(
-            ProviderV2.ID.make(resolved.providerID),
-            ModelV2.ID.make(resolved.modelID),
-          ).pipe(
-            Effect.provideService(InstanceRef, ctx),
-            Effect.exit,
-          )
+
+          // Resolve via promptSvc / sessionPrompt que já conhece todo o catálogo v2 e rotação OAuth (AGY, AGY CLI, etc)
+          const session = yield* sessions
+            .create({
+              title: "diagnostic:model-check",
+              directory: targetDir,
+              permission: [],
+            })
+            .pipe(Effect.provideService(InstanceRef, ctx))
+
+          const checkExit = yield* promptSvc
+            .prompt({
+              sessionID: SessionID.make(session.id),
+              model: {
+                providerID: ProviderV2.ID.make(resolved.providerID),
+                modelID: ModelV2.ID.make(resolved.modelID),
+              },
+              parts: [{ type: "text", text: "ping" }],
+              noReply: true,
+            })
+            .pipe(
+              Effect.provideService(InstanceRef, ctx),
+              Effect.exit,
+            )
+
+          yield* sessions.remove(session.id).pipe(Effect.ignore)
+          return checkExit
         })
 
         if (Exit.isSuccess(modelCheck)) {
@@ -817,38 +870,72 @@ const layer = Layer.effect(
       // 4. Canal WhatsApp
       const waChannel = agent.channels.find((c) => c.type === "whatsapp")
       if (waChannel) {
-        const waCheck = yield* Effect.promise(async () => {
-          try {
-            const adapter = buildAdapter(waChannel)
-            const connector = createConnector(adapter)
-            let statusText = "desconhecido"
-            let isOk = false
-            if (connector.capabilities.includes("instance.status")) {
-              const st = await connector.instance.status().catch((err: any) => ({ state: "error", raw: err.message }))
-              statusText = st.state
-              isOk = st.state === "connected" || st.state === "connecting" || st.state === "qr"
-            } else {
-              statusText = "provedor configurado (sem suporte a status direto)"
-              isOk = true
-            }
+        if (ConfigAgentUIV1.isNativeWhatsAppChannel(waChannel)) {
+          const nativeCheck = yield* Effect.tryPromise(async () => {
+            const { getWhatsAppNativeStore } = await import("@/whatsapp-native/store")
+            const { store } = await getWhatsAppNativeStore()
+            const session = store.session(agent.id)
+            const creds = await session.auth.load().catch(() => undefined)
             return {
-              name: `WhatsApp (${waChannel.provider})`,
-              status: isOk ? (statusText === "connected" ? ("ok" as const) : ("warning" as const)) : ("error" as const),
-              message: `Status da instância: ${statusText}`,
-              details: waChannel.publicUrl
-                ? `Webhook host: ${waChannel.publicUrl}`
-                : "Webhook host: padrão local",
+              hasCreds: Boolean(creds?.meJid),
+              phone: creds?.meJid ? creds.meJid.split("@")[0].split(":")[0] : undefined,
             }
-          } catch (cause) {
-            return {
-              name: `WhatsApp (${waChannel.provider})`,
-              status: "error" as const,
-              message: "Falha na conexão com o gateway do WhatsApp.",
-              details: cause instanceof Error ? cause.message : String(cause),
+          }).pipe(
+            Effect.catch(() => Effect.succeed({ hasCreds: false, phone: undefined })),
+          )
+          const isConnected = nativeCheck.hasCreds
+          items.push({
+            name: "WhatsApp (zapo nativo)",
+            status: isConnected ? "ok" : "warning",
+            message: isConnected
+              ? `Credenciais nativas salvas no SQLite${nativeCheck.phone ? ` (+${nativeCheck.phone})` : ""}`
+              : "Sem pareamento ativo (necessário escanear QR Code)",
+            details: isConnected
+              ? "Sessão persistida no SQLite e gerenciada pelo supervisor de conexão."
+              : "Abra a aba Canais e clique em Conectar para escanear o QR Code.",
+          })
+        } else {
+          const waCheck = yield* Effect.promise(async () => {
+            try {
+              const adapter = buildExternalAdapter(waChannel)
+              if (!adapter) {
+                return {
+                  name: "WhatsApp (API externa)",
+                  status: "error" as const,
+                  message: "Provider de API externa não suportado.",
+                  details: `Provider gravado: "${waChannel.provider ?? "(vazio)"}". Escolha um provider válido do waconector ou use a conexão nativa.`,
+                }
+              }
+              const connector = createConnector(adapter)
+              let statusText = "desconhecido"
+              let isOk = false
+              if (connector.capabilities.includes("instance.status")) {
+                const st = await connector.instance.status().catch((err: any) => ({ state: "error", raw: err.message }))
+                statusText = st.state
+                isOk = st.state === "connected" || st.state === "connecting" || st.state === "qr"
+              } else {
+                statusText = "provedor configurado (sem suporte a status direto)"
+                isOk = true
+              }
+              return {
+                name: `WhatsApp (${waChannel.provider})`,
+                status: isOk ? (statusText === "connected" ? ("ok" as const) : ("warning" as const)) : ("error" as const),
+                message: `Status da instância: ${statusText}`,
+                details: waChannel.publicUrl
+                  ? `Webhook host: ${waChannel.publicUrl}`
+                  : "Webhook host: padrão local",
+              }
+            } catch (cause) {
+              return {
+                name: `WhatsApp (${waChannel.provider})`,
+                status: "error" as const,
+                message: "Falha na conexão com o gateway do WhatsApp.",
+                details: cause instanceof Error ? cause.message : String(cause),
+              }
             }
-          }
-        })
-        items.push(waCheck)
+          })
+          items.push(waCheck)
+        }
       }
 
       // 5. Canal Telegram

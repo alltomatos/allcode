@@ -392,11 +392,20 @@ export const McpLogoutCommand = effectCmd({
 })
 
 async function resolveConfigPath(baseDir: string, global = false) {
-  // Check for existing config files (prefer .jsonc over .json, check .opencode/ subdirectory too)
-  const candidates = [path.join(baseDir, "opencode.json"), path.join(baseDir, "opencode.jsonc")]
+  // Preferência: arquivos modernos do AllCode (`allcode.jsonc`/`allcode.json`)
+  // e, só depois, os legados (`opencode.jsonc`/`opencode.json`). O diretório
+  // `.opencode/` também é aceito como legado.
+  const modern = [path.join(baseDir, "allcode.jsonc"), path.join(baseDir, "allcode.json")]
+  const legacy = [path.join(baseDir, "opencode.jsonc"), path.join(baseDir, "opencode.json")]
+  const candidates = [...modern, ...legacy]
 
   if (!global) {
-    candidates.push(path.join(baseDir, ".opencode", "opencode.json"), path.join(baseDir, ".opencode", "opencode.jsonc"))
+    candidates.push(
+      path.join(baseDir, ".allcode", "allcode.jsonc"),
+      path.join(baseDir, ".allcode", "allcode.json"),
+      path.join(baseDir, ".opencode", "opencode.jsonc"),
+      path.join(baseDir, ".opencode", "opencode.json"),
+    )
   }
 
   for (const candidate of candidates) {
@@ -405,8 +414,8 @@ async function resolveConfigPath(baseDir: string, global = false) {
     }
   }
 
-  // Default to opencode.json if none exist
-  return candidates[0]
+  // Nada existente: cria no formato moderno.
+  return modern[0]
 }
 
 async function addMcpToConfig(name: string, mcpConfig: ConfigMCPV1.Info, configPath: string) {

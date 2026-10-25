@@ -10,9 +10,34 @@ import { makeGlobalNode } from "./effect/app-node"
 import { Branding } from "./platform/branding"
 
 const app = Branding.appName
+
+// Isolamento por profile (dev/beta/...): a build de desenvolvimento nunca deve
+// escrever no mesmo config/data/state do app instalado. Sem isso, as duas
+// builds leem o MESMO arquivo de config e uma reescreve por cima da outra —
+// foi assim que um schema mais novo de agente derrubou a config do app
+// instalado (ConfigInvalidError em todos os consumidores de config).
+//
+// `OPENCODE_PROFILE=dev` => ~/.config/allcode-dev, ~/.local/share/allcode-dev
+// e o banco `allcode-dev.db` (o nome do DB já vem do canal de instalação).
+function profileSuffix(): string {
+  const profile = (process.env["OPENCODE_PROFILE"] ?? "").trim().toLowerCase()
+  if (!profile || profile === "prod" || profile === "production" || profile === "latest") return ""
+  return `-${profile.replace(/[^a-z0-9._-]/g, "-")}`
+}
+
+/** Profile ativo ("dev", "beta", ...) ou "" no app instalado. */
+export function profileName(): string {
+  return profileSuffix().replace(/^-/, "")
+}
+
+const suffix = profileSuffix()
 const data = path.join(xdgData!, app)
 const cache = path.join(xdgCache!, app)
-const config = path.join(xdgConfig!, app)
+// Só o diretório de CONFIG é isolado por profile. `data` continua compartilhado
+// de propósito: é onde vive o auth.json (tokens/chaves dos providers) — mover
+// isso para um profile deixaria o dev "esquecido" de todos os providers.
+// O banco e a sessão do zapo são isolados por nome de arquivo, não por diretório.
+const config = path.join(xdgConfig!, app + suffix)
 const state = path.join(xdgState!, app)
 const tmp = path.join(os.tmpdir(), app)
 

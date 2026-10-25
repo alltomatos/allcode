@@ -25,10 +25,14 @@ import { ModelPickerV2 } from "@/components/model-picker-v2"
 import { DialogAgentUISandbox } from "@/components/settings-v2/dialog-agentui-sandbox"
 import { DialogAgentUIDiagnose } from "@/components/settings-v2/dialog-agentui-diagnose"
 import { DialogIzapiaGroupParticipants } from "@/components/settings-v2/dialog-izapia-group-participants"
+import { DialogNativeGroupParticipants } from "@/components/settings-v2/dialog-native-group-participants"
+import { WhatsAppNativeQrCard } from "@/components/settings-v2/whatsapp-native-qr"
 import {
+  WHATSAPP_MODE_LABELS,
   WHATSAPP_PROVIDER_FIELDS,
   WHATSAPP_PROVIDER_LABELS,
   WHATSAPP_PROVIDER_LINKS,
+  type WhatsAppConnectionMode,
   type WhatsAppProvider,
 } from "@/components/settings-v2/whatsapp-providers"
 import "@/components/settings-v2/settings-v2.css"
@@ -57,6 +61,7 @@ type AgentUIFormState = {
   telegram: boolean
   telegramToken: string
   whatsapp: boolean
+  whatsappMode: WhatsAppConnectionMode
   whatsappProvider: WhatsAppProvider
   whatsappConfig: Record<string, string>
   whatsappSessionIds: string[]
@@ -67,6 +72,10 @@ type AgentUIFormState = {
   whatsappPublicUrl?: string
   whatsappDirectory?: string
   whatsappWebhookSecret: string
+  whatsappDirectMessagesEnabled: boolean
+  whatsappGroupsEnabled: boolean
+  whatsappReplyToQuoteOrMentionOnly: boolean
+  whatsappEnabled: boolean
   mcpServers: string[]
   routinesEnabled: boolean
   agendaEnabled: boolean
@@ -89,6 +98,7 @@ function emptyForm(): AgentUIFormState {
     telegram: false,
     telegramToken: "",
     whatsapp: false,
+    whatsappMode: "native",
     whatsappProvider: "izapia",
     whatsappConfig: {},
     whatsappSessionIds: [],
@@ -99,6 +109,10 @@ function emptyForm(): AgentUIFormState {
     whatsappPublicUrl: undefined,
     whatsappDirectory: undefined,
     whatsappWebhookSecret: "",
+    whatsappDirectMessagesEnabled: true,
+    whatsappGroupsEnabled: true,
+    whatsappReplyToQuoteOrMentionOnly: false,
+    whatsappEnabled: true,
     mcpServers: [],
     routinesEnabled: false,
     agendaEnabled: true,
@@ -172,6 +186,14 @@ export function AgentUIFormPage() {
       telegram: agent.channels.some((c) => c.type === "telegram"),
       telegramToken: agent.channels.find((c) => c.type === "telegram")?.token ?? "",
       whatsapp: agent.channels.some((c) => c.type === "whatsapp"),
+      // `mode` é a fonte de verdade; `provider: "zapo"` em configs antigas
+      // (gravadas antes do modo existir) é lido como nativo.
+      whatsappMode: (() => {
+        const channel = agent.channels.find((c) => c.type === "whatsapp") as any
+        if (!channel) return "native" as WhatsAppConnectionMode
+        if (channel.mode === "native" || channel.mode === "external") return channel.mode as WhatsAppConnectionMode
+        return channel.provider === "zapo" ? "native" : "external"
+      })(),
       whatsappProvider: (agent.channels.find((c) => c.type === "whatsapp")?.provider as WhatsAppProvider) ?? "waha",
       whatsappConfig: agent.channels.find((c) => c.type === "whatsapp")?.config ?? {},
       whatsappSessionIds: [...(agent.channels.find((c) => c.type === "whatsapp")?.sessionIds ?? [])],
@@ -182,6 +204,13 @@ export function AgentUIFormPage() {
       whatsappPublicUrl: (agent.channels.find((c) => c.type === "whatsapp") as any)?.publicUrl,
       whatsappDirectory: agent.channels.find((c) => c.type === "whatsapp")?.directory,
       whatsappWebhookSecret: agent.channels.find((c) => c.type === "whatsapp")?.webhookSecret ?? "",
+      whatsappDirectMessagesEnabled:
+        (agent.channels.find((c) => c.type === "whatsapp") as any)?.native?.directMessagesEnabled ?? true,
+      whatsappGroupsEnabled:
+        (agent.channels.find((c) => c.type === "whatsapp") as any)?.native?.groupsEnabled ?? true,
+      whatsappReplyToQuoteOrMentionOnly:
+        (agent.channels.find((c) => c.type === "whatsapp") as any)?.native?.replyToQuoteOrMentionOnly ?? false,
+      whatsappEnabled: (agent as any).whatsappEnabled ?? true,
       mcpServers: agent.mcpServers ?? [],
       routinesEnabled: agent.routinesEnabled === true,
       agendaEnabled: (agent as any).agendaEnabled ?? true,
@@ -347,10 +376,15 @@ export function AgentUIFormPage() {
       return
     }
     const ownBotToken = form.telegram ? form.telegramToken.trim() : ""
+    const whatsappNative = form.whatsappMode === "native"
     const whatsappFields = WHATSAPP_PROVIDER_FIELDS[form.whatsappProvider]
-    const whatsappMissingField = form.whatsapp && whatsappFields.some((f) => f.required && !form.whatsappConfig[f.key]?.trim())
+    const whatsappMissingField =
+      form.whatsapp && !whatsappNative && whatsappFields.some((f) => f.required && !form.whatsappConfig[f.key]?.trim())
     const whatsappMissingSession =
-      form.whatsapp && form.whatsappProvider === "izapia" && form.whatsappSessionIds.length === 0
+      form.whatsapp &&
+      !whatsappNative &&
+      form.whatsappProvider === "izapia" &&
+      form.whatsappSessionIds.length === 0
     if (form.whatsapp && (whatsappMissingField || whatsappMissingSession)) {
       setError(language.t("settings.agentui.error.whatsappIncomplete"))
       return
@@ -386,18 +420,28 @@ export function AgentUIFormPage() {
     if (form.whatsapp) {
       channels.push({
         type: "whatsapp",
-        provider: form.whatsappProvider,
-        config: form.whatsappConfig,
-        sessionIds: form.whatsappProvider === "izapia" ? form.whatsappSessionIds : undefined,
-        allowedGroups: form.whatsappProvider === "izapia" ? form.whatsappAllowedGroups : undefined,
+        // `mode` é explícito; no modo nativo o `provider` é só um placeholder
+        // aceito por builds antigas (nunca é usado para conectar).
+        mode: form.whatsappMode,
+        provider: whatsappNative ? "waha" : form.whatsappProvider,
+        config: whatsappNative ? {} : form.whatsappConfig,
+        sessionIds: !whatsappNative && form.whatsappProvider === "izapia" ? form.whatsappSessionIds : undefined,
+        allowedGroups: form.whatsappAllowedGroups.length > 0 ? form.whatsappAllowedGroups : undefined,
         allowedSenders: senders.length > 0 ? senders : undefined,
         groupAllowedSenders:
           Object.keys(form.whatsappGroupAllowedSenders).length > 0 ? form.whatsappGroupAllowedSenders : undefined,
         mentionOnly: form.whatsappMentionOnly,
-        publicUrl: publicTunnelUrl() ?? form.whatsappPublicUrl ?? undefined,
+        publicUrl: whatsappNative ? undefined : publicTunnelUrl() ?? form.whatsappPublicUrl ?? undefined,
         directory: form.whatsappDirectory || undefined,
-        webhookSecret: whatsappWebhookSecret,
-      })
+        webhookSecret: whatsappNative ? undefined : whatsappWebhookSecret,
+        native: whatsappNative
+          ? {
+              directMessagesEnabled: form.whatsappDirectMessagesEnabled,
+              groupsEnabled: form.whatsappGroupsEnabled,
+              replyToQuoteOrMentionOnly: form.whatsappReplyToQuoteOrMentionOnly,
+            }
+          : undefined,
+      } as any)
     }
     try {
       await serverSDK().client.agentui.add({
@@ -421,6 +465,7 @@ export function AgentUIFormPage() {
           mcpServers: form.mcpServers,
           routinesEnabled: form.routinesEnabled,
           agendaEnabled: form.agendaEnabled,
+          whatsappEnabled: form.whatsappEnabled,
           memoryEnabled: form.memoryEnabled,
           filesystemEnabled: form.filesystemEnabled,
           terminalEnabled: form.terminalEnabled,
@@ -767,29 +812,130 @@ export function AgentUIFormPage() {
                         <Show when={form.whatsapp}>
                           <div class="flex flex-col gap-4">
                             <div class="flex flex-col gap-1.5">
-                              <label class="settings-v2-server-dialog-label font-medium">Provedor da API</label>
+                              <label class="settings-v2-server-dialog-label font-medium">Modo de conexão</label>
+                              <p class="text-11-regular text-v2-text-text-muted">
+                                Nativo conecta direto com o WhatsApp Web (zapo) e não precisa de webhook. API externa usa um
+                                gateway do waconector (WAHA, Evolution, izapia, ...).
+                              </p>
                               <select
                                 class="h-9 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2.5 text-13-regular text-v2-text-text-base"
-                                value={form.whatsappProvider}
-                                onChange={(event) => {
-                                  setForm({
-                                    whatsappProvider: event.currentTarget.value as WhatsAppProvider,
-                                    whatsappConfig: {},
-                                    whatsappSessionIds: [],
-                                    whatsappAllowedGroups: [],
-                                  })
-                                  setIzapiaSessions([])
-                                  setIzapiaSessionsError(undefined)
-                                  setIzapiaGroups([])
-                                  setIzapiaGroupsError(undefined)
-                                }}
+                                value={form.whatsappMode}
+                                onChange={(event) => setForm("whatsappMode", event.currentTarget.value as WhatsAppConnectionMode)}
                               >
-                                <For each={Object.entries(WHATSAPP_PROVIDER_LABELS)}>
+                                <For each={Object.entries(WHATSAPP_MODE_LABELS)}>
                                   {([value, label]) => <option value={value}>{label}</option>}
                                 </For>
                               </select>
                             </div>
-                            <Show when={WHATSAPP_PROVIDER_LINKS[form.whatsappProvider]}>
+
+                            <Show when={form.whatsappMode === "external"}>
+                              <div class="flex flex-col gap-1.5">
+                                <label class="settings-v2-server-dialog-label font-medium">Provedor da API</label>
+                                <select
+                                  class="h-9 rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2.5 text-13-regular text-v2-text-text-base"
+                                  value={form.whatsappProvider}
+                                  onChange={(event) => {
+                                    setForm({
+                                      whatsappProvider: event.currentTarget.value as WhatsAppProvider,
+                                      whatsappConfig: {},
+                                      whatsappSessionIds: [],
+                                      whatsappAllowedGroups: [],
+                                    })
+                                    setIzapiaSessions([])
+                                    setIzapiaSessionsError(undefined)
+                                    setIzapiaGroups([])
+                                    setIzapiaGroupsError(undefined)
+                                  }}
+                                >
+                                  <For each={Object.entries(WHATSAPP_PROVIDER_LABELS)}>
+                                    {([value, label]) => <option value={value}>{label}</option>}
+                                  </For>
+                                </select>
+                              </div>
+                            </Show>
+                              <Show when={form.whatsappMode === "native"}>
+                                <WhatsAppNativeQrCard
+                                  agentId={form.id}
+                                  enabled={form.whatsapp}
+                                  allowedGroups={form.whatsappAllowedGroups}
+                                  onToggleGroup={(groupJid, checked) => {
+                                    setForm("whatsappAllowedGroups", (list) =>
+                                      checked ? [...list, groupJid] : list.filter((id) => id !== groupJid),
+                                    )
+                                  }}
+                                  onConfigureGroupParticipants={(grp) => {
+                                    dialog.push(() => (
+                                      <DialogNativeGroupParticipants
+                                        agentId={form.id}
+                                        group={grp}
+                                        initialGroupSenders={form.whatsappGroupAllowedSenders[grp.jid]}
+                                        initialGlobalSenders={form.whatsappAllowedSenders}
+                                        onApply={({ groupSenders, globalSenders }) => {
+                                          setForm("whatsappGroupAllowedSenders", (map) => {
+                                            const next = { ...map }
+                                            if (groupSenders.length > 0) {
+                                              next[grp.jid] = groupSenders
+                                            } else {
+                                              delete next[grp.jid]
+                                            }
+                                            return next
+                                          })
+                                          setForm("whatsappAllowedSenders", globalSenders)
+                                        }}
+                                      />
+                                    ))
+                                  }}
+                                  onAutoSave={async () => {
+                                    await save()
+                                  }}
+                                />
+
+                                <div class="flex flex-col gap-2.5 rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-01/30 p-3.5">
+                                  <span class="text-12-medium text-v2-text-text-base">Comportamento de Resposta</span>
+                                  
+                                  <div class="flex items-center justify-between">
+                                    <div class="flex flex-col">
+                                      <span class="text-13-medium text-v2-text-text-base">Mensagens Diretas (DMs)</span>
+                                      <span class="text-11-regular text-v2-text-text-muted">Responder conversas privadas de 1 para 1</span>
+                                    </div>
+                                    <Switch
+                                      checked={form.whatsappDirectMessagesEnabled}
+                                      onChange={(checked) => setForm("whatsappDirectMessagesEnabled", checked)}
+                                    />
+                                  </div>
+
+                                  <div class="flex items-center justify-between border-t border-v2-border-border-base/50 pt-2.5">
+                                    <div class="flex flex-col">
+                                      <span class="text-13-medium text-v2-text-text-base">Grupos</span>
+                                      <span class="text-11-regular text-v2-text-text-muted">Responder em grupos autorizados</span>
+                                    </div>
+                                    <Switch
+                                      checked={form.whatsappGroupsEnabled}
+                                      onChange={(checked) => setForm("whatsappGroupsEnabled", checked)}
+                                    />
+                                  </div>
+
+                                  <Show when={form.whatsappGroupsEnabled}>
+                                    <div class="flex items-center justify-between border-t border-v2-border-border-base/50 pt-2.5">
+                                      <div class="flex flex-col pr-4">
+                                        <span class="text-13-medium text-v2-text-text-base">
+                                          Apenas se mencionado (@) ou respondendo mensagem do agente
+                                        </span>
+                                        <span class="text-11-regular text-v2-text-text-muted">
+                                          Evita que o agente responda qualquer conversa aleatória dentro do grupo
+                                        </span>
+                                      </div>
+                                      <Switch
+                                        checked={form.whatsappReplyToQuoteOrMentionOnly}
+                                        onChange={(checked) => setForm("whatsappReplyToQuoteOrMentionOnly", checked)}
+                                      />
+                                    </div>
+                                  </Show>
+                                </div>
+                              </Show>
+
+                              <Show when={form.whatsappMode === "external"}>
+                              <Show when={WHATSAPP_PROVIDER_LINKS[form.whatsappProvider]}>
                               {(url) => (
                                 <a
                                   href={url()}
@@ -990,6 +1136,7 @@ export function AgentUIFormPage() {
                                 />
                               </div>
                             </Show>
+                            </Show>
 
                             <div class="flex flex-col gap-1.5">
                               <label class="settings-v2-server-dialog-label font-medium">
@@ -1014,8 +1161,9 @@ export function AgentUIFormPage() {
                               </select>
                             </div>
 
-                            <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-background-bg-base p-4">
-                              <span class="text-12-medium text-v2-text-text-base">Host &amp; Webhook Reverso</span>
+                            <Show when={form.whatsappMode === "external"}>
+                              <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-background-bg-base p-4">
+                                <span class="text-12-medium text-v2-text-text-base">Host &amp; Webhook Reverso</span>
                               <Show when={isPrivateServerUrl() && !publicTunnelUrl()}>
                                 <div class="flex flex-col gap-3 rounded-lg border border-v2-border-border-base bg-v2-surface-surface-raised/40 p-3">
                                   <div class="flex flex-col gap-2">
@@ -1119,8 +1267,9 @@ export function AgentUIFormPage() {
                                 )}
                               </Show>
                             </div>
-                          </div>
-                        </Show>
+                          </Show>
+                        </div>
+                      </Show>
                       </div>
                     </div>
 
@@ -1252,7 +1401,20 @@ export function AgentUIFormPage() {
                           />
                         </div>
 
-                        <div class="flex items-center justify-between rounded-lg border border-v2-border-border-base bg-v2-background-bg-base p-3.5 md:col-span-2">
+                        <div class="flex items-center justify-between rounded-lg border border-v2-border-border-base bg-v2-background-bg-base p-3.5">
+                          <div>
+                            <label class="settings-v2-server-dialog-label font-medium">WhatsApp Nativo (Tool)</label>
+                            <p class="text-11-regular text-v2-text-text-muted mt-0.5">
+                              Permite ao agente consultar e listar grupos, conversas e enviar mensagens de texto via ferramentas nativas
+                            </p>
+                          </div>
+                          <Switch
+                            checked={form.whatsappEnabled}
+                            onChange={(checked) => setForm("whatsappEnabled", checked)}
+                          />
+                        </div>
+
+                        <div class="flex items-center justify-between rounded-lg border border-v2-border-border-base bg-v2-background-bg-base p-3.5">
                           <div>
                             <label class="settings-v2-server-dialog-label font-medium">{language.t("settings.agentui.field.terminal")}</label>
                             <p class="text-11-regular text-v2-text-text-muted mt-0.5">{language.t("settings.agentui.field.terminal.hint")}</p>

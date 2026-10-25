@@ -1,6 +1,40 @@
 {
   "releases": [
     {
+      "tag": "v1.24.0",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AgentUI: WhatsApp Nativo (zapo) como modo explícito",
+              "description": "O canal de WhatsApp do agente agora separa claramente dois modos: nativo (conexão direta com o WhatsApp Web via zapo-js, com pareamento por QR e sessão persistida em SQLite) e API externa (WAHA, Evolution, Z-API, izapia e demais gateways do waconector). A escolha fica na aba Canais, no novo campo Modo de conexão."
+            },
+            {
+              "title": "AgentUI: Grupos e participantes autorizados",
+              "description": "É possível listar os grupos da conta conectada e marcar em quais o agente pode responder, além de escolher quais participantes de cada grupo têm permissão para interagir. Grupos onde o agente é administrador aparecem destacados."
+            },
+            {
+              "title": "AgentUI: Menção, citação e mensagens diretas",
+              "description": "Novos controles ligam e desligam respostas em conversas diretas e em grupos, com a opção de responder apenas quando o agente for mencionado (@) ou quando a mensagem citar algo que ele enviou. Menções endereçadas por LID também são reconhecidas."
+            },
+            {
+              "title": "Configuração: allcode.jsonc como arquivo oficial",
+              "description": "O projeto passa a ler e gravar allcode.jsonc (e allcode.json) no lugar de opencode.jsonc. Arquivos antigos continuam sendo lidos e são migrados automaticamente, sem perda de configuração."
+            },
+            {
+              "title": "Desktop: isolamento entre desenvolvimento e produção",
+              "description": "A build de desenvolvimento passou a usar configuração, banco de dados (allcode-dev.db), banco por projeto e sessão de WhatsApp próprios, então testar em dev não altera nada da instalação em produção."
+            },
+            {
+              "title": "Correções: modelo, sessão e canais",
+              "description": "O agente reconecta a sessão do WhatsApp após reiniciar o app, reexecuta a resolução do modelo quando o catálogo ainda está sincronizando, não perde mais a resposta quando o diretório de sessão não é absoluto e o diagnóstico de canais deixou de classificar o WhatsApp nativo como gateway externo."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.23.0",
       "highlights": [
         {

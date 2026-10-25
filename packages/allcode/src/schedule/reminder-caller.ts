@@ -6,7 +6,7 @@ import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { Schedule } from "@allcode/core/schedule"
 import { AgentUI } from "@/agentui"
 import { MCP } from "@/mcp"
-import { buildAdapter } from "@/whatsapp/adapter"
+import { buildExternalAdapter } from "@/whatsapp/adapter"
 import { createConnector } from "waconector"
 
 /**
@@ -43,7 +43,10 @@ export const layer = Layer.effect(
                 : []
 
               const sid = waChannel.sessionIds?.[0]
-              const adapter = buildAdapter(waChannel, sid)
+              // Canais nativos são servidos por WhatsAppNative (sem waconector):
+              // não há adapter externo para eles, então pulamos em vez de falhar.
+              const adapter = buildExternalAdapter(waChannel, sid)
+              if (!adapter) continue
               const connector = createConnector(adapter)
 
               for (const target of targets) {

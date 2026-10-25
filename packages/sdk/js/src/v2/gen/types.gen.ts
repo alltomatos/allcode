@@ -1927,12 +1927,23 @@ export type AgentUiTelegramChannelBinding = {
   directory?: string
 }
 
+export type AgentUiWhatsAppNativeOptions = {
+  autoStart?: boolean
+  deviceBrowser?: string
+  deviceOsDisplayName?: string
+  /**
+   * Maximum outbound messages per minute to prevent account flagging.
+   */
+  sendRateLimitPerMinute?: number | "NaN" | "Infinity" | "-Infinity" | "Infinity" | "-Infinity" | "NaN"
+  allowGroupAdmin?: boolean
+}
+
 export type AgentUiWhatsAppChannelBinding = {
   type: "whatsapp"
   /**
    * Which unofficial WhatsApp API this channel connects through (see waconector).
    */
-  provider: "waha" | "evolution" | "zapi" | "uazapi" | "whapi" | "wuzapi" | "quepasa" | "wppconnect" | "izapia"
+  provider: "zapo" | "waha" | "evolution" | "zapi" | "uazapi" | "whapi" | "wuzapi" | "quepasa" | "wppconnect" | "izapia"
   /**
    * Provider-specific connection fields (e.g. baseUrl+apiKey for WAHA, instanceId+token for Z-API). Shape depends on `provider`.
    */
@@ -1948,10 +1959,8 @@ export type AgentUiWhatsAppChannelBinding = {
   mentionOnly?: boolean
   directory?: string
   publicUrl?: string
-  /**
-   * Random per-channel secret embedded in the webhook URL — authenticates inbound webhook calls from the provider.
-   */
-  webhookSecret: string
+  webhookSecret?: string
+  native?: AgentUiWhatsAppNativeOptions
 }
 
 export type AgentUiChannelBinding = AgentUiTelegramChannelBinding | AgentUiWhatsAppChannelBinding
@@ -2007,6 +2016,7 @@ export type AgentUiAgent = {
   mcpServers?: Array<string>
   routinesEnabled?: boolean
   agendaEnabled?: boolean
+  whatsappEnabled?: boolean
   memoryEnabled?: boolean
   filesystemEnabled?: boolean
   terminalEnabled?: boolean
@@ -2917,6 +2927,44 @@ export type EventTuiSessionSelect = {
      */
     sessionID: string
   }
+}
+
+export type WhatsAppNativeStatus = {
+  agentId: string
+  state: "idle" | "connecting" | "qr_ready" | "paired" | "connected" | "disconnected" | "error"
+  meJid?: string
+  phone?: string
+  connectedAt?: number | "NaN" | "Infinity" | "-Infinity" | "Infinity" | "-Infinity" | "NaN"
+  lastError?: string
+  autoStart?: boolean
+}
+
+export type WhatsAppNativeNotConfiguredError = {
+  _tag: "WhatsAppNativeNotConfiguredError"
+  message: string
+  agentId: string
+}
+
+export type WhatsAppNativeStateError = {
+  _tag: "WhatsAppNativeStateError"
+  message: string
+  agentId: string
+}
+
+export type WhatsAppNativeOperationError = {
+  _tag: "WhatsAppNativeOperationError"
+  message: string
+  agentId: string
+}
+
+export type WhatsAppNativeGroup = {
+  jid: string
+  subject: string
+  participantCount: number | "NaN" | "Infinity" | "-Infinity" | "Infinity" | "-Infinity" | "NaN"
+  isAdmin: boolean
+  isSuperAdmin: boolean
+  creation?: number | "NaN" | "Infinity" | "-Infinity" | "Infinity" | "-Infinity" | "NaN"
+  desc?: string
 }
 
 export type WhatsAppChannelNotConfiguredError = {
@@ -12940,6 +12988,155 @@ export type TuiControlResponseResponses = {
 }
 
 export type TuiControlResponseResponse = TuiControlResponseResponses[keyof TuiControlResponseResponses]
+
+export type WhatsappNativeStatusData = {
+  body?: never
+  path: {
+    agentId: string
+  }
+  query?: never
+  url: "/whatsapp/native/{agentId}"
+}
+
+export type WhatsappNativeStatusErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type WhatsappNativeStatusError = WhatsappNativeStatusErrors[keyof WhatsappNativeStatusErrors]
+
+export type WhatsappNativeStatusResponses = {
+  /**
+   * Status da conexão nativa WhatsApp
+   */
+  200: WhatsAppNativeStatus
+}
+
+export type WhatsappNativeStatusResponse = WhatsappNativeStatusResponses[keyof WhatsappNativeStatusResponses]
+
+export type WhatsappNativeConnectData = {
+  body?: never
+  path: {
+    agentId: string
+  }
+  query?: never
+  url: "/whatsapp/native/{agentId}/connect"
+}
+
+export type WhatsappNativeConnectErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * AgentUINotFoundError | WhatsAppNativeNotConfiguredError | WhatsAppNativeStateError | WhatsAppNativeOperationError
+   */
+  500: AgentUiNotFoundError | WhatsAppNativeNotConfiguredError | WhatsAppNativeStateError | WhatsAppNativeOperationError
+}
+
+export type WhatsappNativeConnectError = WhatsappNativeConnectErrors[keyof WhatsappNativeConnectErrors]
+
+export type WhatsappNativeConnectResponses = {
+  /**
+   * Conexão nativa iniciada
+   */
+  200: WhatsAppNativeStatus
+}
+
+export type WhatsappNativeConnectResponse = WhatsappNativeConnectResponses[keyof WhatsappNativeConnectResponses]
+
+export type WhatsappNativeLogoutData = {
+  body?: never
+  path: {
+    agentId: string
+  }
+  query?: never
+  url: "/whatsapp/native/{agentId}/logout"
+}
+
+export type WhatsappNativeLogoutErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * WhatsAppNativeOperationError
+   */
+  500: WhatsAppNativeOperationError
+}
+
+export type WhatsappNativeLogoutError = WhatsappNativeLogoutErrors[keyof WhatsappNativeLogoutErrors]
+
+export type WhatsappNativeLogoutResponses = {
+  /**
+   * Sessão desconectada com sucesso
+   */
+  200: {
+    ok: true
+  }
+}
+
+export type WhatsappNativeLogoutResponse = WhatsappNativeLogoutResponses[keyof WhatsappNativeLogoutResponses]
+
+export type WhatsappNativeEventsData = {
+  body?: never
+  path: {
+    agentId: string
+  }
+  query?: never
+  url: "/whatsapp/native/{agentId}/events"
+}
+
+export type WhatsappNativeEventsErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type WhatsappNativeEventsError = WhatsappNativeEventsErrors[keyof WhatsappNativeEventsErrors]
+
+export type WhatsappNativeEventsResponses = {
+  /**
+   * Success
+   */
+  200: string
+}
+
+export type WhatsappNativeEventsResponse = WhatsappNativeEventsResponses[keyof WhatsappNativeEventsResponses]
+
+export type WhatsappNativeGroupsData = {
+  body?: never
+  path: {
+    agentId: string
+  }
+  query?: never
+  url: "/whatsapp/native/{agentId}/groups"
+}
+
+export type WhatsappNativeGroupsErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * WhatsAppNativeOperationError
+   */
+  500: WhatsAppNativeOperationError
+}
+
+export type WhatsappNativeGroupsError = WhatsappNativeGroupsErrors[keyof WhatsappNativeGroupsErrors]
+
+export type WhatsappNativeGroupsResponses = {
+  /**
+   * Lista de grupos do WhatsApp nativo
+   */
+  200: Array<WhatsAppNativeGroup>
+}
+
+export type WhatsappNativeGroupsResponse = WhatsappNativeGroupsResponses[keyof WhatsappNativeGroupsResponses]
 
 export type WhatsappWebhookData = {
   body?: unknown

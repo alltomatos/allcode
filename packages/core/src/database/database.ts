@@ -66,6 +66,10 @@ export function path() {
     if (Flag.OPENCODE_DB === ":memory:" || isAbsolute(Flag.OPENCODE_DB)) return Flag.OPENCODE_DB
     return join(Global.Path.data, Flag.OPENCODE_DB)
   }
+  // Profiles (dev/beta) sempre têm um arquivo próprio — `allcode-dev.db`,
+  // `allcode-beta.db` — nunca o `allcode.db` usado pela build instalada.
+  const profile = Global.profileName()
+  if (profile) return join(Global.Path.data, `${Branding.appName}-${profile}.db`)
   if (
     ["latest", "beta", "prod"].includes(InstallationChannel) ||
     process.env.OPENCODE_DISABLE_CHANNEL_DB === "1" ||

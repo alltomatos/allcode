@@ -24,6 +24,7 @@ import { Memory } from "@/memory"
 import { Combo } from "@/combo"
 import { AgentUI } from "@/agentui"
 import { WhatsApp } from "@/whatsapp"
+import { WhatsAppNative } from "@/whatsapp-native"
 import { Tunnel } from "@/tunnel"
 import { McpAuth } from "@/mcp/auth"
 import { Permission } from "@/permission"
@@ -286,6 +287,7 @@ const app = LayerNode.group([
   Combo.node,
   AgentUI.node,
   WhatsApp.node,
+  WhatsAppNative.node,
   Tunnel.node,
   Command.node,
   Truncate.node,

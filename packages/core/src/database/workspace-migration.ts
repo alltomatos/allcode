@@ -30,9 +30,15 @@ export function directoryToWorkspaceHash(directory: string): string {
 
 /**
  * Retorna o caminho absoluto do banco de dados particionado por workspace.
+ *
+ * O diretório carrega o profile (`workspaces-dev/<hash>/project.db`) para que a
+ * build de dev não escreva no `project.db` que o app instalado usa para o mesmo
+ * projeto — sem isso, os dois canais compartilham o histórico daquele diretório.
  */
 export function getWorkspaceDatabasePath(workspaceHash: string): string {
-  return path.join(Global.Path.data, "workspaces", workspaceHash, "project.db")
+  const profile = Global.profileName()
+  const root = profile ? `workspaces-${profile}` : "workspaces"
+  return path.join(Global.Path.data, root, workspaceHash, "project.db")
 }
 
 /**

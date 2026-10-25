@@ -1,0 +1,3 @@
+Ferramenta nativa para interagir diretamente com o WhatsApp da conta conectada do agente.
+Permite consultar status da conexão, enviar mensagens de texto e mídias, listar conversas e histórico, e listar grupos (incluindo grupos onde o agente é administrador).
+Apenas disponível quando o agente possui permissão e canal nativo configurado.

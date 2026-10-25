@@ -1,4 +1,5 @@
 import { dirname, join } from "node:path"
+import { copyFileSync, existsSync } from "node:fs"
 import { fileURLToPath } from "node:url"
 import { app, utilityProcess } from "electron"
 import type { Details } from "electron"
@@ -90,7 +91,13 @@ export function preferAppEnv(userDataPath: string) {
     // dados que devem continuar compartilhados entre canais; redirecionar
     // XDG_DATA_HOME inteiro deixa o canal "esquecido" de todos os
     // providers conectados, sobrando só o catálogo padrão (opencode zen).
-    OPENCODE_DB: process.env.ALLCODE_DB ?? join(userDataPath, "allcode.db"),
+    //
+    // O nome do arquivo carrega o profile: dev => allcode-dev.db, beta =>
+    // allcode-beta.db, instalado => allcode.db. Assim nem o nome do banco se
+    // confunde entre builds rodando na mesma máquina.
+    OPENCODE_DB:
+      process.env.ALLCODE_DB ??
+      join(userDataPath, app.isPackaged ? "allcode.db" : `allcode-${process.env.OPENCODE_PROFILE ?? "dev"}.db`),
   })
   return shellEnv
 }
@@ -101,6 +108,12 @@ export async function spawnLocalServer(
   password: string,
   options: SpawnLocalServerOptions,
 ) {
+  // Build de dev usa um banco próprio (`allcode-dev.db`) no mesmo userData.
+  // Na primeira vez clonamos o banco anterior para o dev não perder contas
+  // OAuth/providers já conectados; a partir daí os dois evoluem separados.
+  if (!app.isPackaged) {
+    ensureProfileDatabase(app.getPath("userData"))
+  }
   const bridge = await startBrowserBridge((_id) => getActiveBrowserPanel()).catch((error) => {
     options.onStderr?.(`browser bridge failed to start: ${String(error)}`)
     return undefined
@@ -307,7 +320,31 @@ function createSidecarEnv(): Record<string, string> {
   )
   delete env.DEBUG
   if (process.platform === "linux") delete env.LD_PRELOAD
+
+  // Dev e app instalado nunca devem compartilhar o mesmo config/data: os dois
+  // rodam versões diferentes e um reescrevia o config do outro (o que já
+  // derrubou a config de agente com schema antigo). O profile muda os caminhos
+  // em @allcode/core/global (allcode-dev) e isola o store da sessão do WhatsApp.
+  if (!app.isPackaged) {
+    env.OPENCODE_PROFILE ??= "dev"
+    delete env.OPENCODE_CONFIG_DIR
+  }
+
   return env
+}
+
+function ensureProfileDatabase(userDataPath: string) {
+  const profile = process.env.OPENCODE_PROFILE ?? "dev"
+  const target = process.env.ALLCODE_DB ?? join(userDataPath, `allcode-${profile}.db`)
+  if (existsSync(target)) return
+  const previous = join(userDataPath, "allcode.db")
+  if (!existsSync(previous)) return
+  try {
+    copyFileSync(previous, target)
+  } catch {
+    // Se a cópia falhar o dev apenas começa com um banco vazio — o pior caso
+    // é reautenticar providers, nunca quebrar o app instalado.
+  }
 }
 
 function delay(ms: number) {

@@ -1,6 +1,6 @@
 export * as ConfigAgentUIV1 from "./agentui"
 
-import { Schema } from "effect"
+import { Schema, SchemaGetter } from "effect"
 
 export const TelegramChannelBinding = Schema.Struct({
   type: Schema.Literal("telegram"),
@@ -24,6 +24,24 @@ export const TelegramChannelBinding = Schema.Struct({
 }).annotate({ identifier: "AgentUITelegramChannelBinding" })
 export type TelegramChannelBinding = Schema.Schema.Type<typeof TelegramChannelBinding>
 
+// O WhatsApp de um agente pode ser conectado de duas formas estruturalmente
+// diferentes, e a distinção é explícita no schema:
+//
+// - `native`: a lib `zapo-js` mantém a sessão direto com a Meta
+//   (WebSocket/Noise), com credenciais persistidas em SQLite local. Não existe
+//   webhook, `provider` do waconector nem URL pública envolvidos.
+// - `external`: o pacote `waconector` fala com uma API externa (WAHA, Evolution,
+//   Z-API, izapia, ...) e recebe mensagens por webhook.
+//
+// `provider` continua existindo apenas para o modo `external`. Antes de `mode`
+// existir, o provider `"zapo"` era usado como se fosse mais um item da lista do
+// waconector — o que quebrava o parse da config inteira em qualquer build cujo
+// schema só conhecia os providers do waconector (ConfigInvalidError derrubava
+// todos os consumidores de config). Hoje `"zapo"` continua sendo aceito na
+// leitura, mas é normalizado para `mode: "native"`.
+export const WHATSAPP_CONNECTION_MODES = ["external", "native"] as const
+export type WhatsAppConnectionMode = (typeof WHATSAPP_CONNECTION_MODES)[number]
+
 // The waconector package (https://alltomatos.github.io/waconector/) wraps 9
 // unofficial WhatsApp APIs behind one contract — some self-hosted (need a
 // Docker container the user runs themselves), some SaaS (need only an API
@@ -46,10 +64,52 @@ export const WHATSAPP_PROVIDERS = [
 ] as const
 export type WhatsAppProvider = (typeof WHATSAPP_PROVIDERS)[number]
 
-export const WhatsAppChannelBinding = Schema.Struct({
+// `"zapo"` é aceito na leitura por retrocompatibilidade (configs gravadas antes
+// de `mode` existir), mas nunca é um provider do waconector.
+const LEGACY_WHATSAPP_PROVIDER = "zapo"
+
+// Valor gravado em `provider` quando o modo é `native`. É só um placeholder de
+// compatibilidade: builds antigos exigem um provider do waconector no schema,
+// e recusariam a config inteira sem ele. Quem decide o modo é sempre `mode`.
+export const WHATSAPP_NATIVE_PROVIDER_PLACEHOLDER = "waha" as const
+
+export const WhatsAppNativeOptions = Schema.Struct({
+  autoStart: Schema.optional(Schema.Boolean).annotate({
+    description: "Whether the native WhatsApp client automatically connects on server startup.",
+  }),
+  deviceBrowser: Schema.optional(Schema.String).annotate({
+    description: "Custom browser/client name presented to WhatsApp Web multi-device.",
+  }),
+  deviceOsDisplayName: Schema.optional(Schema.String).annotate({
+    description: "Operating system name presented in WhatsApp linked devices.",
+  }),
+  sendRateLimitPerMinute: Schema.optional(Schema.Number).annotate({
+    description: "Maximum outbound messages per minute to prevent account flagging.",
+  }),
+  allowGroupAdmin: Schema.optional(Schema.Boolean).annotate({
+    description: "Whether the agent has administrative operations enabled in groups.",
+  }),
+  directMessagesEnabled: Schema.optional(Schema.Boolean).annotate({
+    description: "Whether the agent should respond to private 1:1 direct messages (defaults to true).",
+  }),
+  groupsEnabled: Schema.optional(Schema.Boolean).annotate({
+    description: "Whether the agent should respond in groups (defaults to true).",
+  }),
+  replyToQuoteOrMentionOnly: Schema.optional(Schema.Boolean).annotate({
+    description: "Whether the agent in groups only responds if mentioned (@) OR if the user is replying/quoting a message sent by the agent.",
+  }),
+}).annotate({ identifier: "AgentUIWhatsAppNativeOptions" })
+export type WhatsAppNativeOptions = Schema.Schema.Type<typeof WhatsAppNativeOptions>
+
+const WhatsAppChannelBindingInput = Schema.Struct({
   type: Schema.Literal("whatsapp"),
-  provider: Schema.Literals(WHATSAPP_PROVIDERS).annotate({
-    description: "Which unofficial WhatsApp API this channel connects through (see waconector).",
+  mode: Schema.optional(Schema.Literals(WHATSAPP_CONNECTION_MODES)).annotate({
+    description:
+      "'native' conecta direto com a Meta via zapo-js (sem webhook); 'external' usa uma API externa via waconector. Ausente = 'external', exceto quando provider é 'zapo' (legado), que resolve para 'native'.",
+  }),
+  provider: Schema.optional(Schema.String).annotate({
+    description:
+      "Externo: qual API do waconector usar (waha, evolution, zapi, uazapi, whapi, wuzapi, quepasa, wppconnect, izapia). Em modo nativo é ignorado (gravamos um placeholder para compatibilidade com builds antigos). Valores desconhecidos são aceitos na leitura para nunca invalidar a config inteira — o erro aparece no diagnóstico do canal.",
   }),
   config: Schema.Record(Schema.String, Schema.String).annotate({
     description: "Provider-specific connection fields (e.g. baseUrl+apiKey for WAHA, instanceId+token for Z-API). Shape depends on `provider`.",
@@ -95,12 +155,69 @@ export const WhatsAppChannelBinding = Schema.Struct({
   // this inbound endpoint is called by a third-party service (not our own
   // authenticated client), so it can't go through the normal Authorization
   // middleware; this secret is the only thing standing between it and the
-  // public internet. See WhatsApp.Service.handleWebhook.
-  webhookSecret: Schema.String.annotate({
-    description: "Random per-channel secret embedded in the webhook URL — authenticates inbound webhook calls from the provider.",
+  // public internet. Optional for provider: "zapo" (which connects natively via WebSocket/Noise).
+  webhookSecret: Schema.optional(Schema.String).annotate({
+    description: "Random per-channel secret embedded in the webhook URL — authenticates inbound webhook calls from external providers.",
   }),
-}).annotate({ identifier: "AgentUIWhatsAppChannelBinding" })
+  native: Schema.optional(WhatsAppNativeOptions).annotate({
+    description: "Options specific to native WhatsApp Web protocol connection (zapo-js). Only used when mode is 'native'.",
+  }),
+})
+
+// Normaliza a config para a forma canônica:
+// - `provider: "zapo"` (legado) vira `mode: "native"`;
+// - `mode` ausente com provider do waconector vira `mode: "external"`;
+// - modo nativo sempre grava o placeholder de provider + config vazio, para
+//   que builds antigos (schema só com providers do waconector) sigam parseando.
+function normalizeWhatsAppChannel(
+  channel: Schema.Schema.Type<typeof WhatsAppChannelBindingInput>,
+): Schema.Schema.Type<typeof WhatsAppChannelBindingInput> {
+  const legacyNative = channel.provider === LEGACY_WHATSAPP_PROVIDER
+  const mode: WhatsAppConnectionMode = channel.mode ?? (legacyNative ? "native" : "external")
+  if (mode === "native") {
+    return {
+      ...channel,
+      mode: "native",
+      provider: WHATSAPP_NATIVE_PROVIDER_PLACEHOLDER,
+      config: channel.config ?? {},
+    }
+  }
+  const provider = legacyNative || !channel.provider ? WHATSAPP_NATIVE_PROVIDER_PLACEHOLDER : channel.provider
+  return { ...channel, mode: "external", provider, config: channel.config ?? {} }
+}
+
+export const WhatsAppChannelBinding = WhatsAppChannelBindingInput.pipe(
+  Schema.decodeTo(WhatsAppChannelBindingInput, {
+    decode: SchemaGetter.transform(normalizeWhatsAppChannel),
+    encode: SchemaGetter.passthrough({ strict: false }),
+  }),
+).annotate({ identifier: "AgentUIWhatsAppChannelBinding" })
 export type WhatsAppChannelBinding = Schema.Schema.Type<typeof WhatsAppChannelBinding>
+
+// Modo efetivo de conexão de um canal WhatsApp. Total por construção: qualquer
+// valor inesperado cai em `external`, que é o comportamento legado.
+export function whatsappMode(channel: {
+  readonly mode?: WhatsAppConnectionMode
+  readonly provider?: string
+}): WhatsAppConnectionMode {
+  if (channel.mode === "native") return "native"
+  if (channel.mode === "external") return "external"
+  return channel.provider === LEGACY_WHATSAPP_PROVIDER ? "native" : "external"
+}
+
+export function isNativeWhatsAppChannel(channel: {
+  readonly mode?: WhatsAppConnectionMode
+  readonly provider?: string
+}): boolean {
+  return whatsappMode(channel) === "native"
+}
+
+export function isExternalWhatsAppChannel(channel: {
+  readonly mode?: WhatsAppConnectionMode
+  readonly provider?: string
+}): boolean {
+  return whatsappMode(channel) === "external"
+}
 
 export const ChannelBinding = Schema.Union([TelegramChannelBinding, WhatsAppChannelBinding]).annotate({
   identifier: "AgentUIChannelBinding",
@@ -160,6 +277,10 @@ export const Agent = Schema.Struct({
   // Whether this agent is allowed to create and manage reminders/agenda
   agendaEnabled: Schema.optional(Schema.Boolean).annotate({
     description: "Whether this agent has access to create and manage agenda reminders. Absent/false means disabled.",
+  }),
+  // Whether this agent has access to native WhatsApp tools (whatsapp)
+  whatsappEnabled: Schema.optional(Schema.Boolean).annotate({
+    description: "Whether this agent has access to native WhatsApp tools. Absent/false means disabled.",
   }),
   // Whether this agent is allowed to use continuous memory (memory_save / memory_search)
   memoryEnabled: Schema.optional(Schema.Boolean).annotate({

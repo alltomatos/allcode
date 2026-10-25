@@ -180,7 +180,11 @@ export async function importLegacySessions(
   }
 
   const workspaceHash = directoryToWorkspaceHash(targetDirectory)
-  const targetDbDir = join(appDataRoot(), "allcode", "workspaces", workspaceHash)
+  // Mesmo esquema do core: o diretório do workspace carrega o profile, para a
+  // migração feita no dev não escrever no project.db do app instalado.
+  const profile = process.env.OPENCODE_PROFILE
+  const workspacesRoot = profile && profile !== "prod" && profile !== "production" ? `workspaces-${profile}` : "workspaces"
+  const targetDbDir = join(appDataRoot(), "allcode", workspacesRoot, workspaceHash)
   const targetDbPath = join(targetDbDir, "project.db")
   const globalDbPath = process.env.ALLCODE_DB ?? join(app.getPath("userData"), "allcode.db")
 

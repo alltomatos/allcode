@@ -6,12 +6,13 @@ import { pathToFileURL } from "url"
 import os from "os"
 import { mergeDeep } from "remeda"
 import { Global } from "@allcode/core/global"
+import { Branding } from "@allcode/core/branding"
 import fsNode from "fs/promises"
 import { Flag } from "@allcode/core/flag/flag"
 import { Auth } from "../auth"
 import { Env } from "../env"
 import { applyEdits, modify } from "jsonc-parser"
-import { existsSync } from "fs"
+import { copyFileSync, existsSync } from "fs"
 import { Account } from "@/account/account"
 import { isRecord } from "@/util/record"
 import type { ConsoleState } from "@allcode/core/v1/config/console-state"
@@ -137,13 +138,46 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Co
 export const use = serviceUse(Service)
 
 function globalConfigFile() {
-  const candidates = ["opencode.jsonc", "opencode.json", "config.json"].map((file) =>
+  // Escrita sempre no formato moderno (`allcode.jsonc` / `allcode.json`).
+  // Arquivos legados (`opencode.jsonc`, `opencode.json`, `config.json`) continuam
+  // sendo LIDOS para não quebrar instalações existentes, mas nunca são alvo de
+  // gravação — o AllCode é dono do seu próprio arquivo de config.
+  const preferred = [`${Branding.configFileBase}.jsonc`, `${Branding.configFileBase}.json`].map((file) =>
     path.join(Global.Path.config, file),
   )
-  for (const file of candidates) {
+  for (const file of preferred) {
     if (existsSync(file)) return file
   }
-  return candidates[0]
+  return preferred[0]
+}
+
+// Ordem de merge do config global — o último vence. Legados primeiro,
+// `allcode.jsonc` por último para ter precedência sobre tudo que é legado.
+function globalConfigFiles() {
+  return [
+    "config.json",
+    `${Branding.legacyConfigFileBase}.json`,
+    `${Branding.legacyConfigFileBase}.jsonc`,
+    `${Branding.configFileBase}.json`,
+    `${Branding.configFileBase}.jsonc`,
+  ].map((file) => path.join(Global.Path.config, file))
+}
+
+// Migração não destrutiva: se só existe config legado, copia para
+// `allcode.jsonc` (mantendo o original) para que a próxima gravação aconteça
+// no arquivo do AllCode.
+function migrateLegacyGlobalConfig() {
+  const modern = path.join(Global.Path.config, `${Branding.configFileBase}.jsonc`)
+  if (existsSync(modern)) return
+  const legacy = [`${Branding.legacyConfigFileBase}.jsonc`, `${Branding.legacyConfigFileBase}.json`, "config.json"]
+    .map((file) => path.join(Global.Path.config, file))
+    .find((file) => existsSync(file))
+  if (!legacy) return
+  try {
+    copyFileSync(legacy, modern)
+  } catch {
+    // Sem permissão de escrita: seguimos lendo o legado normalmente.
+  }
 }
 
 function patchJsonc(input: string, patch: unknown, path: string[] = []): string {
@@ -248,6 +282,7 @@ const layer = Layer.effect(
       // Seed the default global config with the schema for editor completion, but avoid writing when the user
       // explicitly routes config through env-provided paths or content.
       if (!Flag.OPENCODE_CONFIG && !Flag.OPENCODE_CONFIG_DIR && !Flag.OPENCODE_CONFIG_CONTENT) {
+        migrateLegacyGlobalConfig()
         const file = globalConfigFile()
         if (!existsSync(file)) {
           yield* fs
@@ -255,9 +290,9 @@ const layer = Layer.effect(
             .pipe(Effect.catch(() => Effect.void))
         }
       }
-      result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, "config.json"), env))
-      result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, "opencode.json"), env))
-      result = mergeConfig(result, yield* loadFile(path.join(Global.Path.config, "opencode.jsonc"), env))
+      for (const file of globalConfigFiles()) {
+        result = mergeConfig(result, yield* loadFile(file, env))
+      }
 
       const legacy = path.join(Global.Path.config, "config")
       if (existsSync(legacy)) {
@@ -422,14 +457,19 @@ const layer = Layer.effect(
         const deps: Fiber.Fiber<void>[] = []
 
         for (const dir of directories) {
-          if (dir.endsWith(".opencode") || dir === Flag.OPENCODE_CONFIG_DIR) {
-            for (const file of ["opencode.json", "opencode.jsonc"]) {
-              const source = path.join(dir, file)
-              yield* Effect.logDebug(`loading config from ${source}`)
-              yield* merge(source, yield* loadFile(source, authEnv))
-              result.agent ??= {}
-              result.mode ??= {}
-              result.plugin ??= []
+          if (dir.endsWith(`.${Branding.configFileBase}`) || dir.endsWith(`.${Branding.legacyConfigFileBase}`) || dir === Flag.OPENCODE_CONFIG_DIR) {
+            // Nomes modernos primeiro e depois os legados: quem usar
+            // `.opencode/opencode.json` continua funcionando, mas `.allcode`/
+            // `allcode.json(c)` é o formato documentado.
+            for (const base of [Branding.legacyConfigFileBase, Branding.configFileBase]) {
+              for (const file of [`${base}.json`, `${base}.jsonc`]) {
+                const source = path.join(dir, file)
+                yield* Effect.logDebug(`loading config from ${source}`)
+                yield* merge(source, yield* loadFile(source, authEnv))
+                result.agent ??= {}
+                result.mode ??= {}
+                result.plugin ??= []
+              }
             }
           }
 
@@ -529,9 +569,11 @@ const layer = Layer.effect(
 
         const managedDir = ConfigManaged.managedConfigDir()
         if (existsSync(managedDir)) {
-          for (const file of ["opencode.json", "opencode.jsonc"]) {
-            const source = path.join(managedDir, file)
-            yield* merge(source, yield* loadFile(source), "global")
+          for (const base of [Branding.legacyConfigFileBase, Branding.configFileBase]) {
+            for (const file of [`${base}.json`, `${base}.jsonc`]) {
+              const source = path.join(managedDir, file)
+              yield* merge(source, yield* loadFile(source), "global")
+            }
           }
         }
 

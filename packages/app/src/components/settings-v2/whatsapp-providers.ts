@@ -3,6 +3,18 @@
 // form) rather than a shared package, since these are UI labels, not
 // business logic. Keep the two in sync when adding/removing a provider or
 // changing a field name (the backend's `config` keys must match exactly).
+
+// Como o WhatsApp do agente é conectado. `native` usa a lib zapo (WebSocket
+// direto com a Meta, sem webhook); `external` usa uma API do waconector.
+export type WhatsAppConnectionMode = "native" | "external"
+
+export const WHATSAPP_MODE_LABELS: Record<WhatsAppConnectionMode, string> = {
+  native: "Nativa (WhatsApp Web / zapo)",
+  external: "API externa (waconector)",
+}
+
+// Providers do waconector aceitos no modo `external`. O modo nativo NÃO usa
+// provider — ele é escolhido separadamente pelo `mode`.
 export type WhatsAppProvider =
   | "waha"
   | "evolution"

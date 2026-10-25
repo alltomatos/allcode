@@ -1,5 +1,5 @@
 import { Schema } from "effect"
-import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
+import { HttpApi, HttpApiEndpoint, HttpApiGroup, HttpApiSchema, OpenApi } from "effect/unstable/httpapi"
 import { AgentUINotFoundError } from "@/agentui"
 import {
   IzapiaGroup,
@@ -9,6 +9,12 @@ import {
   WhatsAppInvalidWebhookError,
   WhatsAppProviderApiError,
 } from "@/whatsapp"
+import {
+  WhatsAppNativeStatus,
+  WhatsAppNativeNotConfiguredError,
+  WhatsAppNativeStateError,
+  WhatsAppNativeOperationError,
+} from "@/whatsapp-native/schema"
 import { InstanceContextMiddleware } from "../middleware/instance-context"
 import { WorkspaceRoutingMiddleware, WorkspaceRoutingQuery } from "../middleware/workspace-routing"
 import { described } from "./metadata"
@@ -23,11 +29,102 @@ export const IzapiaGroupParticipantsPayload = Schema.Struct({
   sid: Schema.String,
   groupId: Schema.String,
 })
+export const WhatsAppNativeGroup = Schema.Struct({
+  jid: Schema.String,
+  subject: Schema.String,
+  participantCount: Schema.Number,
+  isAdmin: Schema.Boolean,
+  isSuperAdmin: Schema.Boolean,
+  creation: Schema.optional(Schema.Number),
+  desc: Schema.optional(Schema.String),
+}).annotate({ identifier: "WhatsAppNativeGroup" })
+export type WhatsAppNativeGroup = Schema.Schema.Type<typeof WhatsAppNativeGroup>
+
+export const WhatsAppNativeParticipant = Schema.Struct({
+  jid: Schema.String,
+  name: Schema.optional(Schema.String),
+  phone: Schema.optional(Schema.String),
+  isAdmin: Schema.Boolean,
+  isSuperAdmin: Schema.Boolean,
+}).annotate({ identifier: "WhatsAppNativeParticipant" })
+export type WhatsAppNativeParticipant = Schema.Schema.Type<typeof WhatsAppNativeParticipant>
+
+export const WhatsAppNativeLogoutResponse = Schema.Struct({ ok: Schema.Literal(true) })
 
 export const WhatsAppApi = HttpApi.make("whatsapp")
   .add(
     HttpApiGroup.make("whatsapp")
       .add(
+        // Endpoints WhatsApp Nativo (zapo-js)
+        HttpApiEndpoint.get("nativeStatus", `${root}/native/:agentId`, {
+          params: { agentId: Schema.String },
+          success: described(WhatsAppNativeStatus, "Status da conexão nativa WhatsApp"),
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "whatsapp.nativeStatus",
+            summary: "Get native WhatsApp connection status",
+            description: "Returns connection state, connected phone number, and errors for the given agent.",
+          }),
+        ),
+        HttpApiEndpoint.post("nativeConnect", `${root}/native/:agentId/connect`, {
+          params: { agentId: Schema.String },
+          success: described(WhatsAppNativeStatus, "Conexão nativa iniciada"),
+          error: [
+            AgentUINotFoundError,
+            WhatsAppNativeNotConfiguredError,
+            WhatsAppNativeStateError,
+            WhatsAppNativeOperationError,
+          ],
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "whatsapp.nativeConnect",
+            summary: "Initiate native WhatsApp pairing/connection",
+            description: "Starts WaClient pairing (emitting QR) or connects existing session for this agent.",
+          }),
+        ),
+        HttpApiEndpoint.post("nativeLogout", `${root}/native/:agentId/logout`, {
+          params: { agentId: Schema.String },
+          success: described(WhatsAppNativeLogoutResponse, "Sessão desconectada com sucesso"),
+          error: [WhatsAppNativeOperationError],
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "whatsapp.nativeLogout",
+            summary: "Disconnect native WhatsApp session",
+            description: "Logs out the native WhatsApp session and removes credentials.",
+          }),
+        ),
+        HttpApiEndpoint.get("nativeEvents", `${root}/native/:agentId/events`, {
+          params: { agentId: Schema.String },
+          success: Schema.String.pipe(HttpApiSchema.asText({ contentType: "text/event-stream" })),
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "whatsapp.nativeEvents",
+            summary: "Subscribe to native WhatsApp events (SSE)",
+            description: "Receives QR codes and connection state changes in real time.",
+          }),
+        ),
+        HttpApiEndpoint.get("nativeGroups", `${root}/native/:agentId/groups`, {
+          params: { agentId: Schema.String },
+          success: described(Schema.Array(WhatsAppNativeGroup), "Lista de grupos do WhatsApp nativo"),
+          error: [WhatsAppNativeOperationError],
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "whatsapp.nativeGroups",
+            summary: "List WhatsApp groups",
+            description: "Lists all WhatsApp groups the account belongs to, identifying if it is an admin.",
+          }),
+        ),
+        HttpApiEndpoint.get("nativeGroupParticipants", `${root}/native/:agentId/groups/:groupId/participants`, {
+          params: { agentId: Schema.String, groupId: Schema.String },
+          success: described(Schema.Array(WhatsAppNativeParticipant), "Lista de participantes do grupo WhatsApp"),
+          error: [WhatsAppNativeOperationError],
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "whatsapp.nativeGroupParticipants",
+            summary: "List WhatsApp group participants",
+            description: "Lists participants of a specific WhatsApp group in native zapo connection.",
+          }),
+        ),
         // Called by the WhatsApp gateway (WAHA/Evolution/Z-API/...), never by
         // our own client — deliberately NOT gated by the Authorization
         // middleware every other instance route uses, since an external

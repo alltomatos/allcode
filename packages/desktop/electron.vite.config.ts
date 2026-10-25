@@ -39,6 +39,7 @@ export default defineConfig({
     build: {
       rollupOptions: {
         input: { index: "src/main/index.ts", sidecar: "src/main/sidecar.ts" },
+        external: ["argo-codec"],
         // Keep this identical to electron-vite's Node 20.11+ shim. Its regex insertion can
         // corrupt bundled TypeScript, while a Rollup banner places the shim safely.
         output: {

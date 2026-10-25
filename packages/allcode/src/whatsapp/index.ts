@@ -75,6 +75,14 @@ function findChannel(agent: ConfigAgentUIV1.Agent): ConfigAgentUIV1.WhatsAppChan
   return found && found.type === "whatsapp" ? found : undefined
 }
 
+// Este serviço atende apenas canais conectados por API externa (waconector).
+// Canais em modo nativo são servidos por @/whatsapp-native e não têm webhook.
+function findExternalChannel(agent: ConfigAgentUIV1.Agent): ConfigAgentUIV1.WhatsAppChannelBinding | undefined {
+  const found = findChannel(agent)
+  if (!found) return undefined
+  return ConfigAgentUIV1.isExternalWhatsAppChannel(found) ? found : undefined
+}
+
 function isChatAllowed(channel: ConfigAgentUIV1.WhatsAppChannelBinding, chatId: string): boolean {
   if (!chatId.endsWith("@g.us")) return true
   const allowed = channel.allowedGroups
@@ -434,7 +442,7 @@ const layer = Layer.effect(
       headers: Record<string, string>
     }) {
       const agent = yield* agentUI.get(input.agentID)
-      const channel = findChannel(agent)
+      const channel = findExternalChannel(agent)
       if (!channel) return yield* new WhatsAppChannelNotConfiguredError({ id: input.agentID })
       if (channel.webhookSecret !== input.secret) {
         return yield* new WhatsAppInvalidWebhookError({ reason: "secret mismatch" })
