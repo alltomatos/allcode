@@ -40,7 +40,7 @@
             },
             {
               "title": "Correções: destinatário, modelo, sessão e inicialização",
-              "description": "Mensagens e mídias enviadas pelo agente vão sempre para a conversa que o acionou (antes podiam cair no próprio número). O modelo é reprocessado quando o catálogo ainda está sincronizando, o diretório de sessão não-absoluto deixou de derrubar o turno, o diagnóstico de canais reconhece o WhatsApp nativo e a inicialização do app ganhou mais tolerância a boots lentos."
+              "description": "Mensagens e mídias enviadas pelo agente vão sempre para a conversa que o acionou (antes podiam cair no próprio número), e o envio por URL passou a inferir o mimetype do arquivo. O modelo é reprocessado quando o catálogo ainda está sincronizando, o diretório de sessão não-absoluto deixou de derrubar o turno, o diagnóstico de canais reconhece o WhatsApp nativo e a inicialização do app ganhou mais tolerância a boots lentos. Arquivos de config legados são migrados para allcode.jsonc antes de qualquer gravação, então valores antigos ainda podem ser limpos."
             }
           ]
         }
