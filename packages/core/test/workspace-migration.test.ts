@@ -130,7 +130,7 @@ describe("WorkspaceMigration", () => {
   })
 
   it("projects sessions into physical project.db and populates session_location index", async () => {
-    const testDir = path.resolve(`packages/core/test/fixture/partition_${Date.now()}`)
+    const testDir = path.join(import.meta.dir, "fixture", `partition_${Date.now()}`)
     await fs.mkdir(testDir, { recursive: true })
     const testHash = WorkspaceMigration.directoryToWorkspaceHash(testDir)
     const projectDbPath = WorkspaceMigration.getWorkspaceDatabasePath(testHash)
@@ -163,6 +163,17 @@ describe("WorkspaceMigration", () => {
         Location.Ref.make({ directory: AbsolutePath.make(testDir) }),
       )
       yield* Layer.build(locationEnv).pipe(Effect.scoped)
+
+      // O project.db físico roda com PRAGMA foreign_keys=ON: a sessão só pode
+      // ser gravada se o projeto existir também naquele banco, e não apenas no global.
+      yield* Effect.sync(() => {
+        const file = new SQLite(projectDbPath)
+        file.run(
+          "INSERT OR IGNORE INTO project (id, worktree, time_created, time_updated, sandboxes) VALUES (?, ?, 1000, 1000, '[]')",
+          ["proj_part", testDir],
+        )
+        file.close()
+      })
 
       yield* Effect.gen(function* () {
         // Publicar criação de sessão dentro do escopo de localização do workspace
