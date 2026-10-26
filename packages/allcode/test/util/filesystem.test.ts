@@ -597,7 +597,8 @@ describe("filesystem", () => {
       const target = path.join(tmp.path, "real")
       await fs.mkdir(target)
       const link = path.join(tmp.path, "link")
-      await fs.symlink(target, link)
+      // Junction não exige Developer Mode/administrador no Windows.
+      await fs.symlink(target, link, process.platform === "win32" ? "junction" : "dir")
       expect(Filesystem.resolve(link)).toBe(Filesystem.resolve(target))
     })
 
@@ -609,6 +610,9 @@ describe("filesystem", () => {
     })
 
     test("throws ELOOP on symlink cycle", async () => {
+      // No Windows o único link criável sem privilégio é junction, e junction
+      // exige um alvo existente — logo um ciclo de diretórios não é representável.
+      if (process.platform === "win32") return
       await using tmp = await tmpdir()
       const a = path.join(tmp.path, "a")
       const b = path.join(tmp.path, "b")
