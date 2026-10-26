@@ -1,4 +1,5 @@
 import { Context, Effect, Layer } from "effect"
+import { debug } from "@/util/debug"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import type { WaClient } from "zapo-js"
 import { getWhatsAppNativeManager } from "./manager"
@@ -189,7 +190,7 @@ export const layer = Layer.effect(
     // Manager único por processo (ver manager.ts): evita dois supervisores
     // disputando a mesma sessão do WhatsApp quando o grafo é montado 2x.
     const manager = getWhatsAppNativeManager()
-    console.log(
+    debug(
       `[WhatsApp Native] serviço iniciado profile=${whatsappNativeProfile()} db=${whatsappNativeDbPath()} configDir=${Global.Path.config}`,
     )
 
@@ -412,7 +413,7 @@ export const layer = Layer.effect(
 
       for (const agent of agents) {
         if (!ConfigAgentUIV1.isEnabled(agent)) {
-          console.log(`[WhatsApp Native Reconcile] agente desativado: ${agent.id}`)
+          debug(`[WhatsApp Native Reconcile] agente desativado: ${agent.id}`)
           continue
         }
         const channel = (agent.channels as readonly ConfigAgentUIV1.WhatsAppChannelBinding[]).find(
@@ -420,7 +421,7 @@ export const layer = Layer.effect(
             c.type === "whatsapp" && ConfigAgentUIV1.isNativeWhatsAppChannel(c),
         )
         if (!channel) {
-          console.log(
+          debug(
             `[WhatsApp Native Reconcile] sem canal nativo: ${agent.id} channels=${JSON.stringify(agent.channels.map((c) => ("type" in c ? c.type : "?")))}`,
           )
           continue
@@ -438,7 +439,7 @@ export const layer = Layer.effect(
             Effect.catch(() => Effect.succeed(undefined)),
           )
           if (creds && creds.meJid) {
-            console.log(
+            debug(
               `[WhatsApp Native Reconcile] reconectando ${agent.id} (${creds.meJid}) mode=${ConfigAgentUIV1.whatsappMode(channel)} provider=${channel.provider ?? "-"}`,
             )
             // catchCause (não catch): uma config/estado inesperado de UM agente

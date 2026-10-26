@@ -1,6 +1,7 @@
 export * as AgentUI from "./index"
 
 import { LayerNode } from "@allcode/core/effect/layer-node"
+import { debug } from "@/util/debug"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import { PermissionV1 } from "@allcode/core/v1/permission"
@@ -631,7 +632,7 @@ const layer = Layer.effect(
               const message = err instanceof Error ? err.message : String(err)
               const retryable = /Model not found/i.test(message)
               if (retryable && attempt > 0) {
-                console.log(
+                debug(
                   `[AgentUI Prompt Retry] ${message} — tentando novamente (${attempt} restantes)`,
                 )
                 return Effect.sleep("3 seconds").pipe(Effect.andThen(runPrompt(attempt - 1)))
@@ -648,7 +649,7 @@ const layer = Layer.effect(
       const promptResult = yield* runPrompt(4)
 
       let reply = promptResult ? extractText(promptResult) : ""
-      console.log(`[AgentUI Prompt Result Direct Text] "${reply}" (parts count: ${promptResult?.parts?.length ?? 0})`)
+      debug(`[AgentUI Prompt Result Direct Text] "${reply}" (parts count: ${promptResult?.parts?.length ?? 0})`)
       if (!reply) {
         // Se a chamada direta não retornou texto (ou teve erro capturado), busca a última mensagem de assistente persistida na sessão
         const history = yield* sessions.messages({ sessionID: SessionID.make(sessionID), limit: 5 }).pipe(
@@ -657,7 +658,7 @@ const layer = Layer.effect(
         const lastAsst = history.findLast((m) => m.info.role === "assistant")
         if (lastAsst) {
           reply = extractText(lastAsst)
-          console.log(`[AgentUI Fallback History Text] "${reply}"`)
+          debug(`[AgentUI Fallback History Text] "${reply}"`)
           if (!reply && "error" in lastAsst.info && lastAsst.info.error) {
             const errObj = lastAsst.info.error as { message?: string }
             if (errObj.message) reply = `⚠️ ${errObj.message}`
@@ -665,7 +666,7 @@ const layer = Layer.effect(
         }
       }
       if (!reply) reply = "(sem resposta)"
-      console.log(`[AgentUI Final Outgoing Reply] "${reply}"`)
+      debug(`[AgentUI Final Outgoing Reply] "${reply}"`)
       yield* logAudit(input.id, { channel, chatKey: input.chatKey, incoming: input.message, outgoing: reply, blocked: false })
       return { reply, blocked: false }
     })

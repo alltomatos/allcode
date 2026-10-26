@@ -1,4 +1,5 @@
 import { Context, Effect, Fiber, Schedule, Duration } from "effect"
+import { debug } from "@/util/debug"
 import { WaClient } from "zapo-js"
 import type { WaConnectionEvent, WaIncomingMessageEvent } from "zapo-js"
 import { getWhatsAppNativeStore } from "./store"
@@ -27,7 +28,8 @@ export interface AgentNativeSession {
   listeners: Set<(event: WhatsAppNativeEvent) => void>
 }
 
-export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNativeSession>()
+export class WhatsAppNativeManager {
+  private sessions = new Map<string, AgentNativeSession>()
   private storePromise = getWhatsAppNativeStore()
 
   getSession(agentId: string): AgentNativeSession | undefined {
@@ -142,7 +144,7 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
         session.lastError = undefined
       }
       self.notify(session, { state: "connecting" })
-      console.log(`[WhatsApp Native] connect iniciado agentId=${agentId}`)
+      debug(`[WhatsApp Native] connect iniciado agentId=${agentId}`)
 
       const client = yield* Effect.try({
         try: () =>
@@ -248,7 +250,7 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
       }).pipe(
         Effect.tap(() =>
           Effect.sync(() =>
-            console.log(`[WhatsApp Native] client.connect() resolvido agentId=${agentId} state=${session!.state}`),
+            debug(`[WhatsApp Native] client.connect() resolvido agentId=${agentId} state=${session!.state}`),
           ),
         ),
         Effect.tapError((err) =>
@@ -332,7 +334,7 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
   }): Effect.Effect<void, never, never> {
     const { agentId, channel, client, msgEvent, agentUI } = input
     return Effect.gen(function* () {
-      console.log("[WhatsApp Native Inbound Raw Event]:", JSON.stringify({
+      debug("[WhatsApp Native Inbound Raw Event]:", JSON.stringify({
         key: msgEvent.key,
         messageKeys: msgEvent.message ? Object.keys(msgEvent.message) : [],
         pushName: msgEvent.pushName,
@@ -361,24 +363,24 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
 
       const nativeOpts = channel.native
 
-      console.log(
+      debug(
         `[WhatsApp Inbound Filter Check] chat=${chatJid} isGroup=${isGroup} sender=${senderJid} senderAlt=${senderAlt} allowedGroups=${JSON.stringify(channel.allowedGroups)}`,
       )
 
       // 0. Toggle de mensagens diretas e grupos
       if (!isGroup && nativeOpts?.directMessagesEnabled === false) {
-        console.log("[WhatsApp Inbound Ignored] Direct messages are disabled")
+        debug("[WhatsApp Inbound Ignored] Direct messages are disabled")
         return
       }
       if (isGroup && nativeOpts?.groupsEnabled === false) {
-        console.log("[WhatsApp Inbound Ignored] Groups are disabled")
+        debug("[WhatsApp Inbound Ignored] Groups are disabled")
         return
       }
 
       // 1. Filtro de Grupos autorizados
       if (isGroup && channel.allowedGroups && channel.allowedGroups.length > 0) {
         if (!channel.allowedGroups.includes(chatJid)) {
-          console.log(`[WhatsApp Inbound Ignored] Group ${chatJid} is not in allowedGroups`)
+          debug(`[WhatsApp Inbound Ignored] Group ${chatJid} is not in allowedGroups`)
           return
         }
       }
@@ -387,7 +389,7 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
       if (channel.allowedSenders && channel.allowedSenders.length > 0) {
         const allowed = isSenderAllowed(channel.allowedSenders)
         if (!allowed) {
-          console.log(`[WhatsApp Inbound Ignored] Sender ${senderJid} not in allowedSenders`)
+          debug(`[WhatsApp Inbound Ignored] Sender ${senderJid} not in allowedSenders`)
           return
         }
       }
@@ -398,7 +400,7 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
         if (groupSenders.length > 0) {
           const allowed = isSenderAllowed(groupSenders)
           if (!allowed) {
-            console.log(`[WhatsApp Inbound Ignored] Sender ${senderJid} not in groupAllowedSenders for ${chatJid}`)
+            debug(`[WhatsApp Inbound Ignored] Sender ${senderJid} not in groupAllowedSenders for ${chatJid}`)
             return
           }
         }
@@ -413,11 +415,11 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
         ""
 
       if (!text.trim()) {
-        console.log("[WhatsApp Inbound Ignored] Text is empty")
+        debug("[WhatsApp Inbound Ignored] Text is empty")
         return
       }
 
-      console.log(`[WhatsApp Inbound Msg] "${text}" from ${senderJid} in ${chatJid}`)
+      debug(`[WhatsApp Inbound Msg] "${text}" from ${senderJid} in ${chatJid}`)
 
       // 4. MentionOnly ou QuoteReply em grupos
       if (isGroup) {
@@ -449,26 +451,26 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
         // Verifica se Ã© resposta citando uma mensagem do prÃ³prio bot
         const isQuotingBot = matchesBot(contextInfo?.participant ?? undefined)
 
-        console.log(
+        debug(
           `[WhatsApp Mention/Quote Check] botIds=${JSON.stringify(botIds)} mentions=${JSON.stringify(mentions)} quoted=${contextInfo?.participant} isMentioned=${isMentioned} isQuotingBot=${isQuotingBot} mentionOnly=${channel.mentionOnly} replyToQuoteOrMentionOnly=${nativeOpts?.replyToQuoteOrMentionOnly}`,
         )
 
         // Se mentionOnly clÃ¡ssico estiver ligado
         if (channel.mentionOnly && !isMentioned) {
-          console.log("[WhatsApp Inbound Ignored] mentionOnly is true but bot was not mentioned")
+          debug("[WhatsApp Inbound Ignored] mentionOnly is true but bot was not mentioned")
           return
         }
 
         // Se a opÃ§Ã£o "Responder somente se mencionado OU se for resposta a mensagem do bot" estiver ativa
         if (nativeOpts?.replyToQuoteOrMentionOnly) {
           if (!isMentioned && !isQuotingBot) {
-            console.log("[WhatsApp Inbound Ignored] replyToQuoteOrMentionOnly is true but not mentioned and not quoting bot")
+            debug("[WhatsApp Inbound Ignored] replyToQuoteOrMentionOnly is true but not mentioned and not quoting bot")
             return
           }
         }
       }
 
-      console.log(`[WhatsApp Inbound Dispatching to AgentUI] agentId=${agentId}`)
+      debug(`[WhatsApp Inbound Dispatching to AgentUI] agentId=${agentId}`)
 
       // Dispatch para o AgentUI
       const result = yield* agentUI
@@ -486,14 +488,14 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
           }),
         )
 
-      console.log(`[WhatsApp Inbound AgentUI Result] reply="${result.reply}" blocked=${result.blocked}`)
+      debug(`[WhatsApp Inbound AgentUI Result] reply="${result.reply}" blocked=${result.blocked}`)
 
       if (!result.reply || result.reply === "(sem resposta)") {
-        console.log("[WhatsApp Inbound] Result reply is empty, skipping sending")
+        debug("[WhatsApp Inbound] Result reply is empty, skipping sending")
         return
       }
 
-      console.log(`[WhatsApp Inbound Sending Reply] to=${chatJid} text="${result.reply}"`)
+      debug(`[WhatsApp Inbound Sending Reply] to=${chatJid} text="${result.reply}"`)
 
       // Envia resposta de volta no mesmo chat com retentativa
       const sendResult = yield* Effect.tryPromise({
@@ -516,18 +518,18 @@ export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNa
         }),
         Effect.catch(() => Effect.void),
       )
-      console.log(`[WhatsApp Inbound Reply Sent Success] to=${chatJid} result=${JSON.stringify(sendResult)}`)
+      debug(`[WhatsApp Inbound Reply Sent Success] to=${chatJid} result=${JSON.stringify(sendResult)}`)
     }).pipe(
       Effect.catch(() => Effect.void),
     )
   }
 }
 
-// O grafo de serviços é construído mais de uma vez no mesmo processo (rotas
-// HTTP, ToolRegistry, AppRuntime). Se cada construção criasse o seu manager,
-// teríamos N supervisores disputando a MESMA sessão do WhatsApp — reconexões
-// em loop, contenção no SQLite e boot lento. O manager (e portanto a conexão)
-// é único por processo.
+// O grafo de serviï¿½os ï¿½ construï¿½do mais de uma vez no mesmo processo (rotas
+// HTTP, ToolRegistry, AppRuntime). Se cada construï¿½ï¿½o criasse o seu manager,
+// terï¿½amos N supervisores disputando a MESMA sessï¿½o do WhatsApp ï¿½ reconexï¿½es
+// em loop, contenï¿½ï¿½o no SQLite e boot lento. O manager (e portanto a conexï¿½o)
+// ï¿½ ï¿½nico por processo.
 let sharedManager: WhatsAppNativeManager | undefined
 
 export function getWhatsAppNativeManager(): WhatsAppNativeManager {

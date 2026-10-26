@@ -66,6 +66,9 @@ export const Flag = {
   get OPENCODE_PURE() {
     return truthy("OPENCODE_PURE")
   },
+  get OPENCODE_DEBUG_AGENTUI() {
+    return truthy("OPENCODE_DEBUG_AGENTUI")
+  },
   get OPENCODE_PERMISSION() {
     return process.env["OPENCODE_PERMISSION"]
   },
