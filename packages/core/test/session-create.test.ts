@@ -26,6 +26,7 @@ import { SessionStore } from "@allcode/core/session/store"
 import { WorkspaceV2 } from "@allcode/core/workspace"
 import { testEffect } from "./lib/effect"
 import { tmpdir } from "./fixture/tmpdir"
+import { projectAbsolute } from "./fixture/project"
 
 const projects = Layer.succeed(
   ProjectV2.Service,
@@ -44,7 +45,7 @@ const it = testEffect(
     ],
   ),
 )
-const location = Location.Ref.make({ directory: AbsolutePath.make("/project") })
+const location = Location.Ref.make({ directory: projectAbsolute })
 const id = SessionV2.ID.create()
 
 describe("SessionV2.create", () => {

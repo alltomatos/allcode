@@ -12,6 +12,7 @@ import { SessionV2 } from "@allcode/core/session"
 import { SessionTable, TodoTable } from "@allcode/core/session/sql"
 import { SessionTodo } from "@allcode/core/session/todo"
 import { testEffect } from "./lib/effect"
+import { projectAbsolute, projectDirectory } from "./fixture/project"
 
 const it = testEffect(AppNodeBuilder.build(LayerNode.group([Database.node, EventV2.node, SessionTodo.node])))
 const sessionID = SessionV2.ID.make("ses_todo_test")
@@ -20,7 +21,7 @@ const setup = Effect.gen(function* () {
   const { db } = yield* Database.Service
   yield* db
     .insert(ProjectTable)
-    .values({ id: Project.ID.global, worktree: AbsolutePath.make("/project"), sandboxes: [] })
+    .values({ id: Project.ID.global, worktree: projectAbsolute, sandboxes: [] })
     .run()
     .pipe(Effect.orDie)
   yield* db
@@ -29,7 +30,7 @@ const setup = Effect.gen(function* () {
       id: sessionID,
       project_id: Project.ID.global,
       slug: "todo",
-      directory: "/project",
+      directory: projectDirectory,
       title: "todo",
       version: "test",
     })

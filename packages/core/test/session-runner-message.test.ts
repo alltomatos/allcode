@@ -8,6 +8,7 @@ import { AgentAttachment, FileAttachment } from "@allcode/core/session/prompt"
 import { toLLMMessages } from "@allcode/core/session/runner/to-llm-message"
 import { SessionV2 } from "@allcode/core/session"
 import { DateTime } from "effect"
+import { projectDirectory } from "./fixture/project"
 
 const created = DateTime.makeUnsafe(0)
 const id = (value: string) => SessionMessage.ID.make(`msg_${value}`)
@@ -89,7 +90,7 @@ describe("toLLMMessages", () => {
           type: "shell",
           callID: "shell-1",
           command: "pwd",
-          output: "/project",
+          output: projectDirectory,
           time: { created, completed: created },
         }),
         SessionMessage.Compaction.make({

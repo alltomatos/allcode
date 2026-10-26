@@ -16,6 +16,7 @@ import { ToolRegistry } from "@allcode/core/tool/registry"
 import { ToolOutputStore } from "@allcode/core/tool-output-store"
 import { testEffect } from "./lib/effect"
 import { toolIdentity, executeTool, settleTool, toolDefinitions } from "./lib/tool"
+import { projectAbsolute, projectDirectory } from "./fixture/project"
 
 const sessionID = SessionV2.ID.make("ses_todowrite_tool_test")
 const assertions: PermissionV2.AssertInput[] = []
@@ -58,7 +59,7 @@ const setup = Effect.gen(function* () {
   const { db } = yield* Database.Service
   yield* db
     .insert(ProjectTable)
-    .values({ id: Project.ID.global, worktree: AbsolutePath.make("/project"), sandboxes: [] })
+    .values({ id: Project.ID.global, worktree: projectAbsolute, sandboxes: [] })
     .run()
     .pipe(Effect.orDie)
   yield* db
@@ -67,7 +68,7 @@ const setup = Effect.gen(function* () {
       id: sessionID,
       project_id: Project.ID.global,
       slug: "todowrite",
-      directory: "/project",
+      directory: projectDirectory,
       title: "todowrite",
       version: "test",
     })

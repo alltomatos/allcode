@@ -37,6 +37,7 @@ import { eq } from "drizzle-orm"
 import { Effect, Layer } from "effect"
 import path from "node:path"
 import { testEffect } from "./lib/effect"
+import { projectAbsolute, projectDirectory } from "./fixture/project"
 
 const cassette =
   process.env.RECORD === "true"
@@ -77,7 +78,7 @@ const runnerLayer = AppNodeBuilder.build(SessionRunnerLLM.node, [
   [LayerNodePlatform.llmClient, client],
   [SessionRunnerModel.node, models],
   [SystemContextRegistry.node, systemContext],
-  [Location.node, Location.boundNode({ directory: AbsolutePath.make("/project") })],
+  [Location.node, Location.boundNode({ directory: projectAbsolute })],
   [SkillGuidance.node, skillGuidance],
   [ReferenceGuidance.node, referenceGuidance],
   [Config.node, config],
@@ -124,7 +125,7 @@ const it = testEffect(
       [ToolOutputStore.node, ToolOutputStore.nodeWithoutConfig],
       [SessionRunnerModel.node, models],
       [SystemContextRegistry.node, systemContext],
-      [Location.node, Location.boundNode({ directory: AbsolutePath.make("/project") })],
+      [Location.node, Location.boundNode({ directory: projectAbsolute })],
       [SkillGuidance.node, skillGuidance],
       [ReferenceGuidance.node, referenceGuidance],
       [Config.node, config],
@@ -141,7 +142,7 @@ describe("SessionRunnerLLM recorded", () => {
       const { db } = yield* Database.Service
       yield* db
         .insert(ProjectTable)
-        .values({ id: Project.ID.global, worktree: AbsolutePath.make("/project"), sandboxes: [] })
+        .values({ id: Project.ID.global, worktree: projectAbsolute, sandboxes: [] })
         .onConflictDoNothing()
         .run()
         .pipe(Effect.orDie)
@@ -151,7 +152,7 @@ describe("SessionRunnerLLM recorded", () => {
           id: sessionID,
           project_id: Project.ID.global,
           slug: "test",
-          directory: "/project",
+          directory: projectDirectory,
           title: "test",
           version: "test",
         })

@@ -29,6 +29,7 @@ import { Database } from "@allcode/core/database/database"
 import { SessionProjector } from "@allcode/core/session/projector"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { tmpdir } from "./fixture/tmpdir"
+import { projectDirectory } from "./fixture/project"
 
 const run = <A, E>(effect: Effect.Effect<A, E, SqlClientService>) =>
   Effect.runPromise(
@@ -239,13 +240,13 @@ describe("DatabaseMigration", () => {
         yield* db.run(sql`PRAGMA foreign_keys = ON`)
         yield* DatabaseMigration.apply(db)
         yield* db.run(
-          sql`INSERT INTO project (id, worktree, time_created, time_updated, sandboxes) VALUES ('global', '/project', 1, 1, '[]')`,
+          sql`INSERT INTO project (id, worktree, time_created, time_updated, sandboxes) VALUES ('global', ${projectDirectory}, 1, 1, '[]')`,
         )
         yield* db.run(
           sql`INSERT INTO workspace (id, type, project_id, time_used) VALUES ('workspace', 'local', 'global', 1)`,
         )
         yield* db.run(
-          sql`INSERT INTO session (id, project_id, workspace_id, slug, directory, title, version, time_created, time_updated) VALUES ('session', 'global', 'workspace', 'session', '/project', 'Before', 'test', 1, 1)`,
+          sql`INSERT INTO session (id, project_id, workspace_id, slug, directory, title, version, time_created, time_updated) VALUES ('session', 'global', 'workspace', 'session', ${projectDirectory}, 'Before', 'test', 1, 1)`,
         )
         yield* db.run(
           sql`INSERT INTO message (id, session_id, time_created, time_updated, data) VALUES ('message', 'session', 1, 1, '{}')`,
@@ -277,7 +278,7 @@ describe("DatabaseMigration", () => {
               id: SessionSchema.ID.make("session"),
               slug: "session",
               projectID: ProjectV2.ID.global,
-              directory: "/project",
+              directory: projectDirectory,
               title: "After",
               version: "test",
               time: { created: 1, updated: 2 },

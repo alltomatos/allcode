@@ -14,6 +14,7 @@ import { SessionProjector } from "@allcode/core/session/projector"
 import { SessionStore } from "@allcode/core/session/store"
 import { SessionTable } from "@allcode/core/session/sql"
 import { testEffect } from "./lib/effect"
+import { projectAbsolute, projectDirectory } from "./fixture/project"
 
 const projects = Layer.succeed(
   ProjectV2.Service,
@@ -32,7 +33,7 @@ const it = testEffect(
     ],
   ),
 )
-const location = Location.Ref.make({ directory: AbsolutePath.make("/project") })
+const location = Location.Ref.make({ directory: projectAbsolute })
 
 const GapEvent = EventV2.define({
   type: "test.session.history.gap",
@@ -48,7 +49,7 @@ describe("SessionV2.history", () => {
       const sessionID = SessionV2.ID.make("ses_empty_history")
       yield* db
         .insert(ProjectTable)
-        .values({ id: ProjectV2.ID.global, worktree: AbsolutePath.make("/project"), sandboxes: [] })
+        .values({ id: ProjectV2.ID.global, worktree: projectAbsolute, sandboxes: [] })
         .onConflictDoNothing()
         .run()
       yield* db
@@ -57,7 +58,7 @@ describe("SessionV2.history", () => {
           id: sessionID,
           project_id: ProjectV2.ID.global,
           slug: "empty-history",
-          directory: "/project",
+          directory: projectDirectory,
           title: "Empty history",
           version: "test",
         })

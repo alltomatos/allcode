@@ -8,6 +8,7 @@ import { AbsolutePath } from "@allcode/core/schema"
 import { location } from "./fixture/location"
 import { testEffect } from "./lib/effect"
 import { agentHost, host } from "./plugin/host"
+import { projectAbsolute } from "./fixture/project"
 
 const it = testEffect(AppNodeBuilder.build(AgentV2.node))
 
@@ -109,7 +110,7 @@ describe("AgentV2", () => {
       ).pipe(
         Effect.provideService(
           Location.Service,
-          Location.Service.of(location({ directory: AbsolutePath.make("/project") })),
+          Location.Service.of(location({ directory: projectAbsolute })),
         ),
       )
 

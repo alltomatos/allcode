@@ -19,6 +19,7 @@ import { SessionInput } from "@allcode/core/session/input"
 import { SessionInputTable, SessionMessageTable, SessionTable } from "@allcode/core/session/sql"
 import { SessionStore } from "@allcode/core/session/store"
 import { testEffect } from "./lib/effect"
+import { projectAbsolute, projectDirectory } from "./fixture/project"
 
 const executionCalls: SessionV2.ID[] = []
 const interruptCalls: SessionV2.ID[] = []
@@ -56,7 +57,7 @@ const setup = Effect.gen(function* () {
   const { db } = yield* Database.Service
   yield* db
     .insert(ProjectTable)
-    .values({ id: Project.ID.global, worktree: AbsolutePath.make("/project"), sandboxes: [] })
+    .values({ id: Project.ID.global, worktree: projectAbsolute, sandboxes: [] })
     .onConflictDoNothing()
     .run()
     .pipe(Effect.orDie)
@@ -66,7 +67,7 @@ const setup = Effect.gen(function* () {
       id: sessionID,
       project_id: Project.ID.global,
       slug: "test",
-      directory: "/project",
+      directory: projectDirectory,
       title: "test",
       version: "test",
     })
@@ -498,7 +499,7 @@ describe("SessionV2.prompt", () => {
           id: other,
           project_id: Project.ID.global,
           slug: "other",
-          directory: "/project",
+          directory: projectDirectory,
           title: "other",
           version: "test",
         })

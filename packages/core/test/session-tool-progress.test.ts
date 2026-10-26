@@ -16,6 +16,7 @@ import { SessionMessage } from "@allcode/core/session/message"
 import { SessionProjector } from "@allcode/core/session/projector"
 import { SessionTable, SessionMessageTable } from "@allcode/core/session/sql"
 import { testEffect } from "./lib/effect"
+import { projectAbsolute, projectDirectory } from "./fixture/project"
 
 const it = testEffect(LayerNode.compile(LayerNode.group([Database.node, EventV2.node, SessionProjector.node])))
 const timestamp = DateTime.makeUnsafe(1)
@@ -31,7 +32,7 @@ describe("Tool.Progress", () => {
       const sessionID = SessionV2.ID.make("ses_tool_progress_projector")
       yield* db
         .insert(ProjectTable)
-        .values({ id: Project.ID.global, worktree: AbsolutePath.make("/project"), sandboxes: [] })
+        .values({ id: Project.ID.global, worktree: projectAbsolute, sandboxes: [] })
         .onConflictDoNothing()
         .run()
         .pipe(Effect.orDie)
@@ -41,7 +42,7 @@ describe("Tool.Progress", () => {
           id: sessionID,
           project_id: Project.ID.global,
           slug: "progress",
-          directory: "/project",
+          directory: projectDirectory,
           title: "progress",
           version: "test",
         })
