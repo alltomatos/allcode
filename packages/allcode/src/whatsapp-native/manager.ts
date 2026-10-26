@@ -11,7 +11,7 @@ import {
   WhatsAppNativeOperationError,
 } from "./schema"
 import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
-import { AgentUI } from "@/agentui"
+import type { ChannelAgentUI } from "./bindings"
 
 export interface AgentNativeSession {
   readonly agentId: string
@@ -27,8 +27,7 @@ export interface AgentNativeSession {
   listeners: Set<(event: WhatsAppNativeEvent) => void>
 }
 
-export class WhatsAppNativeManager {
-  private sessions = new Map<string, AgentNativeSession>()
+export class WhatsAppNativeManager {  private sessions = new Map<string, AgentNativeSession>()
   private storePromise = getWhatsAppNativeStore()
 
   getSession(agentId: string): AgentNativeSession | undefined {
@@ -107,7 +106,7 @@ export class WhatsAppNativeManager {
   connect(
     agentId: string,
     channel: ConfigAgentUIV1.WhatsAppChannelBinding,
-    agentUI: AgentUI.Interface,
+    agentUI: ChannelAgentUI,
   ): Effect.Effect<WhatsAppNativeStatus, WhatsAppNativeOperationError | WhatsAppNativeStateError> {
     const self = this
     return Effect.gen(function* () {
@@ -216,8 +215,8 @@ export class WhatsAppNativeManager {
         const effect = Effect.gen(function* () {
           // Recarrega dinamicamente a versÃ£o mais recente do canal e do agente salvos no AgentUI
           const freshAgent = yield* agentUI.get(agentId).pipe(Effect.orElseSucceed(() => undefined))
-          const freshChannel = freshAgent?.channels.find(
-            (c): c is ConfigAgentUIV1.WhatsAppChannelBinding => c.type === "whatsapp" && c.provider === "zapo",
+          const freshChannel = (freshAgent?.channels as readonly ConfigAgentUIV1.WhatsAppChannelBinding[] | undefined)?.find(
+            (c) => c.type === "whatsapp" && ConfigAgentUIV1.isNativeWhatsAppChannel(c),
           )
           yield* self.handleInboundMessage({
             agentId,
@@ -329,7 +328,7 @@ export class WhatsAppNativeManager {
     channel: ConfigAgentUIV1.WhatsAppChannelBinding
     client: WaClient
     msgEvent: WaIncomingMessageEvent
-    agentUI: AgentUI.Interface
+    agentUI: ChannelAgentUI
   }): Effect.Effect<void, never, never> {
     const { agentId, channel, client, msgEvent, agentUI } = input
     return Effect.gen(function* () {
@@ -522,4 +521,15 @@ export class WhatsAppNativeManager {
       Effect.catch(() => Effect.void),
     )
   }
+}
+
+// O grafo de serviços é construído mais de uma vez no mesmo processo (rotas
+// HTTP, ToolRegistry, AppRuntime). Se cada construção criasse o seu manager,
+// teríamos N supervisores disputando a MESMA sessão do WhatsApp — reconexões
+// em loop, contenção no SQLite e boot lento. O manager (e portanto a conexão)
+// é único por processo.
+let sharedManager: WhatsAppNativeManager | undefined
+
+export function getWhatsAppNativeManager(): WhatsAppNativeManager {
+  return (sharedManager ??= new WhatsAppNativeManager())
 }

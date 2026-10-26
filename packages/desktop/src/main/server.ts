@@ -22,7 +22,13 @@ type SidecarMessage =
 export type SidecarListener = { stop: () => Promise<void> }
 
 const SIDECAR_SERVICE_NAME = "opencode server"
-const SIDECAR_START_STALL_TIMEOUT = 60_000
+// O sidecar constrói o grafo de serviços (banco de 300MB+, catálogo de modelos,
+// skills, MCP e a sessão nativa do WhatsApp) antes de começar a escutar. Em
+// máquinas Windows com disco lento/antivírus isso passa facilmente dos 60s
+// originais — o app então matava um sidecar que estava saudável e mostrava
+// "não foi possível iniciar". 3 minutos cobrem o primeiro boot sem mascarar
+// travamentos reais.
+const SIDECAR_START_STALL_TIMEOUT = 180_000
 const SIDECAR_STOP_TIMEOUT = 6_000
 
 type SpawnLocalServerOptions = {

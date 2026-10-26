@@ -21,6 +21,7 @@ import { jsonSchema, streamText, tool } from "ai"
 import { type LanguageModelV3 } from "@ai-sdk/provider"
 import { McpCatalog } from "@/mcp/catalog"
 import { Global } from "@allcode/core/global"
+import { bindSessionAgent, setAgentUI } from "@/whatsapp-native/bindings"
 import { createConnector } from "waconector"
 import { buildExternalAdapter } from "@/whatsapp/adapter"
 import path from "node:path"
@@ -565,6 +566,7 @@ const layer = Layer.effect(
           })
           .pipe(Effect.provideService(InstanceRef, ctx))
         channelSessions.set(sessionKey, session.id)
+        bindSessionAgent(session.id, input.id)
         return session.id
       })
 
@@ -986,7 +988,7 @@ const layer = Layer.effect(
       } satisfies AgentUIDiagnoseResult
     })
 
-    return Service.of({
+    const service = Service.of({
       getProjectDirectory,
       list,
       get,
@@ -1005,6 +1007,11 @@ const layer = Layer.effect(
       generateDraft,
       diagnose,
     })
+    // A tool `whatsapp` precisa desta instância para operar o canal do agente
+    // da sessão, mas ToolRegistry não pode depender de AgentUI (ciclo de
+    // layers). Ver whatsapp-native/bindings.ts.
+    setAgentUI(service as unknown as Parameters<typeof setAgentUI>[0])
+    return service
   }),
 )
 

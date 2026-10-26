@@ -1,6 +1,7 @@
 import { Context, Effect, Layer } from "effect"
 import { LayerNode } from "@allcode/core/effect/layer-node"
-import { WhatsAppNativeManager } from "./manager"
+import type { WaClient } from "zapo-js"
+import { getWhatsAppNativeManager } from "./manager"
 import { whatsappNativeDbPath, whatsappNativeProfile } from "./store"
 import {
   WhatsAppNativeStatus,
@@ -9,9 +10,35 @@ import {
   WhatsAppNativeStateError,
   WhatsAppNativeOperationError,
 } from "./schema"
-import { AgentUI } from "@/agentui"
+import { getAgentUI, type ChannelAgentUI } from "./bindings"
 import { Global } from "@allcode/core/global"
 import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
+import type { MediaKind } from "./media"
+import type { QuoteRef } from "./send"
+import { sendInteractive, sendMedia, sendReaction, sendText } from "./send"
+import { sendCarousel as sendCarouselMessage, type CarouselCardRequest } from "./carousel"
+import {
+  addGroupParticipants,
+  createGroup,
+  demoteGroupParticipants,
+  groupInviteLink,
+  promoteGroupParticipants,
+  queryGroupInfo,
+  queryGroupParticipants,
+  queryGroups,
+  removeGroupParticipants,
+  revokeGroupInvite,
+  type GroupSummary,
+} from "./groups"
+import { listThreads, readMessages, type StoredMessage, type StoredThread } from "./history"
+import {
+  ctaUrlButton,
+  listMessage,
+  pixPaymentButton,
+  quickReplyButtons,
+  type ListSectionInput,
+  type QuickReplyButtonInput,
+} from "./interactive"
 
 export interface Interface {
   readonly getStatus: (agentId: string) => Effect.Effect<WhatsAppNativeStatus>
@@ -19,10 +46,7 @@ export interface Interface {
     agentId: string,
   ) => Effect.Effect<
     WhatsAppNativeStatus,
-    | WhatsAppNativeNotConfiguredError
-    | WhatsAppNativeStateError
-    | WhatsAppNativeOperationError
-    | AgentUI.AgentUINotFoundError
+    WhatsAppNativeNotConfiguredError | WhatsAppNativeStateError | WhatsAppNativeOperationError
   >
   readonly logout: (agentId: string) => Effect.Effect<void, WhatsAppNativeOperationError>
   readonly subscribeEvents: (
@@ -33,24 +57,94 @@ export interface Interface {
     agentId: string
     to: string
     text: string
+    quote?: QuoteRef
   }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly sendMedia: (input: {
+    agentId: string
+    to: string
+    media: string
+    kind?: MediaKind
+    caption?: string
+    mimetype?: string
+    filename?: string
+    quote?: QuoteRef
+  }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly sendReaction: (input: {
+    agentId: string
+    chatId: string
+    messageId: string
+    emoji: string
+    fromMe?: boolean
+    participant?: string
+  }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly sendButtons: (input: {
+    agentId: string
+    to: string
+    body: string
+    title?: string
+    footer?: string
+    buttons: readonly QuickReplyButtonInput[]
+    quote?: QuoteRef
+  }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly sendLinkButton: (input: {
+    agentId: string
+    to: string
+    body: string
+    label: string
+    url: string
+    title?: string
+    footer?: string
+    quote?: QuoteRef
+  }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly sendList: (input: {
+    agentId: string
+    to: string
+    body: string
+    buttonText: string
+    title?: string
+    footer?: string
+    sections: readonly ListSectionInput[]
+    quote?: QuoteRef
+  }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly sendPix: (input: {
+    agentId: string
+    to: string
+    body: string
+    key: string
+    keyType?: "EVP" | "PHONE" | "EMAIL" | "CPF" | "CNPJ"
+    merchantName?: string
+    amountCents?: number
+    referenceId?: string
+    title?: string
+    footer?: string
+    quote?: QuoteRef
+  }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly sendCarousel: (input: {
+    agentId: string
+    to: string
+    body?: string
+    cards: readonly CarouselCardRequest[]
+    quote?: QuoteRef
+  }) => Effect.Effect<{ messageId?: string }, WhatsAppNativeOperationError>
+  readonly readMessages: (input: {
+    agentId: string
+    chatId: string
+    limit?: number
+    beforeTimestampMs?: number
+  }) => Effect.Effect<StoredMessage[], WhatsAppNativeOperationError>
   readonly listChats: (input: {
     agentId: string
     limit?: number
-  }) => Effect.Effect<{ jid: string; unreadCount?: number }[], WhatsAppNativeOperationError>
-  readonly listGroups: (input: {
+  }) => Effect.Effect<StoredThread[], WhatsAppNativeOperationError>
+  readonly listGroups: (input: { agentId: string; onlyAdmin?: boolean }) => Effect.Effect<
+    GroupSummary[],
+    WhatsAppNativeOperationError
+  >
+  readonly groupInfo: (input: {
     agentId: string
-    onlyAdmin?: boolean
+    groupId: string
   }) => Effect.Effect<
-    {
-      jid: string
-      subject: string
-      participantCount: number
-      isAdmin: boolean
-      isSuperAdmin: boolean
-      creation?: number
-      desc?: string
-    }[],
+    Awaited<ReturnType<typeof queryGroupInfo>>,
     WhatsAppNativeOperationError
   >
   readonly listGroupParticipants: (input: {
@@ -66,15 +160,35 @@ export interface Interface {
     }[],
     WhatsAppNativeOperationError
   >
+  readonly groupCreate: (input: {
+    agentId: string
+    subject: string
+    participants: readonly string[]
+  }) => Effect.Effect<{ jid: string; subject: string }, WhatsAppNativeOperationError>
+  readonly groupUpdateParticipants: (input: {
+    agentId: string
+    groupId: string
+    action: "add" | "remove" | "promote" | "demote"
+    participants: readonly string[]
+  }) => Effect.Effect<unknown[], WhatsAppNativeOperationError>
+  readonly groupInvite: (input: {
+    agentId: string
+    groupId: string
+    revoke?: boolean
+  }) => Effect.Effect<{ code?: string; url?: string }, WhatsAppNativeOperationError>
 }
 
+
 export class Service extends Context.Service<Service, Interface>()("@opencode/WhatsAppNative") {}
+
+let supervisorStarted = false
 
 export const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
-    const agentUI = yield* AgentUI.Service
-    const manager = new WhatsAppNativeManager()
+    // Manager único por processo (ver manager.ts): evita dois supervisores
+    // disputando a mesma sessão do WhatsApp quando o grafo é montado 2x.
+    const manager = getWhatsAppNativeManager()
     console.log(
       `[WhatsApp Native] serviço iniciado profile=${whatsappNativeProfile()} db=${whatsappNativeDbPath()} configDir=${Global.Path.config}`,
     )
@@ -83,20 +197,33 @@ export const layer = Layer.effect(
 
     const connect = (agentId: string) =>
       Effect.gen(function* () {
-        const agent = yield* agentUI.get(agentId)
-        let channel = agent.channels.find(
+        // Resolvido por chamada: o AgentUI registra a instância no bindings
+        // quando o layer dele é construído, que pode ser depois deste.
+        const agentUI = getAgentUI()
+        if (!agentUI) {
+          return yield* Effect.fail(
+            new WhatsAppNativeNotConfiguredError({
+              message: "AgentUI indisponível no processo (bindings não registrado)",
+              agentId,
+            }),
+          )
+        }
+        const agent = yield* agentUI.get(agentId).pipe(
+          Effect.catch(() =>
+            Effect.fail(new WhatsAppNativeNotConfiguredError({ message: `Agente ${agentId} não encontrado`, agentId })),
+          ),
+        )
+        const found = (agent.channels as readonly ConfigAgentUIV1.WhatsAppChannelBinding[]).find(
           (c): c is ConfigAgentUIV1.WhatsAppChannelBinding =>
             c.type === "whatsapp" && ConfigAgentUIV1.isNativeWhatsAppChannel(c),
         )
-        if (!channel) {
-          // Se o agente ainda tem outro provider salvo mas o usuário acabou de acionar a conexão nativa,
-          // fornece fallback de configuração padrão nativa para permitir o pareamento imediato
-          channel = {
-            type: "whatsapp",
-            mode: "native",
-            provider: ConfigAgentUIV1.WHATSAPP_NATIVE_PROVIDER_PLACEHOLDER,
-            config: {},
-          } as ConfigAgentUIV1.WhatsAppChannelBinding
+        const channel: ConfigAgentUIV1.WhatsAppChannelBinding = found ?? {
+          // Fallback para quando o usuário acabou de acionar a conexão nativa
+          // e o canal ainda não foi salvo com mode: "native".
+          type: "whatsapp",
+          mode: "native",
+          provider: ConfigAgentUIV1.WHATSAPP_NATIVE_PROVIDER_PLACEHOLDER,
+          config: {},
         }
         return yield* manager.connect(agentId, channel, agentUI)
       })
@@ -106,148 +233,172 @@ export const layer = Layer.effect(
     const subscribeEvents = (agentId: string, listener: (event: WhatsAppNativeEvent) => void) =>
       Effect.sync(() => manager.addListener(agentId, listener))
 
-    const sendText = (input: { agentId: string; to: string; text: string }) =>
+    const requireClient = (agentId: string): Effect.Effect<WaClient, WhatsAppNativeOperationError> =>
       Effect.gen(function* () {
-        const session = manager.getSession(input.agentId)
+        const session = manager.getSession(agentId)
         if (!session?.client || session.state !== "connected") {
           return yield* Effect.fail(
             new WhatsAppNativeOperationError({
-              message: `Sessão WhatsApp nativa do agente ${input.agentId} não está conectada`,
-              agentId: input.agentId,
+              message: `Sessão WhatsApp nativa do agente ${agentId} não está conectada`,
+              agentId,
             }),
           )
         }
-        const result = yield* Effect.tryPromise({
-          try: () => session.client!.message.send(input.to, input.text),
+        return session.client
+      })
+
+    const op = <A>(agentId: string, label: string, run: (client: WaClient) => Promise<A>) =>
+      Effect.gen(function* () {
+        const client = yield* requireClient(agentId)
+        return yield* Effect.tryPromise({
+          try: () => run(client),
           catch: (err) =>
             new WhatsAppNativeOperationError({
-              message: `Falha ao enviar mensagem de texto para ${input.to}: ${String(err)}`,
-              agentId: input.agentId,
+              message: `${label}: ${err instanceof Error ? err.message : String(err)}`,
+              agentId,
             }),
         })
-        return { messageId: (result as any)?.id }
       })
+
+    const sendTextOp = (input: { agentId: string; to: string; text: string; quote?: QuoteRef }) =>
+      op(input.agentId, `Falha ao enviar texto para ${input.to}`, (client) => sendText(client, input))
+
+    const sendMediaOp = (input: {
+      agentId: string
+      to: string
+      media: string
+      kind?: MediaKind
+      caption?: string
+      mimetype?: string
+      filename?: string
+      quote?: QuoteRef
+    }) => op(input.agentId, `Falha ao enviar mídia para ${input.to}`, (client) => sendMedia(client, input))
+
+    const sendReactionOp = (input: {
+      agentId: string
+      chatId: string
+      messageId: string
+      emoji: string
+      fromMe?: boolean
+      participant?: string
+    }) => op(input.agentId, `Falha ao reagir em ${input.chatId}`, (client) => sendReaction(client, input))
+
+    const sendButtons = (input: {
+      agentId: string
+      to: string
+      body: string
+      title?: string
+      footer?: string
+      buttons: readonly QuickReplyButtonInput[]
+      quote?: QuoteRef
+    }) =>
+      op(input.agentId, `Falha ao enviar botões para ${input.to}`, (client) =>
+        sendInteractive(client, { to: input.to, message: quickReplyButtons(input), quote: input.quote }),
+      )
+
+    const sendLinkButton = (input: {
+      agentId: string
+      to: string
+      body: string
+      label: string
+      url: string
+      title?: string
+      footer?: string
+      quote?: QuoteRef
+    }) =>
+      op(input.agentId, `Falha ao enviar botão de link para ${input.to}`, (client) =>
+        sendInteractive(client, { to: input.to, message: ctaUrlButton(input), quote: input.quote }),
+      )
+
+    const sendList = (input: {
+      agentId: string
+      to: string
+      body: string
+      buttonText: string
+      title?: string
+      footer?: string
+      sections: readonly ListSectionInput[]
+      quote?: QuoteRef
+    }) =>
+      op(input.agentId, `Falha ao enviar lista para ${input.to}`, (client) =>
+        sendInteractive(client, { to: input.to, message: listMessage(input), quote: input.quote }),
+      )
+
+    const sendPix = (input: {
+      agentId: string
+      to: string
+      body: string
+      key: string
+      keyType?: "EVP" | "PHONE" | "EMAIL" | "CPF" | "CNPJ"
+      merchantName?: string
+      amountCents?: number
+      referenceId?: string
+      title?: string
+      footer?: string
+      quote?: QuoteRef
+    }) =>
+      op(input.agentId, `Falha ao enviar cobrança PIX para ${input.to}`, (client) =>
+        sendInteractive(client, { to: input.to, message: pixPaymentButton(input), quote: input.quote }),
+      )
+
+    const sendCarousel = (input: {
+      agentId: string
+      to: string
+      body?: string
+      cards: readonly CarouselCardRequest[]
+      quote?: QuoteRef
+    }) =>
+      op(input.agentId, `Falha ao enviar carrossel para ${input.to}`, (client) =>
+        sendCarouselMessage(client, { to: input.to, body: input.body, cards: input.cards, quote: input.quote }),
+      )
+
+    const readMessagesOp = (input: {
+      agentId: string
+      chatId: string
+      limit?: number
+      beforeTimestampMs?: number
+    }) => op(input.agentId, `Falha ao ler mensagens de ${input.chatId}`, () => readMessages(input))
 
     const listChats = (input: { agentId: string; limit?: number }) =>
-      Effect.gen(function* () {
-        const session = manager.getSession(input.agentId)
-        if (!session?.client) {
-          return yield* Effect.fail(
-            new WhatsAppNativeOperationError({
-              message: `Sessão WhatsApp nativa do agente ${input.agentId} não inicializada`,
-              agentId: input.agentId,
-            }),
-          )
-        }
-        const threads = yield* Effect.tryPromise({
-          try: async () => {
-            const list = await (session.client as any).threads?.list?.({ limit: input.limit ?? 50 })
-            return ((list || []) as any[]).map((t: any) => ({
-              jid: (t.jid || t.id) as string,
-              unreadCount: t.unreadCount as number | undefined,
-            }))
-          },
-          catch: (err) =>
-            new WhatsAppNativeOperationError({
-              message: `Falha ao listar conversas: ${String(err)}`,
-              agentId: input.agentId,
-            }),
-        })
-        return threads
-      })
+      op(input.agentId, "Falha ao listar conversas", () => listThreads(input))
 
     const listGroups = (input: { agentId: string; onlyAdmin?: boolean }) =>
-      Effect.gen(function* () {
-        const session = manager.getSession(input.agentId)
-        if (!session?.client || session.state !== "connected") {
-          return yield* Effect.fail(
-            new WhatsAppNativeOperationError({
-              message: `Sessão WhatsApp nativa do agente ${input.agentId} não está conectada`,
-              agentId: input.agentId,
-            }),
-          )
-        }
-        const client = session.client
-        const groups = yield* Effect.tryPromise({
-          try: async () => {
-            const myJid = client.getCredentials()?.meJid
-            const myPhone = myJid ? myJid.split("@")[0].split(":")[0] : ""
-            const all = await client.group.queryAllGroups()
-            const result = all.map((g: any) => {
-              // Verifica se o usuário atual é admin nos participantes
-              const meParticipant = (g.participants || []).find((p: any) => {
-                const pJid = p.jid || ""
-                return (
-                  (myJid && pJid.includes(myJid.split(":")[0])) ||
-                  (myPhone && pJid.includes(myPhone))
-                )
-              })
-              const isAdmin = meParticipant ? meParticipant.isAdmin || meParticipant.isSuperAdmin : false
-              const isSuperAdmin = meParticipant ? meParticipant.isSuperAdmin : false
+      op(input.agentId, "Falha ao listar grupos", (client) => queryGroups(client, input))
 
-              return {
-                jid: g.jid,
-                subject: g.subject || "(Sem assunto)",
-                participantCount: g.size ?? (g.participants?.length ?? 0),
-                isAdmin,
-                isSuperAdmin,
-                creation: g.creation,
-                desc: g.desc,
-              }
-            })
-
-            if (input.onlyAdmin) {
-              return result.filter((g) => g.isAdmin)
-            }
-            return result
-          },
-          catch: (err) =>
-            new WhatsAppNativeOperationError({
-              message: `Falha ao listar grupos: ${String(err)}`,
-              agentId: input.agentId,
-            }),
-        })
-        return groups
-      })
+    const groupInfo = (input: { agentId: string; groupId: string }) =>
+      op(input.agentId, `Falha ao obter dados do grupo ${input.groupId}`, (client) =>
+        queryGroupInfo(client, input.groupId),
+      )
 
     const listGroupParticipants = (input: { agentId: string; groupId: string }) =>
-      Effect.gen(function* () {
-        const session = manager.getSession(input.agentId)
-        if (!session?.client || session.state !== "connected") {
-          return yield* Effect.fail(
-            new WhatsAppNativeOperationError({
-              message: `Sessão WhatsApp nativa do agente ${input.agentId} não está conectada`,
-              agentId: input.agentId,
-            }),
-          )
-        }
-        const client = session.client
-        const participants = yield* Effect.tryPromise({
-          try: async () => {
-            const meta = await client.group.queryGroupMetadata(input.groupId)
-            const parts = (meta.participants || []) as any[]
-            return parts.map((p) => {
-              const jid: string = p.jid || ""
-              const phone = p.phoneNumber || jid.split("@")[0].split(":")[0]
-              return {
-                jid,
-                name: p.displayName || p.username || phone,
-                phone,
-                isAdmin: Boolean(p.isAdmin || p.isSuperAdmin),
-                isSuperAdmin: Boolean(p.isSuperAdmin),
-              }
-            })
-          },
-          catch: (err) =>
-            new WhatsAppNativeOperationError({
-              message: `Falha ao obter participantes do grupo ${input.groupId}: ${String(err)}`,
-              agentId: input.agentId,
-            }),
-        })
-        return participants
-      })
+      op(input.agentId, `Falha ao obter participantes do grupo ${input.groupId}`, (client) =>
+        queryGroupParticipants(client, input.groupId),
+      )
+
+    const groupCreate = (input: { agentId: string; subject: string; participants: readonly string[] }) =>
+      op(input.agentId, `Falha ao criar grupo "${input.subject}"`, (client) => createGroup(client, input))
+
+    const groupUpdateParticipants = (input: {
+      agentId: string
+      groupId: string
+      action: "add" | "remove" | "promote" | "demote"
+      participants: readonly string[]
+    }) =>
+      op(input.agentId, `Falha ao ${input.action} participantes do grupo ${input.groupId}`, (client) => {
+        if (input.action === "add") return addGroupParticipants(client, input)
+        if (input.action === "remove") return removeGroupParticipants(client, input)
+        if (input.action === "promote") return promoteGroupParticipants(client, input)
+        return demoteGroupParticipants(client, input)
+      }) as Effect.Effect<unknown[], WhatsAppNativeOperationError>
+
+    const groupInvite = (input: { agentId: string; groupId: string; revoke?: boolean }) =>
+      op(input.agentId, `Falha ao obter link de convite do grupo ${input.groupId}`, (client) =>
+        input.revoke ? revokeGroupInvite(client, input.groupId) : groupInviteLink(client, input.groupId),
+      )
 
     const reconcileAgents = Effect.gen(function* () {
+      const agentUI = getAgentUI()
+      if (!agentUI) return
       const agents = yield* agentUI.list()
       const { store } = yield* Effect.tryPromise(() => manager.getStore()).pipe(
         Effect.catch(() => Effect.succeed({ store: undefined })),
@@ -264,7 +415,7 @@ export const layer = Layer.effect(
           console.log(`[WhatsApp Native Reconcile] agente desativado: ${agent.id}`)
           continue
         }
-        const channel = agent.channels.find(
+        const channel = (agent.channels as readonly ConfigAgentUIV1.WhatsAppChannelBinding[]).find(
           (c): c is ConfigAgentUIV1.WhatsAppChannelBinding =>
             c.type === "whatsapp" && ConfigAgentUIV1.isNativeWhatsAppChannel(c),
         )
@@ -292,7 +443,7 @@ export const layer = Layer.effect(
             )
             // catchCause (não catch): uma config/estado inesperado de UM agente
             // não pode matar o supervisor nem derrubar o processo.
-            yield* manager.connect(agent.id, channel, agentUI).pipe(
+            yield* manager.connect(agent.id, channel as ConfigAgentUIV1.WhatsAppChannelBinding, agentUI).pipe(
               Effect.catchCause((cause) =>
                 Effect.logWarning("Falha na auto-reconexão do WhatsApp nativo", {
                   agentId: agent.id,
@@ -317,24 +468,41 @@ export const layer = Layer.effect(
       }
     })
 
-    // Roda o supervisor em background a cada 5 segundos (mesmo padrão do Telegram)
-    yield* Effect.forkScoped(
-      reconcileAgents.pipe(
-        Effect.catchCause((cause) => Effect.logError("WhatsApp native reconcile failed", { cause })),
-        Effect.andThen(() => Effect.sleep("5 seconds")),
-        Effect.forever,
-      ),
-    )
+    // Roda o supervisor em background a cada 5 segundos (mesmo padrão do
+    // Telegram). Um único supervisor por processo, mesmo quando o serviço é
+    // construído em mais de um grafo (rotas + ToolRegistry).
+    if (!supervisorStarted) {
+      supervisorStarted = true
+      yield* Effect.forkScoped(
+        reconcileAgents.pipe(
+          Effect.catchCause((cause) => Effect.logError("WhatsApp native reconcile failed", { cause })),
+          Effect.andThen(() => Effect.sleep("5 seconds")),
+          Effect.forever,
+        ),
+      )
+    }
 
     return Service.of({
       getStatus,
       connect,
       logout,
       subscribeEvents,
-      sendText,
+      sendText: sendTextOp,
+      sendMedia: sendMediaOp,
+      sendReaction: sendReactionOp,
+      sendButtons,
+      sendLinkButton,
+      sendList,
+      sendPix,
+      sendCarousel,
+      readMessages: readMessagesOp,
       listChats,
       listGroups,
+      groupInfo,
       listGroupParticipants,
+      groupCreate,
+      groupUpdateParticipants,
+      groupInvite,
     })
   }),
 )
@@ -342,5 +510,5 @@ export const layer = Layer.effect(
 export const node = LayerNode.make({
   service: Service,
   layer,
-  deps: [AgentUI.node],
+  deps: [],
 })

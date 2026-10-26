@@ -1,6 +1,7 @@
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { httpClient } from "@allcode/core/effect/app-node-platform"
 import { Ripgrep } from "@allcode/core/ripgrep"
+import { WhatsAppNative } from "@/whatsapp-native"
 import { Schedule } from "@allcode/core/schedule"
 import { PlanExitTool } from "./plan"
 import { Session } from "@/session/session"
@@ -21,6 +22,7 @@ import { InvalidTool } from "./invalid"
 import { SkillTool } from "./skill"
 import { RoutineTool } from "./routine"
 import { ReminderTool } from "./reminder"
+import { WhatsAppTool } from "./whatsapp"
 import { MemorySearchTool } from "./memory-search"
 import { MemorySaveTool } from "./memory-save"
 import { Memory } from "../memory"
@@ -128,6 +130,7 @@ const layer = Layer.effect(
     const skilltool = yield* SkillTool
     const routinetool = yield* RoutineTool
     const remindertool = yield* ReminderTool
+    const whatsapptool = yield* WhatsAppTool
     const memorysearchtool = yield* MemorySearchTool
     const memorysavetool = yield* MemorySaveTool
     const agent = yield* Agent.Service
@@ -242,6 +245,7 @@ const layer = Layer.effect(
           skill: Tool.init(skilltool),
           routine: Tool.init(routinetool),
           reminder: Tool.init(remindertool),
+          whatsapp: Tool.init(whatsapptool),
           memorySearch: Tool.init(memorysearchtool),
           memorySave: Tool.init(memorysavetool),
           patch: Tool.init(patchtool),
@@ -271,6 +275,7 @@ const layer = Layer.effect(
             tool.skill,
             tool.routine,
             tool.reminder,
+            tool.whatsapp,
             ...(memoryEnabled ? [tool.memorySearch, tool.memorySave] : []),
             tool.patch,
             ...(tool.execute ? [tool.execute] : []),
@@ -337,7 +342,14 @@ const layer = Layer.effect(
       const codeModeDescription = filtered.some((tool) => tool.id === "execute")
         ? yield* describeCodeMode(input)
         : undefined
-      const visible = filtered.filter((tool) => tool.id !== "execute" || codeModeDescription)
+      // A tool `whatsapp` só é anunciada quando a sessão tem a permissão
+      // `whatsapp` explicitamente liberada (sessões de canal do AgentUI).
+      // Sem isso, sessões normais de código passariam a ver uma tool que não
+      // conseguem usar.
+      const whatsappAllowed = Permission.evaluate("whatsapp", "*", input.permission ?? []).action === "allow"
+      const visible = filtered
+        .filter((tool) => tool.id !== "execute" || codeModeDescription)
+        .filter((tool) => tool.id !== "whatsapp" || whatsappAllowed)
 
       return yield* Effect.forEach(
         visible,
@@ -484,6 +496,7 @@ export const node = LayerNode.make({
     Schedule.node,
     Ripgrep.node,
     Memory.node,
+    WhatsAppNative.node,
   ],
 })
 

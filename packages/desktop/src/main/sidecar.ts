@@ -54,8 +54,11 @@ async function start(command: StartCommand) {
     ensureLoopbackNoProxy()
     useSystemCertificates()
     useEnvProxy()
+    const imported = Date.now()
     const { Server } = await import("virtual:opencode-server")
+    console.log(`[sidecar] módulo do servidor carregado em ${Date.now() - imported}ms`)
 
+    const listening = Date.now()
     listener = await Server.listen({
       port: command.port,
       hostname: command.hostname,
@@ -63,6 +66,7 @@ async function start(command: StartCommand) {
       password: command.password,
       cors: ["oc://renderer"],
     })
+    console.log(`[sidecar] servidor escutando após ${Date.now() - listening}ms`)
     parentPort.postMessage({ type: "ready" })
   } catch (error) {
     parentPort.postMessage({ type: "error", error: serializeError(error) })
