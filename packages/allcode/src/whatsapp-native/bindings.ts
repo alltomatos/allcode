@@ -16,6 +16,7 @@ export interface ChannelAgent {
   readonly name: string
   readonly channels: readonly ChannelBinding[]
   readonly enabled?: boolean
+  readonly mediaDirs?: readonly string[]
 }
 
 /** Superfície do AgentUI usada pelo serviço nativo (não depende do layer). */
@@ -33,6 +34,10 @@ export interface ChannelAgentUI {
 }
 
 const sessionAgents = new Map<string, string>()
+// Conversa (chat/jid) que originou a sessão de canal. É o destinatário padrão
+// das tools de envio: sem isso o modelo precisa adivinhar o JID e acaba
+// mandando mídia/mensagem para o próprio número ou para o chat errado.
+const sessionChats = new Map<string, string>()
 let agentUI: ChannelAgentUI | undefined
 
 export function setAgentUI(service: ChannelAgentUI): void {
@@ -53,4 +58,12 @@ export function unbindSessionAgent(sessionID: string): void {
 
 export function agentForSession(sessionID: string): string | undefined {
   return sessionAgents.get(sessionID)
+}
+
+export function bindSessionChat(sessionID: string, chatID: string): void {
+  sessionChats.set(sessionID, chatID)
+}
+
+export function chatForSession(sessionID: string): string | undefined {
+  return sessionChats.get(sessionID)
 }

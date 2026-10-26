@@ -1,0 +1,11 @@
+Ferramenta da biblioteca de mídia local do agente (pastas configuradas no AgentUI em "Pastas de mídia").
+
+Ações:
+- list: navega pelas pastas permitidas. Sem "path" lista as raízes; com "path" lista a pasta (subpastas + arquivos com tipo/tamanho). Use "depth" para descer 1-3 níveis.
+- find: busca arquivos de mídia por nome em todas as pastas permitidas.
+- send: envia um arquivo da biblioteca pelo WhatsApp nativo, com legenda opcional. O destino padr�o � a pr�pria conversa atual; informe "to" apenas para enviar a outro chat.
+
+Regras importantes:
+- Só é possível acessar/enviar arquivos DENTRO das pastas configuradas.
+- Para mandar a foto certa, primeiro use "list" nas subpastas (ex.: Modelos-outubro) ou "find" pelo nome do modelo e depois "send" com o caminho exato retornado.
+- Sempre confirme o caminho retornado por list/find antes de enviar; caminhos inventados falham.

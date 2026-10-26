@@ -533,6 +533,8 @@ import type {
   WhatsappNativeConnectResponses,
   WhatsappNativeEventsErrors,
   WhatsappNativeEventsResponses,
+  WhatsappNativeGroupParticipantsErrors,
+  WhatsappNativeGroupParticipantsResponses,
   WhatsappNativeGroupsErrors,
   WhatsappNativeGroupsResponses,
   WhatsappNativeLogoutErrors,
@@ -6849,6 +6851,40 @@ export class Whatsapp extends HeyApiClient {
       ThrowOnError
     >({
       url: "/whatsapp/native/{agentId}/groups",
+      ...options,
+      ...params,
+    })
+  }
+
+  /**
+   * List WhatsApp group participants
+   *
+   * Lists participants of a specific WhatsApp group in native zapo connection.
+   */
+  public nativeGroupParticipants<ThrowOnError extends boolean = false>(
+    parameters: {
+      agentId: string
+      groupId: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "path", key: "agentId" },
+            { in: "path", key: "groupId" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).get<
+      WhatsappNativeGroupParticipantsResponses,
+      WhatsappNativeGroupParticipantsErrors,
+      ThrowOnError
+    >({
+      url: "/whatsapp/native/{agentId}/groups/{groupId}/participants",
       ...options,
       ...params,
     })

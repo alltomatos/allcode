@@ -76,6 +76,7 @@ type AgentUIFormState = {
   whatsappGroupsEnabled: boolean
   whatsappReplyToQuoteOrMentionOnly: boolean
   whatsappEnabled: boolean
+  mediaDirs: string
   mcpServers: string[]
   routinesEnabled: boolean
   agendaEnabled: boolean
@@ -113,6 +114,7 @@ function emptyForm(): AgentUIFormState {
     whatsappGroupsEnabled: true,
     whatsappReplyToQuoteOrMentionOnly: false,
     whatsappEnabled: true,
+    mediaDirs: "",
     mcpServers: [],
     routinesEnabled: false,
     agendaEnabled: true,
@@ -211,6 +213,7 @@ export function AgentUIFormPage() {
       whatsappReplyToQuoteOrMentionOnly:
         (agent.channels.find((c) => c.type === "whatsapp") as any)?.native?.replyToQuoteOrMentionOnly ?? false,
       whatsappEnabled: (agent as any).whatsappEnabled ?? true,
+      mediaDirs: ((agent as any).mediaDirs ?? []).join("\n"),
       mcpServers: agent.mcpServers ?? [],
       routinesEnabled: agent.routinesEnabled === true,
       agendaEnabled: (agent as any).agendaEnabled ?? true,
@@ -506,6 +509,10 @@ export function AgentUIFormPage() {
           routinesEnabled: form.routinesEnabled,
           agendaEnabled: form.agendaEnabled,
           whatsappEnabled: form.whatsappEnabled,
+          mediaDirs: form.mediaDirs
+            .split(/[\n,]+/)
+            .map((dir) => dir.trim())
+            .filter(Boolean),
           memoryEnabled: form.memoryEnabled,
           filesystemEnabled: form.filesystemEnabled,
           terminalEnabled: form.terminalEnabled,
@@ -1483,6 +1490,21 @@ export function AgentUIFormPage() {
                             onChange={(checked) => setForm("terminalEnabled", checked)}
                           />
                         </div>
+                      </div>
+
+                      <div class="flex flex-col gap-2 border-t border-v2-border-border-base pt-4">
+                        <label class="settings-v2-server-dialog-label font-medium">Pastas de mídia (envio de arquivos)</label>
+                        <p class="text-11-regular text-v2-text-text-muted">
+                          Pastas locais que o agente pode explorar e enviar imagens, vídeos, áudios e documentos pelo
+                          WhatsApp. Uma pasta por linha — o agente enxerga as subpastas e pode escolher o arquivo certo.
+                          Sem pastas configuradas a ferramenta fica desativada.
+                        </p>
+                        <textarea
+                          class="min-h-[90px] w-full resize-y rounded-md border border-v2-border-border-base bg-v2-background-bg-base px-2.5 py-2 font-mono text-12-regular text-v2-text-text-base outline-none transition-colors focus-visible:border-v2-border-border-focus"
+                          placeholder={"C:\\Users\\ronaldo\\Pictures\\belafit\nD:\\midia\\catalogo"}
+                          value={form.mediaDirs}
+                          onInput={(event) => setForm("mediaDirs", event.currentTarget.value)}
+                        />
                       </div>
                     </div>
                   </div>

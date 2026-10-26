@@ -2,7 +2,7 @@ import { Effect, Schema } from "effect"
 import * as Tool from "./tool"
 import DESCRIPTION from "./whatsapp.txt"
 import { WhatsAppNative } from "@/whatsapp-native"
-import { agentForSession } from "@/whatsapp-native/bindings"
+import { agentForSession, chatForSession } from "@/whatsapp-native/bindings"
 
 const QuickReply = Schema.Struct({
   id: Schema.String.annotate({ description: "Identificador devolvido quando o botão é tocado." }),
@@ -21,15 +21,15 @@ const ListSection = Schema.Struct({
 })
 
 const CarouselCard = Schema.Struct({
-  body: Schema.String.annotate({ description: "Texto do card (obrigat�rio)." }),
+  body: Schema.String.annotate({ description: "Texto do card (obrigat�rio)." }),
   title: Schema.optional(Schema.String),
   footer: Schema.optional(Schema.String),
   media: Schema.String.annotate({
     description:
-      "URL http(s) ou caminho local de uma IMAGEM (png/jpeg/webp). Obrigat�rio: o WhatsApp n�o renderiza carrossel sem m�dia no card.",
+      "URL http(s) ou caminho local de uma IMAGEM (png/jpeg/webp). Obrigat�rio: o WhatsApp n�o renderiza carrossel sem m�dia no card.",
   }),
   mimetype: Schema.optional(Schema.String).annotate({
-    description: "Mimetype da imagem do card (padr�o: inferido pela extens�o).",
+    description: "Mimetype da imagem do card (padr�o: inferido pela extens�o).",
   }),
   buttons: Schema.Array(QuickReply),
 })
@@ -166,12 +166,16 @@ export const WhatsAppTool = Tool.define(
           })
 
           const agentId = params.agentId || agentForSession(ctx.sessionID)
+          // Em sessão de canal o destino é sempre a conversa atual; `to` só é
+          // usado quando a sessão não está presa a um chat. Evita que o modelo
+          // invente um JID e mande a mensagem/mídia para o chat errado.
+          const target = chatForSession(ctx.sessionID) || params.to?.trim()
           const quote =
             params.quoteId && params.quoteId.trim()
               ? {
                   id: params.quoteId,
                   participant: params.quoteParticipant,
-                  remoteJid: params.to ?? params.chatId,
+                  remoteJid: target ?? params.chatId,
                 }
               : undefined
 
@@ -197,22 +201,22 @@ export const WhatsAppTool = Tool.define(
               return done("Status WhatsApp", yield* native.getStatus(agentId))
 
             case "send_text":
-              if (!params.to || !params.text) return missing("to/text")
+              if (!target || !params.text) return missing("to/text")
               return done(
                 "Mensagem WhatsApp",
                 yield* native
-                  .sendText({ agentId, to: params.to, text: params.text, quote })
+                  .sendText({ agentId, to: target, text: params.text, quote })
                   .pipe(Effect.catch((err) => Effect.succeed({ error: err.message }))),
               )
 
             case "send_media":
-              if (!params.to || !params.media) return missing("to/media")
+              if (!target || !params.media) return missing("to/media")
               return done(
                 "Mídia WhatsApp",
                 yield* native
                   .sendMedia({
                     agentId,
-                    to: params.to,
+                    to: target,
                     media: params.media,
                     kind: params.mediaKind,
                     caption: params.caption,
@@ -242,13 +246,13 @@ export const WhatsAppTool = Tool.define(
               )
 
             case "send_buttons":
-              if (!params.to || !params.text || !params.buttons?.length) return missing("to/text/buttons")
+              if (!target || !params.text || !params.buttons?.length) return missing("to/text/buttons")
               return done(
                 "Botões WhatsApp",
                 yield* native
                   .sendButtons({
                     agentId,
-                    to: params.to,
+                    to: target,
                     body: params.text,
                     title: params.title,
                     footer: params.footer,
@@ -259,7 +263,7 @@ export const WhatsAppTool = Tool.define(
               )
 
             case "send_link":
-              if (!params.to || !params.text || !params.label || !params.url) {
+              if (!target || !params.text || !params.label || !params.url) {
                 return missing("to/text/label/url")
               }
               return done(
@@ -267,7 +271,7 @@ export const WhatsAppTool = Tool.define(
                 yield* native
                   .sendLinkButton({
                     agentId,
-                    to: params.to,
+                    to: target,
                     body: params.text,
                     label: params.label,
                     url: params.url,
@@ -279,7 +283,7 @@ export const WhatsAppTool = Tool.define(
               )
 
             case "send_list":
-              if (!params.to || !params.text || !params.buttonText || !params.sections?.length) {
+              if (!target || !params.text || !params.buttonText || !params.sections?.length) {
                 return missing("to/text/buttonText/sections")
               }
               return done(
@@ -287,7 +291,7 @@ export const WhatsAppTool = Tool.define(
                 yield* native
                   .sendList({
                     agentId,
-                    to: params.to,
+                    to: target,
                     body: params.text,
                     buttonText: params.buttonText,
                     title: params.title,
@@ -299,13 +303,13 @@ export const WhatsAppTool = Tool.define(
               )
 
             case "send_pix":
-              if (!params.to || !params.text || !params.pixKey) return missing("to/text/pixKey")
+              if (!target || !params.text || !params.pixKey) return missing("to/text/pixKey")
               return done(
                 "Cobrança PIX",
                 yield* native
                   .sendPix({
                     agentId,
-                    to: params.to,
+                    to: target,
                     body: params.text,
                     key: params.pixKey,
                     keyType: params.pixKeyType,
@@ -320,11 +324,11 @@ export const WhatsAppTool = Tool.define(
               )
 
             case "send_carousel":
-              if (!params.to || !params.cards?.length) return missing("to/cards")
+              if (!target || !params.cards?.length) return missing("to/cards")
               return done(
                 "Carrossel WhatsApp",
                 yield* native
-                  .sendCarousel({ agentId, to: params.to, body: params.text, cards: params.cards, quote })
+                  .sendCarousel({ agentId, to: target, body: params.text, cards: params.cards, quote })
                   .pipe(Effect.catch((err) => Effect.succeed({ error: err.message }))),
               )
 

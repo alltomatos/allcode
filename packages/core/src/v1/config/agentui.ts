@@ -282,6 +282,13 @@ export const Agent = Schema.Struct({
   whatsappEnabled: Schema.optional(Schema.Boolean).annotate({
     description: "Whether this agent has access to native WhatsApp tools. Absent/false means disabled.",
   }),
+  // Pastas locais de mídia que o agente pode listar e enviar (imagens,
+  // vídeos, áudios, documentos). Vazio/ausente desliga a tool `media`.
+  // A resolução é sempre restrita a estas raízes (sem traversal/symlink escape).
+  mediaDirs: Schema.optional(Schema.mutable(Schema.Array(Schema.String))).annotate({
+    description:
+      "Local folders this agent may browse and send files from (media library). Used by the 'media' tool. Empty/absent means disabled.",
+  }),
   // Whether this agent is allowed to use continuous memory (memory_save / memory_search)
   memoryEnabled: Schema.optional(Schema.Boolean).annotate({
     description: "Whether this agent has access to persistent memory tools. Absent/false means disabled.",

@@ -1936,14 +1936,15 @@ export type AgentUiWhatsAppNativeOptions = {
    */
   sendRateLimitPerMinute?: number | "NaN" | "Infinity" | "-Infinity" | "Infinity" | "-Infinity" | "NaN"
   allowGroupAdmin?: boolean
+  directMessagesEnabled?: boolean
+  groupsEnabled?: boolean
+  replyToQuoteOrMentionOnly?: boolean
 }
 
 export type AgentUiWhatsAppChannelBinding = {
   type: "whatsapp"
-  /**
-   * Which unofficial WhatsApp API this channel connects through (see waconector).
-   */
-  provider: "zapo" | "waha" | "evolution" | "zapi" | "uazapi" | "whapi" | "wuzapi" | "quepasa" | "wppconnect" | "izapia"
+  mode?: "external" | "native"
+  provider?: string
   /**
    * Provider-specific connection fields (e.g. baseUrl+apiKey for WAHA, instanceId+token for Z-API). Shape depends on `provider`.
    */
@@ -2017,6 +2018,7 @@ export type AgentUiAgent = {
   routinesEnabled?: boolean
   agendaEnabled?: boolean
   whatsappEnabled?: boolean
+  mediaDirs?: Array<string>
   memoryEnabled?: boolean
   filesystemEnabled?: boolean
   terminalEnabled?: boolean
@@ -2965,6 +2967,14 @@ export type WhatsAppNativeGroup = {
   isSuperAdmin: boolean
   creation?: number | "NaN" | "Infinity" | "-Infinity" | "Infinity" | "-Infinity" | "NaN"
   desc?: string
+}
+
+export type WhatsAppNativeParticipant = {
+  jid: string
+  name?: string
+  phone?: string
+  isAdmin: boolean
+  isSuperAdmin: boolean
 }
 
 export type WhatsAppChannelNotConfiguredError = {
@@ -13137,6 +13147,40 @@ export type WhatsappNativeGroupsResponses = {
 }
 
 export type WhatsappNativeGroupsResponse = WhatsappNativeGroupsResponses[keyof WhatsappNativeGroupsResponses]
+
+export type WhatsappNativeGroupParticipantsData = {
+  body?: never
+  path: {
+    agentId: string
+    groupId: string
+  }
+  query?: never
+  url: "/whatsapp/native/{agentId}/groups/{groupId}/participants"
+}
+
+export type WhatsappNativeGroupParticipantsErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+  /**
+   * WhatsAppNativeOperationError
+   */
+  500: WhatsAppNativeOperationError
+}
+
+export type WhatsappNativeGroupParticipantsError =
+  WhatsappNativeGroupParticipantsErrors[keyof WhatsappNativeGroupParticipantsErrors]
+
+export type WhatsappNativeGroupParticipantsResponses = {
+  /**
+   * Lista de participantes do grupo WhatsApp
+   */
+  200: Array<WhatsAppNativeParticipant>
+}
+
+export type WhatsappNativeGroupParticipantsResponse =
+  WhatsappNativeGroupParticipantsResponses[keyof WhatsappNativeGroupParticipantsResponses]
 
 export type WhatsappWebhookData = {
   body?: unknown

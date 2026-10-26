@@ -23,6 +23,7 @@ import { SkillTool } from "./skill"
 import { RoutineTool } from "./routine"
 import { ReminderTool } from "./reminder"
 import { WhatsAppTool } from "./whatsapp"
+import { MediaTool } from "./media"
 import { MemorySearchTool } from "./memory-search"
 import { MemorySaveTool } from "./memory-save"
 import { Memory } from "../memory"
@@ -131,6 +132,7 @@ const layer = Layer.effect(
     const routinetool = yield* RoutineTool
     const remindertool = yield* ReminderTool
     const whatsapptool = yield* WhatsAppTool
+    const mediatool = yield* MediaTool
     const memorysearchtool = yield* MemorySearchTool
     const memorysavetool = yield* MemorySaveTool
     const agent = yield* Agent.Service
@@ -246,6 +248,7 @@ const layer = Layer.effect(
           routine: Tool.init(routinetool),
           reminder: Tool.init(remindertool),
           whatsapp: Tool.init(whatsapptool),
+          media: Tool.init(mediatool),
           memorySearch: Tool.init(memorysearchtool),
           memorySave: Tool.init(memorysavetool),
           patch: Tool.init(patchtool),
@@ -276,6 +279,7 @@ const layer = Layer.effect(
             tool.routine,
             tool.reminder,
             tool.whatsapp,
+            tool.media,
             ...(memoryEnabled ? [tool.memorySearch, tool.memorySave] : []),
             tool.patch,
             ...(tool.execute ? [tool.execute] : []),
@@ -347,9 +351,11 @@ const layer = Layer.effect(
       // Sem isso, sessões normais de código passariam a ver uma tool que não
       // conseguem usar.
       const whatsappAllowed = Permission.evaluate("whatsapp", "*", input.permission ?? []).action === "allow"
+      const mediaAllowed = Permission.evaluate("media", "*", input.permission ?? []).action === "allow"
       const visible = filtered
         .filter((tool) => tool.id !== "execute" || codeModeDescription)
         .filter((tool) => tool.id !== "whatsapp" || whatsappAllowed)
+        .filter((tool) => tool.id !== "media" || mediaAllowed)
 
       return yield* Effect.forEach(
         visible,

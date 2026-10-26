@@ -21,7 +21,7 @@ import { jsonSchema, streamText, tool } from "ai"
 import { type LanguageModelV3 } from "@ai-sdk/provider"
 import { McpCatalog } from "@/mcp/catalog"
 import { Global } from "@allcode/core/global"
-import { bindSessionAgent, setAgentUI } from "@/whatsapp-native/bindings"
+import { bindSessionAgent, bindSessionChat, setAgentUI } from "@/whatsapp-native/bindings"
 import { createConnector } from "waconector"
 import { buildExternalAdapter } from "@/whatsapp/adapter"
 import path from "node:path"
@@ -150,6 +150,7 @@ export interface Interface {
     filesystemEnabled?: boolean,
     terminalEnabled?: boolean,
     whatsappEnabled?: boolean,
+    mediaEnabled?: boolean,
   ) => PermissionV1.Ruleset
   // Resolves an agent's `model` field ("providerID/modelID" or
   // "combo:<id>", same encoding ModelPickerV2 uses) to a concrete pair.
@@ -382,6 +383,7 @@ const layer = Layer.effect(
       filesystemEnabled?: boolean,
       terminalEnabled?: boolean,
       whatsappEnabled?: boolean,
+      mediaEnabled?: boolean,
     ): PermissionV1.Ruleset => [
       // Wildcard deny-everything, not a per-category list: anything not
       // covered by an explicit rule below falls through to the *default*
@@ -440,6 +442,9 @@ const layer = Layer.effect(
         ? ([
             { permission: "whatsapp", pattern: "*", action: "allow" },
           ] as PermissionV1.Rule[])
+        : []),
+      ...(mediaEnabled
+        ? ([{ permission: "media", pattern: "*", action: "allow" }] as PermissionV1.Rule[])
         : []),
     ]
 
@@ -550,10 +555,14 @@ const layer = Layer.effect(
         agent.filesystemEnabled,
         agent.terminalEnabled,
         agent.whatsappEnabled,
+        (agent.mediaDirs ?? []).some((dir) => dir.trim().length > 0),
       )
       const sessionID = yield* Effect.gen(function* () {
         const existing = channelSessions.get(sessionKey)
+        // O chat de origem é o destinatário padrão das tools de envio; vale
+        // tanto para sessão nova quanto para reaproveitada.
         if (existing) {
+          bindSessionChat(existing, input.chatKey)
           // Garante que permissões atualizadas do agente (ex: novos MCPs adicionados) sejam refletidas na sessão existente
           yield* sessions.setPermission({ sessionID: SessionID.make(existing), permission: permissions }).pipe(Effect.ignore)
           return existing
@@ -567,6 +576,7 @@ const layer = Layer.effect(
           .pipe(Effect.provideService(InstanceRef, ctx))
         channelSessions.set(sessionKey, session.id)
         bindSessionAgent(session.id, input.id)
+        bindSessionChat(session.id, input.chatKey)
         return session.id
       })
 
