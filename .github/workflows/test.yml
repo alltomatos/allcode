@@ -22,7 +22,7 @@ env:
 
 jobs:
   unit:
-    name: unit (${{ matrix.settings.name }})
+    name: unit (${{ matrix.settings.name }}, ${{ matrix.package.name }})
     strategy:
       fail-fast: false
       matrix:
@@ -31,6 +31,22 @@ jobs:
             host: ubuntu-latest
           - name: windows
             host: windows-latest
+        # Cada escopo tem seu próprio job: uma suíte lenta (ou travada) deixa de
+        # esconder o resultado das outras. O `allcode` roda sozinho e com o maior
+        # orçamento porque carrega 1900+ casos com subprocessos e servidores HTTP.
+        package:
+          - name: core
+            filter: --filter=@allcode/core
+            timeout: 25
+          - name: app
+            filter: --filter=@allcode/app
+            timeout: 25
+          - name: allcode
+            filter: --filter=allcode
+            timeout: 60
+          - name: rest
+            filter: --filter=./packages/* --filter=!@allcode/core --filter=!@allcode/app --filter=!allcode
+            timeout: 25
     runs-on: ${{ matrix.settings.host }}
     defaults:
       run:
@@ -96,18 +112,18 @@ jobs:
         # por caso): o job estourava em silêncio sem nenhuma tarefa falhando.
         # O valor mede o tempo real da suíte, não mascara falha — teste que
         # estoura continua vermelho e com o nome impresso no log.
-        timeout-minutes: 60
-        run: GITHUB_ACTIONS=false bun turbo test
+        timeout-minutes: ${{ matrix.package.timeout }}
+        run: GITHUB_ACTIONS=false bun turbo test ${{ matrix.package.filter }}
         env:
           OPENCODE_EXPERIMENTAL_DISABLE_FILEWATCHER: ${{ runner.os == 'Windows' && 'true' || 'false' }}
 
       - name: Check generated client
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && matrix.package.name == 'core'
         working-directory: packages/client
         run: bun run check:generated
 
       - name: Run HttpApi exerciser gates
-        if: runner.os == 'Linux'
+        if: runner.os == 'Linux' && matrix.package.name == 'allcode'
         working-directory: packages/allcode
         run: bun run test:httpapi
 
