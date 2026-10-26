@@ -241,7 +241,12 @@ const layer = Layer.effect(
         Effect.map((sets) => new Map(sets.flat(2).map((item) => [item.directory, item] as const)).values().toArray()),
       )
       const removed = checked.filter((item) => !item.exists).map((item) => item.directory)
-      const result = yield* db
+      // `ProjectDirectories.create/remove` não reportam linhas afetadas quando
+      // rodam dentro de uma transação (o driver devolve `returning` vazio), então
+      // as mudanças são derivadas do estado anterior. Sem isso o refresh nunca
+      // anuncia atualização e o evento `ProjectCopy.Updated` não é publicado.
+      const previous = new Map(stored.map((item) => [item.directory, item.strategy ?? undefined] as const))
+      yield* db
         .transaction((tx) =>
           Effect.all({
             updated: Effect.forEach(discovered, (item) =>
@@ -262,8 +267,10 @@ const layer = Layer.effect(
         )
         .pipe(Effect.orDie)
       const changes = {
-        updated: discovered.filter((_, index) => result.updated[index]).map((item) => item.directory),
-        removed: removed.filter((_, index) => result.removed[index]),
+        updated: discovered
+          .filter((item) => previous.get(item.directory) !== item.strategy)
+          .map((item) => item.directory),
+        removed: removed.filter((directory) => previous.has(directory)),
       }
       yield* changed(input.projectID, changes.updated.length > 0 || changes.removed.length > 0)
       return changes
