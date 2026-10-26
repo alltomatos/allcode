@@ -8,14 +8,26 @@
           "items": [
             {
               "title": "AgentUI: WhatsApp Nativo (zapo) como modo explícito",
-              "description": "O canal de WhatsApp do agente agora separa claramente dois modos: nativo (conexão direta com o WhatsApp Web via zapo-js, com pareamento por QR e sessão persistida em SQLite) e API externa (WAHA, Evolution, Z-API, izapia e demais gateways do waconector). A escolha fica na aba Canais, no novo campo Modo de conexão."
+              "description": "O canal de WhatsApp do agente separa dois modos: nativo (conexão direta com o WhatsApp Web via zapo-js, com pareamento por QR e sessão persistida em SQLite) e API externa (WAHA, Evolution, Z-API, izapia e demais gateways do waconector). A escolha fica na aba Canais, no campo Modo de conexão, e o agente reconecta sozinho após reiniciar o app."
             },
             {
-              "title": "AgentUI: Grupos e participantes autorizados",
+              "title": "AgentUI: ferramentas completas de WhatsApp para o agente",
+              "description": "Além de texto, o agente passou a enviar mídia (imagem, vídeo, áudio, documento, sticker), reações, botões de resposta rápida, botão de link, listas com seções, cobrança PIX e carrossel de cards. Também consulta histórico de conversas, lista grupos e participantes e administra grupos (criar, adicionar/remover/promover/rebaixar e gerar link de convite)."
+            },
+            {
+              "title": "AgentUI: biblioteca de mídia local para enviar fotos e arquivos",
+              "description": "Novo campo Pastas de mídia na aba Ferramentas define uma ou mais pastas do computador que o agente pode explorar. Ele lista subpastas e arquivos, busca por nome e envia a foto ou documento certo pelo WhatsApp — com acesso restrito às pastas configuradas (sem sair delas por caminho relativo ou atalho)."
+            },
+            {
+              "title": "AgentUI: carrossel de cards no WhatsApp",
+              "description": "O envio de carrossel agora sobe uma imagem por card e monta o payload que o WhatsApp realmente renderiza, com validação de quantidade de cards, texto e botões. Cards sem mídia passam a ser recusados com erro claro em vez de virar mensagem não suportada."
+            },
+            {
+              "title": "AgentUI: grupos e participantes autorizados",
               "description": "É possível listar os grupos da conta conectada e marcar em quais o agente pode responder, além de escolher quais participantes de cada grupo têm permissão para interagir. Grupos onde o agente é administrador aparecem destacados."
             },
             {
-              "title": "AgentUI: Menção, citação e mensagens diretas",
+              "title": "AgentUI: menção, citação e mensagens diretas",
               "description": "Novos controles ligam e desligam respostas em conversas diretas e em grupos, com a opção de responder apenas quando o agente for mencionado (@) ou quando a mensagem citar algo que ele enviou. Menções endereçadas por LID também são reconhecidas."
             },
             {
@@ -24,11 +36,11 @@
             },
             {
               "title": "Desktop: isolamento entre desenvolvimento e produção",
-              "description": "A build de desenvolvimento passou a usar configuração, banco de dados (allcode-dev.db), banco por projeto e sessão de WhatsApp próprios, então testar em dev não altera nada da instalação em produção."
+              "description": "A build de desenvolvimento usa configuração, banco de dados (allcode-dev.db), bancos por projeto e sessão de WhatsApp próprios, então testar em dev não altera nada da instalação em produção."
             },
             {
-              "title": "Correções: modelo, sessão e canais",
-              "description": "O agente reconecta a sessão do WhatsApp após reiniciar o app, reexecuta a resolução do modelo quando o catálogo ainda está sincronizando, não perde mais a resposta quando o diretório de sessão não é absoluto e o diagnóstico de canais deixou de classificar o WhatsApp nativo como gateway externo."
+              "title": "Correções: destinatário, modelo, sessão e inicialização",
+              "description": "Mensagens e mídias enviadas pelo agente vão sempre para a conversa que o acionou (antes podiam cair no próprio número). O modelo é reprocessado quando o catálogo ainda está sincronizando, o diretório de sessão não-absoluto deixou de derrubar o turno, o diagnóstico de canais reconhece o WhatsApp nativo e a inicialização do app ganhou mais tolerância a boots lentos."
             }
           ]
         }
