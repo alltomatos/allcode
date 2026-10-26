@@ -15,6 +15,7 @@ import { SessionStore } from "@allcode/core/session/store"
 import { SessionTable } from "@allcode/core/session/sql"
 import { testEffect } from "./lib/effect"
 import { projectAbsolute, projectDirectory } from "./fixture/project"
+import { testLocationServiceMap, LocationServiceMap } from "./fixture/location-services"
 
 const projects = Layer.succeed(
   ProjectV2.Service,
@@ -28,6 +29,7 @@ const it = testEffect(
   AppNodeBuilder.build(
     LayerNode.group([Database.node, EventV2.node, SessionProjector.node, SessionStore.node, SessionV2.node]),
     [
+      [LocationServiceMap.node, testLocationServiceMap],
       [ProjectV2.node, projects],
       [SessionExecution.node, SessionExecution.noopLayer],
     ],

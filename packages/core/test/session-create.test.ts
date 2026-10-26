@@ -27,6 +27,7 @@ import { WorkspaceV2 } from "@allcode/core/workspace"
 import { testEffect } from "./lib/effect"
 import { tmpdir } from "./fixture/tmpdir"
 import { projectAbsolute } from "./fixture/project"
+import { testLocationServiceMap, LocationServiceMap } from "./fixture/location-services"
 
 const projects = Layer.succeed(
   ProjectV2.Service,
@@ -40,6 +41,7 @@ const it = testEffect(
   AppNodeBuilder.build(
     LayerNode.group([Database.node, EventV2.node, SessionProjector.node, SessionStore.node, SessionV2.node]),
     [
+      [LocationServiceMap.node, testLocationServiceMap],
       [ProjectV2.node, projects],
       [SessionExecution.node, SessionExecution.noopLayer],
     ],

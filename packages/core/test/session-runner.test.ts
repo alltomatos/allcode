@@ -58,7 +58,8 @@ import { ProviderV2 } from "@allcode/core/provider"
 import { Cause, DateTime, Deferred, Effect, Exit, Fiber, Layer, Schema, Stream } from "effect"
 import { asc, eq } from "drizzle-orm"
 import { testEffect } from "./lib/effect"
-import { projectAbsolute, projectDirectory } from "./fixture/project"
+import { projectAbsolute, projectDirectory, projectPath } from "./fixture/project"
+import { testLocationServiceMap, LocationServiceMap } from "./fixture/location-services"
 
 const requests: LLMRequest[] = []
 let response: LLMEvent[] = []
@@ -277,6 +278,7 @@ const it = testEffect(
       SessionV2.node,
     ]),
     [
+      [LocationServiceMap.node, testLocationServiceMap],
       [LayerNodePlatform.llmClient, client],
       [PermissionV2.node, permission],
       [SessionRunnerModel.node, models],
@@ -703,7 +705,7 @@ describe("SessionRunnerLLM", () => {
       yield* events.publish(SessionEvent.Moved, {
         sessionID,
         timestamp: DateTime.makeUnsafe(1),
-        location: Location.Ref.make({ directory: AbsolutePath.make("/moved") }),
+        location: Location.Ref.make({ directory: AbsolutePath.make(projectPath("moved")) }),
       })
 
       yield* session.prompt({ sessionID, prompt: Prompt.make({ text: "Second" }), resume: false })

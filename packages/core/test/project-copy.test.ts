@@ -16,9 +16,10 @@ import { ProjectCopy } from "@allcode/core/project/copy"
 import { ProjectDirectories } from "@allcode/core/project/directories"
 import { tmpdir } from "./fixture/tmpdir"
 import { testEffect } from "./lib/effect"
+import { testLocationServiceMap, LocationServiceMap } from "./fixture/location-services"
 
 const it = testEffect(
-  AppNodeBuilder.build(LayerNode.group([ProjectCopy.node, Database.node, EventV2.node, ProjectDirectories.node])),
+  AppNodeBuilder.build(LayerNode.group([ProjectCopy.node, Database.node, EventV2.node, ProjectDirectories.node]), [[LocationServiceMap.node, testLocationServiceMap],]),
 )
 
 function abs(input: string) {

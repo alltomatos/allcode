@@ -18,7 +18,9 @@ import { SessionExecution } from "@allcode/core/session/execution"
 import { SessionInput } from "@allcode/core/session/input"
 import { SessionInputTable, SessionMessageTable, SessionTable } from "@allcode/core/session/sql"
 import { SessionStore } from "@allcode/core/session/store"
+import { Location } from "@allcode/core/location"
 import { testEffect } from "./lib/effect"
+import { testLocationServiceMap, LocationServiceMap } from "./fixture/location-services"
 import { projectAbsolute, projectDirectory } from "./fixture/project"
 
 const executionCalls: SessionV2.ID[] = []
@@ -46,8 +48,8 @@ const execution = Layer.succeed(
 )
 const it = testEffect(
   AppNodeBuilder.build(
-    LayerNode.group([Database.node, EventV2.node, SessionProjector.node, SessionStore.node, SessionV2.node]),
-    [[SessionExecution.node, execution]],
+    LayerNode.group([Database.node, EventV2.node, SessionProjector.node, SessionStore.node, SessionV2.node, LocationServiceMap.node]),
+    [[SessionExecution.node, execution], [LocationServiceMap.node, testLocationServiceMap]],
   ),
 )
 const sessionID = SessionV2.ID.make("ses_prompt_test")
@@ -189,8 +191,13 @@ describe("SessionV2.prompt", () => {
     Effect.gen(function* () {
       yield* setup
       const session = yield* SessionV2.Service
-      const events = yield* EventV2.Service
-      const { db } = yield* Database.Service
+      // A admissão é publicada no EventV2/DB da Location (é o que o SessionV2
+      // usa internamente); promover e assinar pelo par global veria outro fluxo.
+      const locations = yield* LocationServiceMap.Service
+      const [database, events] = yield* Effect.all([Database.Service, EventV2.Service]).pipe(
+        Effect.provide(locations.get(Location.Ref.make({ directory: projectAbsolute }))),
+      )
+      const db = database.db
       const fiber = yield* session.events({ sessionID }).pipe(Stream.take(4), Stream.runCollect, Effect.forkScoped)
       yield* Effect.yieldNow
 

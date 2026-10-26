@@ -38,6 +38,7 @@ import { Effect, Layer } from "effect"
 import path from "node:path"
 import { testEffect } from "./lib/effect"
 import { projectAbsolute, projectDirectory } from "./fixture/project"
+import { testLocationServiceMap, LocationServiceMap } from "./fixture/location-services"
 
 const cassette =
   process.env.RECORD === "true"
@@ -120,6 +121,7 @@ const it = testEffect(
       SessionV2.node,
     ]),
     [
+      [LocationServiceMap.node, testLocationServiceMap],
       [LayerNodePlatform.llmClient, client],
       [PermissionV2.node, permission],
       [ToolOutputStore.node, ToolOutputStore.nodeWithoutConfig],

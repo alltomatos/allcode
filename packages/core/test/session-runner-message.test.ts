@@ -120,7 +120,7 @@ describe("toLLMMessages", () => {
     )
     expect(messages.slice(2).map((message) => message.content)).toEqual([
       [{ type: "text", text: "Synthetic context" }],
-      [{ type: "text", text: "Shell command: pwd\n\n/project" }],
+      [{ type: "text", text: `Shell command: pwd\n\n${projectDirectory}` }],
       [
         {
           type: "text",
