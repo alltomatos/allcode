@@ -692,6 +692,10 @@ const layer = Layer.effect(
     })
 
     const updateGlobal = Effect.fn("Config.updateGlobal")(function* (config: Info) {
+      // Se o usuário só tem config legado, materializa `allcode.jsonc` antes de
+      // gravar: sem isso o patch cairia num arquivo vazio e o valor antigo
+      // (ex.: `shell`) continuaria vencendo o merge.
+      migrateLegacyGlobalConfig()
       const file = globalConfigFile()
       const before = (yield* readConfigFile(file)) ?? "{}"
       const patch = writableGlobal(config)
