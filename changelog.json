@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.25.0",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Navegador embutido: erros claros, posição correta e navegação confiável",
+              "description": "O painel de navegador passou a validar as ações do agente e a devolver mensagens específicas para painel fechado, elemento fora da tela, endereço inválido, offline e timeout, sem expor respostas HTTP cruas. Falhas de carregamento aparecem na interface com opção de tentar novamente; voltar, avançar e recarregar só respondem depois que a navegação termina; referências de snapshot deixam de valer após qualquer navegação. O posicionamento também passou a considerar a escala do monitor, corrigindo o painel que ficava menor e deslocado em telas a 125% e 150%."
+            },
+            {
+              "title": "Home: sessões do AgentUI no grupo Agentes",
+              "description": "As conversas dos canais do AgentUI, guardadas no diretório central do agente, agora aparecem na tela inicial em um grupo próprio chamado Agentes em vez de serem descartadas pelo filtro de projetos. O diretório é resolvido uma vez por servidor e servidores antigos continuam funcionando sem a seção."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.24.1",
       "highlights": [
         {
