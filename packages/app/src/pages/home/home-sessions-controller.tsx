@@ -57,9 +57,39 @@ export function createHomeSessionsController(home: HomeController) {
   const dialog = useDialog()
   const language = useLanguage()
   const queryClient = useQueryClient()
+  // AgentUI channel sessions live in the server's dedicated hub directory
+  // (Global.Path.data/projects/agentui) unless a channel points at a project.
+  // That directory isn't an opened project, so its sessions were dropped by
+  // the project-directory filter below. Resolve it once per server and expose
+  // those sessions as their own "Agents" group instead of hiding them.
+  const agentUIDirectoryLoad = useQuery(() => {
+    const conn = home.server.focused()
+    const ctx = home.server.focusedContext()
+    return {
+      queryKey: ["home", "agentui-directory", conn ? ServerConnection.key(conn) : "none"] as const,
+      enabled: !!ctx,
+      staleTime: Infinity,
+      retry: false,
+      queryFn: async () => {
+        const ctx = home.server.focusedContext()
+        if (!ctx) return undefined
+        const result = await ctx.sdk.client.agentui.projectDirectory().catch(() => undefined)
+        return result?.data?.directory
+      },
+    }
+  })
+  const agentUIProject = createMemo<LocalProject | undefined>(() => {
+    const worktree = agentUIDirectoryLoad.data
+    if (!worktree) return undefined
+    return { worktree, expanded: false, name: language.t("sidebar.tab.agentui") }
+  })
   const projectDirectories = createMemo(() => {
     const project = home.project.selected()
-    if (!project) return home.project.list().flatMap(directories)
+    const agentui = agentUIProject()
+    if (!project) {
+      const all = home.project.list().flatMap(directories)
+      return agentui ? [...all, agentui.worktree] : all
+    }
     return directories(project)
   })
   const projectByID = createMemo(
@@ -106,6 +136,7 @@ export function createHomeSessionsController(home: HomeController) {
       projectDirectories,
       projects: home.project.list,
       projectByID,
+      agentUIProject,
     }),
   )
   const records = createMemo(() => allRecords().slice(0, HOME_SESSION_LIMIT))
@@ -284,20 +315,27 @@ function buildHomeSessionRecords(input: {
   projectDirectories: () => string[]
   projects: () => LocalProject[]
   projectByID: () => Map<string, LocalProject>
+  agentUIProject?: () => LocalProject | undefined
 }) {
   const directories = new Set(input.projectDirectories().map(pathKey))
+  const agentUI = input.agentUIProject?.()
+  const agentUIDirectory = agentUI ? pathKey(agentUI.worktree) : undefined
   const sessions = input.sessions().filter((session) => directories.has(pathKey(session.directory)))
   return [...new Map(sessions.map((session) => [session.id, session] as const)).values()]
     .sort(compareSessionTime)
     .flatMap((session) => {
       const directory = pathKey(session.directory)
+      // The hub directory resolves to the built-in "global" project, whose
+      // worktree is the filesystem root, so never show that as the project name.
       const project =
+        (agentUI && directory === agentUIDirectory ? agentUI : undefined) ??
         input
           .projects()
           .find(
             (item) =>
               pathKey(item.worktree) === directory || item.sandboxes?.some((sandbox) => pathKey(sandbox) === directory),
-          ) ?? projectForSession(session, input.projects(), input.projectByID())
+          ) ??
+        projectForSession(session, input.projects(), input.projectByID())
       if (!project) return []
       return { session, project, projectName: displayName(project) }
     })
