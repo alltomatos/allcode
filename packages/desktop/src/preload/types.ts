@@ -32,17 +32,19 @@ export type UpdaterAPI = {
   install: () => Promise<void>
 }
 
-export type BrowserPanelBounds = { x: number; y: number; width: number; height: number }
+export type BrowserPanelBounds = { x: number; y: number; width: number; height: number; dpr?: number }
 export type BrowserPanelState = {
   url: string
   title: string
   isLoading: boolean
   canGoBack: boolean
   canGoForward: boolean
+  error?: { code: string }
 }
 export type BrowserPanelAPI = {
   setBounds: (rect: BrowserPanelBounds | null) => void
   toggle: (visible?: boolean) => Promise<boolean>
+  state: () => Promise<BrowserPanelState | undefined>
   navigate: (url: string) => Promise<void>
   goBack: () => Promise<void>
   goForward: () => Promise<void>

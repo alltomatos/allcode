@@ -119,10 +119,10 @@ export function SessionPanelsLayout(props: {
           <Show when={props.terminalRegionOpen()}>
             <div class="min-w-0 h-full flex flex-1 flex-col">
               <Show when={props.browserPanelStacked()}>
-                <BrowserPanelOverlay stacked />
+                <BrowserPanelOverlay stacked sessionKey={props.sessionPanelKey()} />
               </Show>
               <Show when={!props.browserPanelStacked()}>
-                <BrowserPanelOverlay />
+                <BrowserPanelOverlay sessionKey={props.sessionPanelKey()} />
               </Show>
               <Show when={props.isDesktop() && (props.desktopV2ReviewOpen() || props.desktopFileTreeOpen())}>
                 <div class="min-h-0 flex-1">

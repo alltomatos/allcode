@@ -1303,7 +1303,16 @@ export const dict = {
   "browser.panel.back": "Back",
   "browser.panel.forward": "Forward",
   "browser.panel.reload": "Reload",
+  "browser.panel.address.label": "Sidens adresse",
   "browser.panel.address.placeholder": "Enter a URL",
+  "browser.panel.loading": "Indlæser side",
+  "browser.panel.error.title": "Denne side kunne ikke indlæses",
+  "browser.panel.error.offline": "Browseren er offline. Tjek forbindelsen og prøv igen.",
+  "browser.panel.error.name": "Den adresse kunne ikke opløses. Tjek URL'en og prøv igen.",
+  "browser.panel.error.timeout": "Siden tog for lang tid at svare. Prøv igen.",
+  "browser.panel.error.default": "Noget gik galt under indlæsning af denne side. Prøv igen.",
+  "browser.panel.error.retry": "Prøv igen",
+  "browser.panel.error.dismiss": "Afvis",
   "sidebar.batuta": "Batuta",
   "sidebar.tab.code": "Code",
   "sidebar.tab.batuta": "Batuta",
@@ -1325,6 +1334,9 @@ export const dict = {
   "batuta.form.field.orchestrator.label": "Orchestrator model",
   "batuta.form.field.workers.label": "Workers",
   "batuta.form.field.workers.label.placeholder": "Worker label",
+
+
+
   "batuta.form.field.workers.add": "Add worker",
   "batuta.form.field.workers.error.required": "Add at least one worker with a label and a model or command",
   "batuta.form.field.workers.kind.internal": "Internal",

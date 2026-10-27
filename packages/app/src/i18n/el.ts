@@ -1228,7 +1228,19 @@ export const dict = {
   "browser.panel.back": "Back",
   "browser.panel.forward": "Forward",
   "browser.panel.reload": "Reload",
+  "browser.panel.address.label": "Διεύθυνση σελίδας",
   "browser.panel.address.placeholder": "Enter a URL",
+  "browser.panel.loading": "Φόρτωση σελίδας",
+  "browser.panel.error.title": "Δεν ήταν δυνατή η φόρτωση αυτής της σελίδας",
+  "browser.panel.error.offline":
+    "Το πρόγραμμα περιήγησης είναι εκτός σύνδεσης. Ελέγξτε τη σύνδεση και δοκιμάστε ξανά.",
+  "browser.panel.error.name":
+    "Δεν ήταν δυνατή η επίλυση αυτής της διεύθυνσης. Ελέγξτε το URL και δοκιμάστε ξανά.",
+  "browser.panel.error.timeout": "Η σελίδα άργησε πολύ να αποκριθεί. Δοκιμάστε ξανά.",
+  "browser.panel.error.default":
+    "Κάτι πήγε στραβά κατά τη φόρτωση αυτής της σελίδας. Δοκιμάστε ξανά.",
+  "browser.panel.error.retry": "Δοκιμάστε ξανά",
+  "browser.panel.error.dismiss": "Παράβλεψη",
   "sidebar.batuta": "Batuta",
   "sidebar.tab.code": "Code",
   "sidebar.tab.batuta": "Batuta",

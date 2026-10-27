@@ -283,21 +283,25 @@ export function registerIpcHandlers(deps: Deps) {
     const win = BrowserWindow.fromWebContents(event.sender)
     return getWindowBrowserPanel(win)?.toggle(visible) ?? false
   })
+  ipcMain.handle("browser-panel-state", (event: IpcMainInvokeEvent) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    return getWindowBrowserPanel(win)?.state()
+  })
   ipcMain.handle("browser-panel-navigate", async (event: IpcMainInvokeEvent, url: string) => {
     const win = BrowserWindow.fromWebContents(event.sender)
     await getWindowBrowserPanel(win)?.navigate(url)
   })
   ipcMain.handle("browser-panel-go-back", (event: IpcMainInvokeEvent) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    getWindowBrowserPanel(win)?.goBack()
+    return getWindowBrowserPanel(win)?.goBack()
   })
   ipcMain.handle("browser-panel-go-forward", (event: IpcMainInvokeEvent) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    getWindowBrowserPanel(win)?.goForward()
+    return getWindowBrowserPanel(win)?.goForward()
   })
   ipcMain.handle("browser-panel-reload", (event: IpcMainInvokeEvent) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    getWindowBrowserPanel(win)?.reload()
+    return getWindowBrowserPanel(win)?.reload()
   })
 
   ipcMain.handle("get-window-id", (event: IpcMainInvokeEvent) => {

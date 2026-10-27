@@ -188,6 +188,7 @@ const api: ElectronAPI = {
   browserPanel: {
     setBounds: (rect: BrowserPanelBounds | null) => ipcRenderer.send("browser-panel-set-bounds", rect),
     toggle: (visible?: boolean) => ipcRenderer.invoke("browser-panel-toggle", visible),
+    state: () => ipcRenderer.invoke("browser-panel-state"),
     navigate: (url: string) => ipcRenderer.invoke("browser-panel-navigate", url),
     goBack: () => ipcRenderer.invoke("browser-panel-go-back"),
     goForward: () => ipcRenderer.invoke("browser-panel-go-forward"),

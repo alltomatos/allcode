@@ -263,6 +263,9 @@ export function createMainWindow(id: string = randomUUID(), opts: { show?: boole
     const browserPanel = createBrowserPanel(win, (state: PanelState) => {
       if (!win.isDestroyed()) win.webContents.send("browser-panel-state-changed", state)
     })
+    // A renderer reload recreates the app UI with the panel closed. Hide the
+    // native view too, otherwise it stays painted over the fresh UI.
+    win.webContents.on("did-start-loading", () => browserPanel.toggle(false))
     win.once("close", () => browserPanel.destroy())
   } catch (error) {
     writeLog("browser-panel", `failed to create: ${String(error)}`, undefined, "error")

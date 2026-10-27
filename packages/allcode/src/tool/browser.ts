@@ -48,11 +48,27 @@ const SnapshotSchema = Schema.Struct({
   outline: Schema.String,
 })
 
+const ErrorBodySchema = Schema.Struct({
+  error: Schema.Struct({ code: Schema.String, message: Schema.String }),
+})
+
+const decodeErrorBody = Schema.decodeUnknownOption(ErrorBodySchema)
+
+const TIMEOUT_MESSAGE = "The browser did not respond in time. The page may still be loading; try again."
+
+export function describeBrowserFailure(status: number, body: unknown): string {
+  const decoded = decodeErrorBody(body)
+  if (Option.isSome(decoded)) return decoded.value.error.message
+  if (status === 404) return "The browser panel is not available in this window. Open the desktop app and try again."
+  if (status === 401 || status === 403) return "The browser rejected the request. Restart the desktop app and try again."
+  if (status === 504) return TIMEOUT_MESSAGE
+  return "The browser could not complete this action. Try again."
+}
+
 export const BrowserTool = Tool.define(
   "browser",
   Effect.gen(function* () {
     const http = yield* HttpClient.HttpClient
-    const httpOk = HttpClient.filterStatusOk(http)
     const flags = yield* RuntimeFlags.Service
 
     return {
@@ -77,16 +93,18 @@ export const BrowserTool = Tool.define(
             })
           }
 
-          const postState = (path: string, body?: unknown) =>
+          const execute = (req: HttpClientRequest.HttpClientRequest) =>
             Effect.gen(function* () {
-              const req = yield* HttpClientRequest.post(`${baseUrl}${path}`).pipe(
-                HttpClientRequest.setHeaders(headers),
-                HttpClientRequest.bodyJson(body ?? {}),
-              )
-              const response = yield* httpOk.execute(req)
-              return yield* HttpClientResponse.schemaBodyJson(StateSchema)(response)
+              const response = yield* http.execute(req)
+              if (response.status < 200 || response.status >= 300) {
+                const body = yield* response.json.pipe(Effect.orElseSucceed(() => undefined))
+                throw new Error(describeBrowserFailure(response.status, body))
+              }
+              return response
             }).pipe(
-              Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error("Browser action timed out")) }),
+              Effect.catch(() =>
+                Effect.die(new Error("The browser bridge is unavailable. Restart the desktop app and try again.")),
+              ),
             )
 
           const post = (path: string, body: unknown) =>
@@ -95,9 +113,22 @@ export const BrowserTool = Tool.define(
                 HttpClientRequest.setHeaders(headers),
                 HttpClientRequest.bodyJson(body),
               )
-              yield* httpOk.execute(req)
+              return yield* execute(req)
             }).pipe(
-              Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error("Browser action timed out")) }),
+              Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error(TIMEOUT_MESSAGE)) }),
+            )
+
+          const postState = (path: string, body?: unknown) =>
+            Effect.gen(function* () {
+              const response = yield* post(path, body ?? {})
+              return yield* HttpClientResponse.schemaBodyJson(StateSchema)(response).pipe(
+                Effect.catch(() => Effect.die(new Error("The browser returned an unexpected response. Try again."))),
+              )
+            })
+
+          const get = (path: string) =>
+            execute(HttpClientRequest.get(`${baseUrl}${path}`).pipe(HttpClientRequest.setHeaders(headers))).pipe(
+              Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error(TIMEOUT_MESSAGE)) }),
             )
 
           switch (params.action) {
@@ -139,21 +170,17 @@ export const BrowserTool = Tool.define(
               return { output: "Scrolled", title: "Browser scroll", metadata: {} }
             }
             case "snapshot": {
-              const response = yield* httpOk
-                .execute(HttpClientRequest.get(`${baseUrl}/snapshot`).pipe(HttpClientRequest.setHeaders(headers)))
-                .pipe(
-                  Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error("Browser action timed out")) }),
-                )
-              const result = yield* HttpClientResponse.schemaBodyJson(SnapshotSchema)(response)
+              const response = yield* get("/snapshot")
+              const result = yield* HttpClientResponse.schemaBodyJson(SnapshotSchema)(response).pipe(
+                Effect.catch(() => Effect.die(new Error("The browser returned an unexpected page snapshot. Try again."))),
+              )
               return { output: result.outline, title: "Page snapshot", metadata: {} }
             }
             case "screenshot": {
-              const response = yield* httpOk
-                .execute(HttpClientRequest.get(`${baseUrl}/screenshot`).pipe(HttpClientRequest.setHeaders(headers)))
-                .pipe(
-                  Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error("Screenshot timed out")) }),
-                )
-              const arrayBuffer = yield* response.arrayBuffer
+              const response = yield* get("/screenshot")
+              const arrayBuffer = yield* response.arrayBuffer.pipe(
+                Effect.catch(() => Effect.die(new Error("The screenshot could not be read. Try again."))),
+              )
               const base64 = Buffer.from(arrayBuffer).toString("base64")
               return {
                 title: "Browser screenshot",
@@ -162,6 +189,8 @@ export const BrowserTool = Tool.define(
                 attachments: [{ type: "file" as const, mime: "image/png", url: `data:image/png;base64,${base64}` }],
               }
             }
+            default:
+              throw new Error("Unsupported browser action.")
           }
         }).pipe(Effect.orDie),
     }
