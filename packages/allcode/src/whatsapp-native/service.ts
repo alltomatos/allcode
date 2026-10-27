@@ -218,6 +218,17 @@ export const layer = Layer.effect(
           (c): c is ConfigAgentUIV1.WhatsAppChannelBinding =>
             c.type === "whatsapp" && ConfigAgentUIV1.isNativeWhatsAppChannel(c),
         )
+        // O supervisor de canais encerra sessões de agentes desativados no
+        // próximo reconcile (5s), então conectar aqui só produziria o ciclo
+        // "conectando → conectado → desconectado" sem QR nem explicação.
+        if (!ConfigAgentUIV1.isEnabled(agent)) {
+          return yield* Effect.fail(
+            new WhatsAppNativeStateError({
+              message: "Agente desativado — ative o agente na aba Geral para conectar o WhatsApp.",
+              agentId,
+            }),
+          )
+        }
         const channel: ConfigAgentUIV1.WhatsAppChannelBinding = found ?? {
           // Fallback para quando o usuário acabou de acionar a conexão nativa
           // e o canal ainda não foi salvo com mode: "native".
