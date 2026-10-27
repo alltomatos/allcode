@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.24.1",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AgentUI: aviso ao conectar WhatsApp com agente desativado",
+              "description": "O botão Conectar / Exibir QR Code agora responde na hora quando o agente está desativado, explicando que é preciso ativá-lo na aba Geral. Antes a conexão subia, o supervisor de canais encerrava a sessão segundos depois e o painel voltava para desconectado sem QR e sem motivo aparente."
+            },
+            {
+              "title": "Desenvolvimento: bun dev:local na raiz",
+              "description": "O comando de desenvolvimento do app desktop com o canal local (OPENCODE_CHANNEL=local) passou a existir também na raiz do workspace, junto de dev:desktop e dev:web, em vez de exigir a entrada em packages/desktop."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.24.0",
       "highlights": [
         {
