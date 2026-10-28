@@ -352,6 +352,17 @@ export const dict = {
   "prompt.toast.enhanced.title": "Prompt enhanced with AI",
   "prompt.toast.enhanceEmpty.title": "Type something in the prompt before enhancing",
   "prompt.toast.enhanceFailed.title": "Failed to enhance prompt",
+  "prompt.toast.enhanceFailed.description": "Provider: {{provider}} · Model: {{model}} · {{reason}}",
+  "prompt.toast.enhanceFailed.reason.truncated": "The model stopped before finishing the response.",
+  "prompt.toast.enhanceFailed.reason.toolCall": "The model returned a tool call instead of the prompt.",
+  "prompt.toast.enhanceFailed.reason.empty": "The model returned an empty response.",
+  "prompt.toast.enhanceFailed.reason.training":
+    "This model requires opting in to training on request data in your workspace privacy settings.",
+  "prompt.toast.enhanceFailed.reason.region": "This model is not available in your workspace region.",
+  "prompt.toast.enhanceFailed.reason.auth": "The provider rejected the credentials for this model.",
+  "prompt.toast.enhanceFailed.reason.rateLimit": "The provider rate limit was reached. Try again shortly.",
+  "prompt.toast.enhanceFailed.reason.timeout": "The provider took too long to respond. Try again.",
+  "prompt.toast.enhanceFailed.reason.modelUnavailable": "The provider or model is currently unavailable.",
   "prompt.toast.enhanceRestartRequired.title": "Restart required",
   "prompt.toast.enhanceRestartRequired.description":
     "The prompt enhancement service was compiled. Please restart the app to activate the new endpoint.",

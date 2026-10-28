@@ -27,6 +27,8 @@ import anthropic
 API_KEY = os.environ.get("AGENTROUTER_API_KEY")
 PORT = int(os.environ.get("AGENTROUTER_PORT", "7187"))
 UPSTREAM = os.environ.get("AGENTROUTER_UPSTREAM", "https://agentrouter.org")
+# Bump together with RELAY_VERSION in manager.ts and relay-source.ts.
+RELAY_VERSION = 2
 
 if not API_KEY:
     print("AGENTROUTER_API_KEY is required", file=sys.stderr)
@@ -222,6 +224,37 @@ def append_pt_instruction(system):
     return [{"type": "text", "text": PT_REPLY_INSTRUCTION.strip()}]
 
 
+# AgentRouter's content filter also inspects the top-level `system` block, but
+# only `messages` used to be translated. A Portuguese system prompt (the prompt
+# enhancer's default, or a user's custom system prompt) therefore tripped the
+# filter and surfaced as a generic upstream 503. Translate system text that
+# actually looks Portuguese, leave the English default prompt untouched, and
+# keep the PT reply instruction out of the translation pass.
+PT_CHARS = set("ãõçáéíóúâêôàÃÕÇÁÉÍÓÚÂÊÔÀ")
+
+
+def looks_portuguese(text):
+    return any(ch in text for ch in PT_CHARS)
+
+
+def translate_system(system):
+    if isinstance(system, str):
+        if len(system) < 8000 and looks_portuguese(system):
+            return translate_to_english(system)
+        return system
+    if isinstance(system, list):
+        translated = []
+        for block in system:
+            block = strip_cache_control(block)
+            if isinstance(block, dict) and block.get("type") == "text" and isinstance(block.get("text"), str):
+                text = block["text"]
+                if len(text) < 8000 and looks_portuguese(text):
+                    block = {**block, "text": translate_to_english(text)}
+            translated.append(block)
+        return translated
+    return system
+
+
 # anthropic's APIStatusError (and generic exceptions raised while parsing a
 # response) stringify with the raw response body appended to the message.
 # Normally that's a small, useful JSON snippet — but AgentRouter's WAF
@@ -241,15 +274,23 @@ def clean_payload(payload):
     payload = {k: v for k, v in payload.items() if k not in STRIP_KEYS}
     if isinstance(payload.get("messages"), list):
         payload["messages"] = clean_messages(payload["messages"])
-    if isinstance(payload.get("system"), list):
-        payload["system"] = [strip_cache_control(block) for block in payload["system"]]
-    payload["system"] = append_pt_instruction(payload.get("system"))
+    payload["system"] = append_pt_instruction(translate_system(payload.get("system")))
     return payload
 
 
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
-        sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
+        # The relay is spawned by the app with piped stderr. If the parent
+        # process restarts, that pipe closes and writing to sys.stderr raises
+        # OSError. BaseHTTPRequestHandler calls log_message from inside
+        # send_response, so an unhandled error there closes the connection
+        # before any bytes are sent and the orphaned relay looks "listening but
+        # unhealthy" forever. Never let logging break a request.
+        try:
+            sys.stderr.write("%s - %s\n" % (self.address_string(), fmt % args))
+            sys.stderr.flush()
+        except (OSError, ValueError):
+            pass
 
     def _send_json(self, status, obj):
         body = json.dumps(obj).encode("utf-8")
@@ -261,7 +302,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path == "/health":
-            self._send_json(200, {"ok": True})
+            self._send_json(200, {"ok": True, "version": RELAY_VERSION})
             return
         if self.path in ("/v1/models", "/models"):
             self._send_json(200, {"data": STUB_MODELS})

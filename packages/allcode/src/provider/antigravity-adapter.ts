@@ -378,8 +378,10 @@ function transformSseStream(readable: ReadableStream<Uint8Array>): ReadableStrea
             }
             try {
               const parsed = JSON.parse(dataContent)
-              const unwrapped = parsed.response ?? (Array.isArray(parsed) ? parsed[0]?.response : undefined) ?? parsed
-              controller.enqueue(encoder.encode(`data: ${JSON.stringify(unwrapped)}\n\n`))
+              for (const chunk of Array.isArray(parsed) ? parsed : [parsed]) {
+                const unwrapped = unwrapAntigravityChunk(chunk)
+                controller.enqueue(encoder.encode(`data: ${JSON.stringify(unwrapped)}\n\n`))
+              }
             } catch {
               controller.enqueue(encoder.encode(`${line}\n`))
             }
@@ -393,6 +395,79 @@ function transformSseStream(readable: ReadableStream<Uint8Array>): ReadableStrea
       return reader.cancel(reason)
     },
   })
+}
+
+type AntigravityCandidate = Record<string, any>
+
+function unwrapAntigravityChunk(parsed: any): any {
+  if (Array.isArray(parsed)) {
+    return parsed.map((item) => item?.response ?? item)
+  }
+  return parsed?.response ?? parsed
+}
+
+/**
+ * Merges incremental `candidates[]` payloads from a streamed generateContent
+ * response into the single-candidate shape a non-streaming caller expects.
+ *
+ * Google sends each text fragment in its own chunk. Pushing those chunks into
+ * `candidates` (the previous behavior) produced N one-fragment candidates and
+ * the SDK only read candidate[0], so every non-streaming call (title
+ * generation, prompt enhancement) returned just the first fragment.
+ */
+export function mergeAntigravityCandidates(target: AntigravityCandidate[], incoming: unknown) {
+  if (!Array.isArray(incoming)) return target
+  for (let index = 0; index < incoming.length; index++) {
+    const next = incoming[index]
+    if (!next || typeof next !== "object") continue
+    const current = target[index]
+    if (!current) {
+      target[index] = next
+      continue
+    }
+    const currentParts = Array.isArray(current.content?.parts) ? current.content.parts : []
+    const nextParts = Array.isArray(next.content?.parts) ? next.content.parts : []
+    target[index] = {
+      ...current,
+      ...next,
+      content: {
+        ...current.content,
+        ...next.content,
+        parts: [...currentParts, ...nextParts],
+      },
+      finishReason: next.finishReason ?? current.finishReason,
+    }
+  }
+  return target
+}
+
+/**
+ * Unwraps a Code Assist SSE body into one GenerateContent response. Kept pure
+ * so the aggregation can be regression-tested without network access.
+ */
+export function unwrapAntigravitySse(text: string): Record<string, any> {
+  const result: Record<string, any> = { candidates: [] as AntigravityCandidate[] }
+  for (const line of text.split("\n")) {
+    if (!line.startsWith("data: ")) continue
+    const data = line.slice(6).trim()
+    if (!data || data === "[DONE]") continue
+    let parsed: any
+    try {
+      parsed = JSON.parse(data)
+    } catch {
+      continue
+    }
+    const chunks = Array.isArray(parsed) ? parsed : [parsed]
+    for (const chunk of chunks) {
+      const unwrapped = unwrapAntigravityChunk(chunk)
+      if (!unwrapped || typeof unwrapped !== "object") continue
+      mergeAntigravityCandidates(result.candidates, unwrapped.candidates)
+      for (const [key, value] of Object.entries(unwrapped)) {
+        if (key !== "candidates") result[key] = value
+      }
+    }
+  }
+  return result
 }
 
 /**
@@ -829,24 +904,8 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
     // If client requested non-streaming generateContent (e.g. title generation / doGenerate)
     if (!urlStr.includes("alt=sse")) {
       const text = await upstream.text()
-      // Unwrap SSE chunks into single JSON response for SDK
-      let unwrapped: any = { candidates: [] }
-      const lines = text.split("\n")
-      for (const line of lines) {
-        if (line.startsWith("data: ")) {
-          const dataContent = line.slice(6).trim()
-          if (dataContent && dataContent !== "[DONE]") {
-            try {
-              const parsed = JSON.parse(dataContent)
-              const chunkCandidates = parsed.response?.candidates ?? parsed.candidates
-              if (Array.isArray(chunkCandidates)) {
-                unwrapped.candidates.push(...chunkCandidates)
-              }
-            } catch {}
-          }
-        }
-      }
-      return new Response(JSON.stringify(unwrapped), {
+      // Unwrap SSE chunks into a single merged GenerateContent response for SDK.
+      return new Response(JSON.stringify(unwrapAntigravitySse(text)), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       })

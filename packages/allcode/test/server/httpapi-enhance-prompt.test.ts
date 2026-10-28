@@ -35,6 +35,10 @@ describe("experimental.enhancePrompt HttpApi", () => {
       const data = yield* response.json
       expect(data).toMatchObject({
         _tag: "InvalidRequestError",
+        provider: "nonexistent",
+        model: "fake-model",
+        reason: "modelUnavailable",
+        retryable: false,
       })
     }),
   )

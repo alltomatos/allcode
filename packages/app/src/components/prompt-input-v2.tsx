@@ -38,6 +38,49 @@ import {
   type PromptInputV2Interaction,
 } from "@allcode/session-ui/v2/prompt-input/interaction"
 
+type EnhanceErrorDetails = {
+  message?: string
+  provider?: string
+  model?: string
+  reason?: string
+  retryable?: boolean
+}
+
+class EnhanceRequestError extends Error {
+  readonly details: EnhanceErrorDetails
+
+  constructor(raw: unknown) {
+    const details = parseEnhanceError(raw)
+    super(details.message ?? "Request failed")
+    this.details = details
+  }
+}
+
+function parseEnhanceError(raw: unknown): EnhanceErrorDetails {
+  if (typeof raw === "string") return { message: raw }
+  if (!raw || typeof raw !== "object") return {}
+  const record = raw as Record<string, unknown>
+  const nested = record.data
+  const source = nested && typeof nested === "object" ? (nested as Record<string, unknown>) : record
+  const text = (value: unknown) => (typeof value === "string" ? value : undefined)
+  return {
+    message:
+      text(record.message) ??
+      text(source.message) ??
+      text(record.error) ??
+      (Object.keys(record).length > 0 ? JSON.stringify(raw) : undefined),
+    provider: text(record.provider) ?? text(source.provider),
+    model: text(record.model) ?? text(source.model),
+    reason: text(record.reason) ?? text(source.reason),
+    retryable:
+      typeof record.retryable === "boolean"
+        ? record.retryable
+        : typeof source.retryable === "boolean"
+          ? source.retryable
+          : undefined,
+  }
+}
+
 export type PromptInputV2ComposerProps = {
   class?: string
   controller: PromptInputV2ComposerController
@@ -60,6 +103,31 @@ export function PromptInputV2Composer(props: PromptInputV2ComposerProps) {
   const platform = usePlatform()
   const settings = useSettings()
   const [enhancing, setEnhancing] = createSignal(false)
+
+  const enhanceReason = (reason: string | undefined, fallback: string) => {
+    switch (reason) {
+      case "truncated":
+        return language.t("prompt.toast.enhanceFailed.reason.truncated")
+      case "toolCall":
+        return language.t("prompt.toast.enhanceFailed.reason.toolCall")
+      case "empty":
+        return language.t("prompt.toast.enhanceFailed.reason.empty")
+      case "training":
+        return language.t("prompt.toast.enhanceFailed.reason.training")
+      case "region":
+        return language.t("prompt.toast.enhanceFailed.reason.region")
+      case "auth":
+        return language.t("prompt.toast.enhanceFailed.reason.auth")
+      case "rateLimit":
+        return language.t("prompt.toast.enhanceFailed.reason.rateLimit")
+      case "timeout":
+        return language.t("prompt.toast.enhanceFailed.reason.timeout")
+      case "modelUnavailable":
+        return language.t("prompt.toast.enhanceFailed.reason.modelUnavailable")
+      default:
+        return fallback
+    }
+  }
 
   const handleEnhance = async () => {
     if (enhancing()) return
@@ -106,16 +174,11 @@ export function PromptInputV2Composer(props: PromptInputV2ComposerProps) {
 
       const rawError = (res as { error?: unknown }).error
       if (rawError) {
-        let errorMsg = "Request failed"
-        if (typeof rawError === "object" && rawError !== null) {
-          const rec = rawError as Record<string, any>
-          errorMsg = rec.message || rec.data?.message || rec.error || JSON.stringify(rawError)
-        } else if (typeof rawError === "string") {
-          errorMsg = rawError
-        }
-        throw new Error(errorMsg)
+        throw new EnhanceRequestError(rawError)
       }
     } catch (err) {
+      const details = err instanceof EnhanceRequestError ? err.details : undefined
+      const structured = details && (details.provider || details.model || details.reason) ? details : undefined
       const message = err instanceof Error ? err.message : String(err)
       const isMissingEndpoint =
         message.includes("<!doctype") ||
@@ -138,10 +201,17 @@ export function PromptInputV2Composer(props: PromptInputV2ComposerProps) {
         return
       }
 
+      const reason = structured ? enhanceReason(structured.reason, structured.message ?? message) : message
       showToast({
         variant: "error",
         title: language.t("prompt.toast.enhanceFailed.title"),
-        description: message,
+        description: structured
+          ? language.t("prompt.toast.enhanceFailed.description", {
+              provider: structured.provider ?? "unknown",
+              model: structured.model ?? "unknown",
+              reason,
+            })
+          : reason,
       })
     } finally {
       setEnhancing(false)

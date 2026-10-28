@@ -6,6 +6,13 @@ export class InvalidRequestError extends Schema.TaggedErrorClass<InvalidRequestE
     message: Schema.String,
     kind: Schema.optional(Schema.String),
     field: Schema.optional(Schema.String),
+    // Structured provider diagnostics. Optional so existing callers and
+    // clients keep the same contract; prompt enhancement uses these fields to
+    // render a localized, actionable message instead of a raw stack.
+    provider: Schema.optional(Schema.String),
+    model: Schema.optional(Schema.String),
+    reason: Schema.optional(Schema.String),
+    retryable: Schema.optional(Schema.Boolean),
   },
   { httpApiStatus: 400 },
 ) {}

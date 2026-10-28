@@ -421,6 +421,17 @@ export const dict = {
   "prompt.toast.enhanced.title": "Prompt melhorado com IA",
   "prompt.toast.enhanceEmpty.title": "Digite algo no prompt antes de melhorar com IA",
   "prompt.toast.enhanceFailed.title": "Falha ao melhorar prompt com IA",
+  "prompt.toast.enhanceFailed.description": "Provedor: {{provider}} · Modelo: {{model}} · {{reason}}",
+  "prompt.toast.enhanceFailed.reason.truncated": "O modelo parou antes de concluir a resposta.",
+  "prompt.toast.enhanceFailed.reason.toolCall": "O modelo retornou uma chamada de ferramenta em vez do prompt.",
+  "prompt.toast.enhanceFailed.reason.empty": "O modelo retornou uma resposta vazia.",
+  "prompt.toast.enhanceFailed.reason.training":
+    "Este modelo exige opt-in para treinamento com dados de requisições nas configurações de privacidade do workspace.",
+  "prompt.toast.enhanceFailed.reason.region": "Este modelo não está disponível na região do seu workspace.",
+  "prompt.toast.enhanceFailed.reason.auth": "O provedor rejeitou as credenciais deste modelo.",
+  "prompt.toast.enhanceFailed.reason.rateLimit": "O limite de requisições do provedor foi atingido. Tente novamente em instantes.",
+  "prompt.toast.enhanceFailed.reason.timeout": "O provedor demorou demais para responder. Tente novamente.",
+  "prompt.toast.enhanceFailed.reason.modelUnavailable": "O provedor ou modelo está indisponível no momento.",
   "prompt.toast.enhanceRestartRequired.title": "Reinicialização necessária",
   "prompt.toast.enhanceRestartRequired.description":
     "O novo serviço de melhoria de prompt foi compilado. Reinicie o aplicativo para ativar o endpoint.",

@@ -8,8 +8,7 @@ import { MCP } from "@/mcp"
 import { Project } from "@/project/project"
 import { Session } from "@/session/session"
 import { LLM } from "@/session/llm"
-import { LLMEvent } from "@allcode/llm"
-import * as Stream from "effect/Stream"
+import { PromptEnhance } from "@/session/prompt-enhance"
 import { MessageID, SessionID } from "@/session/schema"
 import type { SessionV1 } from "@allcode/core/v1/session"
 import { ToolJsonSchema } from "@/tool/json-schema"
@@ -17,9 +16,8 @@ import { ToolRegistry } from "@/tool/registry"
 import { Worktree } from "@/worktree"
 import { Memory } from "@/memory"
 import { Provider } from "@/provider/provider"
-import { ProviderTransform } from "@/provider/transform"
 import { Combo } from "@/combo"
-import { generateText, jsonSchema, tool as aiTool } from "ai"
+import { generateText } from "ai"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { createAntigravityFetch, getLiveToken } from "@/provider/antigravity-adapter"
 import { Catalog } from "@allcode/core/catalog"
@@ -31,7 +29,7 @@ import { Location } from "@allcode/core/location"
 import { AbsolutePath } from "@allcode/core/schema"
 import { ProviderV2 } from "@allcode/core/provider"
 import { ModelV2 } from "@allcode/core/model"
-import { Cause, Effect, Exit, Option } from "effect"
+import { Effect, Exit, Option } from "effect"
 import * as HttpServerResponse from "effect/unstable/http/HttpServerResponse"
 import { HttpApiBuilder, HttpApiError } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
@@ -240,16 +238,6 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
       )
     })
 
-    const MODEL_ALIASES: Record<string, string> = {
-      "gemini-3.8-flash-high": "gemini-3.8-flash-tiered",
-      "gemini-3.8-flash-medium": "gemini-3.8-flash-tiered",
-      "gemini-3.8-flash-low": "gemini-3.8-flash-tiered",
-      "gemini-3.7-flash-high": "gemini-3.7-flash-tiered",
-      "gemini-3.7-flash-medium": "gemini-3.7-flash-tiered",
-      "gemini-3.7-flash-low": "gemini-3.7-flash-tiered",
-      "gemini-3.1-pro-high": "gemini-pro-agent",
-    }
-
     const getModel = Effect.fnUntraced(function* (
       targetProviderID: string,
       targetModelID: string,
@@ -290,7 +278,7 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
       if (ctx.payload.sessionID) {
         const msgs = yield* sessions.messages({ sessionID: ctx.payload.sessionID, limit: 10 }).pipe(Effect.orElseSucceed(() => []))
         for (const msg of msgs) {
-          const role = msg.info.role === "user" ? "Usuário" : "Assistente"
+          const role = msg.info.role === "user" ? "User" : "Assistant"
           const textParts: string[] = []
           for (const part of msg.parts) {
             if ("text" in part && typeof part.text === "string" && part.text.trim()) {
@@ -304,36 +292,21 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
       }
 
       // Memória do projeto e memória global
-      let memoryContext = ""
-      if (ctx.payload.directory) {
-        const projMem = yield* memory.loadProject(ctx.payload.directory).pipe(Effect.orElseSucceed(() => ({ content: "" })))
-        if (projMem.content.trim()) {
-          memoryContext += `[Memória do Projeto]:\n${projMem.content.trim().slice(-2500)}\n\n`
-        }
-      }
-      const globMem = yield* memory.loadGlobal().pipe(Effect.orElseSucceed(() => ({ content: "" })))
-      if (globMem.content.trim()) {
-        memoryContext += `[Memória Global/Preferências]:\n${globMem.content.trim().slice(-2000)}\n\n`
-      }
+      const projectMemory = ctx.payload.directory
+        ? (yield* memory.loadProject(ctx.payload.directory).pipe(Effect.orElseSucceed(() => ({ content: "" })))).content
+            .trim()
+            .slice(-2500)
+        : ""
+      const globalMemory = (yield* memory.loadGlobal().pipe(Effect.orElseSucceed(() => ({ content: "" })))).content
+        .trim()
+        .slice(-2000)
 
-      const systemPrompt =
-        "Você é um engenheiro de prompt e arquiteto de software sênior de elite.\n" +
-        "Sua única tarefa é entender o contexto da conversa, a memória e o rascunho do usuário, e reescrever o rascunho em um prompt aprimorado, muito mais claro, rico em detalhes técnicos essenciais e eficaz para o assistente de programação.\n\n" +
-        "Regras inegociáveis:\n" +
-        "1. Retorne APENAS o texto do prompt melhorado. Jamais inclua preâmbulos, saudações, explicações (como 'Aqui está o prompt:', 'Sugestão:', etc.) ou aspas ao redor.\n" +
-        "2. Mantenha estritamente o mesmo idioma do usuário (ex: português do Brasil se o usuário escreveu em português).\n" +
-        "3. Seja direto, preciso e estruturado. Indique claramente o objetivo, requisitos funcionais, comportamentos esperados e restrições técnicas cabíveis ao contexto.\n" +
-        "4. Preserve qualquer comando (ex: /refactor, /test) ou menção a arquivo (@caminho) presente no rascunho.\n" +
-        "5. Não responda ao pedido nem execute a tarefa técnica. Apenas devolva a instrução aprimorada."
-
-      let promptContent = ""
-      if (contextLines.length > 0) {
-        promptContent += `### Histórico recente da conversa:\n${contextLines.slice(-6).join("\n\n")}\n\n`
-      }
-      if (memoryContext.trim()) {
-        promptContent += `### Memória e contexto do projeto:\n${memoryContext}\n`
-      }
-      promptContent += `### Prompt em rascunho a ser melhorado:\n"${userPrompt}"`
+      const promptContent = PromptEnhance.build({
+        prompt: userPrompt,
+        context: contextLines,
+        projectMemory,
+        globalMemory,
+      })
 
       // 1. Tenta resolver o modelo solicitado
       let targetProviderID = ""
@@ -356,67 +329,97 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
         }
       }
 
-      // 3. Fallback: Se for Google Antigravity direto (sem catalog v2 sync)
-      if (targetProviderID === "google-antigravity" || targetProviderID === "google-antigravity-cli") {
-        const profile: "ide" | "cli" = targetProviderID === "google-antigravity-cli" ? "cli" : "ide"
-        const integrationID = profile === "cli" ? "google-antigravity-cli" : "google-antigravity"
-        const live = (yield* Effect.tryPromise(() => getLiveToken(integrationID, profile)).pipe(
-          Effect.orElseSucceed(() => undefined),
-        )) as { token?: string; exhausted?: boolean } | undefined
-        if (live && !live.exhausted && live.token) {
-          try {
-            const google = createGoogleGenerativeAI({
-              apiKey: "antigravity-oauth",
-              baseURL: "https://daily-cloudcode-pa.googleapis.com/v1internal",
-              fetch: createAntigravityFetch(profile) as any,
-            })
-            const actualModel = MODEL_ALIASES[targetModelID] || targetModelID
-            const directRes: { text: string } = yield* Effect.tryPromise({
-              try: () =>
-                generateText({
-                  model: google.languageModel(actualModel),
-                  system: systemPrompt,
-                  prompt: promptContent,
-                  temperature: 0.3,
-                }),
-              catch: (err) =>
-                new InvalidRequestError({
-                  message: `Erro ao gerar prompt com Google Antigravity: ${err instanceof Error ? err.message : String(err)}`,
-                }),
-            })
-            let enhanced = directRes.text.trim()
-            if ((enhanced.startsWith('"') && enhanced.endsWith('"')) || (enhanced.startsWith("'") && enhanced.endsWith("'"))) {
-              enhanced = enhanced.slice(1, -1).trim()
-            }
-            if (enhanced.startsWith("```") && enhanced.endsWith("```")) {
-              enhanced = enhanced.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/, "").trim()
-            }
-            return { enhancedPrompt: enhanced || userPrompt }
-          } catch (e: any) {
-            return yield* Effect.fail(
+      const fail = (error: PromptEnhance.Failure) =>
+        Effect.logWarning("prompt enhance failed", {
+          provider: error.provider,
+          model: error.model,
+          reason: error.reason,
+          retryable: error.retryable,
+          message: error.message,
+        }).pipe(
+          Effect.andThen(
+            Effect.fail(
               new InvalidRequestError({
-                message: `Falha no Google Antigravity: ${e?.message ?? String(e)}`,
+                message: `Prompt enhancement failed (${error.provider}/${error.model}): ${error.message}`,
+                provider: error.provider,
+                model: error.model,
+                reason: error.reason,
+                retryable: error.retryable,
               }),
-            )
+            ),
+          ),
+        )
+
+      // 3. Resolve através do modelo do Provider/Catalog
+      const resolvedModel: Provider.Model | undefined =
+        targetProviderID && targetModelID
+          ? yield* getModel(targetProviderID, targetModelID, ctx.payload.directory)
+          : undefined
+
+      // 4. Fallback direto para Google Antigravity quando o catalog v2 ainda
+      // não sincronizou o modelo. O adapter agora agrega todos os chunks SSE
+      // (antes só o primeiro fragmento era lido, truncando a resposta).
+      if (!resolvedModel) {
+        const isAntigravity =
+          targetProviderID === "google-antigravity" || targetProviderID === "google-antigravity-cli"
+        if (isAntigravity) {
+          const profile: "ide" | "cli" = targetProviderID === "google-antigravity-cli" ? "cli" : "ide"
+          const live = yield* Effect.tryPromise(() => getLiveToken(targetProviderID, profile)).pipe(
+            Effect.orElseSucceed(() => undefined),
+          )
+
+          if (live && !live.exhausted && live.token) {
+            const outcome = yield* PromptEnhance.run({
+              provider: targetProviderID,
+              model: targetModelID,
+              attempt: Effect.tryPromise({
+                try: async () => {
+                  const google = createGoogleGenerativeAI({
+                    apiKey: "antigravity-oauth",
+                    baseURL: "https://daily-cloudcode-pa.googleapis.com/v1internal",
+                    fetch: createAntigravityFetch(profile) as any,
+                  })
+                  // Pass the user-facing alias (e.g. gemini-3.8-flash-high) so
+                  // the adapter can map it AND apply the matching thinking
+                  // budget. Passing the already-aliased id disabled that.
+                  const result = await generateText({
+                    model: google.languageModel(targetModelID),
+                    system: PromptEnhance.SYSTEM.join("\n\n"),
+                    prompt: promptContent,
+                    temperature: 0.3,
+                    // Generous cap: AGY's reasoning models spend part of the
+                    // budget on thinking. Truncation is still detected below
+                    // (finishReason === "length") instead of returning a
+                    // partial prompt.
+                    maxOutputTokens: 32_768,
+                    // Never leave the UI busy forever if the upstream stalls.
+                    abortSignal: AbortSignal.timeout(120_000),
+                  })
+                  return {
+                    text: result.text,
+                    finishReason: PromptEnhance.fromAI(result.finishReason),
+                  }
+                },
+                catch: (error) => error,
+              }),
+            })
+            if (!outcome.ok) return yield* fail(outcome.error)
+            return { enhancedPrompt: outcome.text }
           }
         }
+
+        return yield* fail({
+          reason: "modelUnavailable",
+          provider: targetProviderID || "unknown",
+          model: targetModelID || ctx.payload.model || "unknown",
+          message: "The model could not be resolved or authenticated. Check the provider credentials in settings.",
+          retryable: false,
+        })
       }
 
-      // 4. Resolve através do modelo do Provider/Catalog
-      let resolvedModel: Provider.Model | undefined = undefined
-      if (targetProviderID && targetModelID) {
-        resolvedModel = yield* getModel(targetProviderID, targetModelID, ctx.payload.directory)
-      }
-
-      if (!resolvedModel) {
-        return yield* Effect.fail(
-          new InvalidRequestError({
-            message: `Não foi possível encontrar ou autenticar o modelo '${ctx.payload.model || targetModelID || "selecionado"}'. Verifique as credenciais do provedor nas configurações.`,
-          }),
-        )
-      }
-
-      // 5. Executa via LLM.Service nativo (mesmo motor do chat)
+      // 5. Executa via LLM.Service (mesmo motor do chat). No tools are sent:
+      // enhancement is pure text-in/text-out, and tool-capable models used to
+      // stop mid-answer when they decided to call one.
       const sessID = ctx.payload.sessionID ?? SessionID.descending()
       const enhanceAgent: Agent.Info = {
         name: "build",
@@ -424,7 +427,7 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
         permission: [],
         options: {},
         native: true,
-        prompt: "Você é um especialista em engenharia de prompt.",
+        prompt: "You are a prompt engineering expert.",
       }
       const userMessage: SessionV1.User = {
         id: MessageID.ascending(),
@@ -435,57 +438,25 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
         model: { providerID: resolvedModel.providerID, modelID: resolvedModel.id },
       }
 
-      // Constrói os tools no formato AI SDK válido para satisfazer o fingerprint dos provedores (ex: OpenCode free tier)
-      const resolvedTools: Record<string, any> = {}
-      for (const item of yield* registry.tools({
-        modelID: ModelV2.ID.make(resolvedModel.api.id),
-        providerID: resolvedModel.providerID,
-        agent: enhanceAgent,
-      })) {
-        const schema = ProviderTransform.schema(resolvedModel, ToolJsonSchema.fromTool(item))
-        resolvedTools[item.id] = aiTool({
-          description: item.description,
-          inputSchema: jsonSchema(schema),
-          async execute() {
-            return "ok"
-          },
-        })
-      }
-
-      const resultText = yield* llm
-        .stream({
-          agent: enhanceAgent,
-          user: userMessage,
-          system: [
-            systemPrompt,
-            "NOTA: As ferramentas disponíveis são informativas. NÃO invoque nenhuma ferramenta. Responda diretamente e exclusivamente com o texto do prompt aprimorado.",
-          ],
-          tools: resolvedTools,
-          toolChoice: "auto",
-          model: resolvedModel,
-          sessionID: sessID,
-          retries: 2,
-          messages: [{ role: "user", content: promptContent }],
-        })
-        .pipe(
-          Stream.filter(LLMEvent.is.textDelta),
-          Stream.map((event) => event.text),
-          Stream.mkString,
-          Effect.catchCause((cause) => {
-            const errStr = Cause.pretty(cause)
-            return Effect.fail(new InvalidRequestError({ message: `Erro ao gerar prompt com IA: ${errStr}` }))
+      const outcome = yield* PromptEnhance.run({
+        provider: resolvedModel.providerID,
+        model: resolvedModel.id,
+        attempt: PromptEnhance.collect(
+          llm.stream({
+            agent: enhanceAgent,
+            user: userMessage,
+            system: PromptEnhance.SYSTEM,
+            tools: {},
+            model: resolvedModel,
+            sessionID: sessID,
+            retries: 2,
+            messages: [{ role: "user", content: promptContent }],
           }),
-        )
+        ),
+      })
 
-      let enhanced = resultText.trim()
-      if ((enhanced.startsWith('"') && enhanced.endsWith('"')) || (enhanced.startsWith("'") && enhanced.endsWith("'"))) {
-        enhanced = enhanced.slice(1, -1).trim()
-      }
-      if (enhanced.startsWith("```") && enhanced.endsWith("```")) {
-        enhanced = enhanced.replace(/^```[a-z]*\n?/i, "").replace(/\n?```$/, "").trim()
-      }
-
-      return { enhancedPrompt: enhanced || userPrompt }
+      if (!outcome.ok) return yield* fail(outcome.error)
+      return { enhancedPrompt: outcome.text }
     })
 
     return handlers
