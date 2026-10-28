@@ -227,6 +227,10 @@ export const loadProvidersQuery = (
 ) =>
   queryOptions({
     queryKey: [scope, directory, "providers"],
+    // Provider lists are cheap local reads and can legitimately arrive partial
+    // while a location's catalog plugins are still booting. Keep the cache
+    // window short so a later mount can recover without a full app restart.
+    staleTime: 60_000,
     queryFn: () =>
       retry(async () => {
         if ((await protocol) === "v1" && legacy) {

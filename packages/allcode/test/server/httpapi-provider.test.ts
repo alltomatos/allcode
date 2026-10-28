@@ -432,6 +432,29 @@ describe("provider HttpApi", () => {
     30000,
   )
 
+  it.instance(
+    "keeps catalog-only AGY providers in GET /provider for a directory",
+    Effect.gen(function* () {
+      const directory = (yield* TestInstance).directory
+      const response = yield* request("/provider", { headers: { "x-opencode-directory": directory } })
+
+      expect(response.status).toBe(200)
+      const body = yield* response.json
+      const modelIDs = (id: string) => {
+        const provider = providerByID(body, "all", id)
+        if (!isRecord(provider) || !isRecord(provider.models)) return []
+        return Object.keys(provider.models)
+      }
+
+      expect(providerByID(body, "all", "google-antigravity")).toBeDefined()
+      expect(providerByID(body, "all", "google-antigravity-cli")).toBeDefined()
+      expect(modelIDs("google-antigravity")).toContain("gemini-3.8-flash-low")
+      expect(modelIDs("google-antigravity-cli")).toContain("gemini-3.8-flash-low")
+    }),
+    projectOptions,
+    60000,
+  )
+
   describe("OmniRoute (Native Provider Plugin) surfaced through the real server", () => {
     let originalFetch: typeof fetch
 

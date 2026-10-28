@@ -100,7 +100,15 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
     const catalogProviders = withLocation(
       Effect.gen(function* () {
         const internal = yield* PluginInternal.Service
-        yield* internal.ready.pipe(Effect.timeout("5 seconds"), Effect.catch(() => Effect.void))
+        // The plugin boot includes ModelsDevPlugin, which can spend its full
+        // 10s network timeout before the built-in ProviderPlugins register
+        // their catalog entries. A 5s bound therefore returned a partial
+        // catalog on slow boots: catalog-only providers such as AGY, AGY CLI,
+        // and OmniRoute disappeared while models.dev-backed providers remained.
+        // The client cached that partial list for minutes. Wait past the
+        // models.dev timeout, still bounded so a hung plugin cannot stall the
+        // request forever.
+        yield* internal.ready.pipe(Effect.timeout("20 seconds"), Effect.catch(() => Effect.void))
         const catalog = yield* Catalog.Service
         const all = yield* catalog.provider.all()
         const models = yield* catalog.model.all()

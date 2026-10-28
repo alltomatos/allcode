@@ -118,6 +118,50 @@ describe("normalizeProviderList", () => {
   test("preserves an empty current default", () => {
     expect(normalizeProviderList([] as ProviderListOutput["data"], [], null).defaultModel).toBeNull()
   })
+
+  test("preserves catalog-only providers such as AGY and AGY CLI", () => {
+    const model = (providerID: string) => ({
+      id: "gemini-3.8-flash-low",
+      providerID,
+      api: { id: "gemini-3.8-flash-low", url: "", npm: "@ai-sdk/google" },
+      name: "Gemini 3.8 Flash (Low)",
+      capabilities: {},
+      cost: { input: 0, output: 0, cache: { read: 0, write: 0 } },
+      limit: { context: 1, output: 1 },
+      status: "active",
+      options: {},
+      headers: {},
+      release_date: "",
+    })
+    const result = normalizeProviderList({
+      all: [
+        {
+          id: "google-antigravity",
+          name: "AGY",
+          source: "custom",
+          env: [],
+          options: {},
+          models: { "gemini-3.8-flash-low": model("google-antigravity") },
+        },
+        {
+          id: "google-antigravity-cli",
+          name: "AGY CLI",
+          source: "custom",
+          env: [],
+          options: {},
+          models: { "gemini-3.8-flash-low": model("google-antigravity-cli") },
+        },
+      ],
+      default: {},
+      connected: ["google-antigravity", "google-antigravity-cli"],
+    } as any)
+
+    expect(result.all.has("google-antigravity")).toBe(true)
+    expect(result.all.has("google-antigravity-cli")).toBe(true)
+    expect(result.connected).toEqual(["google-antigravity", "google-antigravity-cli"])
+    expect(result.all.get("google-antigravity")?.models["gemini-3.8-flash-low"]).toBeDefined()
+    expect(result.all.get("google-antigravity-cli")?.models["gemini-3.8-flash-low"]).toBeDefined()
+  })
 })
 
 describe("directoryKey", () => {

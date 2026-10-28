@@ -94,6 +94,24 @@ describe("GoogleAntigravityPlugin", () => {
     }),
   )
 
+  it.effect("registers AGY and AGY CLI models in the catalog", () =>
+    Effect.gen(function* () {
+      yield* addPlugin()
+      const catalog = yield* Catalog.Service
+      const models = yield* catalog.model.all()
+      for (const [id, name] of [
+        ["google-antigravity", "AGY"],
+        ["google-antigravity-cli", "AGY CLI"],
+      ] as const) {
+        const providerID = ProviderV2.ID.make(id)
+        expect((yield* catalog.provider.get(providerID))?.name).toBe(name)
+        expect(models.some((model) => model.providerID === providerID && model.id === "gemini-3.8-flash-low")).toBe(
+          true,
+        )
+      }
+    }),
+  )
+
   it.effect("uses AGY env var pair to override client id/secret", () =>
     withEnv(
       {
