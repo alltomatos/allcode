@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.25.1",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "AGY e AGY CLI de volta ao seletor de modelos",
+              "description": "Os provedores AGY e AGY CLI deixavam de aparecer no chat quando o app iniciava enquanto o catálogo de providers ainda estava carregando. A lista de provedores agora aguarda o boot dos plugins do catálogo por mais tempo, sem retornar uma lista parcial, e o app reduz a janela de cache para se recuperar automaticamente. As contas OAuth e as configurações existentes continuam válidas, sem necessidade de reconectar."
+            },
+            {
+              "title": "Melhorar prompt com IA completo e com erros claros",
+              "description": "O botão Melhorar prompt com IA passou a agregar todos os fragmentos da resposta no AGY e AGY CLI, em vez de exibir apenas o primeiro trecho, e a interromper com aviso quando o modelo atinge o limite de tokens ou devolve uma chamada de ferramenta. O envio não usa mais ferramentas desnecessárias, o relay do AgentRouter se recupera de processos órfãos e atualiza o próprio binário, e falhas de provedor agora mostram provedor, modelo e motivo em vez de uma pilha de erro."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.25.0",
       "highlights": [
         {
