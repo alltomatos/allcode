@@ -160,6 +160,7 @@ export default {
           \`scheduled_for\` integer,
           \`claimed_by\` text,
           \`lease_until\` integer,
+          \`heartbeat_at\` integer,
           CONSTRAINT \`fk_schedule_run_schedule_id_schedule_id_fk\` FOREIGN KEY (\`schedule_id\`) REFERENCES \`schedule\`(\`id\`) ON DELETE CASCADE
         );
       `)
@@ -176,6 +177,8 @@ export default {
           \`last_status\` text,
           \`last_error\` text,
           \`last_session_id\` text,
+          \`idempotency_key\` text UNIQUE,
+          \`metadata\` text,
           \`time_created\` integer NOT NULL,
           \`time_updated\` integer NOT NULL
         );

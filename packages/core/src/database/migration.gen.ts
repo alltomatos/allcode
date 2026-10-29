@@ -48,5 +48,6 @@ export const migrations = (
     import("./migration/20261017234719_broad_jane_foster"),
     import("./migration/20261021120000_add_schedule_resilience_tables"),
     import("./migration/20261023181319_schedule_run_lifecycle"),
+    import("./migration/20261028111718_schedule_tool_metadata"),
   ])
 ).map((module) => module.default) satisfies DatabaseMigration.Migration[]

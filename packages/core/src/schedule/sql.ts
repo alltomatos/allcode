@@ -14,6 +14,8 @@ export const ScheduleTable = sqliteTable("schedule", {
   last_status: text().$type<"success" | "error">(),
   last_error: text(),
   last_session_id: text(),
+  idempotency_key: text().unique(),
+  metadata: text({ mode: "json" }).$type<Record<string, unknown>>(),
   ...Timestamps,
 })
 
@@ -44,6 +46,7 @@ export const ScheduleRunTable = sqliteTable(
     scheduled_for: integer(),
     claimed_by: text(),
     lease_until: integer(),
+    heartbeat_at: integer(),
   },
   (table) => [
     index("schedule_run_schedule_started_idx").on(table.schedule_id, table.started_at),

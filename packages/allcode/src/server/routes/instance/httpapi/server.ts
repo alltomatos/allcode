@@ -67,6 +67,7 @@ import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { ScheduleMcpCaller } from "@/schedule/mcp-caller"
 import { ScheduleSkillCaller } from "@/schedule/skill-caller"
 import { ScheduleAgentUICaller } from "@/schedule/agentui-caller"
+import { ScheduleRestartBridge } from "@/schedule/restart-bridge"
 import { ScheduleReminderCaller } from "@/schedule/reminder-caller"
 import { EventV2 } from "@allcode/core/event"
 import { ModelsDev } from "@allcode/core/models-dev"
@@ -312,6 +313,7 @@ const app = LayerNode.group([
   ScheduleMcpCaller.node,
   ScheduleAgentUICaller.node,
   ScheduleReminderCaller.node,
+  ScheduleRestartBridge.node,
 ])
 
 export function createRoutes(

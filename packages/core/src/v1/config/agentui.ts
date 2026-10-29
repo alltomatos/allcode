@@ -243,6 +243,9 @@ export type Guardrails = Schema.Schema.Type<typeof Guardrails>
 export const Agent = Schema.Struct({
   id: Schema.String.annotate({ description: "Stable identifier for this AgentUI" }),
   name: Schema.String.annotate({ description: "Display name" }),
+  description: Schema.optional(Schema.String).annotate({
+    description: "Short human-readable description shown in the AgentUI directory",
+  }),
   personality: Schema.String.annotate({ description: "Custom system prompt describing this agent's role/tone" }),
   // Same encoding ModelPickerV2 already uses: "providerID/modelID" for a
   // direct model, "combo:<id>" to resolve through Combo.Service instead —
@@ -306,6 +309,9 @@ export const Agent = Schema.Struct({
   // below rather than this field directly.
   enabled: Schema.optional(Schema.Boolean).annotate({
     description: "Whether this agent is currently reachable on its channels. Missing/undefined means enabled.",
+  }),
+  visibility: Schema.optional(Schema.Literals(["private", "public"])).annotate({
+    description: "Who can discover this agent in the AgentUI directory. Missing/undefined means private.",
   }),
 }).annotate({ identifier: "AgentUIAgent" })
 export type Agent = Schema.Schema.Type<typeof Agent>

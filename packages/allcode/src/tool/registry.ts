@@ -21,12 +21,15 @@ import { WriteTool } from "./write"
 import { InvalidTool } from "./invalid"
 import { SkillTool } from "./skill"
 import { RoutineTool } from "./routine"
+import { AgentUITool } from "./agentui"
 import { ReminderTool } from "./reminder"
 import { WhatsAppTool } from "./whatsapp"
 import { MediaTool } from "./media"
 import { MemorySearchTool } from "./memory-search"
 import { MemorySaveTool } from "./memory-save"
 import { Memory } from "../memory"
+import { Storage } from "@/storage/storage"
+import { AgentUIStore } from "@/agentui/store"
 import * as Tool from "./tool"
 import { Config } from "@/config/config"
 import { type ToolContext as PluginToolContext, type ToolDefinition } from "@allcode/plugin"
@@ -130,6 +133,7 @@ const layer = Layer.effect(
     const patchtool = yield* ApplyPatchTool
     const skilltool = yield* SkillTool
     const routinetool = yield* RoutineTool
+    const agentuitool = yield* AgentUITool
     const remindertool = yield* ReminderTool
     const whatsapptool = yield* WhatsAppTool
     const mediatool = yield* MediaTool
@@ -246,6 +250,7 @@ const layer = Layer.effect(
           search: Tool.init(websearch),
           skill: Tool.init(skilltool),
           routine: Tool.init(routinetool),
+          agentui: Tool.init(agentuitool),
           reminder: Tool.init(remindertool),
           whatsapp: Tool.init(whatsapptool),
           media: Tool.init(mediatool),
@@ -277,6 +282,7 @@ const layer = Layer.effect(
             tool.search,
             tool.skill,
             tool.routine,
+            tool.agentui,
             tool.reminder,
             tool.whatsapp,
             tool.media,
@@ -502,6 +508,8 @@ export const node = LayerNode.make({
     Schedule.node,
     Ripgrep.node,
     Memory.node,
+    Storage.node,
+    AgentUIStore.node,
     WhatsAppNative.node,
   ],
 })

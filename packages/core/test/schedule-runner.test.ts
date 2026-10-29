@@ -440,4 +440,183 @@ describe("ScheduleRunner execution and timeout", () => {
       ).pipe(Effect.provideService(ScheduleRunner.SkillCaller, fakeSkillCaller))
     }),
   )
+
+  it.live("restart rejects an unknown routine", () =>
+    Effect.gen(function* () {
+      const error = yield* Effect.flip(ScheduleRunner.restartOne(Schedule.ID.make("sch_missing")))
+      expect(error._tag).toBe("Schedule.NotFoundError")
+    }),
+  )
+
+  it.live("restart rejects disabled routines without side effects", () =>
+    Effect.gen(function* () {
+      const schedules = yield* Schedule.Service
+      const created = yield* schedules.create({
+        trigger: { kind: "manual" },
+        action: { kind: "shell", command: 'node -e "process.exit(0)"' },
+        enabled: false,
+      })
+
+      const error = yield* Effect.flip(ScheduleRunner.restartOne(created.id))
+      expect(error._tag).toBe("Schedule.RestartRejectedError")
+      if (error._tag === "Schedule.RestartRejectedError") {
+        expect(error.code).toBe("ROUTINE_DISABLED")
+        expect(error.state).toBe("disabled")
+      }
+      expect(yield* schedules.runs(created.id)).toHaveLength(0)
+    }),
+  )
+
+  it.live("restart rejects routines that are not stalled or failed", () =>
+    Effect.gen(function* () {
+      const schedules = yield* Schedule.Service
+      const created = yield* schedules.create({
+        trigger: { kind: "manual" },
+        action: { kind: "shell", command: 'node -e "process.exit(0)"' },
+        enabled: true,
+      })
+      yield* ScheduleRunner.runOne(created.id)
+
+      const error = yield* Effect.flip(ScheduleRunner.restartOne(created.id))
+      expect(error._tag).toBe("Schedule.RestartRejectedError")
+      if (error._tag === "Schedule.RestartRejectedError") {
+        expect(error.code).toBe("ROUTINE_NOT_STALLED")
+        expect(error.state).toBe("succeeded")
+      }
+    }),
+  )
+
+  it.live("restart enforces the attempt limit", () =>
+    Effect.gen(function* () {
+      const schedules = yield* Schedule.Service
+      const { db } = yield* Database.Service
+      const created = yield* schedules.create({
+        trigger: { kind: "manual" },
+        action: { kind: "shell", command: 'node -e "process.exit(0)"' },
+        enabled: true,
+      })
+      const finishedAt = Date.now() - 60_000
+      yield* db
+        .insert(ScheduleRunner.ScheduleRunTable)
+        .values({
+          id: "run_limit",
+          schedule_id: created.id,
+          started_at: finishedAt,
+          duration_ms: 1,
+          status: "error",
+          error: "boom",
+          attempt: 5,
+          finished_at: finishedAt,
+        })
+        .run()
+        .pipe(Effect.orDie)
+
+      const error = yield* Effect.flip(ScheduleRunner.restartOne(created.id))
+      expect(error._tag).toBe("Schedule.RestartRejectedError")
+      if (error._tag === "Schedule.RestartRejectedError") {
+        expect(error.code).toBe("ROUTINE_RESTART_LIMIT")
+      }
+    }),
+  )
+
+  it.live("restart applies a cooldown to recently failed routines", () =>
+    Effect.gen(function* () {
+      const schedules = yield* Schedule.Service
+      const { db } = yield* Database.Service
+      const created = yield* schedules.create({
+        trigger: { kind: "manual" },
+        action: { kind: "shell", command: 'node -e "process.exit(0)"' },
+        enabled: true,
+      })
+      const finishedAt = Date.now() - 1_000
+      yield* db
+        .insert(ScheduleRunner.ScheduleRunTable)
+        .values({
+          id: "run_cooldown",
+          schedule_id: created.id,
+          started_at: finishedAt,
+          duration_ms: 1,
+          status: "error",
+          error: "boom",
+          attempt: 1,
+          finished_at: finishedAt,
+        })
+        .run()
+        .pipe(Effect.orDie)
+
+      const error = yield* Effect.flip(ScheduleRunner.restartOne(created.id))
+      expect(error._tag).toBe("Schedule.RestartRejectedError")
+      if (error._tag === "Schedule.RestartRejectedError") {
+        expect(error.code).toBe("ROUTINE_RESTART_COOLDOWN")
+        expect(error.retryAfterMs).toBeGreaterThan(0)
+      }
+    }),
+  )
+
+  it.live("restart cancels the stale run, claims attempt 2 and completes it", () =>
+    Effect.gen(function* () {
+      const schedules = yield* Schedule.Service
+      const { db } = yield* Database.Service
+      const created = yield* schedules.create({
+        trigger: { kind: "manual" },
+        action: { kind: "shell", command: 'node -e "process.exit(0)"' },
+        enabled: true,
+      })
+      const stale = yield* schedules.startRun({
+        scheduleId: created.id,
+        trigger: "manual",
+        claimedBy: "test",
+        leaseUntil: Date.now() - 1_000,
+      })
+      expect(stale).toBeDefined()
+
+      const restarted = yield* ScheduleRunner.restartOne(created.id)
+      expect(restarted.previousState).toBe("stalled")
+      expect(restarted.newState).toBe("running")
+      expect(restarted.attempt).toBe(2)
+
+      yield* waitFor(
+        () =>
+          Effect.gen(function* () {
+            const row = yield* db
+              .select()
+              .from(ScheduleRunner.ScheduleRunTable)
+              .where(eq(ScheduleRunner.ScheduleRunTable.id, restarted.runId))
+              .get()
+              .pipe(Effect.orDie)
+            return row?.status === "success"
+          }),
+        5_000,
+      )
+
+      const old = yield* db
+        .select()
+        .from(ScheduleRunner.ScheduleRunTable)
+        .where(eq(ScheduleRunner.ScheduleRunTable.id, stale!.id))
+        .get()
+        .pipe(Effect.orDie)
+      expect(old?.status).toBe("cancelled")
+
+      // A late finalizer from the aborted run must not resurrect it.
+      yield* schedules.finishRun({
+        runId: stale!.id,
+        scheduleId: created.id,
+        startedAt: stale!.startedAt,
+        status: "success",
+        durationMs: 1,
+      })
+      const oldAfterLateFinish = yield* db
+        .select()
+        .from(ScheduleRunner.ScheduleRunTable)
+        .where(eq(ScheduleRunner.ScheduleRunTable.id, stale!.id))
+        .get()
+        .pipe(Effect.orDie)
+      expect(oldAfterLateFinish?.status).toBe("cancelled")
+
+      const latest = yield* schedules.latestRun(created.id)
+      expect(latest?.id).toBe(restarted.runId)
+      expect(latest?.attempt).toBe(2)
+      expect(latest?.status).toBe("success")
+    }),
+  )
 })

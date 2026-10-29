@@ -2,13 +2,12 @@ export * as AgentUI from "./index"
 
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { debug } from "@/util/debug"
-import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import { PermissionV1 } from "@allcode/core/v1/permission"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { ProviderV2 } from "@allcode/core/provider"
 import { ModelV2 } from "@allcode/core/model"
-import { Config } from "@/config/config"
+import { AgentUIStore } from "@/agentui/store"
 import { Combo } from "@/combo"
 import { Session } from "@/session/session"
 import { SessionPrompt } from "@/session/prompt"
@@ -211,18 +210,13 @@ export class Service extends Context.Service<Service, Interface>()("@opencode/Ag
 const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
-    const cfgSvc = yield* Config.Service
+    const store = yield* AgentUIStore.Service
     const combos = yield* Combo.Service
     const sessions = yield* Session.Service
     const promptSvc = yield* SessionPrompt.Service
     const instanceStore = yield* InstanceStore.Service
     const provider = yield* Provider.Service
     const storage = yield* Storage.Service
-
-    // Same overlay-on-top-of-disk-config pattern as Combo.Service (src/combo/index.ts)
-    // — Config.Service.updateGlobal only invalidates its own global cache,
-    // not the per-instance merged view Config.Service.get() reads.
-    const overlay = new Map<string, ConfigAgentUIV1.Agent | undefined>()
 
     const getProjectDirectory = Effect.fn("AgentUI.getProjectDirectory")(function* () {
       const dir = getAgentUiProjectDirectory()
@@ -244,38 +238,21 @@ const layer = Layer.effect(
     })
 
     const list = Effect.fn("AgentUI.list")(function* () {
-      const cfg = yield* cfgSvc.get().pipe(
-        Effect.catchDefect((defect) => {
-          if (defect instanceof Error && defect.message.includes("InstanceRef not provided")) {
-            return cfgSvc.getGlobal()
-          }
-          return Effect.die(defect)
-        }),
-      )
-      const merged = new Map<string, ConfigAgentUIV1.Agent>(Object.entries(cfg.agentui ?? {}))
-      for (const [id, agent] of overlay) {
-        if (agent) merged.set(id, agent)
-        else merged.delete(id)
-      }
-      return Array.from(merged.values())
+      return yield* store.list()
     })
 
     const get = Effect.fn("AgentUI.get")(function* (id: string) {
-      const agents = yield* list()
-      const found = agents.find((item) => item.id === id)
+      const found = yield* store.get(id)
       if (!found) return yield* new AgentUINotFoundError({ id })
       return found
     })
 
     const add = Effect.fn("AgentUI.add")(function* (agent: ConfigAgentUIV1.Agent) {
-      overlay.set(agent.id, agent)
-      yield* cfgSvc.updateGlobal({ agentui: { [agent.id]: agent } } as unknown as ConfigV1.Info)
-      return agent
+      return yield* store.add(agent)
     })
 
     const remove = Effect.fn("AgentUI.remove")(function* (id: string) {
-      overlay.set(id, undefined)
-      yield* cfgSvc.updateGlobal({ agentui: { [id]: undefined } } as unknown as ConfigV1.Info)
+      yield* store.remove(id)
     })
 
     const MAX_SOURCE_CHARS = 4000
@@ -410,6 +387,7 @@ const layer = Layer.effect(
       ...(routinesEnabled
         ? ([
             { permission: "routine", pattern: "*", action: "allow" },
+            { permission: "routine_restart", pattern: "*", action: "allow" },
           ] as PermissionV1.Rule[])
         : []),
       ...(agendaEnabled || routinesEnabled
@@ -1029,6 +1007,14 @@ const layer = Layer.effect(
 export const node = LayerNode.make({
   service: Service,
   layer,
-  deps: [Config.node, Combo.node, Session.node, SessionPrompt.node, InstanceStore.node, Provider.node, Storage.node],
+  deps: [
+    AgentUIStore.node,
+    Combo.node,
+    Session.node,
+    SessionPrompt.node,
+    InstanceStore.node,
+    Provider.node,
+    Storage.node,
+  ],
 })
 

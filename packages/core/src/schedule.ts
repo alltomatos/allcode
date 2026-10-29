@@ -1,14 +1,17 @@
 export * as Schedule from "./schedule"
 
-import { and, asc, eq, gt, lt, sql } from "drizzle-orm"
+import { and, asc, desc, eq, gt, lt, sql } from "drizzle-orm"
 import { Context, Effect, Layer, Schema } from "effect"
 import { Schedule } from "@allcode/schema/schedule"
 import { Database } from "./database/database"
+import { EventV2 } from "./event"
 import { makeGlobalNode } from "./effect/app-node"
 import { DaemonHeartbeatTable, ScheduleRunTable, ScheduleTable } from "./schedule/sql"
 
 export const ID = Schedule.ID
 export type ID = Schedule.ID
+
+export const Event = Schedule.Event
 
 export const RunID = Schedule.RunID
 export type RunID = Schedule.RunID
@@ -55,6 +58,8 @@ export class Info extends Schema.Class<Info>("v2.Schedule.Info")({
   lastStatus: Schema.optional(Schema.Literals(["success", "error"])),
   lastError: Schema.optional(Schema.String),
   lastSessionId: Schema.optional(Schema.String),
+  idempotencyKey: Schema.optional(Schema.String),
+  metadata: Schema.optional(Schema.Record(Schema.String, Schema.Unknown)),
 }) {}
 
 export interface CreateInput {
@@ -64,6 +69,34 @@ export interface CreateInput {
   readonly action: Action
   readonly workspace?: string
   readonly enabled?: boolean
+  readonly idempotencyKey?: string
+  readonly metadata?: Record<string, unknown>
+}
+
+export interface RunRecord {
+  readonly id: RunID
+  readonly scheduleId: ID
+  readonly startedAt: number
+  readonly durationMs: number
+  readonly status: RunStatus
+  readonly attempt: number
+  readonly error?: string
+  readonly sessionId?: string
+  readonly finishedAt?: number
+  readonly trigger?: RunTrigger
+  readonly scheduledFor?: number
+  readonly claimedBy?: string
+  readonly leaseUntil?: number
+  readonly heartbeatAt?: number
+}
+
+export interface SchedulerHeartbeat {
+  readonly instanceId: string
+  readonly pid: number
+  readonly processTitle: string
+  readonly lastSeen: number
+  readonly ownerId?: string
+  readonly leaseUntil?: number
 }
 
 export interface UpdateInput {
@@ -77,6 +110,7 @@ export interface UpdateInput {
   readonly lastStatus?: "success" | "error"
   readonly lastError?: string | null
   readonly lastSessionId?: string
+  readonly metadata?: Record<string, unknown>
 }
 
 export interface StartRunInput {
@@ -243,6 +277,11 @@ export interface Interface {
   readonly remove: (id: ID) => Effect.Effect<void>
   readonly startRun: (input: StartRunInput) => Effect.Effect<StartRunResult | undefined>
   readonly finishRun: (input: FinishRunInput) => Effect.Effect<void>
+  readonly runs: (scheduleId: ID, limit?: number) => Effect.Effect<RunRecord[]>
+  readonly latestRun: (scheduleId: ID) => Effect.Effect<RunRecord | undefined>
+  readonly heartbeatRun: (runId: RunID, now?: number) => Effect.Effect<void>
+  readonly abortRun: (runId: RunID, now: number, message: string) => Effect.Effect<boolean>
+  readonly schedulerHeartbeat: () => Effect.Effect<SchedulerHeartbeat | undefined>
   readonly failStaleRuns: (now: number, message: string) => Effect.Effect<number>
   readonly claimLease: (input: LeaseInput) => Effect.Effect<boolean>
   readonly renewLease: (input: LeaseInput) => Effect.Effect<boolean>
@@ -256,6 +295,7 @@ export const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
     const { db } = yield* Database.Service
+    const events = yield* EventV2.Service
 
     const stored = (row: typeof ScheduleTable.$inferSelect) =>
       new Info({
@@ -270,7 +310,26 @@ export const layer = Layer.effect(
         lastStatus: row.last_status ?? undefined,
         lastError: row.last_error ?? undefined,
         lastSessionId: row.last_session_id ?? undefined,
+        idempotencyKey: row.idempotency_key ?? undefined,
+        metadata: row.metadata ?? undefined,
       })
+
+    const storedRun = (row: typeof ScheduleRunTable.$inferSelect): RunRecord => ({
+      id: RunID.make(row.id),
+      scheduleId: ID.make(row.schedule_id),
+      startedAt: row.started_at,
+      durationMs: row.duration_ms,
+      status: row.status,
+      attempt: row.attempt,
+      error: row.error ?? undefined,
+      sessionId: row.session_id ?? undefined,
+      finishedAt: row.finished_at ?? undefined,
+      trigger: row.trigger_source ?? undefined,
+      scheduledFor: row.scheduled_for ?? undefined,
+      claimedBy: row.claimed_by ?? undefined,
+      leaseUntil: row.lease_until ?? undefined,
+      heartbeatAt: row.heartbeat_at ?? undefined,
+    })
 
     return Service.of({
       list: Effect.fn("v2.Schedule.list")(function* () {
@@ -305,6 +364,16 @@ export const layer = Layer.effect(
           action = { kind: "shell", command, timeoutMs: action.timeoutMs }
         }
 
+        if (input.idempotencyKey) {
+          const existing = yield* db
+            .select()
+            .from(ScheduleTable)
+            .where(eq(ScheduleTable.idempotency_key, input.idempotencyKey))
+            .get()
+            .pipe(Effect.orDie)
+          if (existing) return stored(existing)
+        }
+
         const info = new Info({
           id: ID.create(),
           name: input.name,
@@ -313,6 +382,8 @@ export const layer = Layer.effect(
           action,
           workspace: input.workspace,
           enabled: input.enabled ?? true,
+          idempotencyKey: input.idempotencyKey,
+          metadata: input.metadata,
         })
         yield* db
           .insert(ScheduleTable)
@@ -324,10 +395,26 @@ export const layer = Layer.effect(
             action: info.action,
             workspace: info.workspace,
             enabled: info.enabled,
+            idempotency_key: info.idempotencyKey,
+            metadata: info.metadata,
           })
+          .onConflictDoNothing()
           .run()
           .pipe(Effect.orDie)
-        return info
+
+        const row = yield* db
+          .select()
+          .from(ScheduleTable)
+          .where(
+            input.idempotencyKey
+              ? eq(ScheduleTable.idempotency_key, input.idempotencyKey)
+              : eq(ScheduleTable.id, info.id),
+          )
+          .get()
+          .pipe(Effect.orDie)
+        const created = row ? stored(row) : info
+        yield* events.publish(Event.Created, { id: created.id })
+        return created
       }),
       update: Effect.fn("v2.Schedule.update")(function* (id, updates) {
         yield* db
@@ -343,15 +430,25 @@ export const layer = Layer.effect(
             last_status: updates.lastStatus,
             last_error: updates.lastError,
             last_session_id: updates.lastSessionId,
+            ...(updates.metadata !== undefined ? { metadata: updates.metadata } : {}),
           })
           .where(eq(ScheduleTable.id, id))
           .run()
           .pipe(Effect.orDie)
         const row = yield* db.select().from(ScheduleTable).where(eq(ScheduleTable.id, id)).get().pipe(Effect.orDie)
-        return row ? stored(row) : undefined
+        if (!row) return undefined
+        yield* events.publish(Event.Updated, { id })
+        return stored(row)
       }),
       remove: Effect.fn("v2.Schedule.remove")(function* (id) {
+        const existing = yield* db
+          .select({ id: ScheduleTable.id })
+          .from(ScheduleTable)
+          .where(eq(ScheduleTable.id, id))
+          .get()
+          .pipe(Effect.orDie)
         yield* db.delete(ScheduleTable).where(eq(ScheduleTable.id, id)).run().pipe(Effect.orDie)
+        if (existing) yield* events.publish(Event.Deleted, { id })
       }),
       startRun: Effect.fn("v2.Schedule.startRun")(function* (input) {
         const startedAt = Date.now()
@@ -391,6 +488,7 @@ export const layer = Layer.effect(
                   scheduled_for: input.scheduledFor ?? null,
                   claimed_by: input.claimedBy,
                   lease_until: leaseUntil,
+                  heartbeat_at: startedAt,
                 })
                 .run()
 
@@ -412,28 +510,115 @@ export const layer = Layer.effect(
       finishRun: Effect.fn("v2.Schedule.finishRun")(function* (input) {
         const finishedAt = input.finishedAt ?? Date.now()
         yield* db
+          .transaction((tx) =>
+            Effect.gen(function* () {
+              // A restart may have already cancelled this run. A late fiber
+              // must not resurrect it or overwrite the denormalized schedule
+              // state that the new run now owns.
+              const active = yield* tx
+                .select({ id: ScheduleRunTable.id })
+                .from(ScheduleRunTable)
+                .where(
+                  and(eq(ScheduleRunTable.id, input.runId), eq(ScheduleRunTable.status, "running")),
+                )
+                .get()
+              if (!active) return false
+
+              yield* tx
+                .update(ScheduleRunTable)
+                .set({
+                  status: input.status,
+                  error: input.error ?? null,
+                  session_id: input.sessionId ?? null,
+                  duration_ms: input.durationMs,
+                  finished_at: finishedAt,
+                  lease_until: null,
+                })
+                .where(
+                  and(eq(ScheduleRunTable.id, input.runId), eq(ScheduleRunTable.status, "running")),
+                )
+                .run()
+
+              // Cache denormalizado para a UI. timeout/cancelled/skipped viram "error".
+              yield* tx.run(sql`
+                UPDATE schedule
+                SET last_run_at = ${input.startedAt},
+                    last_status = ${input.status === "success" ? "success" : "error"},
+                    last_error = ${input.error ?? null},
+                    last_session_id = ${input.sessionId ?? null}
+                WHERE id = ${input.scheduleId}
+              `)
+              return true
+            }),
+          )
+          .pipe(Effect.orDie)
+      }),
+      runs: Effect.fn("v2.Schedule.runs")(function* (scheduleId, limit = 20) {
+        const rows = yield* db
+          .select()
+          .from(ScheduleRunTable)
+          .where(eq(ScheduleRunTable.schedule_id, scheduleId))
+          .orderBy(desc(ScheduleRunTable.started_at))
+          .limit(limit)
+          .all()
+          .pipe(Effect.orDie)
+        return rows.map(storedRun)
+      }),
+      latestRun: Effect.fn("v2.Schedule.latestRun")(function* (scheduleId) {
+        const row = yield* db
+          .select()
+          .from(ScheduleRunTable)
+          .where(eq(ScheduleRunTable.schedule_id, scheduleId))
+          .orderBy(desc(ScheduleRunTable.started_at))
+          .limit(1)
+          .get()
+          .pipe(Effect.orDie)
+        return row ? storedRun(row) : undefined
+      }),
+      heartbeatRun: Effect.fn("v2.Schedule.heartbeatRun")(function* (runId, now = Date.now()) {
+        yield* db
           .update(ScheduleRunTable)
-          .set({
-            status: input.status,
-            error: input.error ?? null,
-            session_id: input.sessionId ?? null,
-            duration_ms: input.durationMs,
-            finished_at: finishedAt,
-            lease_until: null,
-          })
-          .where(eq(ScheduleRunTable.id, input.runId))
+          .set({ heartbeat_at: now })
+          .where(and(eq(ScheduleRunTable.id, runId), eq(ScheduleRunTable.status, "running")))
           .run()
           .pipe(Effect.orDie)
-
-        // Cache denormalizado para a UI. timeout/cancelled/skipped viram "error".
+      }),
+      abortRun: Effect.fn("v2.Schedule.abortRun")(function* (runId, now, message) {
+        const active = yield* db
+          .select({ id: ScheduleRunTable.id })
+          .from(ScheduleRunTable)
+          .where(and(eq(ScheduleRunTable.id, runId), eq(ScheduleRunTable.status, "running")))
+          .get()
+          .pipe(Effect.orDie)
+        if (!active) return false
         yield* db.run(sql`
-          UPDATE schedule
-          SET last_run_at = ${input.startedAt},
-              last_status = ${input.status === "success" ? "success" : "error"},
-              last_error = ${input.error ?? null},
-              last_session_id = ${input.sessionId ?? null}
-          WHERE id = ${input.scheduleId}
+          UPDATE schedule_run
+          SET status = 'cancelled',
+              error = ${message},
+              finished_at = ${now},
+              duration_ms = ${now} - started_at,
+              lease_until = NULL
+          WHERE id = ${runId}
+            AND status = 'running'
         `).pipe(Effect.orDie)
+        return true
+      }),
+      schedulerHeartbeat: Effect.fn("v2.Schedule.schedulerHeartbeat")(function* () {
+        const row = yield* db
+          .select()
+          .from(DaemonHeartbeatTable)
+          .where(eq(DaemonHeartbeatTable.instance_id, LEASE_ROW_ID))
+          .get()
+          .pipe(Effect.orDie)
+        if (!row) return undefined
+        return {
+          instanceId: row.instance_id,
+          pid: row.pid,
+          processTitle: row.process_title,
+          lastSeen: row.last_seen,
+          ownerId: row.owner_id ?? undefined,
+          leaseUntil: row.lease_until ?? undefined,
+        }
       }),
       failStaleRuns: Effect.fn("v2.Schedule.failStaleRuns")(function* (now, message) {
         const stale = yield* db
@@ -539,4 +724,4 @@ export const layer = Layer.effect(
   }),
 )
 
-export const node = makeGlobalNode({ service: Service, layer, deps: [Database.node] })
+export const node = makeGlobalNode({ service: Service, layer, deps: [Database.node, EventV2.node] })

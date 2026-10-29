@@ -15,12 +15,80 @@ import {
   Semaphore,
 } from "effect"
 import { Database } from "../database/database"
+import { EventV2 } from "../event"
 import { Schedule } from "../schedule"
+import { ScheduleHealth } from "./health"
 import { makeGlobalNode } from "../effect/app-node"
 
 export class NotFoundError extends Schema.TaggedErrorClass<NotFoundError>()("Schedule.NotFoundError", {
   id: Schedule.ID,
 }) {}
+
+export const RestartRejection = Schema.Literals([
+  "ROUTINE_DISABLED",
+  "ROUTINE_NOT_STALLED",
+  "ROUTINE_RESTART_LIMIT",
+  "ROUTINE_RESTART_COOLDOWN",
+  "ROUTINE_RESTART_IN_PROGRESS",
+])
+export type RestartRejection = typeof RestartRejection.Type
+
+export class RestartRejectedError extends Schema.TaggedErrorClass<RestartRejectedError>()(
+  "Schedule.RestartRejectedError",
+  {
+    id: Schedule.ID,
+    code: RestartRejection,
+    state: Schema.String,
+    retryAfterMs: Schema.optional(Schema.Number),
+  },
+) {
+  override get message() {
+    return `${this.code}: routine ${this.id} is ${this.state}`
+  }
+}
+
+export class RestartUnavailableError extends Schema.TaggedErrorClass<RestartUnavailableError>()(
+  "Schedule.RestartUnavailableError",
+  {},
+) {
+  override get message() {
+    return "The scheduler is not running in this process, so routines cannot be restarted."
+  }
+}
+
+export interface RestartResult {
+  readonly scheduleId: Schedule.ID
+  readonly runId: Schedule.RunID
+  readonly previousState: string
+  readonly newState: "running"
+  readonly attempt: number
+}
+
+export type RestartBridge = (
+  id: Schedule.ID,
+) => Effect.Effect<RestartResult, NotFoundError | RestartRejectedError>
+
+let restartBridge: RestartBridge | undefined
+
+/**
+ * The scheduler lives in a layer graph that depends on SessionPrompt (through
+ * the skill/AgentUI callers), while ToolRegistry is what SessionPrompt itself
+ * depends on. A direct layer dependency would therefore be cyclic. The active
+ * scheduler registers a ready-to-use bridge here instead, and the tool invokes
+ * it as a plain function.
+ */
+export const registerRestartBridge = (bridge: RestartBridge) =>
+  Effect.sync(() => {
+    restartBridge = bridge
+    return () => {
+      if (restartBridge === bridge) restartBridge = undefined
+    }
+  })
+
+export const restartViaBridge = (
+  id: Schedule.ID,
+): Effect.Effect<RestartResult, NotFoundError | RestartRejectedError | RestartUnavailableError> =>
+  restartBridge ? restartBridge(id) : Effect.fail(new RestartUnavailableError())
 
 export { DaemonHeartbeatTable, ScheduleRunTable } from "./sql"
 export { eq, lt } from "drizzle-orm"
@@ -418,7 +486,16 @@ const executeAndFinalize = Effect.fnUntraced(function* (
   trigger: Schedule.RunTrigger,
 ) {
   const schedules = yield* Schedule.Service
-  const exit = yield* Effect.exit(runActionWithRetry(schedule.action, schedule.workspace, schedule.lastSessionId))
+  const exit = yield* Effect.scoped(
+    Effect.gen(function* () {
+      yield* schedules.heartbeatRun(run.id)
+      yield* schedules.heartbeatRun(run.id).pipe(
+        Effect.repeat(EffectSchedule.spaced(Duration.millis(HEARTBEAT_INTERVAL_MS))),
+        Effect.forkScoped,
+      )
+      return yield* Effect.exit(runActionWithRetry(schedule.action, schedule.workspace, schedule.lastSessionId))
+    }),
+  )
   const outcome = classify(exit, schedule.lastSessionId)
   const durationMs = Date.now() - run.startedAt
 
@@ -473,6 +550,92 @@ export const runOne = Effect.fn("v2.Schedule.runOne")(function* (id: Schedule.ID
 
   yield* executeAndFinalize(schedule, run, "manual")
   return (yield* schedules.get(id))!
+})
+
+/**
+ * Recovers a stalled or failed routine without overlapping executions.
+ *
+ * The old run is only marked as cancelled after the new run has been claimed,
+ * so a rejected restart leaves the previous state untouched. The new action
+ * runs detached: callers get the intermediate `running` state immediately
+ * instead of blocking on a long skill/agent turn.
+ */
+export const restartOne = Effect.fn("v2.Schedule.restartOne")(function* (id: Schedule.ID) {
+  const schedules = yield* Schedule.Service
+  const schedule = yield* schedules.get(id)
+  if (!schedule) return yield* Effect.fail(new NotFoundError({ id }))
+
+  const now = Date.now()
+  const latest = yield* schedules.latestRun(id)
+  const health = ScheduleHealth.evaluateRoutine(schedule, latest, now)
+
+  if (!schedule.enabled) {
+    return yield* Effect.fail(
+      new RestartRejectedError({ id, code: "ROUTINE_DISABLED", state: health.state }),
+    )
+  }
+  if (health.state !== "stalled" && health.state !== "failed") {
+    return yield* Effect.fail(
+      new RestartRejectedError({ id, code: "ROUTINE_NOT_STALLED", state: health.state }),
+    )
+  }
+
+  const attempt = latest?.attempt ?? 0
+  if (attempt >= ScheduleHealth.MAX_RESTART_ATTEMPTS) {
+    return yield* Effect.fail(
+      new RestartRejectedError({ id, code: "ROUTINE_RESTART_LIMIT", state: health.state }),
+    )
+  }
+
+  const reference = latest?.finishedAt ?? latest?.startedAt
+  if (health.state !== "stalled" && reference !== undefined) {
+    const elapsed = now - reference
+    if (elapsed >= 0 && elapsed < ScheduleHealth.RESTART_COOLDOWN_MS) {
+      return yield* Effect.fail(
+        new RestartRejectedError({
+          id,
+          code: "ROUTINE_RESTART_COOLDOWN",
+          state: health.state,
+          retryAfterMs: ScheduleHealth.RESTART_COOLDOWN_MS - elapsed,
+        }),
+      )
+    }
+  }
+
+  const timeoutMs = ScheduleHealth.actionTimeoutMs(schedule.action)
+  const run = yield* schedules.startRun({
+    scheduleId: id,
+    trigger: "manual",
+    scheduledFor: now,
+    attempt: attempt + 1,
+    claimedBy: PROCESS_INSTANCE_ID,
+    leaseUntil: now + timeoutMs * 2 + RUN_LEASE_GRACE_MS,
+    disableSchedule: schedule.trigger.kind === "once",
+  })
+  if (!run) {
+    return yield* Effect.fail(
+      new RestartRejectedError({ id, code: "ROUTINE_RESTART_IN_PROGRESS", state: health.state }),
+    )
+  }
+
+  if (latest?.status === "running") {
+    yield* schedules.abortRun(latest.id, now, "Execução anterior encerrada pelo reinício da rotina")
+  }
+
+  yield* executeAndFinalize(schedule, run, "manual").pipe(
+    Effect.catchCause((cause) =>
+      Effect.logError(`[Schedule] Restarted routine ${id} failed`, { runId: run.id, cause }),
+    ),
+    Effect.forkDetach,
+  )
+
+  return {
+    scheduleId: id,
+    runId: run.id,
+    previousState: health.state,
+    newState: "running" as const,
+    attempt: attempt + 1,
+  }
 })
 
 export const tick = Effect.fn("v2.Schedule.tick")(function* (scope: Scope.Scope) {
@@ -593,5 +756,13 @@ const tickLayer = Layer.effectDiscard(
 export const tickNode = makeGlobalNode({
   name: "schedule-tick",
   layer: Layer.merge(Schedule.layer, tickLayer.pipe(Layer.provide(Schedule.layer))),
-  deps: [Database.node, Schedule.node, mcpCallerNode, skillCallerNode, agentUICallerNode, reminderCallerNode],
+  deps: [
+    Database.node,
+    EventV2.node,
+    Schedule.node,
+    mcpCallerNode,
+    skillCallerNode,
+    agentUICallerNode,
+    reminderCallerNode,
+  ],
 })

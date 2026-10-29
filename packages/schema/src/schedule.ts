@@ -1,6 +1,7 @@
 export * as Schedule from "./schedule"
 
 import { Schema } from "effect"
+import { define, inventory } from "./event"
 import { ascending } from "./identifier"
 import { optional, statics } from "./schema"
 
@@ -179,3 +180,17 @@ export const DaemonHeartbeat = Schema.Struct({
   ownerId: optional(Schema.String),
   leaseUntil: optional(Schema.Number),
 }).annotate({ identifier: "Schedule.DaemonHeartbeat" })
+
+// Mutations happen in several places (HTTP routes, the `routine` chat tool,
+// future CLI paths), so the events live next to the schedule schema and are
+// published by the Schedule service itself instead of by each caller.
+const Created = define({ type: "schedule.created", schema: { id: ID } })
+const Updated = define({ type: "schedule.updated", schema: { id: ID } })
+const Deleted = define({ type: "schedule.deleted", schema: { id: ID } })
+export const Event = {
+  Created,
+  Updated,
+  Deleted,
+  Definitions: inventory(Created, Updated, Deleted),
+}
+

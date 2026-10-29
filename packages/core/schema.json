@@ -1,9 +1,9 @@
 {
   "version": "7",
   "dialect": "sqlite",
-  "id": "367dc0f9-34d9-458a-9a02-257295a09e0f",
+  "id": "7320f337-d836-40fd-9a11-016a5c9d47a0",
   "prevIds": [
-    "a84dd586-8132-4e44-be0e-c866a77f09e3"
+    "367dc0f9-34d9-458a-9a02-257295a09e0f"
   ],
   "ddl": [
     {
@@ -1049,6 +1049,16 @@
       "table": "schedule_run"
     },
     {
+      "type": "integer",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "heartbeat_at",
+      "entityType": "columns",
+      "table": "schedule_run"
+    },
+    {
       "type": "text",
       "notNull": false,
       "autoincrement": false,
@@ -1155,6 +1165,26 @@
       "default": null,
       "generated": null,
       "name": "last_session_id",
+      "entityType": "columns",
+      "table": "schedule"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "idempotency_key",
+      "entityType": "columns",
+      "table": "schedule"
+    },
+    {
+      "type": "text",
+      "notNull": false,
+      "autoincrement": false,
+      "default": null,
+      "generated": null,
+      "name": "metadata",
       "entityType": "columns",
       "table": "schedule"
     },
@@ -2717,6 +2747,15 @@
       "name": "todo_session_idx",
       "entityType": "indexes",
       "table": "todo"
+    },
+    {
+      "columns": [
+        "idempotency_key"
+      ],
+      "nameExplicit": false,
+      "name": "schedule_idempotency_key_unique",
+      "entityType": "uniques",
+      "table": "schedule"
     }
   ],
   "renames": []

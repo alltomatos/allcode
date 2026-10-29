@@ -1,0 +1,7 @@
+Create and inspect AgentUI agents.
+
+Use `action: "create"` to add an agent to the AgentUI "Agentes" group. Required fields: `name`, `systemPrompt` (the agent's role/personality) and `model` (`providerID/modelID` or `combo:<id>`). Optional: `description`, `tools` (MCP server names), `permissions` (filesystem, terminal, memory, routines, agenda, whatsapp), `commandTriggers`, `guardrails`, `enabled` and `visibility`.
+
+The response is `{ ok, data?, error? }`. Successful create returns `agentId` and `agentUrl` (the AgentUI editor route). Failures use `INVALID_INPUT`, `AGENT_DUPLICATE`, `AGENT_NOT_FOUND` or `PERMISSION_DENIED`, with `error.message` and `error.details` safe to show to the user.
+
+This tool reuses AgentUI.Service, so the same validation and persistence rules as the Settings UI apply. Agents are created without channels by default; they can still be tested with the sandbox chat and later connected to Telegram/WhatsApp in Settings.

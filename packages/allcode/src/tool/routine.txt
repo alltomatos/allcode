@@ -1,1 +1,29 @@
-Allows an agent to list available routines (schedules), view details of a routine, and trigger or test execution of a routine.
+Manage scheduled routines (schedules) and check their execution health.
+
+Actions:
+- `list`: list routines.
+- `get`: return one routine (`routineId` required).
+- `create`: create a routine from `name`, `prompt`, `schedule` and optional `model`, `tools`, `agentId`, `workspace`, `enabled`, `timeoutMinutes`, `metadata`, `idempotencyKey`.
+- `status`: return health for one routine (`routineId`) or all routines.
+- `restart`: recover a `stalled` or `failed` routine. Requires `routineId` and `confirm: true`.
+
+Create input:
+- `schedule.kind`: `cron`, `interval`, `once` or `manual`.
+- `schedule.expr`: 5-field cron expression, e.g. `"0 9 * * 1-5"`.
+- `schedule.intervalMs` or `schedule.everyMinutes`: interval trigger.
+- `schedule.at`: ISO-8601 date/time (or `YYYY-MM-DD HH:mm`) for a single execution.
+- `prompt`: instructions for the routine. If `agentId` is set, this is the message sent to that AgentUI agent.
+- `tools`: MCP tools as `{ "server": "...", "tool": "..." }`.
+- `idempotencyKey`: retries with the same key return the existing routine.
+- `metadata`: free-form object persisted with the routine.
+
+Status returns `state` (`queued`, `running`, `succeeded`, `failed`, `stalled`, `disabled`), `healthy`, `reason`, `attempts`, `lastError`, `lastRun`, `nextRunAt`, `heartbeatAt`, `leaseUntil` and scheduler health. A run is stalled when its lease expired, its heartbeat is older than 45s, or it exceeded the routine timeout plus grace.
+
+Restart is rejected with a structured error and no side effects when the routine is disabled (`ROUTINE_DISABLED`), not stalled/failed (`ROUTINE_NOT_STALLED`), already restarting (`ROUTINE_RESTART_IN_PROGRESS`), cooling down (`ROUTINE_RESTART_COOLDOWN`) or out of attempts (`ROUTINE_RESTART_LIMIT`). The old run is cancelled only after the new run is claimed; the action then runs in the background and the tool returns `newState: "running"` immediately.
+
+Every action returns `{ "ok": true, "data": ... }` or `{ "ok": false, "error": { "code", "message", "details"? } }`. `list` and `get` keep their legacy raw JSON output for compatibility.
+
+Other error codes: `INVALID_INPUT`, `INVALID_CRON`, `INVALID_INTERVAL`, `INVALID_ONCE`, `ROUTINE_NOT_FOUND`, `ROUTINE_DUPLICATE`, `ROUTINE_RESTART_FAILED`, `CONFIRMATION_REQUIRED`, `PERMISSION_DENIED`.
+
+Example: create a weekend report at 09:00:
+`{ "action": "create", "name": "Relatório semanal", "prompt": "Resuma os commits da semana.", "schedule": { "kind": "cron", "expr": "0 9 * * 1-5" }, "idempotencyKey": "weekly-report-v1" }`
