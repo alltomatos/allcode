@@ -1,6 +1,40 @@
 {
   "releases": [
     {
+      "tag": "v1.26.0",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Rotinas controladas pelo chat",
+              "description": "A tool routine agora cria rotinas, consulta a saúde das execuções e reinicia rotinas travadas direto na conversa, com idempotência, metadados e auditoria. O reinício exige confirmação, respeita limite de tentativas e cooldown e usa a permissão separada routine_restart."
+            },
+            {
+              "title": "Agentes do AgentUI criados pelo chat",
+              "description": "A tool agentui lista, consulta e cria agentes com modelo, ferramentas e permissões, gravando no mesmo config global usado pela tela de Settings. O schema de agente ganhou os campos opcionais description e visibility."
+            },
+            {
+              "title": "Rotinas atualizam sem clicar em Atualizar status",
+              "description": "Os eventos schedule.created, schedule.updated e schedule.deleted passaram a ser emitidos pelo serviço de rotinas e invalidam a lista no cliente. Criação, edição, exclusão e toggle de enabled aparecem na hora, inclusive quando a mudança vem da tool routine no chat ou das rotas /api/schedule."
+            },
+            {
+              "title": "Sessões novas aparecem na hora na tela inicial",
+              "description": "A Home passou a registrar as consultas no mesmo cache do server sync que recebe os eventos; antes a lista ficava congelada até um reload completo. As sessões de canal do AgentUI continuam agrupadas em Agentes."
+            },
+            {
+              "title": "Servidor de desenvolvimento recarrega sozinho",
+              "description": "Em builds não empacotados, o servidor local roda direto dos fontes sob Bun e observa as pastas de allcode, core, schema, protocol e server. Salvar um arquivo reinicia o processo, libera a porta e o cliente reconecta sozinho, sem rebuild manual."
+            },
+            {
+              "title": "Free tier do OpenCode compatível no desktop",
+              "description": "O desktop passou a enviar a identidade de CLI reconhecida pelo gateway do OpenCode (User-Agent e headers de sessão e projeto), tenta novamente quando o modelo gratuito é recusado e não envia tool_choice none, que o free tier rejeita."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.25.1",
       "highlights": [
         {
