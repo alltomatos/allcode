@@ -11,6 +11,7 @@ import { startBrowserBridge } from "./browser-bridge"
 import { getActiveBrowserPanel } from "./browser-panel"
 import { startComputerBridge } from "./computer-bridge"
 import { getComputerUseEnabled } from "./computer-use-settings"
+import { spawnDevSourceServer } from "./dev-server"
 
 export type HealthCheck = { wait: Promise<void> }
 
@@ -150,6 +151,19 @@ export async function spawnLocalServer(
       options.onStdout?.(`computer bridge started on port ${computerBridge.port}`)
     }
   }
+
+  // Dev server runs straight from TypeScript under Bun and reloads the server
+  // process when the server-facing packages change. Falls back to the bundled
+  // utility-process sidecar when the source layout is unavailable.
+  const dev = spawnDevSourceServer({
+    hostname,
+    port,
+    password,
+    env: createSidecarEnv(),
+    onStdout: (message) => options.onStdout?.(message),
+    onStderr: (message) => options.onStderr?.(message),
+  })
+  if (dev) return dev
 
   const sidecar = join(dirname(fileURLToPath(import.meta.url)), "sidecar.js")
   const child = utilityProcess.fork(sidecar, [], {

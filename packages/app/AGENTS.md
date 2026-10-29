@@ -5,7 +5,12 @@
 
 ## Debugging
 
-- NEVER try to restart the app, or the server process, EVER.
+- You MAY restart the local dev server/sidecar when it is required to load code changes or unblock validation. Guardrails:
+  - Only in a local development environment. Never restart production, staging, or shared/remote instances.
+  - Prefer the dev auto-reload described below; a manual restart is the fallback.
+  - Before restarting, identify the exact process/command, stop it gracefully (no orphan processes, stuck ports, or parallel instances), and log the reason.
+  - After restarting, wait for readiness (health endpoint, port, or SSE connected) before continuing. Never restart in a loop.
+  - If the restart does not fix the problem, report the root cause instead of masking it.
 
 ## Local Dev
 
@@ -14,6 +19,8 @@
 - Backend (from `packages/opencode`): `bun run --conditions=browser ./src/index.ts serve --port 4096`
 - App (from `packages/app`): `bun dev -- --port 4444`
 - Open `http://localhost:4444` to verify UI changes (it targets the backend at `http://localhost:4096`).
+- Desktop dev (`bun run dev:local`) auto-reloads the local server: unpackaged builds run `packages/allcode/src/index.ts` under Bun and watch `packages/{allcode,core,schema,protocol,server}/src`. Saving a file there stops the server child, frees the port, boots a new instance from the edited source, and the renderer reconnects through its existing SSE/HTTP retry loop (changes are debounced, at most one reload runs at a time). Logs show `[dev] reloading: <event> <file>` and `[dev] server ready from source in <ms>`.
+- Disable auto-reload with `OPENCODE_DEV_SERVER_WATCH=0`. Manual fallback: quit the running dev app and start `bun run dev:local` again; do not start a second instance while the first still holds the sidecar port.
 
 ## SolidJS
 
