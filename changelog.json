@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.26.1",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Melhorar com IA funciona no free tier do OpenCode",
+              "description": "O botão de melhoria de prompt passou a montar a requisição com o mesmo contrato de um turno de chat — agente da sessão, instruções do projeto e o conjunto real de ferramentas — porque o gateway do free tier só atende pedidos que parecem o CLI. Isso elimina o erro 429 (FreeUsageLimitError) ao melhorar o prompt com modelos gratuitos. Quando o limite é atingido de verdade, a falha aparece como mensagem localizada, sem repetições infinitas, e o prompt original é preservado. O app instalado só recebe esta correção após o novo release."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.26.0",
       "highlights": [
         {
