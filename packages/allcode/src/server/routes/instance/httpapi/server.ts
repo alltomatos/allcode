@@ -38,6 +38,7 @@ import { Provider } from "@/provider/provider"
 import { Question } from "@/question"
 import { SessionCompaction } from "@/session/compaction"
 import { Instruction } from "@/session/instruction"
+import { SystemPrompt } from "@/session/system"
 import { LLM } from "@/session/llm"
 import { SessionProcessor } from "@/session/processor"
 import { SessionPrompt } from "@/session/prompt"
@@ -278,6 +279,7 @@ const app = LayerNode.group([
   SessionSummary.node,
   SessionPrompt.node,
   Instruction.node,
+  SystemPrompt.node,
   LLM.node,
   LSP.node,
   MCP.node,

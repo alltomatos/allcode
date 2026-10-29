@@ -1,5 +1,5 @@
 import { LLMEvent, type FinishReason } from "@allcode/llm"
-import { Cause, Effect, Exit } from "effect"
+import { Cause, Effect, Exit, Option } from "effect"
 import * as Stream from "effect/Stream"
 
 /**
@@ -29,6 +29,8 @@ export type Failure = {
   readonly model: string
   readonly message: string
   readonly retryable: boolean
+  /** Seconds the provider asked us to wait before trying again, when known. */
+  readonly retryAfter?: number
 }
 
 export type Outcome = { readonly ok: true; readonly text: string } | { readonly ok: false; readonly error: Failure }
@@ -61,6 +63,21 @@ const COMPLETION_NOTE =
   "NOTE: Do not call any tool. Reply directly and exclusively with the text of the improved prompt."
 
 export const SYSTEM = [SYSTEM_PROMPT, COMPLETION_NOTE]
+
+/**
+ * Task text for the session LLM path. It travels as the user turn, next to the
+ * conversation context, while the request keeps the regular assistant system
+ * prompt. The hosted OpenCode free lane rejects enhancement-shaped system
+ * prompts (it answers `FreeUsageLimitError` for the "prompt engineer" framing)
+ * but serves ordinary user requests, so the enhancement asks for the rewrite
+ * the same way a person would.
+ */
+export const INSTRUCTIONS = [
+  "Rewrite the draft below into a clearer, more complete and actionable instruction for a coding assistant.",
+  "Reply with the rewritten instruction only: no preamble, no explanation, no surrounding quotes.",
+  "Keep the user's original language. Preserve any slash command (/refactor, /test) or file reference (@path).",
+  "Do not perform the task itself. Only return the rewritten instruction.",
+].join("\n")
 
 export type BuildInput = {
   readonly prompt: string
@@ -119,12 +136,14 @@ export function normalize(provider: string, text: string) {
 export const classify = (provider: string, model: string, value: unknown): Failure => {
   const message = errorText(value)
   const lower = message.toLowerCase()
+  const retryAfter = retryAfterSeconds(value)
   const fail = (reason: Reason, retryable: boolean): Failure => ({
     reason,
     provider,
     model,
     message: message.slice(0, 600) || "The provider did not return a response.",
     retryable,
+    ...(retryAfter === undefined ? {} : { retryAfter }),
   })
 
   if (
@@ -163,6 +182,12 @@ export const classify = (provider: string, model: string, value: unknown): Failu
     lower.includes("ratelimit") ||
     lower.includes("too many requests") ||
     lower.includes("quota") ||
+    // The hosted OpenCode free lane reports exhaustion as a generic
+    // `FreeUsageLimitError`, which is a rate limit even though the wording
+    // never says "rate".
+    lower.includes("free usage limit") ||
+    lower.includes("freeusagelimiterror") ||
+    lower.includes("usage limit reached") ||
     /\b429\b/.test(lower)
   )
     return fail("rateLimit", true)
@@ -174,6 +199,27 @@ export const classify = (provider: string, model: string, value: unknown): Failu
   )
     return fail("timeout", true)
   return fail("unknown", false)
+}
+
+/**
+ * Providers expose the retry window on the structured error (AI SDK's
+ * `APICallError.responseHeaders`). Logs use it so a quota rejection records how
+ * long the provider asked us to wait instead of looking like an unknown failure.
+ */
+function retryAfterSeconds(value: unknown): number | undefined {
+  if (!value || typeof value !== "object") return undefined
+  const headers = (value as Record<string, unknown>).responseHeaders
+  if (!headers || typeof headers !== "object") return undefined
+  const record = headers as Record<string, string>
+  const ms = record["retry-after-ms"]
+  if (ms) {
+    const parsed = Number.parseFloat(ms)
+    if (Number.isFinite(parsed)) return Math.max(0, Math.ceil(parsed / 1000))
+  }
+  const seconds = record["retry-after"] ?? record["Retry-After"]
+  if (!seconds) return undefined
+  const parsed = Number.parseFloat(seconds)
+  return Number.isFinite(parsed) ? Math.max(0, Math.ceil(parsed)) : undefined
 }
 
 function errorText(value: unknown) {
@@ -246,7 +292,13 @@ export const run = (input: {
   Effect.gen(function* () {
     const exit = yield* Effect.exit(input.attempt)
     if (Exit.isFailure(exit)) {
-      return { ok: false as const, error: classify(input.provider, input.model, Cause.pretty(exit.cause)) }
+      // Prefer the structured failure so response headers (retry-after) survive;
+      // fall back to the pretty cause when the stream only reported a string.
+      const failure = Cause.findErrorOption(exit.cause)
+      return {
+        ok: false as const,
+        error: classify(input.provider, input.model, Option.isSome(failure) ? failure.value : Cause.pretty(exit.cause)),
+      }
     }
 
     const result = exit.value

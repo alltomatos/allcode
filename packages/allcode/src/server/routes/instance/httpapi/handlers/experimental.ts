@@ -16,8 +16,11 @@ import { ToolRegistry } from "@/tool/registry"
 import { Worktree } from "@/worktree"
 import { Memory } from "@/memory"
 import { Provider } from "@/provider/provider"
+import { ProviderTransform } from "@/provider/transform"
+import { SystemPrompt } from "@/session/system"
+import { Instruction } from "@/session/instruction"
 import { Combo } from "@/combo"
-import { generateText } from "ai"
+import { generateText, jsonSchema, tool as aiTool } from "ai"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { createAntigravityFetch, getLiveToken } from "@/provider/antigravity-adapter"
 import { Catalog } from "@allcode/core/catalog"
@@ -52,6 +55,8 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
     const registry = yield* ToolRegistry.Service
     const worktreeSvc = yield* Worktree.Service
     const sessions = yield* Session.Service
+    const sys = yield* SystemPrompt.Service
+    const instruction = yield* Instruction.Service
     const background = yield* BackgroundJob.Service
     const flags = yield* RuntimeFlags.Service
     const memory = yield* Memory.Service
@@ -275,19 +280,19 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
 
       // Contexto recente da conversa
       const contextLines: string[] = []
-      if (ctx.payload.sessionID) {
-        const msgs = yield* sessions.messages({ sessionID: ctx.payload.sessionID, limit: 10 }).pipe(Effect.orElseSucceed(() => []))
-        for (const msg of msgs) {
-          const role = msg.info.role === "user" ? "User" : "Assistant"
-          const textParts: string[] = []
-          for (const part of msg.parts) {
-            if ("text" in part && typeof part.text === "string" && part.text.trim()) {
-              textParts.push(part.text.trim())
-            }
+      const msgs = ctx.payload.sessionID
+        ? yield* sessions.messages({ sessionID: ctx.payload.sessionID, limit: 10 }).pipe(Effect.orElseSucceed(() => []))
+        : []
+      for (const msg of msgs) {
+        const role = msg.info.role === "user" ? "User" : "Assistant"
+        const textParts: string[] = []
+        for (const part of msg.parts) {
+          if ("text" in part && typeof part.text === "string" && part.text.trim()) {
+            textParts.push(part.text.trim())
           }
-          if (textParts.length > 0) {
-            contextLines.push(`${role}: ${textParts.join("\n").slice(0, 1500)}`)
-          }
+        }
+        if (textParts.length > 0) {
+          contextLines.push(`${role}: ${textParts.join("\n").slice(0, 1500)}`)
         }
       }
 
@@ -321,12 +326,12 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
       }
 
       // 2. Se não especificado no payload, tenta a sessão existente
-      if (!targetProviderID && ctx.payload.sessionID) {
-        const sess = yield* sessions.get(ctx.payload.sessionID).pipe(Effect.orElseSucceed(() => undefined))
-        if (sess?.model) {
-          targetProviderID = sess.model.providerID
-          targetModelID = sess.model.id
-        }
+      const sess = ctx.payload.sessionID
+        ? yield* sessions.get(ctx.payload.sessionID).pipe(Effect.orElseSucceed(() => undefined))
+        : undefined
+      if (!targetProviderID && sess?.model) {
+        targetProviderID = sess.model.providerID
+        targetModelID = sess.model.id
       }
 
       const fail = (error: PromptEnhance.Failure) =>
@@ -335,6 +340,7 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
           model: error.model,
           reason: error.reason,
           retryable: error.retryable,
+          retryAfter: error.retryAfter,
           message: error.message,
         }).pipe(
           Effect.andThen(
@@ -417,26 +423,58 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
         })
       }
 
-      // 5. Executa via LLM.Service (mesmo motor do chat). No tools are sent:
-      // enhancement is pure text-in/text-out, and tool-capable models used to
-      // stop mid-answer when they decided to call one.
+      // 5. Executa via LLM.Service (mesmo motor do chat). A requisição replica
+      // o contrato de um turno de chat — prompt de sistema do agente,
+      // instruções do projeto e o registry real de tools — porque o free lane
+      // hospedado do OpenCode só atende requisições que parecem um turno de CLI
+      // (system prompt + tools). Sem isso o gateway responde
+      // `FreeUsageLimitError`. A tarefa em si vai na mensagem do usuário.
       const sessID = ctx.payload.sessionID ?? SessionID.descending()
-      const enhanceAgent: Agent.Info = {
-        name: "build",
-        mode: "primary",
-        permission: [],
-        options: {},
-        native: true,
-        prompt: "You are a prompt engineering expert.",
-      }
+      // Reuse the variant the conversation is actually running with so the
+      // enhancement request carries the same model options as a chat turn.
+      const lastUser = msgs.map((msg) => msg.info).findLast((info) => info.role === "user")
+      const variant = lastUser?.model?.variant ?? sess?.model?.variant
+      const enhanceAgent =
+        (sess?.agent ? yield* agents.get(sess.agent) : undefined) ?? (yield* agents.defaultInfo())
       const userMessage: SessionV1.User = {
         id: MessageID.ascending(),
         sessionID: sessID,
         role: "user",
         time: { created: Date.now() },
         agent: enhanceAgent.name,
-        model: { providerID: resolvedModel.providerID, modelID: resolvedModel.id },
+        model: { providerID: resolvedModel.providerID, modelID: resolvedModel.id, variant },
       }
+
+      const [skills, env, instructions, mcpInstructions, toolDefs] = yield* Effect.all([
+        sys.skills(enhanceAgent),
+        sys.environment(resolvedModel),
+        instruction.system().pipe(Effect.orDie),
+        sys.mcp(enhanceAgent, sess?.permission),
+        registry.tools({
+          providerID: resolvedModel.providerID,
+          modelID: ModelV2.ID.make(resolvedModel.api.id),
+          agent: enhanceAgent,
+          permission: sess?.permission,
+        }),
+      ])
+      const system = [
+        ...env,
+        ...instructions,
+        ...(mcpInstructions ? [mcpInstructions] : []),
+        ...(skills ? [skills] : []),
+      ]
+      // Definitions only: the enhancement must never execute a tool. A model
+      // that insists on calling one finishes with `tool-calls`, which
+      // PromptEnhance rejects instead of returning a half-written prompt.
+      const tools = Object.fromEntries(
+        toolDefs.map((item) => [
+          item.id,
+          aiTool({
+            description: item.description,
+            inputSchema: jsonSchema(ProviderTransform.schema(resolvedModel, ToolJsonSchema.fromTool(item))),
+          }),
+        ]),
+      )
 
       const outcome = yield* PromptEnhance.run({
         provider: resolvedModel.providerID,
@@ -444,13 +482,17 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
         attempt: PromptEnhance.collect(
           llm.stream({
             agent: enhanceAgent,
+            permission: sess?.permission,
             user: userMessage,
-            system: PromptEnhance.SYSTEM,
-            tools: {},
+            system,
+            tools,
             model: resolvedModel,
             sessionID: sessID,
-            retries: 2,
-            messages: [{ role: "user", content: promptContent }],
+            // A single attempt: enhancement is interactive, and retrying a
+            // rate-limited or quota-limited provider just burns the budget and
+            // keeps the composer spinning. Failures are surfaced structurally.
+            retries: 0,
+            messages: [{ role: "user", content: `${PromptEnhance.INSTRUCTIONS}\n\n${promptContent}` }],
           }),
         ),
       })

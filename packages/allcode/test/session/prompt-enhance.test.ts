@@ -160,6 +160,23 @@ describe("prompt enhance error classification", () => {
     )
   })
 
+  test("treats the OpenCode free lane rejection as a rate limit", () => {
+    const failure = classify(
+      'AI_RetryError: Failed after 3 attempts. Last error: Free usage limit reached. Free models work in OpenCode (https://opencode.ai); subscribe to OpenCode Go to keep going: https://opencode.ai/go',
+    )
+    expect(failure.reason).toBe("rateLimit")
+    expect(failure.retryable).toBe(true)
+  })
+
+  test("keeps the retry window exposed by the provider", () => {
+    const error = Object.assign(new Error("Free usage limit reached."), {
+      responseHeaders: { "retry-after": "42000" },
+    })
+    const failure = PromptEnhance.classify("opencode", "model", error)
+    expect(failure.reason).toBe("rateLimit")
+    expect(failure.retryAfter).toBe(42000)
+  })
+
   test("detects upstream routing rejections from AgentRouter", () => {
     expect(classify("503 当前分组 default 下对于模型 claude-opus-5 无可用渠道").reason).toBe("modelUnavailable")
     expect(classify("no available channel for this model").reason).toBe("modelUnavailable")
