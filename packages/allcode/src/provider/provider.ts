@@ -35,6 +35,7 @@ import { ModelStatus } from "./model-status"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { ProviderError } from "./error"
 import { ensureRelay, DEFAULT_PORT as AGENTROUTER_DEFAULT_PORT } from "./agentrouter/manager"
+import * as OpencodeCompat from "@/session/llm/opencode-compat"
 
 const OPENAI_HEADER_TIMEOUT_DEFAULT = 300_000
 
@@ -2039,7 +2040,9 @@ const layer = Layer.effect(
         const existing = s.sdk.get(key)
         if (existing) return existing
 
-        options["fetch"] = timeoutFetch(options)
+        options["fetch"] = model.providerID.startsWith("opencode")
+          ? OpencodeCompat.retryFetch(timeoutFetch(options))
+          : timeoutFetch(options)
         delete options["chunkTimeout"]
         delete options["headerTimeout"]
 

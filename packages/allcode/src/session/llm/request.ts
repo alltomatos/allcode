@@ -14,6 +14,7 @@ import { Effect, Record } from "effect"
 import { jsonSchema, tool as aiTool, type ModelMessage, type Tool } from "ai"
 import type { Plugin } from "@/plugin"
 import { mergeDeep } from "remeda"
+import * as OpencodeCompat from "./opencode-compat"
 
 const USER_AGENT = `opencode/${InstallationVersion}`
 
@@ -186,14 +187,11 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
     messageTransformOptions: options,
     headers: {
       ...(input.model.providerID.startsWith("opencode")
-        ? {
-            ...(opencodeProjectID ? { "x-opencode-project": opencodeProjectID } : {}),
-            "x-opencode-session": input.sessionID,
-            "x-opencode-session-id": input.sessionID,
-            "x-opencode-request": input.user.id,
-            "x-opencode-client": "cli",
-            "User-Agent": USER_AGENT,
-          }
+        ? OpencodeCompat.headers({
+            sessionID: input.sessionID,
+            requestID: input.user.id,
+            projectID: opencodeProjectID,
+          })
         : {
             "x-session-affinity": input.sessionID,
             "X-Session-Id": input.sessionID,
