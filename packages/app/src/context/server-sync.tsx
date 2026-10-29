@@ -36,6 +36,7 @@ import { queryOptions, useMutation, useQueries, useQuery, useQueryClient } from 
 import type { SolidQueryOptions } from "@tanstack/solid-query"
 import { createRefreshQueue } from "./global-sync/queue"
 import { directoryKey } from "./global-sync/utils"
+import { invalidateRoutines } from "./routines-query"
 import { PathKey } from "@/utils/path-key"
 import { createDirSyncContext } from "./directory-sync"
 import { createSimpleContext } from "@allcode/ui/context"
@@ -549,6 +550,12 @@ export function createServerSyncContextInner(serverSDK: ServerSDK) {
     }
     homeSessions.refresh(event.type)
     if (eventType === "integration.connection.updated") void refreshProviders()
+    // Routines can be created/edited/removed from the chat tool as well as the
+    // settings form, so the list refreshes from the server event instead of
+    // only from the form's own invalidation.
+    if (eventType === "schedule.created" || eventType === "schedule.updated" || eventType === "schedule.deleted") {
+      void invalidateRoutines(queryClient, ServerConnection.key(serverSDK.server))
+    }
 
     if (directory === "global") {
       if (eventType === "server.connected" && activeSessionsQuery.data === undefined && !activeSessionsQuery.isFetching)
@@ -697,6 +704,11 @@ export function createServerSyncContextInner(serverSDK: ServerSDK) {
     session,
     indexSession,
     homeSessions,
+    // The Home session index lives in this client, so consumers must create
+    // their queries here too. The renderer's nested QueryClientProvider is a
+    // different cache, and writes from home-session events would never reach a
+    // query registered there.
+    queryClient,
     mcp: {
       toggle: async (directory: string, name: string) => {
         const key = directoryKey(directory)

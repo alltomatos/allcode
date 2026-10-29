@@ -1,9 +1,12 @@
 import { describe, expect, test } from "bun:test"
 import type { SessionV2Info } from "@allcode/sdk/v2/client"
+import { QueryClient } from "@tanstack/solid-query"
 import {
   applyHomeSessionEvent,
   appendHomeSessionEvent,
+  createHomeSessionIndexCache,
   HOME_V2_SESSION_PAGE_LIMIT,
+  type HomeSessionIndex,
   loadHomeSessionIndex,
   homeSessionIndexSessions,
   homeSessionIndexRefresh,
@@ -150,6 +153,34 @@ describe("Home V2 session index", () => {
     expect(homeSessionIndexRefresh("server.connected", true)).toEqual({ connected: true, refetch: true })
     expect(homeSessionIndexRefresh("global.disposed", true).refetch).toBe(true)
     expect(homeSessionIndexRefresh("session.next.moved", true).refetch).toBe(true)
+  })
+
+  test("applies events to the cache that owns the index query", () => {
+    const queryClient = new QueryClient()
+    const cache = createHomeSessionIndexCache(queryClient, "server")
+    const initial = parseHomeSessionIndex([session({ id: "old" })])
+    queryClient.setQueryData(cache.indexKey, { sessions: initial, eventSequence: 0 })
+
+    const created = { ...initial[0]!, id: "new", slug: "new", title: "new", time: { created: 2, updated: 2 } }
+    cache.apply({ type: "session.created", properties: { sessionID: created.id, info: created } })
+
+    const index = queryClient.getQueryData<HomeSessionIndex>(cache.indexKey)
+    expect(cache.sessions(index, undefined).map((item) => item.id).sort()).toEqual(["new", "old"])
+  })
+
+  test("drops events when the index query lives in another cache", () => {
+    const owner = new QueryClient()
+    const other = new QueryClient()
+    const ownerCache = createHomeSessionIndexCache(owner, "server")
+    const otherCache = createHomeSessionIndexCache(other, "server")
+    const initial = parseHomeSessionIndex([session({ id: "old" })])
+    owner.setQueryData(ownerCache.indexKey, { sessions: initial, eventSequence: 0 })
+
+    const created = { ...initial[0]!, id: "new", slug: "new", title: "new", time: { created: 2, updated: 2 } }
+    otherCache.apply({ type: "session.created", properties: { sessionID: created.id, info: created } })
+
+    expect(other.getQueryData(otherCache.indexKey)).toBeUndefined()
+    expect(owner.getQueryData<HomeSessionIndex>(ownerCache.indexKey)!.sessions.map((item) => item.id)).toEqual(["old"])
   })
 })
 

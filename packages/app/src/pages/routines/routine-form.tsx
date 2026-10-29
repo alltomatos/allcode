@@ -21,7 +21,7 @@ import { useDialog } from "@allcode/ui/context/dialog"
 import { DialogMcpAddV2 } from "@/components/settings-v2/dialog-mcp-v2"
 import { GlobalLoading } from "@/components/global-loading"
 import type { McpToolRef } from "./summary"
-import { ROUTINES_QUERY_KEY } from "./routines-cache"
+import { routinesQueryKey } from "@/context/routines-query"
 
 type WhenKind = "daily" | "weekdays" | "interval" | "cron" | "manual"
 type IntervalUnit = "minutes" | "hours"
@@ -429,7 +429,7 @@ export const RoutineFormPage: Component = () => {
       }
     },
     onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: [ROUTINES_QUERY_KEY, server.key] })
+      void queryClient.invalidateQueries({ queryKey: routinesQueryKey(server.key) })
       navigate("/rotinas")
     },
     onError: (err) => {

@@ -1,7 +1,7 @@
 import type { Session } from "@allcode/sdk/v2/client"
 import { preloadMarkdown } from "@allcode/session-ui/markdown-cache"
 import { useDialog } from "@allcode/ui/context/dialog"
-import { useQuery, useQueryClient } from "@tanstack/solid-query"
+import { useQuery } from "@tanstack/solid-query"
 import { DateTime } from "luxon"
 import { type Accessor, createEffect, createMemo, createRoot, createSignal, type JSX, onCleanup, startTransition } from "solid-js"
 import { produce } from "solid-js/store"
@@ -56,7 +56,11 @@ export function createHomeSessionsController(home: HomeController) {
   const command = useCommand()
   const dialog = useDialog()
   const language = useLanguage()
-  const queryClient = useQueryClient()
+  // The session index is written by the server sync's event listener, so the
+  // Home queries must live in that same cache. The renderer's nested
+  // QueryClientProvider holds a different cache, and registering here left the
+  // list frozen until a full reload refetched it.
+  const syncQueryClient = () => home.server.focusedSync().queryClient
   // AgentUI channel sessions live in the server's dedicated hub directory
   // (Global.Path.data/projects/agentui) unless a channel points at a project.
   // That directory isn't an opened project, so its sessions were dropped by
@@ -96,33 +100,39 @@ export function createHomeSessionsController(home: HomeController) {
     () => new Map(home.project.list().flatMap((project) => (project.id ? [[project.id, project] as const] : []))),
   )
   const homeSessions = () => home.server.focusedSync().homeSessions
-  const sessionEventLoad = useQuery(() => ({
-    queryKey: homeSessions().eventsKey,
-    queryFn: async (): Promise<HomeSessionEvents> => ({ sequence: 0, entries: [] }),
-    initialData: { sequence: 0, entries: [] } satisfies HomeSessionEvents,
-    enabled: false,
-  }))
-  const sessionLoad = useQuery(() => ({
-    queryKey: homeSessions().indexKey,
-    enabled: !!home.server.focusedContext(),
-    queryFn: async ({ signal }) => {
-      const ctx = home.server.focusedContext()
-      if (!ctx) return { sessions: [], eventSequence: 0 }
-      const cache = homeSessions()
-      const eventSequence = cache.eventSequence()
-      const index = await loadHomeSessionIndex(
-        (input, options) => ctx.sdk.client.v2.session.list(input, options),
-        eventSequence,
-        signal,
-      )
-      cache.complete(eventSequence)
-      return index
-    },
-    retry: false,
-    staleTime: 60_000,
-    refetchOnMount: false,
-    refetchOnReconnect: true,
-  }))
+  const sessionEventLoad = useQuery(
+    () => ({
+      queryKey: homeSessions().eventsKey,
+      queryFn: async (): Promise<HomeSessionEvents> => ({ sequence: 0, entries: [] }),
+      initialData: { sequence: 0, entries: [] } satisfies HomeSessionEvents,
+      enabled: false,
+    }),
+    syncQueryClient,
+  )
+  const sessionLoad = useQuery(
+    () => ({
+      queryKey: homeSessions().indexKey,
+      enabled: !!home.server.focusedContext(),
+      queryFn: async ({ signal }) => {
+        const ctx = home.server.focusedContext()
+        if (!ctx) return { sessions: [], eventSequence: 0 }
+        const cache = homeSessions()
+        const eventSequence = cache.eventSequence()
+        const index = await loadHomeSessionIndex(
+          (input, options) => ctx.sdk.client.v2.session.list(input, options),
+          eventSequence,
+          signal,
+        )
+        cache.complete(eventSequence)
+        return index
+      },
+      retry: false,
+      staleTime: 60_000,
+      refetchOnMount: false,
+      refetchOnReconnect: true,
+    }),
+    syncQueryClient,
+  )
   const indexedSessions = createMemo(() =>
     retainHomeSessions(
       homeSessions().sessions(sessionLoad.data, sessionEventLoad.data),
@@ -234,7 +244,7 @@ export function createHomeSessionsController(home: HomeController) {
       loading: () => sessionLoad.isLoading,
       searchRecords: allRecords,
       allSessions: indexedSessions,
-      refetch: () => queryClient.invalidateQueries({ queryKey: homeSessions().indexKey }),
+      refetch: () => syncQueryClient().invalidateQueries({ queryKey: homeSessions().indexKey }),
     },
     project: {
       selected: home.project.selected,
