@@ -214,13 +214,15 @@ export function DesktopLoginModal() {
                   <label class="text-12-medium text-v2-text-text-muted">
                     Palavra-passe
                   </label>
-                  <a
-                    href={`${DEFAULT_AUTH_URL}/recuperar-senha`}
-                    target="_blank"
-                    class="text-11-medium text-emerald-400 hover:text-emerald-300 transition"
-                  >
-                    Recuperar acesso
-                  </a>
+                  <Show when={tenantAuth.canChangePassword()}>
+                    <a
+                      href={`${DEFAULT_AUTH_URL}/recuperar-senha`}
+                      target="_blank"
+                      class="text-11-medium text-emerald-400 hover:text-emerald-300 transition"
+                    >
+                      Recuperar acesso
+                    </a>
+                  </Show>
                 </div>
                 <div class="relative">
                   <input

@@ -165,6 +165,8 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...payload,
+            startedAt: new Date(payload.startedAt).toISOString(),
+            endedAt: payload.endedAt ? new Date(payload.endedAt).toISOString() : undefined,
             userId: u.id,
             orgId: t.id,
           }),

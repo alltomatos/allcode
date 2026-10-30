@@ -1,6 +1,23 @@
 import type { APIEvent } from "@solidjs/start"
 import { store } from "~/lib/store"
 
+function normalizeIsoDate(value: unknown): string {
+  if (typeof value === "number") {
+    return new Date(value).toISOString()
+  }
+  if (typeof value === "string") {
+    const asNum = Number(value)
+    if (!Number.isNaN(asNum) && asNum > 1_000_000_000_000) {
+      return new Date(asNum).toISOString()
+    }
+    const parsed = new Date(value)
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed.toISOString()
+    }
+  }
+  return new Date().toISOString()
+}
+
 export async function POST(event: APIEvent) {
   try {
     const body = (await event.request.json()) as {
@@ -13,8 +30,8 @@ export async function POST(event: APIEvent) {
       title?: string
       summary?: string
       workspace?: string
-      startedAt?: string
-      endedAt?: string
+      startedAt?: string | number
+      endedAt?: string | number
       tokensTotal?: number
       tokensInput?: number
       tokensOutput?: number
@@ -29,7 +46,8 @@ export async function POST(event: APIEvent) {
     const orgID = body.orgID || body.orgId
     const summary = body.summary || body.title || "Sessão de trabalho AllCode"
     const workspace = body.workspace || "Workspace local"
-    const startedAt = body.startedAt || new Date().toISOString()
+    const startedAt = normalizeIsoDate(body.startedAt)
+    const endedAt = body.endedAt ? normalizeIsoDate(body.endedAt) : undefined
 
     if (!sessionID || !userID || !orgID) {
       return new Response(
@@ -52,7 +70,7 @@ export async function POST(event: APIEvent) {
       summary,
       workspace,
       startedAt,
-      endedAt: body.endedAt,
+      endedAt,
       tokensTotal: Math.max(0, Number(body.tokensTotal ?? 0)),
       tokensInput: Math.max(0, Number(body.tokensInput ?? 0)),
       tokensOutput: Math.max(0, Number(body.tokensOutput ?? 0)),
