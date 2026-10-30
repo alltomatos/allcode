@@ -28,4 +28,5 @@ resources/opencode-cli*
 resources/allcode-cli*
 resources/icons
 resources/mcpmail
+resources/default-skills
 resources/*.metainfo.xml

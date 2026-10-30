@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "allcode-panel",
+  "main": ".output/server/index.mjs",
+  "compatibility_date": "2025-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".output/public"
+  },
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "allcode-panel",
+      "database_id": "da2843cf-1acc-4c83-97d5-adf70ae35cbb",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "ASSETS_BUCKET",
+      "bucket_name": "allcode-panel-assets"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "allcode.alltomatos.dev.br",
+      "custom_domain": true
+    }
+  ]
+}

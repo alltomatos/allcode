@@ -75,7 +75,7 @@ const cli = yargs(args)
 
     Heap.start()
 
-    void DefaultSkills.ensureDefaultSkills(Global.Path.home)
+    await DefaultSkills.seedDefaultSkills(Global.Path.home)
     void DefaultPython.ensureDefaultPython(Global.Path.home)
 
     process.env.AGENT = "1"

@@ -1,0 +1,3 @@
+PANEL_SESSION_SECRET=replace-with-a-random-string-of-32-plus-characters
+PANEL_ADMIN_EMAIL=admin@allcode.dev
+PANEL_ADMIN_PASSWORD=replace-with-a-strong-password

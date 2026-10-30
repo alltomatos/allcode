@@ -355,6 +355,17 @@ function oauth(http: HttpClient.HttpClient, profile: Profile) {
   } satisfies IntegrationOAuthMethodRegistration
 }
 
+// Code Assist latency grows sharply with prompt size: measured against the
+// live endpoint, a Gemini 3.8 Flash turn costs ~5s at 80k tokens, ~25s at 250k
+// and ~120s at 950k, because the whole history is replayed on every agent
+// step. Compaction only fires against `limit.input`, so capping it here makes
+// the session compact long before it reaches the 1M hard limit while still
+// advertising the real 1M `context` window to compaction itself.
+const MAX_INPUT_TOKENS = (() => {
+  const raw = Number(process.env.AGY_MAX_INPUT_TOKENS ?? 300_000)
+  return Number.isFinite(raw) && raw > 0 ? raw : 300_000
+})()
+
 // NOTE: this registers OAuth + credential storage only. The Code Assist wire
 // protocol (`:generateContent`/`:streamGenerateContent` over the discovered
 // project) is a distinct, proprietary request/response shape — wiring an
@@ -420,7 +431,7 @@ export const GoogleAntigravityPlugin = define<HttpClient.HttpClient | Scope.Scop
             draft.enabled = true
             draft.limit = {
               context: 1048576,
-              input: 1048576,
+              input: isGemini ? Math.min(MAX_INPUT_TOKENS, 1048576) : 1048576,
               output: 65536,
             }
           })

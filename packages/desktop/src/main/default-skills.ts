@@ -1,11 +1,13 @@
-import { existsSync } from "node:fs"
-import { mkdir, copyFile, readdir } from "node:fs/promises"
+import { constants, existsSync } from "node:fs"
+import { copyFile, mkdir, readFile, readdir, writeFile } from "node:fs/promises"
 import { join, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import { homedir } from "node:os"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
+
+const MARKER = ".allcode-skills.json"
 
 function resolveDefaultSkillsSource(): string | undefined {
   const candidates = [
@@ -22,35 +24,56 @@ function resolveDefaultSkillsSource(): string | undefined {
 
 export async function ensureDefaultSkills() {
   const target = join(homedir(), ".opencode", "skills")
+  const source = resolveDefaultSkillsSource()
+  if (!source) return
 
-  if (existsSync(target)) {
-    return
-  }
+  const bundled = await readMarker(join(source, MARKER))
+  if (bundled?.version && (await readMarker(join(target, MARKER)))?.version === bundled.version) return
 
   try {
-    await mkdir(target, { recursive: true })
-
-    const source = resolveDefaultSkillsSource()
-    if (source) {
-      await copySkillsRecursive(source, target)
-      console.log("default-skills", `seeded skills from ${source}`)
+    await copyMissing(source, target)
+    if (bundled) {
+      await writeFile(join(target, MARKER), `${JSON.stringify(bundled, null, 2)}\n`)
     }
+    console.log("default-skills", `seeded skills from ${source}`)
   } catch (error) {
     console.warn("default-skills", `failed to seed default skills: ${String(error)}`, error)
   }
 }
 
-async function copySkillsRecursive(src: string, dest: string) {
-  const entries = await readdir(src, { withFileTypes: true, recursive: true })
+async function copyMissing(src: string, dest: string) {
+  await mkdir(dest, { recursive: true })
 
-  for (const entry of entries) {
-    const entryPath = join(src, entry.name)
+  for (const entry of await readdir(src, { withFileTypes: true })) {
+    if (entry.name === MARKER) continue
+    const from = join(src, entry.name)
+    const to = join(dest, entry.name)
 
     if (entry.isDirectory()) {
-      await mkdir(join(dest, entry.name), { recursive: true })
-      await copySkillsRecursive(entryPath, join(dest, entry.name))
-    } else if (entry.isFile()) {
-      await copyFile(entryPath, join(dest, entry.name))
+      await copyMissing(from, to)
+      continue
+    }
+    if (!entry.isFile()) continue
+
+    try {
+      // Do not clobber a user's edited skill; only fill in what is missing.
+      await copyFile(from, to, constants.COPYFILE_EXCL)
+    } catch (error) {
+      if (!isExistsError(error)) throw error
     }
   }
+}
+
+async function readMarker(path: string): Promise<{ version?: string } | undefined> {
+  try {
+    const data: unknown = JSON.parse(await readFile(path, "utf8"))
+    if (typeof data !== "object" || data === null || !("version" in data)) return undefined
+    return { version: typeof data.version === "string" ? data.version : undefined }
+  } catch {
+    return undefined
+  }
+}
+
+function isExistsError(error: unknown) {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "EEXIST"
 }

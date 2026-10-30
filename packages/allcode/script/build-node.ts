@@ -12,6 +12,9 @@ process.chdir(dir)
 
 const generated = await import("./generate.ts")
 
+const skills = await import("./generate-skills.ts")
+await skills.check()
+
 await Bun.build({
   target: "node",
   // Bun's bundler resolves package.json "imports" conditions (e.g. `#sqlite`/`#pty`/`#fff`

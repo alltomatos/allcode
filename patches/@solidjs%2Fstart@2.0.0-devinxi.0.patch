@@ -1,0 +1,98 @@
+diff --git a/dist/config/fs-routes/router.js b/dist/config/fs-routes/router.js
+index 237f86d..8da59e1 100644
+--- a/dist/config/fs-routes/router.js
++++ b/dist/config/fs-routes/router.js
+@@ -76,7 +76,7 @@ export class BaseFileSystemRouter extends EventTarget {
+         this.routes.push(route);
+     }
+     async addRoute(src) {
+-        src = normalize(src);
++        src = src.replace(/\\/g, "/");
+         if (this.isRoute(src)) {
+             try {
+                 const route = this.toRoute(src);
+@@ -99,7 +99,7 @@ export class BaseFileSystemRouter extends EventTarget {
+         }));
+     }
+     async updateRoute(src) {
+-        src = normalize(src);
++        src = src.replace(/\\/g, "/");
+         if (this.isRoute(src)) {
+             try {
+                 const route = this.toRoute(src);
+@@ -115,7 +115,7 @@ export class BaseFileSystemRouter extends EventTarget {
+         }
+     }
+     removeRoute(src) {
+-        src = normalize(src);
++        src = src.replace(/\\/g, "/");
+         if (this.isRoute(src)) {
+             const path = this.toPath(src);
+             if (path === undefined) {
+
+diff --git a/dist/config/index.js b/dist/config/index.js
+index 69e8f80..f8319b7 100644
+--- a/dist/config/index.js
++++ b/dist/config/index.js
+@@ -12,6 +12,7 @@ import lazy from "./lazy.js";
+ import { manifest } from "./manifest.js";
+ import { parseIdQuery } from "./utils.js";
+ const absolute = (path, root) => path ? (isAbsolute(path) ? path : join(root, path)) : path;
++const slash = (value) => value.replace(/\\/g, "/");
+ export function solidStart(options) {
+     const start = defu(options ?? {}, {
+         appRoot: "./src",
+@@ -33,8 +34,8 @@ export function solidStart(options) {
+     }
+     const entryExtension = extname(appEntryPath);
+     const handlers = {
+-        client: `${start.appRoot}/entry-client${entryExtension}`,
+-        server: `${start.appRoot}/entry-server${entryExtension}`
++        client: slash(`${start.appRoot}/entry-client${entryExtension}`),
++        server: slash(`${start.appRoot}/entry-server${entryExtension}`)
+     };
+     return [
+         {
+@@ -103,7 +104,7 @@ export function solidStart(options) {
+                     resolve: {
+                         alias: {
+                             "@solidjs/start/server/entry": handlers.server,
+-                            "~": join(process.cwd(), start.appRoot),
++                            "~": slash(join(process.cwd(), start.appRoot)),
+                             ...(!start.ssr
+                                 ? {
+                                     "@solidjs/start/server": "@solidjs/start/server/spa",
+@@ -115,8 +116,8 @@ export function solidStart(options) {
+                     define: {
+                         "import.meta.env.MANIFEST": `globalThis.MANIFEST`,
+                         "import.meta.env.START_SSR": JSON.stringify(start.ssr),
+-                        "import.meta.env.START_APP_ENTRY": `"${appEntryPath}"`,
+-                        "import.meta.env.START_CLIENT_ENTRY": `"${handlers.client}"`,
++                        "import.meta.env.START_APP_ENTRY": JSON.stringify(slash(appEntryPath)),
++                        "import.meta.env.START_CLIENT_ENTRY": JSON.stringify(handlers.client),
+                         "import.meta.env.START_DEV_OVERLAY": JSON.stringify(start.devOverlay)
+                     },
+                     builder: {
+@@ -163,19 +164,19 @@ export function solidStart(options) {
+                 {
+                     envConsumer: "client",
+                     envName: VITE_ENVIRONMENTS.client,
+-                    getRuntimeCode: () => `import { createServerReference } from "${normalize(fileURLToPath(new URL("../server/server-runtime", import.meta.url)))}"`,
++                    getRuntimeCode: () => `import { createServerReference } from "${slash(fileURLToPath(new URL("../server/server-runtime", import.meta.url)))}"`,
+                     replacer: opts => `createServerReference('${opts.functionId}')`
+                 },
+                 {
+                     envConsumer: "server",
+                     envName: VITE_ENVIRONMENTS.server,
+-                    getRuntimeCode: () => `import { createServerReference } from '${normalize(fileURLToPath(new URL("../server/server-fns-runtime", import.meta.url)))}'`,
++                    getRuntimeCode: () => `import { createServerReference } from '${slash(fileURLToPath(new URL("../server/server-fns-runtime", import.meta.url)))}'`,
+                     replacer: opts => `createServerReference(${opts.fn}, '${opts.functionId}')`
+                 }
+             ],
+             provider: {
+                 envName: VITE_ENVIRONMENTS.server,
+-                getRuntimeCode: () => `import { createServerReference } from '${normalize(fileURLToPath(new URL("../server/server-fns-runtime", import.meta.url)))}'`,
++                getRuntimeCode: () => `import { createServerReference } from '${slash(fileURLToPath(new URL("../server/server-fns-runtime", import.meta.url)))}'`,
+                 replacer: opts => `createServerReference(${opts.fn}, '${opts.functionId}')`
+             }
+         }),

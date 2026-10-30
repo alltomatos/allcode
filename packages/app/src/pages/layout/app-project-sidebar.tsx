@@ -6,6 +6,7 @@ import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
 import { useLayout, type ProjectSidebarTab } from "@/context/layout"
 import { useLanguage } from "@/context/language"
+import { useTenantAuth } from "@/context/tenant-auth"
 import type { ServerConnection } from "@/context/server"
 import { ServerSDKProvider } from "@/context/server-sdk"
 import { createHomeController } from "@/pages/home/home-controller"
@@ -22,11 +23,22 @@ import { RoutinesSidebarList } from "@/pages/routines/routines-sidebar-list"
 export const AppProjectSidebar: Component = () => {
   const layout = useLayout()
   const language = useLanguage()
+  const tenantAuth = useTenantAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const home = createHomeController()
   const projectsController = createHomeProjectsController(home)
   const scroll = createHomeScrollController(() => [])
+
+  // Proteção de rotas com base nas permissões RBAC do tenant
+  createEffect(() => {
+    if (location.pathname.startsWith("/agentui") && !tenantAuth.canUseAgentUI()) {
+      navigate("/sessions")
+    }
+    if (location.pathname.startsWith("/rotinas") && !tenantAuth.canUseRoutines()) {
+      navigate("/sessions")
+    }
+  })
 
   const selectProject = (conn: ServerConnection.Any, directory: string) => {
     home.project.select(conn, directory)
@@ -34,6 +46,9 @@ export const AppProjectSidebar: Component = () => {
   }
 
   const selectTab = (tab: ProjectSidebarTab) => {
+    if (tab === "agentui" && !tenantAuth.canUseAgentUI()) return
+    if (tab === "schedule" && !tenantAuth.canUseRoutines()) return
+
     layout.projectSidebar.setTab(tab)
     if (tab === "agentui" && !location.pathname.startsWith("/agentui")) navigate("/agentui")
     if (tab === "schedule" && !location.pathname.startsWith("/rotinas")) navigate("/rotinas")
@@ -87,32 +102,36 @@ export const AppProjectSidebar: Component = () => {
             >
               <Icon name="bubble-5" size="small" />
             </ProjectRailTabButton>
-            <ProjectRailTabButton
-              active={layout.projectSidebar.tab() === "agentui"}
-              label={language.t("sidebar.tab.agentui")}
-              onClick={() => {
-                if (layout.projectSidebar.tab() === "agentui") {
-                  layout.projectSidebar.open()
-                } else {
-                  selectTab("agentui")
-                }
-              }}
-            >
-              <IconV2 name="subagent" size="small" />
-            </ProjectRailTabButton>
-            <ProjectRailTabButton
-              active={layout.projectSidebar.tab() === "schedule"}
-              label={routinesLabel()}
-              onClick={() => {
-                if (layout.projectSidebar.tab() === "schedule") {
-                  layout.projectSidebar.open()
-                } else {
-                  selectTab("schedule")
-                }
-              }}
-            >
-              <Icon name="task" size="small" />
-            </ProjectRailTabButton>
+            <Show when={tenantAuth.canUseAgentUI()}>
+              <ProjectRailTabButton
+                active={layout.projectSidebar.tab() === "agentui"}
+                label={language.t("sidebar.tab.agentui")}
+                onClick={() => {
+                  if (layout.projectSidebar.tab() === "agentui") {
+                    layout.projectSidebar.open()
+                  } else {
+                    selectTab("agentui")
+                  }
+                }}
+              >
+                <IconV2 name="subagent" size="small" />
+              </ProjectRailTabButton>
+            </Show>
+            <Show when={tenantAuth.canUseRoutines()}>
+              <ProjectRailTabButton
+                active={layout.projectSidebar.tab() === "schedule"}
+                label={routinesLabel()}
+                onClick={() => {
+                  if (layout.projectSidebar.tab() === "schedule") {
+                    layout.projectSidebar.open()
+                  } else {
+                    selectTab("schedule")
+                  }
+                }}
+              >
+                <Icon name="task" size="small" />
+              </ProjectRailTabButton>
+            </Show>
           </div>
           <div class="flex w-full flex-col items-center gap-1.5 px-1">
             <TooltipV2 placement="right" value={language.t("sidebar.agenda")}>
@@ -216,6 +235,8 @@ const ProjectSidebarTabs: Component<{
   language: ReturnType<typeof useLanguage>
   routinesLabel: string
 }> = (props) => {
+  const tenantAuth = useTenantAuth()
+
   return (
     <div class="flex h-10 min-w-0 flex-1 items-center justify-center gap-0.5 rounded-[8px] bg-v2-background-bg-layer-01 p-0.5">
       <ProjectSidebarTabButton
@@ -225,20 +246,24 @@ const ProjectSidebarTabs: Component<{
       >
         <Icon name="bubble-5" size="small" />
       </ProjectSidebarTabButton>
-      <ProjectSidebarTabButton
-        active={props.tab === "agentui"}
-        label={props.language.t("sidebar.tab.agentui")}
-        onClick={() => props.onSelect("agentui")}
-      >
-        <IconV2 name="subagent" size="small" />
-      </ProjectSidebarTabButton>
-      <ProjectSidebarTabButton
-        active={props.tab === "schedule"}
-        label={props.routinesLabel}
-        onClick={() => props.onSelect("schedule")}
-      >
-        <Icon name="task" size="small" />
-      </ProjectSidebarTabButton>
+      <Show when={tenantAuth.canUseAgentUI()}>
+        <ProjectSidebarTabButton
+          active={props.tab === "agentui"}
+          label={props.language.t("sidebar.tab.agentui")}
+          onClick={() => props.onSelect("agentui")}
+        >
+          <IconV2 name="subagent" size="small" />
+        </ProjectSidebarTabButton>
+      </Show>
+      <Show when={tenantAuth.canUseRoutines()}>
+        <ProjectSidebarTabButton
+          active={props.tab === "schedule"}
+          label={props.routinesLabel}
+          onClick={() => props.onSelect("schedule")}
+        >
+          <Icon name="task" size="small" />
+        </ProjectSidebarTabButton>
+      </Show>
     </div>
   )
 }

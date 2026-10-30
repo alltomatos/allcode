@@ -57,6 +57,8 @@ import { SDKProvider, useSDK } from "@/context/sdk"
 import { WslServersProvider } from "@/wsl/context"
 import { SshServersProvider } from "@/ssh-tunnel/context"
 import DirectoryLayout, { DirectoryDataProvider } from "@/pages/directory-layout"
+import { TenantAuthProvider } from "@/context/tenant-auth"
+import { DesktopLoginModal } from "@/components/desktop-login-modal"
 import { GlobalLoading } from "@/components/global-loading"
 import LegacyLayout from "@/pages/layout"
 import NewLayout from "@/pages/layout-new"
@@ -643,32 +645,35 @@ export function AppInterface(props: {
       servers={props.servers}
     >
       <GlobalProvider>
-        <SettingsProvider>
-          <MaintenanceProvider>
-            <ConnectionGate disableHealthCheck={props.disableHealthCheck} startup={props.startup}>
-              <Show when={useSettings().general.newLayoutDesigns().toString()} keyed>
-                <Dynamic
-                  component={props.router ?? Router}
-                  root={(routerProps) => (
-                    <TabsProvider>
-                      <PermissionProvider>
-                        <NotificationProvider>
-                          <ServerShell>
-                            <Show when={useSettings().general.newLayoutDesigns()} fallback={routerProps.children}>
-                              <NewAppLayout serverScoped={props.serverScoped}>{routerProps.children}</NewAppLayout>
-                            </Show>
-                          </ServerShell>
-                        </NotificationProvider>
-                      </PermissionProvider>
-                    </TabsProvider>
-                  )}
-                >
-                  <Routes serverScoped={props.serverScoped} />
-                </Dynamic>
-              </Show>
-            </ConnectionGate>
-          </MaintenanceProvider>
-        </SettingsProvider>
+        <TenantAuthProvider>
+          <SettingsProvider>
+            <MaintenanceProvider>
+              <ConnectionGate disableHealthCheck={props.disableHealthCheck} startup={props.startup}>
+                <DesktopLoginModal />
+                <Show when={useSettings().general.newLayoutDesigns().toString()} keyed>
+                  <Dynamic
+                    component={props.router ?? Router}
+                    root={(routerProps) => (
+                      <TabsProvider>
+                        <PermissionProvider>
+                          <NotificationProvider>
+                            <ServerShell>
+                              <Show when={useSettings().general.newLayoutDesigns()} fallback={routerProps.children}>
+                                <NewAppLayout serverScoped={props.serverScoped}>{routerProps.children}</NewAppLayout>
+                              </Show>
+                            </ServerShell>
+                          </NotificationProvider>
+                        </PermissionProvider>
+                      </TabsProvider>
+                    )}
+                  >
+                    <Routes serverScoped={props.serverScoped} />
+                  </Dynamic>
+                </Show>
+              </ConnectionGate>
+            </MaintenanceProvider>
+          </SettingsProvider>
+        </TenantAuthProvider>
       </GlobalProvider>
     </ServerProvider>
   )

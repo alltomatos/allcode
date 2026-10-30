@@ -1,0 +1,16 @@
+dist
+.output
+.nitro
+.wrangler
+
+# Environment
+.env
+.env*.local
+.dev.vars
+
+# dependencies
+/node_modules
+
+# System Files
+.DS_Store
+Thumbs.db

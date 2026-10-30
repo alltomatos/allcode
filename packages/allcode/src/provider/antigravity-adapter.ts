@@ -3,6 +3,13 @@ import { Database as CoreDatabase } from "@allcode/core/database/database"
 import { IntegrationRotation } from "@allcode/core/integration/rotation"
 import { Integration } from "@allcode/core/integration"
 
+// The Code Assist backend does not expose the same model IDs to both OAuth
+// clients. Measured against the live endpoint: the IDE profile accepts the
+// `-low/-medium/-high` variants directly, while the CLI profile only serves
+// the `-tiered` alias (everything else answers 404 NOT_FOUND). Aliasing
+// unconditionally made the IDE take the slower auto-routed tier even when the
+// caller picked an explicit thinking level, so the alias is only a fallback
+// there and a primary for CLI.
 const MODEL_ALIASES: Record<string, string> = {
   "gemini-3.8-flash-high": "gemini-3.8-flash-tiered",
   "gemini-3.8-flash-medium": "gemini-3.8-flash-tiered",
@@ -18,6 +25,35 @@ const ANTIGRAVITY_BASE_URLS = [
   "https://cloudcode-pa.googleapis.com",
   "https://daily-cloudcode-pa.sandbox.googleapis.com",
 ]
+
+// Runs that go silent for this long are treated as stalled and aborted so the
+// SDK surfaces an error instead of waiting forever. Long thinking on a huge
+// context can legitimately delay the first byte, so the default is generous
+// and env-overridable.
+const STREAM_IDLE_TIMEOUT_MS = Number(process.env.AGY_STREAM_IDLE_TIMEOUT_MS ?? 150_000)
+// Only turns that took longer than this get a latency line by default; set
+// AGY_LATENCY_LOG=1 to log every turn or AGY_LATENCY_LOG=0 to stay silent.
+const SLOW_TURN_MS = 10_000
+
+// Models already observed answering 404 on their literal ID for a profile.
+// Once known, the doomed first attempt is skipped and the alias goes straight
+// to the wire.
+const aliasRequired = new Map<"ide" | "cli", Set<string>>()
+// Last base URL that answered 2xx, so unrelated endpoints are not probed again.
+const preferredBaseUrl: Record<"ide" | "cli", string | undefined> = { ide: undefined, cli: undefined }
+
+function modelCandidates(profile: "ide" | "cli", rawModel: string): string[] {
+  const alias = MODEL_ALIASES[rawModel]
+  if (!alias) return [rawModel]
+  if (aliasRequired.get(profile)?.has(rawModel)) return [alias]
+  return [...new Set(profile === "cli" ? [alias, rawModel] : [rawModel, alias])]
+}
+
+function orderedBaseUrls(profile: "ide" | "cli"): string[] {
+  const preferred = preferredBaseUrl[profile]
+  if (!preferred) return ANTIGRAVITY_BASE_URLS
+  return [preferred, ...ANTIGRAVITY_BASE_URLS.filter((url) => url !== preferred)]
+}
 
 const ANTIGRAVITY_IDE_VERSION = "2.11.0"
 
@@ -337,7 +373,11 @@ export async function getLiveToken(
       }
     }
 
-    await checkQuotaAndBenchIfLow(profile, selectedRow.id, access, projectID)
+    // Deliberately not awaited: the probe hits up to three endpoints with an
+    // 8s timeout each, and it used to sit on the critical path of every
+    // message once the 90s TTL expired. A real 429 still benches the account
+    // through benchConnectionOnFailure, so this is only an early-warning hop.
+    void checkQuotaAndBenchIfLow(profile, selectedRow.id, access, projectID)
 
     return { token: access, projectID, connectionId: selectedRow.id }
   } catch {
@@ -345,54 +385,111 @@ export async function getLiveToken(
   }
 }
 
-function transformSseStream(readable: ReadableStream<Uint8Array>): ReadableStream<Uint8Array> {
-  const reader = readable.getReader()
+interface StreamTiming {
+  profile: "ide" | "cli"
+  model: string
+  startedAt: number
+  firstChunkAt?: number
+  lastChunkAt: number
+  chunks: number
+  bytes: number
+  maxGapMs: number
+}
+
+function logStreamTiming(timing: StreamTiming, outcome: string) {
+  const mode = process.env.AGY_LATENCY_LOG
+  if (mode === "0") return
+  const total = Date.now() - timing.startedAt
+  const failed = outcome !== "closed" && outcome !== "cancelled"
+  if (mode !== "1" && !failed && total < SLOW_TURN_MS) return
+  const ttfb = timing.firstChunkAt ? timing.firstChunkAt - timing.startedAt : -1
+  console.debug(
+    `[agy] stream profile=${timing.profile} model=${timing.model} ttfb=${ttfb}ms total=${total}ms chunks=${timing.chunks} bytes=${timing.bytes} maxGap=${Math.round(timing.maxGapMs)}ms outcome=${outcome}`,
+  )
+}
+
+/**
+ * Aborts the response body when the upstream goes silent for longer than the
+ * timeout. Google sometimes holds an entire turn open without emitting a byte
+ * (the "thinking then nothing" stalls); without this guard the run waits
+ * forever instead of failing and letting the caller retry.
+ */
+export function createIdleGuard(timeoutMs: number, onTimeout: (error: Error) => void): TransformStream<Uint8Array, Uint8Array> {
+  let timer: ReturnType<typeof setTimeout> | undefined
+  const arm = (controller: TransformStreamDefaultController<Uint8Array>) => {
+    if (timeoutMs <= 0) return
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      const error = new Error(`Antigravity stream stalled for ${timeoutMs}ms`)
+      onTimeout(error)
+      controller.error(error)
+    }, timeoutMs)
+  }
+  return new TransformStream<Uint8Array, Uint8Array>({
+    start(controller) {
+      arm(controller)
+    },
+    transform(chunk, controller) {
+      arm(controller)
+      controller.enqueue(chunk)
+    },
+    flush() {
+      if (timer) clearTimeout(timer)
+    },
+  })
+}
+
+export function createSseTransform(timing: StreamTiming): TransformStream<Uint8Array, Uint8Array> {
   const decoder = new TextDecoder()
   const encoder = new TextEncoder()
   let buffer = ""
 
-  return new ReadableStream<Uint8Array>({
-    async pull(controller) {
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) {
-          controller.close()
-          return
-        }
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split("\n")
-        buffer = lines.pop() ?? ""
-
-        for (const line of lines) {
-          const trimmed = line.trim()
-          if (!trimmed) {
-            controller.enqueue(encoder.encode("\n"))
-            continue
-          }
-          if (trimmed.startsWith("data: ")) {
-            const dataContent = trimmed.slice(6).trim()
-            if (dataContent === "[DONE]") {
-              controller.enqueue(encoder.encode("data: [DONE]\n\n"))
-              continue
-            }
-            try {
-              const parsed = JSON.parse(dataContent)
-              for (const chunk of Array.isArray(parsed) ? parsed : [parsed]) {
-                const unwrapped = unwrapAntigravityChunk(chunk)
-                controller.enqueue(encoder.encode(`data: ${JSON.stringify(unwrapped)}\n\n`))
-              }
-            } catch {
-              controller.enqueue(encoder.encode(`${line}\n`))
-            }
-          } else {
-            controller.enqueue(encoder.encode(`${line}\n`))
-          }
-        }
+  const emit = (controller: TransformStreamDefaultController<Uint8Array>, line: string) => {
+    const trimmed = line.trim()
+    if (!trimmed) {
+      controller.enqueue(encoder.encode("\n"))
+      return
+    }
+    if (!trimmed.startsWith("data: ")) {
+      controller.enqueue(encoder.encode(`${line}\n`))
+      return
+    }
+    const dataContent = trimmed.slice(6).trim()
+    if (dataContent === "[DONE]") {
+      controller.enqueue(encoder.encode("data: [DONE]\n\n"))
+      return
+    }
+    try {
+      const parsed = JSON.parse(dataContent)
+      for (const chunk of Array.isArray(parsed) ? parsed : [parsed]) {
+        controller.enqueue(encoder.encode(`data: ${JSON.stringify(unwrapAntigravityChunk(chunk))}\n\n`))
       }
+    } catch {
+      controller.enqueue(encoder.encode(`${line}\n`))
+    }
+  }
+
+  return new TransformStream<Uint8Array, Uint8Array>({
+    transform(value, controller) {
+      const now = Date.now()
+      if (!timing.firstChunkAt) {
+        timing.firstChunkAt = now
+      } else {
+        timing.maxGapMs = Math.max(timing.maxGapMs, now - timing.lastChunkAt)
+      }
+      timing.lastChunkAt = now
+      timing.chunks++
+      timing.bytes += value.byteLength
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split("\n")
+      buffer = lines.pop() ?? ""
+      for (const line of lines) emit(controller, line)
     },
-    cancel(reason) {
-      return reader.cancel(reason)
+    flush(controller) {
+      // Flush a trailing frame that arrived without a final newline.
+      buffer += decoder.decode()
+      if (buffer.trim()) emit(controller, buffer)
+      buffer = ""
     },
   })
 }
@@ -740,6 +837,7 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
   const integrationID = profile === "cli" ? "google-antigravity-cli" : "google-antigravity"
   return async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const urlStr = typeof input === "string" ? input : input instanceof URL ? input.href : input.url
+    const requestStartedAt = Date.now()
     if (!urlStr.includes("GenerateContent") && !urlStr.includes("generateContent")) {
       return fetch(input, init)
     }
@@ -775,39 +873,29 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
 
     const modelMatch = urlStr.match(/\/models\/([^:]+):/)
     const rawModel = modelMatch ? modelMatch[1] : "gemini-pro-agent"
-    const model = MODEL_ALIASES[rawModel] ?? rawModel
+    const candidates = modelCandidates(profile, rawModel)
+    let model = candidates[0] ?? rawModel
 
     const reqBody = typeof init?.body === "string" ? JSON.parse(init.body) : {}
 
-    if (rawModel.includes("-high")) {
-      reqBody.generationConfig = reqBody.generationConfig ?? {}
-      reqBody.generationConfig.thinkingConfig = { thinkingBudget: 24576 }
-    } else if (rawModel.includes("-medium")) {
-      reqBody.generationConfig = reqBody.generationConfig ?? {}
-      reqBody.generationConfig.thinkingConfig = { thinkingBudget: 8192 }
-    } else if (rawModel.includes("-low")) {
-      reqBody.generationConfig = reqBody.generationConfig ?? {}
-      reqBody.generationConfig.thinkingConfig = { thinkingBudget: 1024 }
+    const budget = rawModel.includes("-high")
+      ? 24576
+      : rawModel.includes("-medium")
+        ? 8192
+        : rawModel.includes("-low")
+          ? 1024
+          : undefined
+    if (budget !== undefined && !reqBody.generationConfig?.thinkingConfig) {
+      reqBody.generationConfig = { ...reqBody.generationConfig, thinkingConfig: { thinkingBudget: budget } }
     }
 
-    const envelope = {
-      project: projectID ?? "aicode-consumers",
-      model,
-      request: reqBody,
-    }
-
+    const streaming = urlStr.includes("streamGenerateContent") || urlStr.includes("alt=sse")
     const client = CLIENT_CONFIGS[profile]
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-      "User-Agent": client.userAgent,
-    }
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`
-    }
 
     const executeGenerate = async (
-      authToken?: string,
-      pId?: string,
+      authToken: string | undefined,
+      pId: string | undefined,
+      candidateModel: string,
     ): Promise<Response | undefined> => {
       const currentHeaders: Record<string, string> = {
         "Content-Type": "application/json",
@@ -817,24 +905,28 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
       const count = Array.isArray(reqBody.contents) ? reqBody.contents.length : 1
       const currentEnvelope = {
         project: pId ?? "aicode-consumers",
-        model,
+        model: candidateModel,
         userAgent: "antigravity",
         requestType: "agent",
-        requestId: buildIdeRequestId(pId ?? "aicode-consumers", model, count),
+        requestId: buildIdeRequestId(pId ?? "aicode-consumers", candidateModel, count),
         request: reqBody,
       }
+      const suffix = streaming ? ":streamGenerateContent?alt=sse" : ":generateContent"
 
       let res: Response | undefined
-      for (const baseUrl of ANTIGRAVITY_BASE_URLS) {
+      for (const baseUrl of orderedBaseUrls(profile)) {
         try {
-          const r = await fetch(`${baseUrl}/v1internal:streamGenerateContent?alt=sse`, {
+          const r = await fetch(`${baseUrl}/v1internal${suffix}`, {
             method: "POST",
             headers: currentHeaders,
             body: JSON.stringify(currentEnvelope),
             signal: init?.signal,
           })
           res = r
-          if (r.ok) break
+          if (r.ok) {
+            preferredBaseUrl[profile] = baseUrl
+            break
+          }
         } catch (e) {
           if (!res) res = new Response(String(e), { status: 500 })
         }
@@ -842,7 +934,22 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
       return res
     }
 
-    let upstream = await executeGenerate(token, projectID)
+    const executeWithModelFallback = async (authToken: string | undefined, pId: string | undefined) => {
+      let response = await executeGenerate(authToken, pId, model)
+      for (const next of candidates.slice(1)) {
+        if (response?.status !== 404) break
+        response = await executeGenerate(authToken, pId, next)
+        if (response?.ok) model = next
+      }
+      if (response?.status === 404) {
+        const required = aliasRequired.get(profile) ?? new Set<string>()
+        required.add(rawModel)
+        aliasRequired.set(profile, required)
+      }
+      return response
+    }
+
+    let upstream = await executeWithModelFallback(token, projectID)
 
     // Handle 401 / UNAUTHENTICATED / Token expiration with automatic refresh and failover
     if (upstream && !upstream.ok && (upstream.status === 401 || upstream.status === 403)) {
@@ -866,7 +973,7 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
           if (refreshed.token) {
             token = refreshed.token
             projectID = refreshed.projectID || projectID
-            upstream = await executeGenerate(token, projectID)
+            upstream = await executeWithModelFallback(token, projectID)
           }
         }
 
@@ -880,7 +987,7 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
             token = nextLive.token
             projectID = nextLive.projectID || projectID
             usedConnectionId = nextLive.connectionId
-            upstream = await executeGenerate(token, projectID)
+            upstream = await executeWithModelFallback(token, projectID)
           }
         }
       }
@@ -901,17 +1008,58 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
       return upstream
     }
 
-    // If client requested non-streaming generateContent (e.g. title generation / doGenerate)
-    if (!urlStr.includes("alt=sse")) {
-      const text = await upstream.text()
-      // Unwrap SSE chunks into a single merged GenerateContent response for SDK.
-      return new Response(JSON.stringify(unwrapAntigravitySse(text)), {
+    // Non-streaming callers (title generation, prompt enhancement, doGenerate)
+    // get the plain generateContent response instead of us buffering an entire
+    // SSE exchange and merging it back into JSON.
+    if (!streaming) {
+      const json = await upstream.json()
+      return new Response(JSON.stringify(unwrapAntigravityChunk(json)), {
         status: 200,
         headers: { "Content-Type": "application/json" },
       })
     }
 
-    const transformed = transformSseStream(upstream.body)
+    const timing: StreamTiming = {
+      profile,
+      model,
+      startedAt: requestStartedAt,
+      lastChunkAt: requestStartedAt,
+      chunks: 0,
+      bytes: 0,
+      maxGapMs: 0,
+    }
+
+    let outcome = "closed"
+    const reader = upstream.body
+      .pipeThrough(createIdleGuard(STREAM_IDLE_TIMEOUT_MS, (error) => logStreamTiming(timing, error.message)))
+      .pipeThrough(createSseTransform(timing))
+      .getReader()
+
+    // One read per pull keeps the queue bounded, so a slow consumer throttles
+    // the upstream instead of buffering the whole response in memory.
+    const transformed = new ReadableStream<Uint8Array>({
+      async pull(controller) {
+        try {
+          const { done, value } = await reader.read()
+          if (done) {
+            controller.close()
+            logStreamTiming(timing, outcome)
+            return
+          }
+          controller.enqueue(value)
+        } catch (error) {
+          outcome = String(error)
+          controller.error(error)
+          logStreamTiming(timing, outcome)
+        }
+      },
+      cancel(reason) {
+        outcome = "cancelled"
+        logStreamTiming(timing, outcome)
+        return reader.cancel(reason)
+      },
+    })
+
     return new Response(transformed, {
       status: upstream.status,
       headers: {

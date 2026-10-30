@@ -327,7 +327,7 @@ const main = Effect.gen(function* () {
 
   yield* Effect.promise(() => app.whenReady())
 
-  void ensureDefaultSkills()
+  yield* Effect.promise(() => ensureDefaultSkills())
   void ensureDefaultPython()
 
   if (!TEST_ONBOARDING) migrate()

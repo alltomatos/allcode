@@ -18,7 +18,7 @@ export const ServeCommand = effectCmd({
     if (!Flag.OPENCODE_SERVER_PASSWORD) {
       console.log("Warning: OPENCODE_SERVER_PASSWORD is not set; server is unsecured.")
     }
-    void DefaultSkills.ensureDefaultSkills(Global.Path.home)
+    yield* Effect.promise(() => DefaultSkills.seedDefaultSkills(Global.Path.home))
     void DefaultPython.ensureDefaultPython(Global.Path.home)
     const opts = yield* resolveNetworkOptions(args)
     const server = yield* Effect.promise(() => Server.listen(opts))

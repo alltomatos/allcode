@@ -14,6 +14,13 @@ import {
 import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import type { ChannelAgentUI } from "./bindings"
 
+const DEBOUNCE_MS = 2500
+
+interface PendingBatch {
+  texts: string[]
+  fiber: Fiber.Fiber<void, never>
+}
+
 export interface AgentNativeSession {
   readonly agentId: string
   client?: WaClient
@@ -31,6 +38,8 @@ export interface AgentNativeSession {
 export class WhatsAppNativeManager {
   private sessions = new Map<string, AgentNativeSession>()
   private storePromise = getWhatsAppNativeStore()
+  private processedMessageIds = new Set<string>()
+  private pendingBatches = new Map<string, PendingBatch>()
 
   getSession(agentId: string): AgentNativeSession | undefined {
     return this.sessions.get(agentId)
@@ -226,6 +235,7 @@ export class WhatsAppNativeManager {
             client,
             msgEvent,
             agentUI,
+            appContext,
           })
         }).pipe(
           Effect.catchCause((cause) =>
@@ -331,8 +341,11 @@ export class WhatsAppNativeManager {
     client: WaClient
     msgEvent: WaIncomingMessageEvent
     agentUI: ChannelAgentUI
+    appContext: Context.Context<never>
   }): Effect.Effect<void, never, never> {
-    const { agentId, channel, client, msgEvent, agentUI } = input
+    const { agentId, channel, client, msgEvent, agentUI, appContext } = input
+    const self = this
+    const session = self.sessions.get(agentId)
     return Effect.gen(function* () {
       debug("[WhatsApp Native Inbound Raw Event]:", JSON.stringify({
         key: msgEvent.key,
@@ -342,6 +355,20 @@ export class WhatsAppNativeManager {
 
       // Mensagens enviadas pelo próprio bot
       if (msgEvent.key?.fromMe) return
+
+      // Deduplicação: se a mensagem já foi processada recentemente, ignora
+      const messageId = msgEvent.key?.id
+      if (messageId) {
+        if (self.processedMessageIds.has(messageId)) {
+          debug(`[WhatsApp Inbound Ignored] Mensagem duplicada já processada: id=${messageId}`)
+          return
+        }
+        self.processedMessageIds.add(messageId)
+        if (self.processedMessageIds.size > 2000) {
+          const first = self.processedMessageIds.values().next().value
+          if (first) self.processedMessageIds.delete(first)
+        }
+      }
 
       const chatJid = msgEvent.key?.remoteJid
       if (!chatJid) return
@@ -470,15 +497,86 @@ export class WhatsAppNativeManager {
         }
       }
 
-      debug(`[WhatsApp Inbound Dispatching to AgentUI] agentId=${agentId}`)
+      // Enfileira mensagem no lote debounced para este chat/agente
+      yield* self.enqueueInbound({
+        agentId,
+        channel,
+        client,
+        chatJid,
+        text,
+        agentUI,
+        appContext,
+      })
+    }).pipe(
+      Effect.catch(() => Effect.void),
+    )
+  }
+
+  private enqueueInbound(input: {
+    agentId: string
+    channel: ConfigAgentUIV1.WhatsAppChannelBinding
+    client: WaClient
+    chatJid: string
+    text: string
+    agentUI: ChannelAgentUI
+    appContext: Context.Context<never>
+  }): Effect.Effect<void, never, never> {
+    const self = this
+    return Effect.sync(() => {
+      const key = `${input.agentId}:${input.chatJid}`
+      const existing = self.pendingBatches.get(key)
+      if (existing) {
+        Effect.runFork(Fiber.interrupt(existing.fiber))
+      }
+      const texts = existing ? [...existing.texts, input.text] : [input.text]
+
+      const task = Effect.sleep(Duration.millis(DEBOUNCE_MS)).pipe(
+        Effect.andThen(() =>
+          self.flushBatch({
+            agentId: input.agentId,
+            channel: input.channel,
+            client: input.client,
+            chatJid: input.chatJid,
+            agentUI: input.agentUI,
+            key,
+          }),
+        ),
+        Effect.catchCause((cause) =>
+          Effect.sync(() => {
+            console.error("[WhatsApp Inbound Batch FATAL]", String(cause))
+          }),
+        ),
+      )
+
+      const fiber = Effect.runFork(Effect.provideContext(input.appContext)(task))
+      self.pendingBatches.set(key, { texts, fiber })
+    })
+  }
+
+  private flushBatch(input: {
+    agentId: string
+    channel: ConfigAgentUIV1.WhatsAppChannelBinding
+    client: WaClient
+    chatJid: string
+    agentUI: ChannelAgentUI
+    key: string
+  }): Effect.Effect<void, never, never> {
+    const self = this
+    return Effect.gen(function* () {
+      const batch = self.pendingBatches.get(input.key)
+      self.pendingBatches.delete(input.key)
+      if (!batch || batch.texts.length === 0) return
+
+      const aggregatedText = batch.texts.join("\n")
+      debug(`[WhatsApp Inbound Dispatching Batch to AgentUI] agentId=${input.agentId} count=${batch.texts.length} text="${aggregatedText}"`)
 
       // Dispatch para o AgentUI
-      const result = yield* agentUI
+      const result = yield* input.agentUI
         .dispatchChannelMessage({
-          id: agentId,
-          directory: channel.directory || "default",
-          chatKey: chatJid,
-          message: text,
+          id: input.agentId,
+          directory: input.channel.directory || "default",
+          chatKey: input.chatJid,
+          message: aggregatedText,
           channel: "whatsapp",
         })
         .pipe(
@@ -495,13 +593,13 @@ export class WhatsAppNativeManager {
         return
       }
 
-      debug(`[WhatsApp Inbound Sending Reply] to=${chatJid} text="${result.reply}"`)
+      debug(`[WhatsApp Inbound Sending Reply] to=${input.chatJid} text="${result.reply}"`)
 
       // Envia resposta de volta no mesmo chat com retentativa
       const sendResult = yield* Effect.tryPromise({
-        try: () => client.message.send(chatJid, result.reply),
+        try: () => input.client.message.send(input.chatJid, result.reply),
         catch: (err) => {
-          console.error(`[WhatsApp client.message.send THREW] to=${chatJid}:`, err)
+          console.error(`[WhatsApp client.message.send THREW] to=${input.chatJid}:`, err)
           return err
         },
       }).pipe(
@@ -509,16 +607,16 @@ export class WhatsAppNativeManager {
           schedule: Schedule.exponential(Duration.seconds(2)).pipe(Schedule.both(Schedule.recurs(3))),
         }),
         Effect.tapError((cause) => {
-          console.error(`[WhatsApp Inbound send reply error] to=${chatJid}:`, cause)
+          console.error(`[WhatsApp Inbound send reply error] to=${input.chatJid}:`, cause)
           return Effect.logError("Falha ao enviar resposta WhatsApp nativa", {
-            agentId,
-            chatJid,
+            agentId: input.agentId,
+            chatJid: input.chatJid,
             error: String(cause),
           })
         }),
         Effect.catch(() => Effect.void),
       )
-      debug(`[WhatsApp Inbound Reply Sent Success] to=${chatJid} result=${JSON.stringify(sendResult)}`)
+      debug(`[WhatsApp Inbound Reply Sent Success] to=${input.chatJid} result=${JSON.stringify(sendResult)}`)
     }).pipe(
       Effect.catch(() => Effect.void),
     )

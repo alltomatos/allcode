@@ -1,0 +1,36 @@
+{
+  "name": "@allcode/panel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "build:cloudflare": "vite build && bun ./script/finalize.ts",
+    "deploy": "bun run build:cloudflare && wrangler d1 migrations apply allcode-panel --remote --config wrangler.jsonc && wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply allcode-panel --local --config wrangler.jsonc",
+    "db:migrate:remote": "wrangler d1 migrations apply allcode-panel --remote --config wrangler.jsonc",
+    "preview": "wrangler dev",
+    "start": "vite start",
+    "test": "bun test",
+    "typecheck": "tsgo --noEmit"
+  },
+  "dependencies": {
+    "@solidjs/meta": "catalog:",
+    "@solidjs/router": "catalog:",
+    "@solidjs/start": "catalog:",
+    "nitro": "3.0.1-alpha.1",
+    "solid-js": "catalog:",
+    "vite": "catalog:"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "catalog:",
+    "@tailwindcss/vite": "catalog:",
+    "@types/bun": "catalog:",
+    "@typescript/native-preview": "catalog:",
+    "tailwindcss": "catalog:",
+    "typescript": "catalog:",
+    "wrangler": "4.152.0"
+  }
+}

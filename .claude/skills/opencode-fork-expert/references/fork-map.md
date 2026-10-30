@@ -1,6 +1,6 @@
 # Mapa do fork alltomatos/opencode
 
-**Última verificação:** 2026-10-21 (versões: fork `1.22.1` — prod e dev promoteados em `175e80df7`; upstream `1.18.30` — ver achados da sincronização em `upstream-sync.md`). Este arquivo é um cache leve — os fatos abaixo (versões, quem está à frente de quem) mudam com o tempo. Se a pergunta depender de um número exato e atual (versão publicada agora, quantos commits de diferença), confirme ao vivo (ver seção final) antes de responder como definitivo.
+**Última verificação:** 2026-10-30 (versões: fork `1.26.2` — releases de tenant audit, RBAC, e antigravity resiliência). Este arquivo é um cache leve — os fatos abaixo (versões, quem está à frente de quem) mudam com o tempo. Se a pergunta depender de um número exato e atual (versão publicada agora, quantos commits de diferença), confirme ao vivo (ver seção final) antes de responder como definitivo.
 
 ## Remotes
 

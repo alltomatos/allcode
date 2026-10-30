@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "1.26.1",
+  "version": "1.26.2",
   "name": "allcode",
   "type": "module",
   "license": "MIT",
@@ -12,6 +12,8 @@
     "bench:test": "bun run script/bench-test-suite.ts",
     "profile:test": "bun run script/profile-test-files.ts",
     "build": "bun run script/build.ts",
+    "skills:sync": "bun run script/sync-skills.ts",
+    "skills:check": "bun run script/generate-skills.ts --check",
     "dev": "bun run --conditions=browser ./src/index.ts",
     "dev:temporary": "bun run --conditions=browser ./src/temporary.ts"
   },

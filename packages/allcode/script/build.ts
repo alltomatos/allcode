@@ -13,6 +13,11 @@ process.chdir(dir)
 
 const generated = await import("./generate.ts")
 
+// Fail the release build if the committed skills manifest drifted from the
+// vendored snapshot, instead of shipping an older skill set silently.
+const skills = await import("./generate-skills.ts")
+await skills.check()
+
 import { Script } from "@allcode/script"
 import pkg from "../package.json"
 

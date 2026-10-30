@@ -1,4 +1,5 @@
 import { createSignal, onMount, For, Show, type Component } from "solid-js"
+import { useTenantAuth } from "@/context/tenant-auth"
 import { Icon } from "@allcode/ui/icon"
 import type { IconProps } from "@allcode/ui/icon"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
@@ -15,6 +16,7 @@ export const OnboardingGuide: Component<{
   onOpenSettings?: () => void
 }> = (props) => {
   const language = useLanguage()
+  const tenantAuth = useTenantAuth()
   const [dismissed, setDismissed] = createSignal(true)
   const [collapsed, setCollapsed] = createSignal(false)
   const [activeStep, setActiveStep] = createSignal(0)
@@ -111,16 +113,38 @@ export const OnboardingGuide: Component<{
         {/* Header do Guia */}
         <div class="flex items-start justify-between gap-3">
           <div class="flex items-center gap-3">
-            <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-v2-background-bg-raised border border-v2-border-border-base text-v2-text-text-accent shadow-xs">
-              <Icon name="code" size="normal" />
-            </div>
+            <Show
+              when={tenantAuth.store.tenant?.logoUrl}
+              fallback={
+                <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-v2-background-bg-raised border border-v2-border-border-base text-v2-text-text-accent shadow-xs">
+                  <Icon name="code" size="normal" />
+                </div>
+              }
+            >
+              <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-white p-1 border border-v2-border-border-base shadow-xs overflow-hidden">
+                <img
+                  src={
+                    tenantAuth.store.tenant!.logoUrl!.startsWith("http")
+                      ? tenantAuth.store.tenant!.logoUrl!
+                      : `https://allcode.alltomatos.dev.br${tenantAuth.store.tenant!.logoUrl!}`
+                  }
+                  alt={tenantAuth.store.tenant?.name}
+                  class="max-h-full max-w-full object-contain"
+                />
+              </div>
+            </Show>
             <div class="flex flex-col min-w-0">
               <div class="flex items-center gap-2">
-                <span class="text-15-semibold text-v2-text-text-base">Bem-vindo ao AllCode Desktop</span>
-                <Tag variant="accent">Guia de Boas-vindas</Tag>
+                <span class="text-15-semibold text-v2-text-text-base">
+                  {tenantAuth.store.tenant?.name ? `Bem-vindo à ${tenantAuth.store.tenant.name}` : "Bem-vindo ao AllCode Desktop"}
+                </span>
+                <Tag variant="accent">
+                  {tenantAuth.store.tenant?.name ? "Workspace Corporativo" : "Guia de Boas-vindas"}
+                </Tag>
               </div>
               <p class="text-12-regular text-v2-text-text-muted">
-                Conheça os pilares principais da plataforma corporativa de engenharia de software e automações com IA.
+                {tenantAuth.store.tenant?.welcomeMessage ||
+                  "Conheça os pilares principais da plataforma corporativa de engenharia de software e automações com IA."}
               </p>
             </div>
           </div>

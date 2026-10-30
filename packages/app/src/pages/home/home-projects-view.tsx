@@ -15,6 +15,7 @@ import { getProjectAvatarVariant, type HomeProjectSelection, type LocalProject }
 import { ServerConnection, serverName } from "@/context/server"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
+import { useTenantAuth } from "@/context/tenant-auth"
 import { displayName, getProjectAvatarSource } from "@/pages/layout/helpers"
 import { ServerRowMenuView, serverMenuLabels } from "@/components/server/server-row-menu"
 import { ServerHealthIndicator } from "@/components/server/server-row"
@@ -170,6 +171,7 @@ export function HomeUtilityNav(props: {
   language: ReturnType<typeof useLanguage>
 }) {
   const platform = usePlatform()
+  const tenantAuth = useTenantAuth()
   return (
     <div class={`${props.class ?? ""} min-w-0 flex-col gap-1 pr-3`}>
       <Show when={props.onOpenAgenda}>
@@ -218,6 +220,37 @@ export function HomeUtilityNav(props: {
         <IconV2 name="help" size="small" />
         <span class={HOME_PROJECT_NAV_LABEL}>{props.language.t("sidebar.help")}</span>
       </HomeProjectNavButton>
+
+      {/* Perfil do Utilizador Autenticado e Botão de Logout */}
+      <Show when={tenantAuth.isLoggedIn() && tenantAuth.store.user}>
+        {(u) => (
+          <div class="mt-2 flex flex-col gap-1.5 rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-02 p-2">
+            <div class="flex items-center gap-2 min-w-0">
+              <div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-800 text-[10px] font-bold text-white">
+                {u().name.slice(0, 2).toUpperCase()}
+              </div>
+              <div class="flex flex-col min-w-0 flex-1">
+                <span class="truncate text-11-medium text-v2-text-text-base leading-tight">
+                  {u().name}
+                </span>
+                <span class="truncate text-[10px] text-emerald-400 leading-tight">
+                  {tenantAuth.store.tenant?.name || u().email}
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="mt-1 flex h-6 w-full items-center justify-center gap-1.5 rounded border border-v2-border-border-base bg-v2-background-bg-base text-[11px] font-medium text-v2-text-text-muted hover:border-rose-500/50 hover:bg-rose-950/30 hover:text-rose-300 transition cursor-pointer"
+              onClick={() => tenantAuth.logout()}
+              title="Terminar sessão"
+            >
+              <IconV2 name="close" size="small" class="size-3 text-rose-400" />
+              <span>Terminar Sessão</span>
+            </button>
+          </div>
+        )}
+      </Show>
+
       <Show when={platform.version}>
         {(version) => (
           <div class="min-w-0 px-2 pt-0.5 text-11-regular text-v2-text-text-faint select-none">v{version()}</div>

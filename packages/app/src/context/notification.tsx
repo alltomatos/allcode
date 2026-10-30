@@ -7,6 +7,7 @@ import type { ServerSync } from "./server-sync"
 import { usePlatform } from "@/context/platform"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
+import { useTenantAuth } from "@/context/tenant-auth"
 import { base64Encode } from "@allcode/core/util/encode"
 import { decode64 } from "@/utils/base64"
 import { EventSessionError } from "@allcode/sdk/v2"
@@ -123,6 +124,7 @@ export const { use: useNotification, provider: NotificationProvider } = createSi
     const platform = usePlatform()
     const settings = useSettings()
     const language = useLanguage()
+    const tenantAuth = useTenantAuth()
     const owner = getOwner()
     const states = new Map<ServerScope, { dispose: () => void; state: NotificationState }>()
 
@@ -158,6 +160,7 @@ export const { use: useNotification, provider: NotificationProvider } = createSi
             platform,
             settings,
             language,
+            tenantAuth,
             navigate,
           }),
         }),
@@ -223,6 +226,7 @@ function createServerNotificationState(input: {
   platform: ReturnType<typeof usePlatform>
   settings: ReturnType<typeof useSettings>
   language: ReturnType<typeof useLanguage>
+  tenantAuth: ReturnType<typeof useTenantAuth>
   navigate: (href: string) => void
 }) {
   const serverSDK = () => input.sdk
@@ -230,6 +234,7 @@ function createServerNotificationState(input: {
   const platform = input.platform
   const settings = input.settings
   const language = input.language
+  const tenantAuth = input.tenantAuth
 
   const empty: Notification[] = []
 
@@ -381,6 +386,45 @@ function createServerNotificationState(input: {
           },
         ],
       })
+
+      // Registo assíncrono de auditoria executiva da sessão para o Portal corporativo do Tenant
+      if (tenantAuth.isLoggedIn()) {
+        const id = session.id
+        const startedAt = typeof session.time?.created === "number" ? session.time.created : Date.now()
+        const endedAt = typeof session.time?.updated === "number" ? session.time.updated : Date.now()
+        const durationMs = Math.max(0, endedAt - startedAt)
+        const tokensInput = session.tokens?.input ?? 0
+        const tokensOutput = session.tokens?.output ?? 0
+        const tokensReasoning = session.tokens?.reasoning ?? 0
+        const tokensTotal = tokensInput + tokensOutput + tokensReasoning
+        const costUsd = session.cost ?? 0
+
+        const sync = serverSync().ensureDirSyncContext(directory)
+        const messages = sync.data.message[id] || []
+        const userMessages = messages.filter((m) => m.role === "user") as any[]
+        const lastUserMsg = userMessages[userMessages.length - 1]
+
+        let summary = session.title || "Sessão de desenvolvimento e automação"
+        if (lastUserMsg?.summary?.title) {
+          summary = lastUserMsg.summary.title
+        }
+
+        void tenantAuth.recordSessionAudit({
+          sessionID: id,
+          title: session.title || "Sessão AllCode",
+          summary,
+          workspace: directory,
+          startedAt,
+          endedAt,
+          tokensTotal,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          costUsd,
+          durationMs,
+          messagesCount: messages.length,
+        })
+      }
     })
   }
 

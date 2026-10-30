@@ -1,6 +1,32 @@
 {
   "releases": [
     {
+      "tag": "v1.26.2",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Portal do Tenant: Dashboard de KPIs e Auditoria Executiva de Sessões",
+              "description": "O portal corporativo (allcode.alltomatos.dev.br) ganhou módulo de auditoria com resumos executivos, caminhos de workspace locais, timestamps e métricas de consumo (tokens de input/output/reasoning e custo USD). As páginas de colaborador exibem um grid de KPIs consolidados de produtividade e gasto de IA."
+            },
+            {
+              "title": "Controle Granular de Permissões (RBAC) e Bloqueio Imediato",
+              "description": "Administradores podem configurar permissões granulares por colaborador para uso de AgentUI, Rotinas e alteração própria de senha. O bloqueio ou suspensão de conta revoga o acesso imediatamente no desktop, desconectando o usuário e impedindo novas operações."
+            },
+            {
+              "title": "Proteção e Sincronização Dinâmica no Desktop",
+              "description": "O AllCode Desktop sincroniza o status e as permissões ativas em segundo plano, ocultando ou bloqueando automaticamente abas e rotas restritas e reportando os dados de auditoria ao término de cada sessão de trabalho."
+            },
+            {
+              "title": "Estabilidade do Antigravity e WhatsApp Nativo",
+              "description": "Adicionado guard de inatividade para streaming SSE evitando travamentos silenciosos, otimização de compactação e modelos no Google Antigravity, e suporte a agregação e debouncing de mensagens no canal nativo de WhatsApp do AgentUI."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.26.1",
       "highlights": [
         {

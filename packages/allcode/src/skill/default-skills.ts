@@ -1,46 +1,75 @@
 export * as DefaultSkills from "./default-skills"
 
-import { existsSync } from "node:fs"
-import { mkdir, writeFile } from "node:fs/promises"
+import { mkdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
-import { ZipReader, Uint8ArrayReader, Uint8ArrayWriter } from "@zip.js/zip.js"
+import { FILES, VERSION } from "./skills.gen"
 
-// Mirrors packages/desktop/src/main/default-skills.ts — the desktop app
-// seeds this same folder for the bundled Electron server, but a headless
-// `opencode serve`/`opencode web` on a bare VPS never goes through that
-// code path, so it never got the base skill set. Seeding it here instead
-// (once, on server boot) makes CLI-only deployments behave the same as the
-// desktop app instead of silently missing every default skill.
-const SKILLS_REPO_ZIP = "https://github.com/alltomatos/skills/archive/refs/heads/main.zip"
+// The skills are embedded in the binary (see script/generate-skills.ts) so a
+// fresh install works offline instead of downloading a moving branch at
+// runtime. They are seeded into the legacy config dir because the loader scans
+// both ~/.allcode and ~/.opencode for skill folders.
+const TARGET = join(".opencode", "skills")
+const MARKER = ".allcode-skills.json"
 
-export async function ensureDefaultSkills(home: string): Promise<void> {
-  const target = join(home, ".opencode", "skills")
-  if (existsSync(target)) return
+type Marker = {
+  version?: string
+}
 
-  try {
-    const response = await fetch(SKILLS_REPO_ZIP)
-    if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const buffer = new Uint8Array(await response.arrayBuffer())
+export type SeedResult = {
+  target: string
+  written: number
+  skipped: boolean
+}
 
-    const reader = new ZipReader(new Uint8ArrayReader(buffer))
-    const entries = await reader.getEntries()
+export async function ensureDefaultSkills(home: string, options?: { force?: boolean }): Promise<SeedResult> {
+  const target = join(home, TARGET)
+  const markerPath = join(target, MARKER)
 
-    for (const entry of entries) {
-      if (entry.directory || !entry.getData) continue
-      // Zip entries are rooted at "<repo>-<branch>/..." — only pull files
-      // under that root's "skills/" folder, matching the loader's glob.
-      const match = /^[^/]+\/skills\/(.+)$/.exec(entry.filename)
-      if (!match) continue
-      const relative = match[1]
-
-      const dest = join(target, relative)
-      await mkdir(dirname(dest), { recursive: true })
-      const data = await entry.getData(new Uint8ArrayWriter())
-      await writeFile(dest, data)
-    }
-    await reader.close()
-  } catch {
-    // Best-effort — a missing base skill set shouldn't stop the server
-    // from starting; the user can still install skills manually.
+  if (!options?.force && (await readMarker(markerPath))?.version === VERSION) {
+    return { target, written: 0, skipped: true }
   }
+
+  await mkdir(target, { recursive: true })
+
+  let written = 0
+  for (const [relative, content] of Object.entries(FILES)) {
+    const dest = join(target, relative)
+    await mkdir(dirname(dest), { recursive: true })
+
+    try {
+      // Never overwrite a skill the user edited or replaced. Missing files are
+      // still filled in, which also repairs a folder left half-seeded by an
+      // older build.
+      await writeFile(dest, content, { flag: "wx" })
+      written++
+    } catch (error) {
+      if (!isExistsError(error)) throw error
+    }
+  }
+
+  await writeFile(markerPath, `${JSON.stringify({ version: VERSION, files: Object.keys(FILES).length }, null, 2)}\n`)
+  return { target, written, skipped: false }
+}
+
+export async function seedDefaultSkills(home: string) {
+  try {
+    return await ensureDefaultSkills(home)
+  } catch (error) {
+    console.error("default-skills: failed to seed bundled skills", error)
+    return undefined
+  }
+}
+
+async function readMarker(path: string): Promise<Marker | undefined> {
+  try {
+    const data: unknown = JSON.parse(await readFile(path, "utf8"))
+    if (typeof data !== "object" || data === null || !("version" in data)) return undefined
+    return { version: typeof data.version === "string" ? data.version : undefined }
+  } catch {
+    return undefined
+  }
+}
+
+function isExistsError(error: unknown) {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "EEXIST"
 }
