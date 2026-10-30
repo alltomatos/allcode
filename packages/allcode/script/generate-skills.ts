@@ -64,12 +64,14 @@ export async function check() {
   const currentManifest = await readFile(manifestPath, "utf8").catch(() => "")
   const currentMarker = await readFile(markerPath, "utf8").catch(() => "")
 
-  if (currentManifest !== manifest) {
+  const normalize = (s: string) => s.replace(/\r\n/g, "\n").trim()
+
+  if (normalize(currentManifest) !== normalize(manifest)) {
     throw new Error(
       `Generated skills manifest is stale. Run "bun run script/generate-skills.ts" from packages/allcode.`,
     )
   }
-  if (currentMarker !== marker) {
+  if (normalize(currentMarker) !== normalize(marker)) {
     throw new Error(
       `Vendored skills marker is stale. Run "bun run script/generate-skills.ts" from packages/allcode.`,
     )
