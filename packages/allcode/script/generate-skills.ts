@@ -28,7 +28,10 @@ async function walk(root: string, prefix = ""): Promise<string[]> {
 async function render() {
   const paths = (await walk(skillsDir)).toSorted()
   const files = await Promise.all(
-    paths.map(async (relative) => [relative, await readFile(path.join(skillsDir, relative), "utf8")] as const),
+    paths.map(
+      async (relative) =>
+        [relative, (await readFile(path.join(skillsDir, relative), "utf8")).replace(/\r\n/g, "\n")] as const,
+    ),
   )
 
   const manifest = [
