@@ -1,6 +1,32 @@
 {
   "releases": [
     {
+      "tag": "v1.27.0",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Perfis de acesso reutilizáveis (grupos) no Portal do Tenant",
+              "description": "O portal ganhou grupos de perfil com permissões por recurso (AgentUI, rotinas, servidores, provedores, modelos, combos, skills, memórias e MCP). Cada grupo pode ser atribuído a vários colaboradores e as permissões se somam sem revogar acessos concedidos por outro grupo."
+            },
+            {
+              "title": "Acesso individual, modelos padrão e bloqueio de Configurações",
+              "description": "Administradores podem definir overrides individuais que vencem os grupos, escolher o modelo padrão por colaborador e por tenant, e fechar o acesso às Configurações do Desktop. Os padrões aparecem automaticamente na primeira mensagem de cada sessão."
+            },
+            {
+              "title": "Troca de senha no próprio aplicativo",
+              "description": "O Desktop agora permite trocar a senha em um novo menu de conta, validando a senha atual e reportando erros localizados. Quando o administrador desativa a troca de senha, a opção some do menu."
+            },
+            {
+              "title": "Versão do aplicativo reportada ao portal",
+              "description": "Cada login e verificação de status envia a versão do AllCode Desktop em execução. O portal exibe a versão e a data do último reporte por colaborador para facilitar o suporte."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.26.2",
       "highlights": [
         {
