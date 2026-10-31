@@ -43,7 +43,6 @@ export function NewHome() {
           <HomeUtilityNav
             class="flex lg:hidden"
             onOpenSettings={projects.utility.settings}
-            onOpenHelp={projects.utility.help}
             onOpenStats={() => navigate("/stats")}
             onOpenMedia={() => navigate("/media")}
             onOpenAgenda={() => navigate("/agenda")}

@@ -218,7 +218,6 @@ export const AppProjectSidebar: Component = () => {
         <HomeUtilityNav
           class="mt-2 flex shrink-0 border-t border-v2-border-border-base pt-2"
           onOpenSettings={projectsController.utility.settings}
-          onOpenHelp={projectsController.utility.help}
           onOpenStats={() => navigate("/stats")}
           onOpenMedia={() => navigate("/media")}
           onOpenAgenda={() => navigate("/agenda")}

@@ -1,4 +1,4 @@
-import { Component, Show, createMemo, createSignal, startTransition } from "solid-js"
+import { Component, Show, createEffect, createMemo, createSignal, startTransition } from "solid-js"
 import { Dialog } from "@allcode/ui/v2/dialog-v2"
 import { TabsV2 } from "@allcode/ui/v2/tabs-v2"
 import { Icon } from "@allcode/ui/icon"
@@ -21,6 +21,7 @@ import { useDialog } from "@allcode/ui/context/dialog"
 import { useLayout } from "@/context/layout"
 import { useTabs } from "@/context/tabs"
 import { useServerSync } from "@/context/server-sync"
+import { useTenantAuth } from "@/context/tenant-auth"
 
 export const DialogSettings: Component<{
   sessionID?: string
@@ -33,7 +34,21 @@ export const DialogSettings: Component<{
   const tabs = useTabs()
   const serverSync = useServerSync()
   const maintenance = useMaintenance()
+  const tenantAuth = useTenantAuth()
   const [tab, setTab] = createSignal(props.defaultValue ?? "general")
+
+  const sectionFor = (value: string) => {
+    if (value === "memory") return "memories"
+    if (value === "externalAgents") return "agents"
+    if (["providers", "models", "combos", "skills", "mcp", "servers"].includes(value))
+      return value as "providers" | "models" | "combos" | "skills" | "mcp" | "servers"
+    return undefined
+  }
+
+  createEffect(() => {
+    const section = sectionFor(tab())
+    if (section && !tenantAuth.canUseSettings(section)) setTab("general")
+  })
   const directory = createMemo(() => {
     const route = layout.route()
     if (route.type === "dir-new-sesssion") return route.dir
@@ -82,48 +97,64 @@ export const DialogSettings: Component<{
                 <div class="flex flex-col gap-1.5">
                   <TabsV2.SectionTitle>{language.t("settings.section.server")}</TabsV2.SectionTitle>
                   <div class="flex flex-col gap-1.5 w-full">
-                    <TabsV2.Trigger value="servers">
-                      <Icon name="server" />
-                      {language.t("status.popover.tab.servers")}
-                    </TabsV2.Trigger>
-                    <TabsV2.Trigger value="providers">
-                      <Icon name="providers" />
-                      {language.t("settings.providers.title")}
-                    </TabsV2.Trigger>
-                    <TabsV2.Trigger value="models">
-                      <Icon name="models" />
-                      {language.t("settings.models.title")}
-                    </TabsV2.Trigger>
-                    <TabsV2.Trigger value="combos">
-                      <Icon name="branch" />
-                      {language.t("settings.combos.title")}
-                    </TabsV2.Trigger>
+                    <Show when={tenantAuth.canUseSettings("servers")}>
+                      <TabsV2.Trigger value="servers">
+                        <Icon name="server" />
+                        {language.t("status.popover.tab.servers")}
+                      </TabsV2.Trigger>
+                    </Show>
+                    <Show when={tenantAuth.canUseSettings("providers")}>
+                      <TabsV2.Trigger value="providers">
+                        <Icon name="providers" />
+                        {language.t("settings.providers.title")}
+                      </TabsV2.Trigger>
+                    </Show>
+                    <Show when={tenantAuth.canUseSettings("models")}>
+                      <TabsV2.Trigger value="models">
+                        <Icon name="models" />
+                        {language.t("settings.models.title")}
+                      </TabsV2.Trigger>
+                    </Show>
+                    <Show when={tenantAuth.canUseSettings("combos")}>
+                      <TabsV2.Trigger value="combos">
+                        <Icon name="branch" />
+                        {language.t("settings.combos.title")}
+                      </TabsV2.Trigger>
+                    </Show>
                   </div>
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                   <TabsV2.SectionTitle>{language.t("settings.section.customize")}</TabsV2.SectionTitle>
                   <div class="flex flex-col gap-1.5 w-full">
-                    <TabsV2.Trigger value="skills">
-                      <Icon name="brain" />
-                      {language.t("settings.skills.title")}
-                    </TabsV2.Trigger>
-                    <TabsV2.Trigger value="memory">
-                      <Icon name="archive" />
-                      {language.t("settings.memory.title")}
-                    </TabsV2.Trigger>
-                    <TabsV2.Trigger value="mcp">
-                      <Icon name="link" />
-                      {language.t("settings.mcp.title")}
-                    </TabsV2.Trigger>
+                    <Show when={tenantAuth.canUseSettings("skills")}>
+                      <TabsV2.Trigger value="skills">
+                        <Icon name="brain" />
+                        {language.t("settings.skills.title")}
+                      </TabsV2.Trigger>
+                    </Show>
+                    <Show when={tenantAuth.canUseSettings("memories")}>
+                      <TabsV2.Trigger value="memory">
+                        <Icon name="archive" />
+                        {language.t("settings.memory.title")}
+                      </TabsV2.Trigger>
+                    </Show>
+                    <Show when={tenantAuth.canUseSettings("mcp")}>
+                      <TabsV2.Trigger value="mcp">
+                        <Icon name="link" />
+                        {language.t("settings.mcp.title")}
+                      </TabsV2.Trigger>
+                    </Show>
                     <TabsV2.Trigger value="integrations">
                       <Icon name="share" />
                       {language.t("settings.integrations.title")}
                     </TabsV2.Trigger>
-                    <TabsV2.Trigger value="externalAgents">
-                      <Icon name="terminal" />
-                      {language.t("settings.externalAgents.title")}
-                    </TabsV2.Trigger>
+                    <Show when={tenantAuth.canUseSettings("agents")}>
+                      <TabsV2.Trigger value="externalAgents">
+                        <Icon name="terminal" />
+                        {language.t("settings.externalAgents.title")}
+                      </TabsV2.Trigger>
+                    </Show>
                   </div>
                 </div>
               </div>

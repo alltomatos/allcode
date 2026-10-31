@@ -148,5 +148,57 @@ describe("restorePromptModel", () => {
     expect(restored).toBe(false)
     expect(calls).toEqual([])
   })
+
+  test("applies the tenant default when the collaborator has no saved choice", () => {
+    const calls: unknown[] = []
+    const restored = restorePromptModel(
+      {
+        model: {
+          current: () => undefined,
+          set: (model) => calls.push(model),
+          variant: {
+            current: () => undefined,
+            set: (variant) => calls.push(variant),
+          },
+        },
+      },
+      {
+        model: {
+          current: () => undefined,
+          set() {},
+        },
+      },
+      { providerID: "anthropic", modelID: "claude-sonnet" },
+    )
+
+    expect(restored).toBe(true)
+    expect(calls).toEqual([{ providerID: "anthropic", modelID: "claude-sonnet" }, undefined])
+  })
+
+  test("the collaborator's own saved model wins over the tenant default", () => {
+    const calls: unknown[] = []
+    const restored = restorePromptModel(
+      {
+        model: {
+          current: () => undefined,
+          set: (model) => calls.push(model),
+          variant: {
+            current: () => undefined,
+            set: (variant) => calls.push(variant),
+          },
+        },
+      },
+      {
+        model: {
+          current: () => ({ providerID: "openai", modelID: "gpt-4o" }),
+          set() {},
+        },
+      },
+      { providerID: "anthropic", modelID: "claude-sonnet" },
+    )
+
+    expect(restored).toBe(true)
+    expect(calls).toEqual([{ providerID: "openai", modelID: "gpt-4o" }, undefined])
+  })
 })
 

@@ -34,6 +34,7 @@ import { useCommand } from "@/context/command"
 import { DirectoryDataProvider } from "@/pages/directory-layout"
 import { useServerSync } from "@/context/server-sync"
 import { useLanguage } from "@/context/language"
+import { useTenantAuth } from "@/context/tenant-auth"
 import { useLayout } from "@/context/layout"
 import { ModelsProvider } from "@/context/models"
 import { useNotification } from "@/context/notification"
@@ -124,6 +125,7 @@ export default function Page() {
   const queryClient = useQueryClient()
   const dialog = useDialog()
   const language = useLanguage()
+  const tenantAuth = useTenantAuth()
   const sdk = useSDK()
   const serverSDK = useServerSDK()
   const settings = useSettings()
@@ -305,11 +307,16 @@ export default function Page() {
   createEffect(() => {
     const id = params.id
     if (!id || !prompt.ready() || !local.session.ready()) return
-    if (restoredModelSession !== id) {
-      restoredModelSession = id
-      if (restorePromptModel(local, prompt)) return
-    }
-    syncPromptModel(local, prompt)
+      if (restoredModelSession !== id) {
+        restoredModelSession = id
+        const fallback = tenantAuth.defaultModel?.()
+        const tenantDefault =
+          fallback?.provider && fallback?.model
+            ? { providerID: fallback.provider, modelID: fallback.model }
+            : undefined
+        if (restorePromptModel(local, prompt, tenantDefault)) return
+      }
+      syncPromptModel(local, prompt)
   })
 
   createEffect(

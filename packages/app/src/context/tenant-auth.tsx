@@ -2,6 +2,7 @@ import { createSimpleContext } from "@allcode/ui/context"
 import { persisted, Persist } from "@/utils/persist"
 import { createStore } from "solid-js/store"
 import { createMemo, onMount, onCleanup } from "solid-js"
+import { usePlatform } from "@/context/platform"
 
 const DEFAULT_AUTH_URL = "https://allcode.alltomatos.dev.br"
 
@@ -21,6 +22,33 @@ export interface UserPermissions {
   changePassword: boolean
 }
 
+export type AccessResource =
+  | "agentui"
+  | "routines"
+  | "servers"
+  | "providers"
+  | "models"
+  | "combos"
+  | "skills"
+  | "memories"
+  | "mcp"
+
+export type SettingsSection =
+  | "providers"
+  | "models"
+  | "combos"
+  | "skills"
+  | "memories"
+  | "mcp"
+  | "servers"
+  | "routines"
+  | "agents"
+
+export interface ModelDefault {
+  provider?: string
+  model?: string
+}
+
 export interface UserSession {
   id: string
   name: string
@@ -28,6 +56,10 @@ export interface UserSession {
   role: string
   mustChangePassword?: boolean
   permissions?: UserPermissions
+  access?: Partial<Record<AccessResource, boolean>>
+  settings?: Partial<Record<SettingsSection, boolean>>
+  canOpenSettings?: boolean
+  defaultModel?: ModelDefault
 }
 
 export interface SessionAuditPayload {
@@ -66,23 +98,32 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
       createStore<TenantAuthState>(DEFAULT_STATE),
     )
 
+    const platform = usePlatform()
+    const appVersion = () => platform.version
+
     const isLoggedIn = createMemo(() => Boolean(store.isLoggedIn && store.user))
     const isFirstLogin = createMemo(() => !store.tenant && !store.lastEmail)
 
-    // RBAC: Owner e Admin têm acesso total; membros seguem as permissões granulares configuradas
-    const canUseAgentUI = createMemo(() => {
+    // RBAC: Owner e Admin têm acesso total; membros seguem o mapa de acesso
+    // resolvido pelo portal (indivíduo > grupos > padrão do tenant).
+    const isPrivileged = () => {
       const u = store.user
-      if (!u) return false
-      if (u.role === "owner" || u.role === "admin") return true
-      return u.permissions?.agentui ?? true
-    })
+      return u?.role === "owner" || u?.role === "admin"
+    }
 
-    const canUseRoutines = createMemo(() => {
+    const canUse = (resource: AccessResource) => {
       const u = store.user
       if (!u) return false
-      if (u.role === "owner" || u.role === "admin") return true
-      return u.permissions?.routines ?? true
-    })
+      if (isPrivileged()) return true
+      const value = u.access?.[resource]
+      if (value !== undefined) return value
+      if (resource === "agentui") return u.permissions?.agentui ?? true
+      if (resource === "routines") return u.permissions?.routines ?? true
+      return true
+    }
+
+    const canUseAgentUI = createMemo(() => canUse("agentui"))
+    const canUseRoutines = createMemo(() => canUse("routines"))
 
     const canChangePassword = createMemo(() => {
       const u = store.user
@@ -90,6 +131,24 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
       if (u.role === "owner" || u.role === "admin") return true
       return u.permissions?.changePassword ?? true
     })
+
+    const canOpenSettings = createMemo(() => {
+      const u = store.user
+      if (!u) return false
+      if (u.role === "owner" || u.role === "admin") return true
+      return u.canOpenSettings !== false
+    })
+
+    const canUseSettings = (section: SettingsSection) => {
+      const u = store.user
+      if (!u) return false
+      if (isPrivileged()) return true
+      if (u.canOpenSettings === false) return false
+      const value = u.settings?.[section]
+      return value !== false
+    }
+
+    const defaultModel = createMemo(() => store.user?.defaultModel)
 
     const login = (user: UserSession, tenant: TenantInfo) => {
       setStore({
@@ -130,8 +189,10 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
       if (!u || !t || !store.isLoggedIn) return
 
       try {
-        const url = `${DEFAULT_AUTH_URL}/api/v1/auth/status?userId=${encodeURIComponent(u.id)}&orgId=${encodeURIComponent(t.id)}`
-        const res = await fetch(url)
+        const version = appVersion()
+        const query = new URLSearchParams({ userId: u.id, orgId: t.id })
+        if (version) query.set("appVersion", version)
+        const res = await fetch(`${DEFAULT_AUTH_URL}/api/v1/auth/status?${query.toString()}`)
         if (!res.ok) {
           if (res.status === 403 || res.status === 401) {
             logout(true)
@@ -146,6 +207,10 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
           } else if (data.permissions) {
             // Sincroniza permissões RBAC caso o administrador tenha alterado no portal
             setStore("user", "permissions", data.permissions)
+            if (data.access) setStore("user", "access", data.access)
+            if (data.settings) setStore("user", "settings", data.settings)
+            if (typeof data.canOpenSettings === "boolean") setStore("user", "canOpenSettings", data.canOpenSettings)
+            if (data.defaultModel) setStore("user", "defaultModel", data.defaultModel)
           }
         }
       } catch {
@@ -169,6 +234,7 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
             endedAt: payload.endedAt ? new Date(payload.endedAt).toISOString() : undefined,
             userId: u.id,
             orgId: t.id,
+            appVersion: appVersion(),
           }),
         })
       } catch {
@@ -192,8 +258,12 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
       isLoggedIn,
       isFirstLogin,
       canUseAgentUI,
-      canUseRoutines,
-      canChangePassword,
+        canUseRoutines,
+        canChangePassword,
+        canUse,
+        canOpenSettings,
+        canUseSettings,
+        defaultModel,
       login,
       logout,
       switchAccount,

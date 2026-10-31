@@ -1,4 +1,4 @@
-import { type Accessor, createMemo, For, type JSX, onCleanup, Show, splitProps } from "solid-js"
+import { type Accessor, createMemo, createSignal, For, type JSX, onCleanup, Show, splitProps } from "solid-js"
 import { createStore } from "solid-js/store"
 import { DragDropProvider, PointerSensor } from "@dnd-kit/solid"
 import { isSortable, useSortable } from "@dnd-kit/solid/sortable"
@@ -6,6 +6,7 @@ import { AutoScroller, Feedback, PointerActivationConstraints } from "@dnd-kit/d
 import { RestrictToVerticalAxis } from "@dnd-kit/abstract/modifiers"
 import { RestrictToElement } from "@dnd-kit/dom/modifiers"
 import { ScrollView } from "@allcode/ui/scroll-view"
+import { Icon } from "@allcode/ui/icon"
 import { ProjectAvatar } from "@allcode/ui/v2/project-avatar-v2"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
@@ -16,6 +17,7 @@ import { ServerConnection, serverName } from "@/context/server"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
 import { useTenantAuth } from "@/context/tenant-auth"
+import { AccountModal } from "@/components/account-modal"
 import { displayName, getProjectAvatarSource } from "@/pages/layout/helpers"
 import { ServerRowMenuView, serverMenuLabels } from "@/components/server/server-row-menu"
 import { ServerHealthIndicator } from "@/components/server/server-row"
@@ -73,7 +75,6 @@ export type HomeProjectsViewProps = {
   onClearNotifications: (server: ServerConnection.Any, project: LocalProject) => void
   onCloseProject: (server: ServerConnection.Any, directory: string) => void
   onOpenSettings: () => void
-  onOpenHelp: () => void
 }
 
 export function HomeProjectsView(props: HomeProjectsViewProps) {
@@ -164,7 +165,6 @@ export function HomeProjectsView(props: HomeProjectsViewProps) {
 export function HomeUtilityNav(props: {
   class?: string
   onOpenSettings: () => void
-  onOpenHelp: () => void
   onOpenStats?: () => void
   onOpenMedia?: () => void
   onOpenAgenda?: () => void
@@ -172,6 +172,7 @@ export function HomeUtilityNav(props: {
 }) {
   const platform = usePlatform()
   const tenantAuth = useTenantAuth()
+  const [accountOpen, setAccountOpen] = createSignal(false)
   return (
     <div class={`${props.class ?? ""} min-w-0 flex-col gap-1 pr-3`}>
       <Show when={props.onOpenAgenda}>
@@ -204,51 +205,46 @@ export function HomeUtilityNav(props: {
           <span class={HOME_PROJECT_NAV_LABEL}>{props.language.t("sidebar.stats")}</span>
         </HomeProjectNavButton>
       </Show>
-      <HomeProjectNavButton
-        type="button"
-        class="text-v2-text-text-faint [&>[data-slot=icon-svg]]:text-v2-icon-icon-muted"
-        onClick={props.onOpenSettings}
-      >
-        <IconV2 name="settings-gear" size="small" />
-        <span class={HOME_PROJECT_NAV_LABEL}>{props.language.t("sidebar.settings")}</span>
-      </HomeProjectNavButton>
-      <HomeProjectNavButton
-        type="button"
-        class="text-v2-text-text-faint [&>[data-slot=icon-svg]]:text-v2-icon-icon-muted"
-        onClick={props.onOpenHelp}
-      >
-        <IconV2 name="help" size="small" />
-        <span class={HOME_PROJECT_NAV_LABEL}>{props.language.t("sidebar.help")}</span>
-      </HomeProjectNavButton>
+      <Show when={tenantAuth.canOpenSettings()}>
+        <HomeProjectNavButton
+          type="button"
+          class="text-v2-text-text-faint [&>[data-slot=icon-svg]]:text-v2-icon-icon-muted"
+          onClick={props.onOpenSettings}
+        >
+          <IconV2 name="settings-gear" size="small" />
+          <span class={HOME_PROJECT_NAV_LABEL}>{props.language.t("sidebar.settings")}</span>
+        </HomeProjectNavButton>
+      </Show>
 
-      {/* Perfil do Utilizador Autenticado e Botão de Logout */}
+      {/* Perfil discreto do colaborador — abre o menu da conta */}
       <Show when={tenantAuth.isLoggedIn() && tenantAuth.store.user}>
         {(u) => (
-          <div class="mt-2 flex flex-col gap-1.5 rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-02 p-2">
-            <div class="flex items-center gap-2 min-w-0">
-              <div class="flex size-6 shrink-0 items-center justify-center rounded-full bg-emerald-800 text-[10px] font-bold text-white">
-                {u().name.slice(0, 2).toUpperCase()}
-              </div>
-              <div class="flex flex-col min-w-0 flex-1">
-                <span class="truncate text-11-medium text-v2-text-text-base leading-tight">
-                  {u().name}
-                </span>
-                <span class="truncate text-[10px] text-emerald-400 leading-tight">
-                  {tenantAuth.store.tenant?.name || u().email}
-                </span>
-              </div>
-            </div>
-            <button
-              type="button"
-              class="mt-1 flex h-6 w-full items-center justify-center gap-1.5 rounded border border-v2-border-border-base bg-v2-background-bg-base text-[11px] font-medium text-v2-text-text-muted hover:border-rose-500/50 hover:bg-rose-950/30 hover:text-rose-300 transition cursor-pointer"
-              onClick={() => tenantAuth.logout()}
-              title="Terminar sessão"
+          <button
+            type="button"
+            class="mt-2 flex w-full items-center gap-2 rounded-lg border border-v2-border-border-base bg-v2-background-bg-layer-01 px-2 py-1.5 text-left transition hover:bg-v2-background-bg-layer-02 cursor-pointer"
+            onClick={() => setAccountOpen(true)}
+            aria-label={props.language.t("sidebar.account.manage")}
+            title={props.language.t("sidebar.account.manage")}
+          >
+            <div
+              class="flex size-6 shrink-0 items-center justify-center rounded-full text-[10px] font-semibold"
+              style={{ background: "#0f9d6e", color: "#ffffff" }}
             >
-              <IconV2 name="close" size="small" class="size-3 text-rose-400" />
-              <span>Terminar Sessão</span>
-            </button>
-          </div>
+              {u().name.slice(0, 2).toUpperCase()}
+            </div>
+            <div class="flex min-w-0 flex-1 flex-col">
+              <span class="truncate text-12-medium text-v2-text-text-base leading-tight">{u().name}</span>
+              <span class="truncate text-[10px] text-v2-text-text-faint leading-tight">
+                {tenantAuth.store.tenant?.name || u().email}
+              </span>
+            </div>
+            <Icon name="chevron-right" size="small" class="size-3 shrink-0 text-v2-icon-icon-muted" />
+          </button>
         )}
+      </Show>
+
+      <Show when={accountOpen() && tenantAuth.isLoggedIn()}>
+        <AccountModal onClose={() => setAccountOpen(false)} />
       </Show>
 
       <Show when={platform.version}>
