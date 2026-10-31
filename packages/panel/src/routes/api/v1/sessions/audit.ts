@@ -39,6 +39,7 @@ export async function POST(event: APIEvent) {
       costUsd?: number
       durationMs?: number
       messagesCount?: number
+      appVersion?: string
     }
 
     const sessionID = body.sessionID || body.sessionId
@@ -61,6 +62,14 @@ export async function POST(event: APIEvent) {
 
     const db = store()
     await db.ensureSeed()
+
+    const version = body.appVersion?.trim().slice(0, 40)
+    if (version) {
+      const user = await db.users.findByID(userID)
+      if (user && version !== user.appVersion) {
+        await db.users.update(user.id, { appVersion: version, appVersionAt: new Date().toISOString() })
+      }
+    }
 
     const sessionRecord = await db.sessions.create({
       sessionID,

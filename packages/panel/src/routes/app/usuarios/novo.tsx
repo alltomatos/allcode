@@ -1,14 +1,15 @@
-import { A, revalidate, useAction } from "@solidjs/router"
-import { Show, createSignal } from "solid-js"
+import { A, createAsync, revalidate, useAction } from "@solidjs/router"
+import { For, Show, createSignal } from "solid-js"
 import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { createUser } from "~/lib/actions"
+import { createUser, listGroups } from "~/lib/actions"
 
 type Issued = { email: string; password: string }
 
 export default function NewUserPage() {
   const i18n = useI18n()
   const create = useAction(createUser)
+  const groups = createAsync(() => listGroups())
   const [issued, setIssued] = createSignal<Issued | null>(null)
   const [error, setError] = createSignal<string | null>(null)
   const [pending, setPending] = createSignal(false)
@@ -116,9 +117,52 @@ export default function NewUserPage() {
               </label>
             </div>
 
-            <div class="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
-              {i18n.t("users.new.tempPasswordHint")}
-            </div>
+              <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                  {i18n.t("access.defaults.title")}
+                </span>
+                <Field
+                  label={i18n.t("access.defaults.provider")}
+                  name="defaultProvider"
+                  placeholder="anthropic"
+                  autocomplete="off"
+                />
+                <Field
+                  label={i18n.t("access.defaults.model")}
+                  name="defaultModel"
+                  placeholder="claude-sonnet-4"
+                  autocomplete="off"
+                />
+                <p class="text-[11px] text-slate-500">{i18n.t("access.defaults.hint")}</p>
+              </div>
+
+              <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">
+                  {i18n.t("access.groups.title")}
+                </span>
+                <Show
+                  when={(groups() ?? []).length > 0}
+                  fallback={<p class="text-[11px] text-slate-500">{i18n.t("access.groups.empty")}</p>}
+                >
+                  <For each={groups() ?? []}>
+                    {(group) => (
+                      <label class="flex items-center gap-2 text-xs text-slate-700">
+                        <input
+                          type="checkbox"
+                          name="groupIds"
+                          value={group.id}
+                          class="size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span>{group.name}</span>
+                      </label>
+                    )}
+                  </For>
+                </Show>
+              </div>
+
+              <div class="rounded-lg bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                {i18n.t("users.new.tempPasswordHint")}
+              </div>
 
             <Show when={error()}>
               <div class="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">

@@ -1,22 +1,29 @@
 import type { APIEvent } from "@solidjs/start"
 import { store } from "~/lib/store"
 import { verifyPassword } from "~/lib/crypto"
+import { resolveUserAccess } from "~/lib/user-access"
 
 export async function POST(event: APIEvent) {
   try {
     let email: string | undefined
     let password: string | undefined
+    let appVersion: string | undefined
 
     const contentType = event.request.headers.get("content-type") || ""
     if (contentType.includes("application/json")) {
       const body = (await event.request.json()) as any
       email = body?.email
       password = body?.password
+      appVersion = typeof body?.appVersion === "string" ? body.appVersion : undefined
     } else {
       const form = await event.request.formData()
       email = form.get("email") as string
       password = form.get("password") as string
+      const version = form.get("appVersion")
+      appVersion = typeof version === "string" ? version : undefined
     }
+
+    appVersion = appVersion?.trim().slice(0, 40) || undefined
 
     email = email?.trim().toLowerCase()
 
@@ -63,6 +70,7 @@ export async function POST(event: APIEvent) {
     await db.users.update(user.id, {
       status: "active",
       lastLoginAt: new Date().toISOString(),
+      ...(appVersion ? { appVersion, appVersionAt: new Date().toISOString() } : {}),
     })
 
     await db.audit.log({
@@ -76,6 +84,7 @@ export async function POST(event: APIEvent) {
     })
 
     // Retorna payload completo para o AllCode Desktop
+    const resolved = await resolveUserAccess(user)
     return new Response(
       JSON.stringify({
         ok: true,
@@ -86,10 +95,14 @@ export async function POST(event: APIEvent) {
           role: user.role,
           mustChangePassword: user.mustChangePassword,
           permissions: {
-            agentui: user.canUseAgentUI,
-            routines: user.canUseRoutines,
+            agentui: resolved.access.agentui,
+            routines: resolved.access.routines,
             changePassword: user.canChangePassword,
           },
+          access: resolved.access,
+          settings: resolved.settings,
+          canOpenSettings: resolved.canOpenSettings,
+          defaultModel: resolved.defaultModel,
         },
         tenant: {
           id: tenant.id,

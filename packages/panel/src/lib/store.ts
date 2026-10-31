@@ -17,8 +17,25 @@ export type PanelUser = {
   canUseAgentUI: boolean
   canUseRoutines: boolean
   canChangePassword: boolean
+  /** undefined = inherit from the access groups. */
+  canOpenSettings?: boolean
+  defaultProvider?: string
+  defaultModel?: string
+  accessOverrides: string
+  appVersion?: string
+  appVersionAt?: string
   createdAt: string
   lastLoginAt?: string
+}
+
+export type AccessGroup = {
+  id: string
+  orgID: string
+  name: string
+  description?: string
+  access: string
+  canOpenSettings: boolean
+  createdAt: string
 }
 
 export type SessionAudit = {
@@ -61,6 +78,8 @@ export type Organization = {
   ssoMode: "optional" | "required"
   offlineGraceHours: number
   sessionMaxAgeHours: number
+  defaultProvider?: string
+  defaultModel?: string
   createdAt: string
 }
 
@@ -86,14 +105,35 @@ export type UserPatch = Partial<
     | "passwordHash"
     | "mustChangePassword"
     | "lastLoginAt"
+    | "appVersion"
+    | "appVersionAt"
     | "canUseAgentUI"
     | "canUseRoutines"
     | "canChangePassword"
+    | "canOpenSettings"
+    | "defaultProvider"
+    | "defaultModel"
+    | "accessOverrides"
   >
 >
 
 export type OrgPatch = Partial<
-  Pick<Organization, "name" | "slug" | "status" | "maxUsers" | "contactEmail" | "logoUrl" | "welcomeMessage" | "brandColor" | "ssoMode" | "offlineGraceHours" | "sessionMaxAgeHours">
+  Pick<
+    Organization,
+    | "name"
+    | "slug"
+    | "status"
+    | "maxUsers"
+    | "contactEmail"
+    | "logoUrl"
+    | "welcomeMessage"
+    | "brandColor"
+    | "ssoMode"
+    | "offlineGraceHours"
+    | "sessionMaxAgeHours"
+    | "defaultProvider"
+    | "defaultModel"
+  >
 >
 
 export type TenantStats = {
@@ -133,9 +173,38 @@ export type Store = {
       canUseAgentUI?: boolean
       canUseRoutines?: boolean
       canChangePassword?: boolean
+      canOpenSettings?: boolean
+      defaultProvider?: string
+      defaultModel?: string
+      accessOverrides?: Record<string, boolean>
     }): Promise<PanelUser>
     update(id: string, patch: UserPatch): Promise<PanelUser | undefined>
     count(orgID?: string): Promise<{ total: number; active: number; invited: number; suspended: number }>
+  }
+  groups: {
+    list(orgID?: string): Promise<AccessGroup[]>
+    findByID(id: string): Promise<AccessGroup | undefined>
+    create(input: {
+      orgID?: string
+      name: string
+      description?: string
+      access?: Record<string, boolean>
+      canOpenSettings?: boolean
+    }): Promise<AccessGroup>
+    update(
+      id: string,
+      patch: {
+        name?: string
+        description?: string
+        access?: Record<string, boolean>
+        canOpenSettings?: boolean
+      },
+    ): Promise<AccessGroup | undefined>
+    remove(id: string): Promise<void>
+    members(groupID: string): Promise<string[]>
+    groupsForUser(userID: string): Promise<AccessGroup[]>
+    setMembers(groupID: string, userIDs: string[]): Promise<void>
+    setUserGroups(userID: string, groupIDs: string[]): Promise<void>
   }
   sessions: {
     create(input: Omit<SessionAudit, "id" | "createdAt">): Promise<SessionAudit>
@@ -181,6 +250,8 @@ function memoryStore(): Store {
   const users = new Map<string, PanelUser>()
   const events: AuditEvent[] = []
   const orgs = new Map<string, Organization>()
+  const groups = new Map<string, AccessGroup>()
+  const members = new Map<string, Set<string>>()
   const initialOrg = defaultOrg()
   orgs.set(initialOrg.id, initialOrg)
   let seeding: Promise<void> | undefined
@@ -207,6 +278,8 @@ function memoryStore(): Store {
           canUseAgentUI: true,
           canUseRoutines: true,
           canChangePassword: true,
+          canOpenSettings: true,
+          accessOverrides: "{}",
           createdAt: new Date().toISOString(),
         })
       })()
@@ -281,6 +354,10 @@ function memoryStore(): Store {
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
+          canOpenSettings: input.canOpenSettings ?? true,
+          defaultProvider: input.defaultProvider,
+          defaultModel: input.defaultModel,
+          accessOverrides: JSON.stringify(input.accessOverrides ?? {}),
           createdAt: new Date().toISOString(),
         }
         users.set(user.email, user)
@@ -304,6 +381,63 @@ function memoryStore(): Store {
           active: list.filter((user) => user.status === "active").length,
           invited: list.filter((user) => user.status === "invited").length,
           suspended: list.filter((user) => user.status === "suspended").length,
+        }
+      },
+    },
+    groups: {
+      async list(orgID) {
+        return [...groups.values()]
+          .filter((group) => !orgID || group.orgID === orgID)
+          .sort((left, right) => left.name.localeCompare(right.name))
+      },
+      async findByID(id) {
+        return groups.get(id)
+      },
+      async create(input) {
+        const group: AccessGroup = {
+          id: crypto.randomUUID(),
+          orgID: input.orgID ?? DEFAULT_ORG_ID,
+          name: input.name,
+          description: input.description,
+          access: JSON.stringify(input.access ?? {}),
+          canOpenSettings: input.canOpenSettings ?? true,
+          createdAt: new Date().toISOString(),
+        }
+        groups.set(group.id, group)
+        members.set(group.id, new Set())
+        return group
+      },
+      async update(id, patch) {
+        const group = groups.get(id)
+        if (!group) return
+        Object.assign(group, {
+          ...patch,
+          access: patch.access ? JSON.stringify(patch.access) : group.access,
+        })
+        return group
+      },
+      async remove(id) {
+        groups.delete(id)
+        members.delete(id)
+      },
+      async members(groupID) {
+        return [...(members.get(groupID) ?? [])]
+      },
+      async groupsForUser(userID) {
+        return [...members.entries()]
+          .filter(([, set]) => set.has(userID))
+          .flatMap(([groupId]) => {
+            const group = groups.get(groupId)
+            return group ? [group] : []
+          })
+      },
+      async setMembers(groupID, userIDs) {
+        members.set(groupID, new Set(userIDs))
+      },
+      async setUserGroups(userID, groupIDs) {
+        for (const [groupId, set] of members) {
+          if (groupIDs.includes(groupId)) set.add(userID)
+          else set.delete(userID)
         }
       },
     },
@@ -364,6 +498,12 @@ type UserRow = {
   can_use_agentui?: number
   can_use_routines?: number
   can_change_password?: number
+  can_open_settings?: number | null
+  default_provider?: string | null
+  default_model?: string | null
+  access_overrides?: string | null
+  app_version?: string | null
+  app_version_at?: string | null
   created_at: string
   last_login_at: string | null
 }
@@ -381,6 +521,18 @@ type OrgRow = {
   sso_mode: string
   offline_grace_hours: number
   session_max_age_hours: number
+  default_provider?: string | null
+  default_model?: string | null
+  created_at: string
+}
+
+type GroupRow = {
+  id: string
+  org_id: string
+  name: string
+  description: string | null
+  access: string
+  can_open_settings: number
   created_at: string
 }
 
@@ -430,8 +582,29 @@ function toUser(row: UserRow): PanelUser {
     canUseAgentUI: row.can_use_agentui !== 0,
     canUseRoutines: row.can_use_routines !== 0,
     canChangePassword: row.can_change_password !== 0,
+    canOpenSettings:
+      row.can_open_settings === null || row.can_open_settings === undefined
+        ? undefined
+        : row.can_open_settings !== 0,
+    defaultProvider: row.default_provider ?? undefined,
+    defaultModel: row.default_model ?? undefined,
+    accessOverrides: row.access_overrides ?? "{}",
+    appVersion: row.app_version ?? undefined,
+    appVersionAt: row.app_version_at ?? undefined,
     createdAt: row.created_at,
     lastLoginAt: row.last_login_at ?? undefined,
+  }
+}
+
+function toGroup(row: GroupRow): AccessGroup {
+  return {
+    id: row.id,
+    orgID: row.org_id,
+    name: row.name,
+    description: row.description ?? undefined,
+    access: row.access,
+    canOpenSettings: row.can_open_settings !== 0,
+    createdAt: row.created_at,
   }
 }
 
@@ -471,6 +644,8 @@ function toOrg(row: OrgRow): Organization {
     ssoMode: row.sso_mode === "required" ? "required" : "optional",
     offlineGraceHours: row.offline_grace_hours,
     sessionMaxAgeHours: row.session_max_age_hours,
+    defaultProvider: row.default_provider ?? undefined,
+    defaultModel: row.default_model ?? undefined,
     createdAt: row.created_at,
   }
 }
@@ -601,7 +776,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ? WHERE id = ?`,
+            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -615,6 +790,8 @@ export function d1Store(db: D1Database): Store {
             next.ssoMode,
             next.offlineGraceHours,
             next.sessionMaxAgeHours,
+            next.defaultProvider ?? null,
+            next.defaultModel ?? null,
             id,
           )
           .run()
@@ -673,12 +850,16 @@ export function d1Store(db: D1Database): Store {
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
+          canOpenSettings: input.canOpenSettings ?? true,
+          defaultProvider: input.defaultProvider,
+          defaultModel: input.defaultModel,
+          accessOverrides: JSON.stringify(input.accessOverrides ?? {}),
           createdAt: new Date().toISOString(),
         }
         await db
           .prepare(
-            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, can_use_agentui, can_use_routines, can_change_password, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, can_use_agentui, can_use_routines, can_change_password, can_open_settings, default_provider, default_model, access_overrides, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             user.id,
@@ -693,6 +874,10 @@ export function d1Store(db: D1Database): Store {
             user.canUseAgentUI ? 1 : 0,
             user.canUseRoutines ? 1 : 0,
             user.canChangePassword ? 1 : 0,
+            user.canOpenSettings === undefined ? null : user.canOpenSettings ? 1 : 0,
+            user.defaultProvider ?? null,
+            user.defaultModel ?? null,
+            user.accessOverrides,
             user.createdAt,
           )
           .run()
@@ -704,7 +889,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ? WHERE id = ?`,
+            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, can_open_settings = ?, default_provider = ?, default_model = ?, access_overrides = ?, app_version = ?, app_version_at = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -717,6 +902,12 @@ export function d1Store(db: D1Database): Store {
             next.canUseAgentUI ? 1 : 0,
             next.canUseRoutines ? 1 : 0,
             next.canChangePassword ? 1 : 0,
+            next.canOpenSettings === undefined ? null : next.canOpenSettings ? 1 : 0,
+            next.defaultProvider ?? null,
+            next.defaultModel ?? null,
+            next.accessOverrides ?? "{}",
+            next.appVersion ?? null,
+            next.appVersionAt ?? null,
             id,
           )
           .run()
@@ -749,6 +940,109 @@ export function d1Store(db: D1Database): Store {
           active: Number(row?.active ?? 0),
           invited: Number(row?.invited ?? 0),
           suspended: Number(row?.suspended ?? 0),
+        }
+      },
+    },
+    groups: {
+      async list(orgID) {
+        const query = orgID
+          ? db.prepare("SELECT * FROM access_group WHERE org_id = ? ORDER BY name ASC").bind(orgID)
+          : db.prepare("SELECT * FROM access_group ORDER BY name ASC")
+        const rows = await query.all<GroupRow>()
+        return rows.results.map(toGroup)
+      },
+      async findByID(id) {
+        const row = await db.prepare("SELECT * FROM access_group WHERE id = ?").bind(id).first<GroupRow>()
+        return row ? toGroup(row) : undefined
+      },
+      async create(input) {
+        const group: AccessGroup = {
+          id: crypto.randomUUID(),
+          orgID: input.orgID ?? DEFAULT_ORG_ID,
+          name: input.name,
+          description: input.description,
+          access: JSON.stringify(input.access ?? {}),
+          canOpenSettings: input.canOpenSettings ?? true,
+          createdAt: new Date().toISOString(),
+        }
+        await db
+          .prepare(
+            `INSERT INTO access_group (id, org_id, name, description, access, can_open_settings, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .bind(
+            group.id,
+            group.orgID,
+            group.name,
+            group.description ?? null,
+            group.access,
+            group.canOpenSettings ? 1 : 0,
+            group.createdAt,
+          )
+          .run()
+        return group
+      },
+      async update(id, patch) {
+        const row = await db.prepare("SELECT * FROM access_group WHERE id = ?").bind(id).first<GroupRow>()
+        const current = row ? toGroup(row) : undefined
+        if (!current) return
+        const next = {
+          ...current,
+          ...patch,
+          access: patch.access ? JSON.stringify(patch.access) : current.access,
+        }
+        await db
+          .prepare(
+            "UPDATE access_group SET name = ?, description = ?, access = ?, can_open_settings = ? WHERE id = ?",
+          )
+          .bind(
+            next.name,
+            next.description ?? null,
+            next.access,
+            next.canOpenSettings ? 1 : 0,
+            id,
+          )
+          .run()
+        return next
+      },
+      async remove(id) {
+        await db.prepare("DELETE FROM access_group_member WHERE group_id = ?").bind(id).run()
+        await db.prepare("DELETE FROM access_group WHERE id = ?").bind(id).run()
+      },
+      async members(groupID) {
+        const rows = await db
+          .prepare("SELECT user_id FROM access_group_member WHERE group_id = ?")
+          .bind(groupID)
+          .all<{ user_id: string }>()
+        return rows.results.map((row) => row.user_id)
+      },
+      async groupsForUser(userID) {
+        const rows = await db
+          .prepare(
+            `SELECT g.* FROM access_group g
+             JOIN access_group_member m ON m.group_id = g.id
+             WHERE m.user_id = ? ORDER BY g.name ASC`,
+          )
+          .bind(userID)
+          .all<GroupRow>()
+        return rows.results.map(toGroup)
+      },
+      async setMembers(groupID, userIDs) {
+        await db.prepare("DELETE FROM access_group_member WHERE group_id = ?").bind(groupID).run()
+        for (const userID of userIDs) {
+          await db
+            .prepare("INSERT OR IGNORE INTO access_group_member (group_id, user_id, created_at) VALUES (?, ?, ?)")
+            .bind(groupID, userID, new Date().toISOString())
+            .run()
+        }
+      },
+      async setUserGroups(userID, groupIDs) {
+        await db.prepare("DELETE FROM access_group_member WHERE user_id = ?").bind(userID).run()
+        for (const groupID of groupIDs) {
+          await db
+            .prepare("INSERT OR IGNORE INTO access_group_member (group_id, user_id, created_at) VALUES (?, ?, ?)")
+            .bind(groupID, userID, new Date().toISOString())
+            .run()
         }
       },
     },

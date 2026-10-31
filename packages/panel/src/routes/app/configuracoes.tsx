@@ -1,6 +1,6 @@
 import { createAsync, revalidate, useAction } from "@solidjs/router"
 import { Show, createSignal } from "solid-js"
-import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
+import { Button, Card, Field, PageHeader } from "~/components/ui"
 import { useI18n } from "~/i18n"
 import { getSettings, requireMe, updateSettings } from "~/lib/actions"
 
@@ -108,6 +108,31 @@ export default function SettingsPage() {
                 </div>
 
                 {/* Seção 2: Identidade Visual e AllCode Desktop Banner */}
+                <div class="border-t border-slate-100 pt-5">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    {i18n.t("access.defaults.title")}
+                  </h3>
+                  <div class="grid gap-4 sm:grid-cols-2">
+                    <Field
+                      label={i18n.t("access.defaults.provider")}
+                      name="defaultProvider"
+                      value={current().defaultProvider ?? ""}
+                      placeholder="anthropic"
+                      autocomplete="off"
+                      disabled={actor()?.role !== "owner"}
+                    />
+                    <Field
+                      label={i18n.t("access.defaults.model")}
+                      name="defaultModel"
+                      value={current().defaultModel ?? ""}
+                      placeholder="claude-sonnet-4"
+                      autocomplete="off"
+                      disabled={actor()?.role !== "owner"}
+                    />
+                  </div>
+                  <p class="mt-2 text-xs text-slate-500">{i18n.t("access.defaults.hint")}</p>
+                </div>
+
                 <div class="border-t border-slate-100 pt-5">
                   <div class="flex items-center justify-between mb-1">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">

@@ -1,7 +1,8 @@
 import type { APIEvent } from "@solidjs/start"
 import { store } from "~/lib/store"
+import { resolveUserAccess } from "~/lib/user-access"
 
-async function resolveStatus(userId?: string, email?: string) {
+async function resolveStatus(userId?: string, email?: string, appVersion?: string) {
   if (!userId && !email) {
     return new Response(JSON.stringify({ error: "userId or email is required" }), {
       status: 400,
@@ -75,10 +76,16 @@ async function resolveStatus(userId?: string, email?: string) {
     )
   }
 
+  const resolved = await resolveUserAccess(user)
   const permissions = {
-    agentui: user.canUseAgentUI,
-    routines: user.canUseRoutines,
+    agentui: resolved.access.agentui,
+    routines: resolved.access.routines,
     changePassword: user.canChangePassword,
+  }
+
+  const version = appVersion?.trim().slice(0, 40)
+  if (version && version !== user.appVersion) {
+    await db.users.update(user.id, { appVersion: version, appVersionAt: new Date().toISOString() })
   }
 
   return new Response(
@@ -87,6 +94,11 @@ async function resolveStatus(userId?: string, email?: string) {
       active: true,
       status: user.status,
       permissions,
+      access: resolved.access,
+      settings: resolved.settings,
+      canOpenSettings: resolved.canOpenSettings,
+      defaultModel: resolved.defaultModel,
+      appVersion: version ?? user.appVersion,
       user: {
         id: user.id,
         name: user.name,
@@ -94,6 +106,10 @@ async function resolveStatus(userId?: string, email?: string) {
         role: user.role,
         mustChangePassword: user.mustChangePassword,
         permissions,
+        access: resolved.access,
+        settings: resolved.settings,
+        canOpenSettings: resolved.canOpenSettings,
+        defaultModel: resolved.defaultModel,
       },
       tenant: {
         id: tenant.id,
@@ -120,7 +136,8 @@ export async function GET(event: APIEvent) {
     const url = new URL(event.request.url)
     const userId = url.searchParams.get("userId") || undefined
     const email = url.searchParams.get("email")?.trim().toLowerCase() || undefined
-    return await resolveStatus(userId, email)
+    const appVersion = url.searchParams.get("appVersion") || undefined
+    return await resolveStatus(userId, email, appVersion)
   } catch (error: any) {
     return new Response(JSON.stringify({ error: "Internal server error", details: error?.message || String(error) }), {
       status: 500,
@@ -134,10 +151,10 @@ export async function GET(event: APIEvent) {
 
 export async function POST(event: APIEvent) {
   try {
-    const body = (await event.request.json()) as { userId?: string; email?: string }
+    const body = (await event.request.json()) as { userId?: string; email?: string; appVersion?: string }
     const userId = body?.userId
     const email = body?.email?.trim().toLowerCase()
-    return await resolveStatus(userId, email)
+    return await resolveStatus(userId, email, body?.appVersion)
   } catch (error: any) {
     return new Response(JSON.stringify({ error: "Internal server error", details: error?.message || String(error) }), {
       status: 500,

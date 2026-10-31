@@ -7,12 +7,15 @@ import {
   getUserKPIs,
   getUserSessions,
   listAudit,
+  listGroups,
   requireMe,
+  resetUserPassword,
   setUserRole,
   setUserStatus,
   removeUser,
-  updateUserPermissions,
+  updateUserAccess,
 } from "~/lib/actions"
+import { RESOURCES, type Resource } from "~/lib/access"
 import { actionKey, formatDate, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
 
 function formatDuration(ms?: number): string {
@@ -43,18 +46,28 @@ export default function UserDetailPage() {
   const changeRole = useAction(setUserRole)
   const changeStatus = useAction(setUserStatus)
   const remove = useAction(removeUser)
-  const updatePermissions = useAction(updateUserPermissions)
+  const saveAccess = useAction(updateUserAccess)
+  const resetPassword = useAction(resetUserPassword)
+  const groups = createAsync(() => listGroups())
 
   const [error, setError] = createSignal<string | null>(null)
   const [success, setSuccess] = createSignal<string | null>(null)
   const [confirmEmail, setConfirmEmail] = createSignal("")
   const [pending, setPending] = createSignal(false)
   const [savingPermissions, setSavingPermissions] = createSignal(false)
+  const [newPassword, setNewPassword] = createSignal("")
+  const [resettingPassword, setResettingPassword] = createSignal(false)
+  const [issuedPassword, setIssuedPassword] = createSignal<string | null>(null)
+  const [copiedPassword, setCopiedPassword] = createSignal(false)
 
-  // Estados locais para edição de permissões
-  const [permAgentUI, setPermAgentUI] = createSignal<boolean | null>(null)
-  const [permRoutines, setPermRoutines] = createSignal<boolean | null>(null)
-  const [permChangePass, setPermChangePass] = createSignal<boolean | null>(null)
+  // Estados locais para edição de acesso
+  const [accessDraft, setAccessDraft] = createSignal<Record<string, "inherit" | "allow" | "deny">>({})
+  const [settingsDraft, setSettingsDraft] = createSignal<"inherit" | "allow" | "deny">("inherit")
+  const [groupDraft, setGroupDraft] = createSignal<string[]>([])
+  const [providerDraft, setProviderDraft] = createSignal("")
+  const [modelDraft, setModelDraft] = createSignal("")
+  const [changePassDraft, setChangePassDraft] = createSignal(true)
+  const [accessInitialized, setAccessInitialized] = createSignal(false)
 
   const isOwner = createMemo(() => actor()?.role === "owner")
   const canRemove = createMemo(() => isOwner() && user()?.role !== "owner")
@@ -89,21 +102,55 @@ export default function UserDetailPage() {
     }
   }
 
-  async function onSavePermissions() {
+  async function onResetPassword() {
+    const target = user()
+    if (!target) return
+    setResettingPassword(true)
+    setError(null)
+    setSuccess(null)
+    setCopiedPassword(false)
+    const result = await resetPassword(target.id, newPassword().trim() || undefined)
+    setResettingPassword(false)
+    if (result?.error) {
+      setError(i18n.t(result.error))
+      return
+    }
+    setIssuedPassword(result?.password ?? null)
+    setNewPassword("")
+    setSuccess(i18n.t("user.password.success"))
+    revalidate("panel.user")
+    revalidate("panel.audit")
+  }
+
+  async function copyIssuedPassword() {
+    const value = issuedPassword()
+    if (!value) return
+    await navigator.clipboard.writeText(value)
+    setCopiedPassword(true)
+    setTimeout(() => setCopiedPassword(false), 2000)
+  }
+
+  async function onSaveAccess() {
     const target = user()
     if (!target) return
     setSavingPermissions(true)
     setError(null)
     setSuccess(null)
 
-    const canUseAgentUI = permAgentUI() !== null ? permAgentUI()! : target.canUseAgentUI
-    const canUseRoutines = permRoutines() !== null ? permRoutines()! : target.canUseRoutines
-    const canChangePassword = permChangePass() !== null ? permChangePass()! : target.canChangePassword
+    const overrides: Record<string, boolean> = {}
+    for (const [resource, value] of Object.entries(accessDraft())) {
+      if (value === "allow") overrides[resource] = true
+      if (value === "deny") overrides[resource] = false
+    }
 
-    const result = await updatePermissions(target.id, {
-      canUseAgentUI,
-      canUseRoutines,
-      canChangePassword,
+    const result = await saveAccess(target.id, {
+      access: overrides,
+      canOpenSettings:
+        settingsDraft() === "inherit" ? undefined : settingsDraft() === "allow",
+      canChangePassword: changePassDraft(),
+      defaultProvider: providerDraft(),
+      defaultModel: modelDraft(),
+      groupIds: groupDraft(),
     })
     setSavingPermissions(false)
 
@@ -112,6 +159,7 @@ export default function UserDetailPage() {
     } else {
       setSuccess(i18n.t("user.permissions.saved"))
       revalidate("panel.user")
+      revalidate("panel.users")
       revalidate("panel.audit")
     }
   }
@@ -138,13 +186,26 @@ export default function UserDetailPage() {
       />
 
       <Show when={user()} fallback={<EmptyState>{i18n.t("users.empty")}</EmptyState>}>
-        {(current) => {
-          // Inicializa os sinais com os valores atuais se ainda nulos
-          if (permAgentUI() === null) setPermAgentUI(current().canUseAgentUI)
-          if (permRoutines() === null) setPermRoutines(current().canUseRoutines)
-          if (permChangePass() === null) setPermChangePass(current().canChangePassword)
+          {(current) => {
+            // Inicializa os rascunhos de acesso a partir do colaborador carregado
+            if (!accessInitialized()) {
+              const draft: Record<string, "inherit" | "allow" | "deny"> = {}
+              for (const resource of RESOURCES) {
+                const value = current().access[resource as Resource]
+                draft[resource] = value === undefined ? "inherit" : value ? "allow" : "deny"
+              }
+              setAccessDraft(draft)
+              setSettingsDraft(
+                current().canOpenSettings === undefined ? "inherit" : current().canOpenSettings ? "allow" : "deny",
+              )
+              setGroupDraft(current().groupIDs ?? [])
+              setProviderDraft(current().defaultProvider ?? "")
+              setModelDraft(current().defaultModel ?? "")
+              setChangePassDraft(current().canChangePassword)
+              setAccessInitialized(true)
+            }
 
-          return (
+            return (
             <div class="space-y-6">
               {/* ========================================================= */}
               {/* 1. DASHBOARD DE KPIS E CONSUMO CONSOLIDADO DO COLABORADOR */}
@@ -206,6 +267,21 @@ export default function UserDetailPage() {
                           {current().lastLoginAt
                             ? formatDate(current().lastLoginAt, i18n.locale())
                             : i18n.t("common.never")}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt class="text-xs text-slate-500">{i18n.t("user.detail.appVersion")}</dt>
+                        <dd class="mt-0.5">
+                          <Show when={current().appVersion} fallback={<span class="text-slate-400">—</span>}>
+                            <span class="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-700">
+                              v{current().appVersion}
+                            </span>
+                            <Show when={current().appVersionAt}>
+                              <span class="ml-2 text-[11px] text-slate-400">
+                                {formatDate(current().appVersionAt, i18n.locale())}
+                              </span>
+                            </Show>
+                          </Show>
                         </dd>
                       </div>
                     </dl>
@@ -362,6 +438,59 @@ export default function UserDetailPage() {
                       </p>
                     </div>
 
+                    {/* Redefinição de senha pelo administrador */}
+                    <Show when={canChange()}>
+                      <div class="mt-6 border-t border-slate-200 pt-4">
+                        <h3 class="text-xs font-semibold tracking-wide text-slate-700 uppercase">
+                          {i18n.t("user.password.title")}
+                        </h3>
+                        <p class="mt-1 text-[11px] text-slate-500">{i18n.t("user.password.hint")}</p>
+
+                        <input
+                          type="text"
+                          autocomplete="new-password"
+                          class="mt-2 h-9 w-full rounded-lg bg-white px-3 font-mono text-sm ring-1 ring-slate-300 ring-inset outline-none placeholder:font-sans focus:ring-2 focus:ring-indigo-500"
+                          value={newPassword()}
+                          onInput={(event) => setNewPassword(event.currentTarget.value)}
+                          placeholder={i18n.t("user.password.placeholder")}
+                        />
+
+                        <Button
+                          variant="secondary"
+                          class="mt-2 w-full"
+                          disabled={resettingPassword()}
+                          onClick={onResetPassword}
+                        >
+                          {resettingPassword() ? i18n.t("common.loading") : i18n.t("user.password.submit")}
+                        </Button>
+
+                        <Show when={issuedPassword()}>
+                          {(password) => (
+                            <div class="mt-3 rounded-lg border border-emerald-200 bg-emerald-50/60 p-2.5">
+                              <div class="flex items-center gap-2">
+                                <code class="flex-1 truncate rounded bg-white px-2 py-1 font-mono text-xs text-slate-900 ring-1 ring-slate-200">
+                                  {password()}
+                                </code>
+                                <button
+                                  type="button"
+                                  class="text-xs font-medium text-indigo-600 hover:text-indigo-500"
+                                  onClick={copyIssuedPassword}
+                                >
+                                  {copiedPassword()
+                                    ? i18n.t("common.copied")
+                                    : i18n.t("user.password.copy")}
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </Show>
+
+                        <Show when={success()}>
+                          <p class="mt-2 text-[11px] text-emerald-700">{success()}</p>
+                        </Show>
+                      </div>
+                    </Show>
+
                     {/* Remoção de Usuário (Owner apenas) */}
                     <Show when={canRemove()}>
                       <div class="mt-6 border-t border-slate-200 pt-4">
@@ -401,13 +530,15 @@ export default function UserDetailPage() {
 
                     <div class="space-y-4">
                       <label class="flex items-start gap-3 cursor-pointer rounded-lg p-2 hover:bg-slate-50 border border-slate-100">
-                        <input
-                          type="checkbox"
-                          checked={permAgentUI() ?? current().canUseAgentUI}
-                          onChange={(e) => setPermAgentUI(e.currentTarget.checked)}
-                          disabled={!canChange() || savingPermissions()}
-                          class="mt-1 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                        />
+                          <input
+                            type="checkbox"
+                            checked={accessDraft().agentui === "allow"}
+                            onChange={(e) =>
+                              setAccessDraft({ ...accessDraft(), agentui: e.currentTarget.checked ? "allow" : "deny" })
+                            }
+                            disabled={!canChange() || savingPermissions()}
+                            class="mt-1 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                          />
                         <div class="text-xs">
                           <span class="font-semibold text-slate-900 block">{i18n.t("user.permissions.agentui")}</span>
                           <span class="text-slate-500">{i18n.t("user.permissions.agentuiDesc")}</span>
@@ -415,13 +546,15 @@ export default function UserDetailPage() {
                       </label>
 
                       <label class="flex items-start gap-3 cursor-pointer rounded-lg p-2 hover:bg-slate-50 border border-slate-100">
-                        <input
-                          type="checkbox"
-                          checked={permRoutines() ?? current().canUseRoutines}
-                          onChange={(e) => setPermRoutines(e.currentTarget.checked)}
-                          disabled={!canChange() || savingPermissions()}
-                          class="mt-1 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                        />
+                          <input
+                            type="checkbox"
+                            checked={accessDraft().routines === "allow"}
+                            onChange={(e) =>
+                              setAccessDraft({ ...accessDraft(), routines: e.currentTarget.checked ? "allow" : "deny" })
+                            }
+                            disabled={!canChange() || savingPermissions()}
+                            class="mt-1 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                          />
                         <div class="text-xs">
                           <span class="font-semibold text-slate-900 block">{i18n.t("user.permissions.routines")}</span>
                           <span class="text-slate-500">{i18n.t("user.permissions.routinesDesc")}</span>
@@ -429,13 +562,13 @@ export default function UserDetailPage() {
                       </label>
 
                       <label class="flex items-start gap-3 cursor-pointer rounded-lg p-2 hover:bg-slate-50 border border-slate-100">
-                        <input
-                          type="checkbox"
-                          checked={permChangePass() ?? current().canChangePassword}
-                          onChange={(e) => setPermChangePass(e.currentTarget.checked)}
-                          disabled={!canChange() || savingPermissions()}
-                          class="mt-1 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                        />
+                          <input
+                            type="checkbox"
+                            checked={changePassDraft()}
+                            onChange={(e) => setChangePassDraft(e.currentTarget.checked)}
+                            disabled={!canChange() || savingPermissions()}
+                            class="mt-1 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                          />
                         <div class="text-xs">
                           <span class="font-semibold text-slate-900 block">{i18n.t("user.permissions.changePassword")}</span>
                           <span class="text-slate-500">{i18n.t("user.permissions.changePasswordDesc")}</span>
@@ -443,12 +576,101 @@ export default function UserDetailPage() {
                       </label>
 
                       <Show when={canChange()}>
+                        <div class="mt-4 space-y-2 border-t border-slate-100 pt-3">
+                          <p class="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
+                            {i18n.t("access.resources.title")}
+                          </p>
+                          <For each={RESOURCES.filter((resource) => resource !== "agentui" && resource !== "routines")}>
+                            {(resource) => (
+                              <label class="flex items-center justify-between gap-3 rounded-lg border border-slate-100 px-2 py-1.5">
+                                <span class="text-xs text-slate-700">{i18n.t(`access.resource.${resource}`)}</span>
+                                <input
+                                  type="checkbox"
+                                  checked={accessDraft()[resource] === "allow"}
+                                  onChange={(e) =>
+                                    setAccessDraft({
+                                      ...accessDraft(),
+                                      [resource]: e.currentTarget.checked ? "allow" : "deny",
+                                    })
+                                  }
+                                  disabled={savingPermissions()}
+                                  class="size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                />
+                              </label>
+                            )}
+                          </For>
+                        </div>
+
+                        <div class="mt-4 space-y-2 border-t border-slate-100 pt-3">
+                          <p class="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
+                            {i18n.t("access.defaults.title")}
+                          </p>
+                          <input
+                            class="h-9 w-full rounded-lg bg-white px-3 font-mono text-xs ring-1 ring-slate-300 ring-inset outline-none placeholder:font-sans focus:ring-2 focus:ring-indigo-500"
+                            placeholder={i18n.t("access.defaults.provider")}
+                            value={providerDraft()}
+                            onInput={(e) => setProviderDraft(e.currentTarget.value)}
+                          />
+                          <input
+                            class="h-9 w-full rounded-lg bg-white px-3 font-mono text-xs ring-1 ring-slate-300 ring-inset outline-none placeholder:font-sans focus:ring-2 focus:ring-indigo-500"
+                            placeholder={i18n.t("access.defaults.model")}
+                            value={modelDraft()}
+                            onInput={(e) => setModelDraft(e.currentTarget.value)}
+                          />
+                          <p class="text-[11px] text-slate-500">{i18n.t("access.defaults.hint")}</p>
+                        </div>
+
+                        <div class="mt-4 space-y-2 border-t border-slate-100 pt-3">
+                          <p class="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
+                            {i18n.t("access.groups.title")}
+                          </p>
+                          <Show
+                            when={(groups() ?? []).length > 0}
+                            fallback={<p class="text-[11px] text-slate-500">{i18n.t("access.groups.empty")}</p>}
+                          >
+                            <For each={groups() ?? []}>
+                              {(group) => (
+                                <label class="flex items-center gap-2 text-xs text-slate-700">
+                                  <input
+                                    type="checkbox"
+                                    checked={groupDraft().includes(group.id)}
+                                    onChange={(e) =>
+                                      setGroupDraft(
+                                        e.currentTarget.checked
+                                          ? [...groupDraft(), group.id]
+                                          : groupDraft().filter((id) => id !== group.id),
+                                      )
+                                    }
+                                    class="size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                                  />
+                                  <span>{group.name}</span>
+                                </label>
+                              )}
+                            </For>
+                          </Show>
+                        </div>
+
+                        <div class="mt-4 border-t border-slate-100 pt-3">
+                          <Select
+                            label={i18n.t("access.settings.label")}
+                            name="canOpenSettings"
+                            value={settingsDraft()}
+                            onSelect={(value) => setSettingsDraft(value as "inherit" | "allow" | "deny")}
+                          >
+                            <option value="inherit">{i18n.t("access.tristate.inherit")}</option>
+                            <option value="allow">{i18n.t("access.tristate.allow")}</option>
+                            <option value="deny">{i18n.t("access.tristate.deny")}</option>
+                          </Select>
+                        </div>
+                      </Show>
+
+                      <Show when={canChange()}>
                         <Button
                           variant="secondary"
                           size="sm"
                           class="w-full mt-2"
                           disabled={savingPermissions()}
-                          onClick={onSavePermissions}
+                          onClick={onSaveAccess}
                         >
                           {savingPermissions() ? i18n.t("common.loading") : i18n.t("user.permissions.save")}
                         </Button>

@@ -1,5 +1,6 @@
 import { Database } from "bun:sqlite"
 import { describe, expect, test } from "bun:test"
+import { generatePassword, hashPassword, verifyPassword } from "../src/lib/crypto"
 import { d1Store } from "../src/lib/store"
 
 function d1From(db: Database) {
@@ -36,6 +37,8 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0002_platform_admin.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0003_tenant_branding.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0004_session_audit_and_permissions.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0005_user_app_version.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0006_access_groups.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -147,5 +150,28 @@ describe("D1 store", () => {
     expect(kpis.totalTokens).toBe(1500)
     expect(kpis.totalCostUsd).toBeCloseTo(0.0045, 4)
     expect(kpis.totalDurationMs).toBe(60000)
+  })
+
+  test("admin password reset replaces the hash and forces a change on next sign-in", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const created = await store.users.create({
+      name: "Maria",
+      email: "maria@test.dev",
+      role: "member",
+      passwordHash: await hashPassword("original-pass"),
+      mustChangePassword: false,
+    })
+
+    const reset = generatePassword(16)
+    await store.users.update(created.id, {
+      passwordHash: await hashPassword(reset),
+      mustChangePassword: true,
+    })
+
+    const updated = await store.users.findByID(created.id)
+    expect(updated?.mustChangePassword).toBe(true)
+    expect(await verifyPassword(reset, updated!.passwordHash)).toBe(true)
+    expect(await verifyPassword("original-pass", updated!.passwordHash)).toBe(false)
   })
 })

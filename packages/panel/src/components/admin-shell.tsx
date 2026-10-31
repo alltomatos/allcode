@@ -1,7 +1,6 @@
 import { A, useLocation } from "@solidjs/router"
 import { For, Show, type ParentProps } from "solid-js"
 import { useI18n, locales, type Locale } from "~/i18n"
-import { logout } from "~/lib/actions"
 import { initials } from "~/lib/labels"
 import type { PublicUser } from "~/lib/actions"
 import { Badge, cx } from "./ui"
@@ -62,7 +61,7 @@ export function AdminShell(props: ParentProps<{ user: PublicUser }>) {
           </div>
           <div class="mt-3 flex items-center justify-between gap-2">
             <Badge tone="brand">Super Admin</Badge>
-            <form action={logout}>
+            <form method="post" action="/api/logout">
               <button type="submit" class="text-xs font-medium text-slate-400 hover:text-white cursor-pointer">
                 {i18n.t("nav.logout")}
               </button>

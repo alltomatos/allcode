@@ -1,7 +1,6 @@
 import { A, useLocation } from "@solidjs/router"
 import { For, Show, type ParentProps } from "solid-js"
 import { useI18n, locales, type Locale } from "~/i18n"
-import { logout } from "~/lib/actions"
 import { initials, roleKey } from "~/lib/labels"
 import type { PublicUser } from "~/lib/actions"
 import { Badge, cx } from "./ui"
@@ -9,6 +8,7 @@ import { Badge, cx } from "./ui"
 const navItems = [
   { href: "/app", label: "nav.overview" },
   { href: "/app/usuarios", label: "nav.users" },
+  { href: "/app/grupos", label: "nav.groups" },
   { href: "/app/auditoria", label: "nav.audit" },
   { href: "/app/configuracoes", label: "nav.settings" },
 ] as const
@@ -90,7 +90,7 @@ export function Shell(props: ParentProps<{ user: PublicUser }>) {
           </div>
           <div class="mt-3 flex items-center justify-between gap-2">
             <Badge tone="brand">{i18n.t(roleKey(props.user.role))}</Badge>
-            <form action={logout}>
+            <form method="post" action="/api/logout">
               <button type="submit" class="text-xs font-medium text-slate-500 hover:text-slate-900">
                 {i18n.t("nav.logout")}
               </button>

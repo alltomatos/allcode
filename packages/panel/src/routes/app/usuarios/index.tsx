@@ -57,6 +57,7 @@ export default function UsersPage() {
                 <th class="px-4 py-3">{i18n.t("common.name")}</th>
                 <th class="hidden px-4 py-3 sm:table-cell">{i18n.t("common.role")}</th>
                 <th class="px-4 py-3">{i18n.t("common.status")}</th>
+                <th class="hidden px-4 py-3 md:table-cell">{i18n.t("users.version")}</th>
                 <th class="hidden px-4 py-3 lg:table-cell">{i18n.t("common.lastLogin")}</th>
                 <th class="px-4 py-3" />
               </tr>
@@ -74,6 +75,13 @@ export default function UsersPage() {
                     </td>
                     <td class="px-4 py-3">
                       <Badge tone={statusTone(user.status)}>{i18n.t(statusKey(user.status))}</Badge>
+                    </td>
+                    <td class="hidden px-4 py-3 md:table-cell">
+                      <Show when={user.appVersion} fallback={<span class="text-xs text-slate-400">—</span>}>
+                        <span class="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-xs text-slate-700">
+                          v{user.appVersion}
+                        </span>
+                      </Show>
                     </td>
                     <td class="hidden px-4 py-3 text-xs text-slate-500 lg:table-cell">
                       {user.lastLoginAt ? formatDate(user.lastLoginAt, i18n.locale()) : i18n.t("common.never")}

@@ -1,11 +1,30 @@
 import { action, query, redirect } from "@solidjs/router"
 import { canManageOrganization, canManageUsers, canRemoveUsers, currentUser, requirePlatformAdmin, requireUser } from "./auth"
 import { generatePassword, hashPassword, verifyPassword } from "./crypto"
+import { parseOverrides, RESOURCES, type AccessOverrides } from "./access"
 import { usePanelSession } from "./session"
 import { store, type PanelUser, type Role } from "./store"
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const CREATABLE_ROLES: Role[] = ["admin", "member"]
+
+/** Reads the tri-state access matrix rendered by the portal forms. */
+export function accessFromForm(form: FormData): AccessOverrides {
+  const overrides: AccessOverrides = {}
+  for (const resource of RESOURCES) {
+    const value = String(form.get(`access.${resource}`) ?? "inherit")
+    if (value === "allow") overrides[resource] = true
+    if (value === "deny") overrides[resource] = false
+  }
+  return overrides
+}
+
+function settingsFlag(form: FormData, name: string): boolean | undefined {
+  const value = String(form.get(name) ?? "inherit")
+  if (value === "allow") return true
+  if (value === "deny") return false
+  return undefined
+}
 
 function publicUser(user: PanelUser) {
   return {
@@ -20,6 +39,12 @@ function publicUser(user: PanelUser) {
     canUseAgentUI: user.canUseAgentUI,
     canUseRoutines: user.canUseRoutines,
     canChangePassword: user.canChangePassword,
+    canOpenSettings: user.canOpenSettings,
+    defaultProvider: user.defaultProvider,
+    defaultModel: user.defaultModel,
+    access: parseOverrides(user.accessOverrides),
+    appVersion: user.appVersion,
+    appVersionAt: user.appVersionAt,
     createdAt: user.createdAt,
     lastLoginAt: user.lastLoginAt,
   }
@@ -53,7 +78,8 @@ export const getUser = query(async (id: string) => {
   const db = store()
   const user = await db.users.findByID(id)
   if (!user || user.orgID !== actor.orgID) return null
-  return publicUser(user)
+  const groups = await db.groups.groupsForUser(user.id)
+  return { ...publicUser(user), groupIDs: groups.map((group) => group.id) }
 }, "panel.user")
 
 export const getUserSessions = query(async (id: string) => {
@@ -149,25 +175,6 @@ export const login = action(async (form: FormData) => {
   throw redirect("/app")
 }, "panel.login")
 
-export const logout = action(async () => {
-  "use server"
-  const user = await currentUser()
-  const db = store()
-  if (user) {
-    await db.audit.log({
-      actorID: user.id,
-      actorEmail: user.email,
-      action: "auth.logout",
-      result: "allow",
-      targetType: "user",
-      targetID: user.id,
-    })
-  }
-  const session = await usePanelSession()
-  await session.clear()
-  throw redirect("/login")
-}, "panel.logout")
-
 export const createUser = action(async (form: FormData) => {
   "use server"
   const actor = await requireUser()
@@ -181,6 +188,11 @@ export const createUser = action(async (form: FormData) => {
   const canUseAgentUI = form.get("canUseAgentUI") === "on" || form.get("canUseAgentUI") === "true"
   const canUseRoutines = form.get("canUseRoutines") === "on" || form.get("canUseRoutines") === "true"
   const canChangePassword = form.get("canChangePassword") === "on" || form.get("canChangePassword") === "true"
+  const canOpenSettings = settingsFlag(form, "canOpenSettings")
+  const defaultProvider = String(form.get("defaultProvider") ?? "").trim() || undefined
+  const defaultModel = String(form.get("defaultModel") ?? "").trim() || undefined
+  const groupIDs = form.getAll("groupIds").map((value) => String(value))
+  const access = accessFromForm(form)
 
   if (!name) return { error: "users.new.error.nameRequired" as const }
   if (!EMAIL.test(email)) return { error: "users.new.error.invalidEmail" as const }
@@ -199,7 +211,12 @@ export const createUser = action(async (form: FormData) => {
     canUseAgentUI,
     canUseRoutines,
     canChangePassword,
+    canOpenSettings,
+    defaultProvider,
+    defaultModel,
+    accessOverrides: access,
   })
+  if (groupIDs.length > 0) await db.groups.setUserGroups(created.id, groupIDs)
   await db.audit.log({
     orgID: actor.orgID,
     actorID: actor.id,
@@ -212,12 +229,15 @@ export const createUser = action(async (form: FormData) => {
   return { error: undefined, email: created.email, password }
 }, "panel.user.create")
 
-export const updateUserPermissions = action(async (
+export const updateUserAccess = action(async (
   id: string,
-  permissions: {
-    canUseAgentUI: boolean
-    canUseRoutines: boolean
+  input: {
+    access: AccessOverrides
+    canOpenSettings?: boolean
     canChangePassword: boolean
+    defaultProvider?: string
+    defaultModel?: string
+    groupIds: string[]
   },
 ) => {
   "use server"
@@ -226,22 +246,58 @@ export const updateUserPermissions = action(async (
   const db = store()
   const target = await db.users.findByID(id)
   if (!target || target.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+
   await db.users.update(id, {
-    canUseAgentUI: permissions.canUseAgentUI,
-    canUseRoutines: permissions.canUseRoutines,
-    canChangePassword: permissions.canChangePassword,
+    accessOverrides: JSON.stringify(input.access),
+    canOpenSettings: input.canOpenSettings,
+    canChangePassword: input.canChangePassword,
+    defaultProvider: input.defaultProvider?.trim() || undefined,
+    defaultModel: input.defaultModel?.trim() || undefined,
+    canUseAgentUI: input.access.agentui ?? target.canUseAgentUI,
+    canUseRoutines: input.access.routines ?? target.canUseRoutines,
   })
+  await db.groups.setUserGroups(id, input.groupIds)
   await db.audit.log({
     orgID: actor.orgID,
     actorID: actor.id,
     actorEmail: actor.email,
-    action: "user.permissions_updated",
+    action: "user.access_updated",
     result: "allow",
     targetType: "user",
     targetID: id,
   })
   return { error: undefined }
-}, "panel.user.permissions")
+}, "panel.user.access")
+
+export const resetUserPassword = action(async (id: string, password?: string) => {
+  "use server"
+  const actor = await requireUser()
+  if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+  if (actor.id === id) return { error: "users.new.error.forbidden" as const }
+  const db = store()
+  const target = await db.users.findByID(id)
+  if (!target || target.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  if (target.role === "owner" && actor.role !== "owner") return { error: "users.new.error.forbidden" as const }
+
+  const provided = password?.trim()
+  if (provided && provided.length < 8) return { error: "users.password.error.tooShort" as const }
+
+  const nextPassword = provided && provided.length > 0 ? provided : generatePassword(16)
+  await db.users.update(id, {
+    passwordHash: await hashPassword(nextPassword),
+    mustChangePassword: true,
+  })
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "user.password_reset",
+    result: "allow",
+    targetType: "user",
+    targetID: id,
+  })
+  return { error: undefined, password: nextPassword }
+}, "panel.user.password")
 
 export const setUserRole = action(async (id: string, role: Role) => {
   "use server"
@@ -317,6 +373,8 @@ export const updateSettings = action(async (form: FormData) => {
   const logoUrl = String(form.get("logoUrl") ?? "").trim()
   const welcomeMessage = String(form.get("welcomeMessage") ?? "").trim()
   const brandColor = String(form.get("brandColor") ?? "").trim()
+  const defaultProvider = String(form.get("defaultProvider") ?? "").trim()
+  const defaultModel = String(form.get("defaultModel") ?? "").trim()
 
   if (!name) return { error: "users.new.error.nameRequired" as const }
   const db = store()
@@ -328,6 +386,8 @@ export const updateSettings = action(async (form: FormData) => {
     logoUrl: logoUrl || undefined,
     welcomeMessage: welcomeMessage || undefined,
     brandColor: brandColor || "#10b981",
+    defaultProvider: defaultProvider || undefined,
+    defaultModel: defaultModel || undefined,
   })
   await db.audit.log({
     orgID: actor.orgID,
@@ -339,6 +399,120 @@ export const updateSettings = action(async (form: FormData) => {
   })
   return { error: undefined }
 }, "panel.org.update")
+
+// ==========================================
+// GRUPOS DE ACESSO (PERFIS)
+// ==========================================
+
+function publicGroup(group: { id: string; name: string; description?: string; access: string; canOpenSettings: boolean }) {
+  return {
+    id: group.id,
+    name: group.name,
+    description: group.description,
+    access: parseOverrides(group.access),
+    canOpenSettings: group.canOpenSettings,
+  }
+}
+
+export const listGroups = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const groups = await db.groups.list(actor.orgID)
+  return groups.map(publicGroup)
+}, "panel.groups")
+
+export const getGroup = query(async (id: string) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const group = await db.groups.findByID(id)
+  if (!group || group.orgID !== actor.orgID) return null
+  const memberIDs = await db.groups.members(id)
+  return { ...publicGroup(group), memberIDs }
+}, "panel.group")
+
+export const createGroup = action(async (form: FormData) => {
+  "use server"
+  const actor = await requireUser()
+  if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+  const name = String(form.get("name") ?? "").trim()
+  if (!name) return { error: "groups.error.nameRequired" as const }
+  const db = store()
+  const created = await db.groups.create({
+    orgID: actor.orgID,
+    name,
+    description: String(form.get("description") ?? "").trim() || undefined,
+    access: accessFromForm(form),
+    canOpenSettings: settingsFlag(form, "canOpenSettings") ?? true,
+  })
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "group.created",
+    result: "allow",
+    targetType: "group",
+    targetID: created.id,
+  })
+  return { error: undefined, id: created.id }
+}, "panel.group.create")
+
+export const updateGroup = action(async (id: string, input: {
+  access: AccessOverrides
+  canOpenSettings: boolean
+}) => {
+  "use server"
+  const actor = await requireUser()
+  if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+  const db = store()
+  const group = await db.groups.findByID(id)
+  if (!group || group.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  await db.groups.update(id, { access: input.access, canOpenSettings: input.canOpenSettings })
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "group.updated",
+    result: "allow",
+    targetType: "group",
+    targetID: id,
+  })
+  return { error: undefined }
+}, "panel.group.update")
+
+export const removeGroup = action(async (id: string) => {
+  "use server"
+  const actor = await requireUser()
+  if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+  const db = store()
+  const group = await db.groups.findByID(id)
+  if (!group || group.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  await db.groups.remove(id)
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "group.removed",
+    result: "allow",
+    targetType: "group",
+    targetID: id,
+  })
+  return { error: undefined }
+}, "panel.group.remove")
+
+export const setGroupMembers = action(async (id: string, userIDs: string[]) => {
+  "use server"
+  const actor = await requireUser()
+  if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+  const db = store()
+  const group = await db.groups.findByID(id)
+  if (!group || group.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  const users = await db.users.list(actor.orgID)
+  const allowed = new Set(users.map((user) => user.id))
+  await db.groups.setMembers(id, userIDs.filter((userID) => allowed.has(userID)))
+  return { error: undefined }
+}, "panel.group.members")
 
 // ==========================================
 // AÇÕES DO SUPER-ADMIN (GESTÃO DE TENANTS)
