@@ -1,6 +1,32 @@
 {
   "releases": [
     {
+      "tag": "v1.27.2",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Módulo de revendas com painel próprio e comissões",
+              "description": "O portal ganhou um módulo completo de revendedores parceiros: o super-admin cadastra a revenda e recebe as credenciais de acesso, e o parceiro passa a ter um painel exclusivo para criar empresas clientes com logo, mensagem de boas-vindas e período de avaliação. O dashboard de revenda consolida empresas ativas, trials em andamento, trials expirados, colaboradores atendidos, receita mensal estimada da carteira e a comissão prevista, com isolamento rígido por revenda."
+            },
+            {
+              "title": "Período de avaliação com bloqueio automático",
+              "description": "Empresas criadas em modo trial passam a ter data de expiração controlada. Ao vencer o prazo, o acesso é bloqueado automaticamente: as chamadas de API respondem 403 com aviso de trial expirado e o portal redireciona os colaboradores para a tela de reativação, sem derrubar o ambiente nem perder dados. Administradores e revendas podem prorrogar o trial em +7, +14 ou +30 dias e converter a empresa para plano pago a qualquer momento."
+            },
+            {
+              "title": "Identidade visual e boas-vindas por empresa",
+              "description": "Cada empresa pode ter logo própria (PNG, JPG, SVG ou WEBP até 5MB) exibida no cabeçalho do portal e nas listagens, além de uma mensagem de boas-vindas que aparece em destaque no dashboard dos colaboradores no primeiro acesso."
+            },
+            {
+              "title": "Portal fala a língua do cliente",
+              "description": "Toda a interface do portal e as traduções em português, espanhol e inglês deixaram de usar o termo técnico \"tenant\" e passaram a falar \"empresa\", incluindo telas de gestão, auditoria, licenças e provedores."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.1",
       "highlights": [
         {
