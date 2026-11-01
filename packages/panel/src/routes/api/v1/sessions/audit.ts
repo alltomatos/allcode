@@ -1,5 +1,25 @@
 import type { APIEvent } from "@solidjs/start"
-import { store } from "~/lib/store"
+import { store, type ModelUsageEntry } from "~/lib/store"
+
+function normalizeModelUsage(value: unknown): ModelUsageEntry[] {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") return []
+    const record = item as Record<string, unknown>
+    const providerID = typeof record.providerID === "string" ? record.providerID.trim() : ""
+    const modelID = typeof record.modelID === "string" ? record.modelID.trim() : ""
+    if (!providerID || !modelID) return []
+    return [
+      {
+        providerID,
+        modelID,
+        tokens: Math.max(0, Number(record.tokens ?? 0)),
+        costUsd: Math.max(0, Number(record.costUsd ?? 0)),
+        calls: Math.max(0, Number(record.calls ?? 0)),
+      },
+    ]
+  })
+}
 
 function normalizeIsoDate(value: unknown): string {
   if (typeof value === "number") {
@@ -39,6 +59,7 @@ export async function POST(event: APIEvent) {
       costUsd?: number
       durationMs?: number
       messagesCount?: number
+      modelUsage?: unknown
       appVersion?: string
     }
 
@@ -63,12 +84,17 @@ export async function POST(event: APIEvent) {
     const db = store()
     await db.ensureSeed()
 
+    const user = await db.users.findByID(userID)
+    if (!user || user.orgID !== orgID) {
+      return new Response(JSON.stringify({ error: "userID does not belong to orgID" }), {
+        status: 400,
+        headers: { "content-type": "application/json" },
+      })
+    }
+
     const version = body.appVersion?.trim().slice(0, 40)
-    if (version) {
-      const user = await db.users.findByID(userID)
-      if (user && version !== user.appVersion) {
-        await db.users.update(user.id, { appVersion: version, appVersionAt: new Date().toISOString() })
-      }
+    if (version && version !== user.appVersion) {
+      await db.users.update(user.id, { appVersion: version, appVersionAt: new Date().toISOString() })
     }
 
     const sessionRecord = await db.sessions.create({
@@ -87,6 +113,7 @@ export async function POST(event: APIEvent) {
       costUsd: Math.max(0, Number(body.costUsd ?? 0)),
       durationMs: Math.max(0, Number(body.durationMs ?? 0)),
       messagesCount: Math.max(0, Number(body.messagesCount ?? 0)),
+      modelUsage: normalizeModelUsage(body.modelUsage),
     })
 
     return new Response(JSON.stringify({ ok: true, session: sessionRecord }), {

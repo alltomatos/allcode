@@ -53,10 +53,11 @@ export interface ProvisionedProvider {
   id: string
   name: string
   kind: "builtin" | "custom" | "proxy"
+  protocol?: "openai" | "anthropic"
   npm?: string
   baseURL?: string
   apiKey?: string
-  models: Array<{ id: string; name: string }>
+  models: Array<{ id: string; name: string; enabled?: boolean }>
   headers: Record<string, string>
   env: string[]
 }

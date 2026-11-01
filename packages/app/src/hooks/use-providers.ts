@@ -28,6 +28,8 @@ export function useProviders(directory: Accessor<string | undefined>) {
     const current = policy()
     if (!current) return true
     if (current.denied.includes(providerID)) return false
+    const prov = (current.provisioned ?? []).find((p) => p.id === providerID)
+    if (prov && !prov.apiKey) return false
     if (!current.restricted) return true
     return current.allowLocal || current.allowed.includes(providerID)
   }

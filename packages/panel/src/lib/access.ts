@@ -145,10 +145,11 @@ export type ProvisionedProvider = {
   id: string
   name: string
   kind: "builtin" | "custom" | "proxy"
+  protocol?: "openai" | "anthropic"
   npm?: string
   baseURL?: string
   apiKey?: string
-  models: Array<{ id: string; name: string }>
+  models: Array<{ id: string; name: string; enabled?: boolean }>
   headers: Record<string, string>
   env: string[]
 }
@@ -158,10 +159,11 @@ export type ProviderCatalogEntry = {
   providerID: string
   displayName?: string
   kind?: "builtin" | "custom" | "proxy"
+  protocol?: "openai" | "anthropic"
   npm?: string
   baseURL?: string
   apiKey?: string
-  models?: Array<{ id: string; name: string }>
+  models?: Array<{ id: string; name: string; enabled?: boolean }>
   headers?: Array<{ key: string; value: string }>
   env?: string[]
   enabled: boolean
@@ -233,14 +235,16 @@ export function resolveProviderPolicy(input: {
       entry.baseURL ||
       (entry.models && entry.models.length > 0)
     ) {
+      const activeModels = (entry.models ?? []).filter((m) => m.enabled !== false)
       provisioned.push({
         id: entry.providerID,
         name: entry.displayName || entry.providerID,
-        kind: entry.kind || "builtin",
-        npm: entry.npm || "@ai-sdk/openai-compatible",
+        kind: entry.kind || "custom",
+        protocol: entry.protocol || "openai",
+        npm: entry.npm || (entry.protocol === "anthropic" ? "@ai-sdk/anthropic" : "@ai-sdk/openai-compatible"),
         baseURL: entry.baseURL,
         apiKey: entry.apiKey,
-        models: entry.models ?? [],
+        models: activeModels,
         headers: Object.fromEntries((entry.headers ?? []).map((h) => [h.key, h.value])),
         env: entry.env ?? [],
       })

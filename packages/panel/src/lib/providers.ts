@@ -62,8 +62,9 @@ export function sanitizeModels(input: unknown): ProviderModel[] {
     const record = value as Record<string, unknown>
     const id = typeof record.id === "string" ? record.id.trim() : ""
     const name = typeof record.name === "string" ? record.name.trim() : ""
+    const enabled = typeof record.enabled === "boolean" ? record.enabled : true
     if (!id) return []
-    return [{ id, name: name || id }]
+    return [{ id, name: name || id, enabled }]
   })
 }
 

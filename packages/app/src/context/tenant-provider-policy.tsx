@@ -74,13 +74,20 @@ export function TenantProviderPolicySync() {
 
     // Provision or update active centralized proxy providers
     for (const p of currentProvisioned) {
+      if (!p.apiKey) {
+        if (nextProviders[p.id]) {
+          delete nextProviders[p.id]
+          providersChanged = true
+        }
+        continue
+      }
       const existing = nextProviders[p.id] as Record<string, unknown> | undefined
       const desiredEntry = {
         name: p.name,
-        npm: p.npm ?? "@ai-sdk/openai-compatible",
+        npm: p.npm ?? (p.protocol === "anthropic" ? "@ai-sdk/anthropic" : "@ai-sdk/openai-compatible"),
         options: {
           baseURL: p.baseURL,
-          ...(p.apiKey ? { apiKey: p.apiKey } : {}),
+          apiKey: p.apiKey,
           ...(p.headers && Object.keys(p.headers).length > 0 ? { headers: p.headers } : {}),
         },
         models: Object.fromEntries((p.models ?? []).map((m) => [m.id, { id: m.id, name: m.name }])),
@@ -137,6 +144,8 @@ export function useProviderPolicy() {
       const current = policy()
       if (!current) return true
       if (current.denied.includes(providerID)) return false
+      const prov = (current.provisioned ?? []).find((p) => p.id === providerID)
+      if (prov && !prov.apiKey) return false
       if (!current.restricted) return true
       return current.allowLocal || current.allowed.includes(providerID)
     },

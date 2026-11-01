@@ -24,11 +24,13 @@ export type ResolvedAccess = {
  */
 export async function resolveUserAccess(user: PanelUser): Promise<ResolvedAccess> {
   const db = store()
-  const [groups, org, catalog] = await Promise.all([
+  const [groups, org, catalog, userCreds] = await Promise.all([
     db.groups.groupsForUser(user.id),
     db.org.get(user.orgID),
     db.providers.list(user.orgID),
+    db.credentials.listByUser(user.id),
   ])
+  const credsMap = new Map(userCreds.map((c) => [c.providerID, c.apiKey]))
   const [groupGrants, individualGrants] = await Promise.all([
     db.providers.grantsForScopes(
       "group",
@@ -66,9 +68,10 @@ export async function resolveUserAccess(user: PanelUser): Promise<ResolvedAccess
         providerID: provider.providerID,
         displayName: provider.displayName,
         kind: provider.kind,
+        protocol: provider.protocol,
         npm: provider.npm,
         baseURL: provider.baseURL,
-        apiKey: provider.apiKey,
+        apiKey: credsMap.get(provider.providerID) || provider.apiKey,
         models: provider.models,
         headers: provider.headers,
         env: provider.env,

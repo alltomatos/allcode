@@ -15,6 +15,12 @@ export default function NewUserPage() {
   const [error, setError] = createSignal<string | null>(null)
   const [pending, setPending] = createSignal(false)
   const [copied, setCopied] = createSignal(false)
+  const [selectedProviderID, setSelectedProviderID] = createSignal("")
+  const [selectedModelID, setSelectedModelID] = createSignal("")
+
+  const activeProvider = () =>
+    (providers() ?? []).find((p) => p.providerID === selectedProviderID())
+  const availableModels = () => (activeProvider()?.models ?? []).filter((m) => m.enabled !== false)
 
   async function submit(event: SubmitEvent) {
     event.preventDefault()
@@ -122,18 +128,46 @@ export default function NewUserPage() {
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">
                   {i18n.t("access.defaults.title")}
                 </span>
-                <Select label={i18n.t("access.defaults.provider")} name="defaultProvider">
-                  <option value="">—</option>
+                <Select
+                  label={i18n.t("access.defaults.provider")}
+                  name="defaultProvider"
+                  value={selectedProviderID()}
+                  onSelect={(val) => {
+                    setSelectedProviderID(val)
+                    setSelectedModelID("")
+                  }}
+                >
+                  <option value="">— {i18n.t("access.defaults.provider")} —</option>
                   <For each={(providers() ?? []).filter((provider) => provider.enabled)}>
                     {(provider) => <option value={provider.providerID}>{provider.displayName}</option>}
                   </For>
                 </Select>
-                <Field
-                  label={i18n.t("access.defaults.model")}
-                  name="defaultModel"
-                  placeholder="claude-sonnet-4"
-                  autocomplete="off"
-                />
+
+                <Show
+                  when={availableModels().length > 0}
+                  fallback={
+                    <Field
+                      label={i18n.t("access.defaults.model")}
+                      name="defaultModel"
+                      value={selectedModelID()}
+                      placeholder="Selecione um provedor com modelos disponíveis"
+                      autocomplete="off"
+                      onInput={(e) => setSelectedModelID(e.currentTarget.value)}
+                    />
+                  }
+                >
+                  <Select
+                    label={i18n.t("access.defaults.model")}
+                    name="defaultModel"
+                    value={selectedModelID()}
+                    onSelect={setSelectedModelID}
+                  >
+                    <option value="">— Nenhum modelo padrão —</option>
+                    <For each={availableModels()}>
+                      {(model) => <option value={model.id}>{model.name || model.id}</option>}
+                    </For>
+                  </Select>
+                </Show>
                 <p class="text-[11px] text-slate-500">{i18n.t("access.defaults.hint")}</p>
               </div>
 

@@ -40,8 +40,9 @@ export type AccessGroup = {
 
 export type ProviderKind = "builtin" | "custom" | "proxy"
 export type ProviderEffect = "allow" | "deny"
+export type ProviderProtocol = "openai" | "anthropic"
 
-export type ProviderModel = { id: string; name: string }
+export type ProviderModel = { id: string; name: string; enabled?: boolean }
 export type ProviderHeader = { key: string; value: string }
 
 export type ProviderDefinition = {
@@ -50,6 +51,7 @@ export type ProviderDefinition = {
   providerID: string
   displayName: string
   kind: ProviderKind
+  protocol: ProviderProtocol
   npm?: string
   baseURL?: string
   apiKey?: string
@@ -69,6 +71,14 @@ export type ProviderGrant = {
   effect: ProviderEffect
 }
 
+export type UserProviderCredential = {
+  userID: string
+  providerID: string
+  apiKey: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type SessionAudit = {
   id: string
   sessionID: string
@@ -86,7 +96,20 @@ export type SessionAudit = {
   costUsd: number
   durationMs: number
   messagesCount: number
+  modelUsage: ModelUsageEntry[]
   createdAt: string
+}
+
+export type ModelUsageEntry = {
+  providerID: string
+  modelID: string
+  tokens: number
+  costUsd: number
+  calls: number
+}
+
+export type ModelUsageSummary = ModelUsageEntry & {
+  sessions: number
 }
 
 export type UserKPIs = {
@@ -94,6 +117,13 @@ export type UserKPIs = {
   totalTokens: number
   totalCostUsd: number
   totalDurationMs: number
+}
+
+export type SessionListOptions = {
+  userID?: string
+  search?: string
+  limit?: number
+  offset?: number
 }
 
 export type Organization = {
@@ -252,6 +282,7 @@ export type Store = {
       providerID: string
       displayName: string
       kind?: ProviderKind
+      protocol?: ProviderProtocol
       npm?: string
       baseURL?: string
       apiKey?: string
@@ -265,6 +296,7 @@ export type Store = {
       id: string,
       patch: {
         displayName?: string
+        protocol?: ProviderProtocol
         npm?: string
         baseURL?: string
         apiKey?: string
@@ -283,7 +315,17 @@ export type Store = {
   sessions: {
     create(input: Omit<SessionAudit, "id" | "createdAt">): Promise<SessionAudit>
     listByUser(userID: string, limit?: number): Promise<SessionAudit[]>
+    listByOrg(orgID: string, options?: SessionListOptions): Promise<SessionAudit[]>
+    findBySessionID(sessionID: string): Promise<SessionAudit | undefined>
     getUserKPIs(userID: string): Promise<UserKPIs>
+    getOrgKPIs(orgID: string): Promise<UserKPIs>
+    getUserModelUsage(userID: string, options?: { days?: number }): Promise<ModelUsageSummary[]>
+  }
+  credentials: {
+    listByUser(userID: string): Promise<UserProviderCredential[]>
+    findByUserAndProvider(userID: string, providerID: string): Promise<UserProviderCredential | undefined>
+    set(userID: string, providerID: string, apiKey: string): Promise<void>
+    remove(userID: string, providerID: string): Promise<void>
   }
   audit: {
     log(event: Omit<AuditEvent, "id" | "orgID" | "at"> & { orgID?: string }): Promise<AuditEvent>
@@ -330,6 +372,8 @@ function memoryStore(): Store {
   const members = new Map<string, Set<string>>()
   const providers = new Map<string, ProviderDefinition>()
   const providerGrants = new Map<string, ProviderGrant[]>()
+  const sessionRecords: SessionAudit[] = []
+  const credentials = new Map<string, UserProviderCredential>()
   const initialOrg = defaultOrg()
   orgs.set(initialOrg.id, initialOrg)
   let seeding: Promise<void> | undefined
@@ -543,6 +587,7 @@ function memoryStore(): Store {
           providerID: input.providerID,
           displayName: input.displayName,
           kind: input.kind ?? "builtin",
+          protocol: input.protocol ?? "openai",
           npm: input.npm,
           baseURL: input.baseURL,
           apiKey: input.apiKey,
@@ -615,23 +660,120 @@ function memoryStore(): Store {
     },
     sessions: {
       async create(input) {
+        const existingIdx = sessionRecords.findIndex((record) => record.sessionID === input.sessionID)
         const item: SessionAudit = {
           ...input,
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
+          id: existingIdx >= 0 ? sessionRecords[existingIdx].id : crypto.randomUUID(),
+          createdAt: existingIdx >= 0 ? sessionRecords[existingIdx].createdAt : new Date().toISOString(),
+        }
+        if (existingIdx >= 0) {
+          sessionRecords[existingIdx] = item
+        } else {
+          sessionRecords.push(item)
         }
         return item
       },
       async listByUser(userID, limit = 50) {
-        return []
+        return sessionRecords
+          .filter((record) => record.userID === userID)
+          .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+          .slice(0, limit)
+      },
+      async listByOrg(orgID, options = {}) {
+        const { userID, search, limit = 50, offset = 0 } = options
+        const normalizedSearch = search?.trim().toLowerCase()
+        return sessionRecords
+          .filter((record) => {
+            if (record.orgID !== orgID) return false
+            if (userID && record.userID !== userID) return false
+            if (normalizedSearch) {
+              const inTitle = record.title.toLowerCase().includes(normalizedSearch)
+              const inSummary = record.summary.toLowerCase().includes(normalizedSearch)
+              const inWorkspace = record.workspace.toLowerCase().includes(normalizedSearch)
+              const inSessionID = record.sessionID.toLowerCase().includes(normalizedSearch)
+              if (!inTitle && !inSummary && !inWorkspace && !inSessionID) return false
+            }
+            return true
+          })
+          .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+          .slice(offset, offset + limit)
+      },
+      async findBySessionID(sessionID) {
+        return sessionRecords.find((record) => record.sessionID === sessionID)
       },
       async getUserKPIs(userID) {
+        const userSessions = sessionRecords.filter((record) => record.userID === userID)
         return {
-          totalSessions: 0,
-          totalTokens: 0,
-          totalCostUsd: 0,
-          totalDurationMs: 0,
+          totalSessions: userSessions.length,
+          totalTokens: userSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
+          totalCostUsd: userSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
+          totalDurationMs: userSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
         }
+      },
+      async getOrgKPIs(orgID) {
+        const orgSessions = sessionRecords.filter((record) => record.orgID === orgID)
+        return {
+          totalSessions: orgSessions.length,
+          totalTokens: orgSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
+          totalCostUsd: orgSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
+          totalDurationMs: orgSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
+        }
+      },
+      async getUserModelUsage(userID, options = {}) {
+        const { days = 30 } = options
+        const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+        const userSessions = sessionRecords.filter(
+          (record) => record.userID === userID && record.startedAt >= cutoff,
+        )
+        const summaryMap = new Map<string, ModelUsageSummary>()
+        for (const session of userSessions) {
+          const sessionKeysSeen = new Set<string>()
+          for (const usage of session.modelUsage || []) {
+            const key = `${usage.providerID}:${usage.modelID}`
+            const existing = summaryMap.get(key) ?? {
+              providerID: usage.providerID,
+              modelID: usage.modelID,
+              tokens: 0,
+              costUsd: 0,
+              calls: 0,
+              sessions: 0,
+            }
+            existing.tokens += usage.tokens
+            existing.costUsd += usage.costUsd
+            existing.calls += usage.calls
+            if (!sessionKeysSeen.has(key)) {
+              existing.sessions += 1
+              sessionKeysSeen.add(key)
+            }
+            summaryMap.set(key, existing)
+          }
+        }
+        return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
+      },
+    },
+    credentials: {
+      async listByUser(userID) {
+        return [...credentials.values()]
+          .filter((cred) => cred.userID === userID)
+          .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      },
+      async findByUserAndProvider(userID, providerID) {
+        return credentials.get(`${userID}:${providerID}`)
+      },
+      async set(userID, providerID, apiKey) {
+        const key = `${userID}:${providerID}`
+        const existing = credentials.get(key)
+        const now = new Date().toISOString()
+        credentials.set(key, {
+          userID,
+          providerID,
+          apiKey,
+          createdAt: existing?.createdAt ?? now,
+          updatedAt: now,
+        })
+      },
+      async remove(userID, providerID) {
+        credentials.delete(`${userID}:${providerID}`)
       },
     },
     audit: {
@@ -716,6 +858,7 @@ type ProviderRow = {
   provider_id: string
   display_name: string
   kind: string
+  protocol: string | null
   npm: string | null
   base_url: string | null
   api_key: string | null
@@ -733,6 +876,14 @@ type ProviderGrantRow = {
   scope_id: string
   provider_id: string
   effect: string
+}
+
+type UserProviderCredentialRow = {
+  user_id: string
+  provider_id: string
+  api_key: string
+  created_at: string
+  updated_at: string
 }
 
 type AuditRow = {
@@ -764,6 +915,7 @@ type SessionAuditRow = {
   cost_usd: number
   duration_ms: number
   messages_count: number
+  model_usage?: string | null
   created_at: string
 }
 
@@ -807,7 +959,18 @@ function toGroup(row: GroupRow): AccessGroup {
   }
 }
 
-function toSessionAudit(row: SessionAuditRow): SessionAudit {  return {
+function parseModelUsage(value: string | null | undefined): ModelUsageEntry[] {
+  if (!value) return []
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? (parsed as ModelUsageEntry[]) : []
+  } catch {
+    return []
+  }
+}
+
+function toSessionAudit(row: SessionAuditRow): SessionAudit {
+  return {
     id: row.id,
     sessionID: row.session_id,
     userID: row.user_id,
@@ -824,7 +987,18 @@ function toSessionAudit(row: SessionAuditRow): SessionAudit {  return {
     costUsd: row.cost_usd ?? 0,
     durationMs: row.duration_ms ?? 0,
     messagesCount: row.messages_count ?? 0,
+    modelUsage: parseModelUsage(row.model_usage),
     createdAt: row.created_at,
+  }
+}
+
+function toCredential(row: UserProviderCredentialRow): UserProviderCredential {
+  return {
+    userID: row.user_id,
+    providerID: row.provider_id,
+    apiKey: row.api_key,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   }
 }
 
@@ -857,6 +1031,7 @@ function toProvider(row: ProviderRow): ProviderDefinition {
     providerID: row.provider_id,
     displayName: row.display_name,
     kind: row.kind === "custom" ? "custom" : row.kind === "proxy" ? "proxy" : "builtin",
+    protocol: (row.protocol === "anthropic" ? "anthropic" : "openai") as ProviderProtocol,
     npm: row.npm ?? undefined,
     baseURL: row.base_url ?? undefined,
     apiKey: row.api_key ?? undefined,
@@ -1312,6 +1487,7 @@ export function d1Store(db: D1Database): Store {
           providerID: input.providerID,
           displayName: input.displayName,
           kind: input.kind ?? "builtin",
+          protocol: input.protocol ?? "openai",
           npm: input.npm,
           baseURL: input.baseURL,
           apiKey: input.apiKey,
@@ -1325,8 +1501,8 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, kind, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, kind, protocol, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             provider.id,
@@ -1334,6 +1510,7 @@ export function d1Store(db: D1Database): Store {
             provider.providerID,
             provider.displayName,
             provider.kind,
+            provider.protocol,
             provider.npm ?? null,
             provider.baseURL ?? null,
             provider.apiKey ?? null,
@@ -1358,10 +1535,11 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `UPDATE provider_definition SET display_name = ?, npm = ?, base_url = ?, api_key = ?, models_json = ?, headers_json = ?, env_json = ?, enabled = ?, updated_at = ? WHERE id = ?`,
+            `UPDATE provider_definition SET display_name = ?, protocol = ?, npm = ?, base_url = ?, api_key = ?, models_json = ?, headers_json = ?, env_json = ?, enabled = ?, updated_at = ? WHERE id = ?`,
           )
           .bind(
             next.displayName,
+            next.protocol,
             next.npm ?? null,
             next.baseURL ?? null,
             next.apiKey ?? null,
@@ -1438,8 +1616,21 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `INSERT INTO session_audit (id, session_id, user_id, org_id, title, summary, workspace, started_at, ended_at, tokens_total, tokens_input, tokens_output, tokens_reasoning, cost_usd, duration_ms, messages_count, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO session_audit (id, session_id, user_id, org_id, title, summary, workspace, started_at, ended_at, tokens_total, tokens_input, tokens_output, tokens_reasoning, cost_usd, duration_ms, messages_count, model_usage, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(session_id) DO UPDATE SET
+               title = excluded.title,
+               summary = excluded.summary,
+               workspace = excluded.workspace,
+               ended_at = excluded.ended_at,
+               tokens_total = excluded.tokens_total,
+               tokens_input = excluded.tokens_input,
+               tokens_output = excluded.tokens_output,
+               tokens_reasoning = excluded.tokens_reasoning,
+               cost_usd = excluded.cost_usd,
+               duration_ms = excluded.duration_ms,
+               messages_count = excluded.messages_count,
+               model_usage = excluded.model_usage`,
           )
           .bind(
             item.id,
@@ -1458,6 +1649,7 @@ export function d1Store(db: D1Database): Store {
             item.costUsd,
             item.durationMs,
             item.messagesCount,
+            JSON.stringify(item.modelUsage ?? []),
             item.createdAt,
           )
           .run()
@@ -1469,6 +1661,43 @@ export function d1Store(db: D1Database): Store {
           .bind(userID, limit)
           .all<SessionAuditRow>()
         return rows.results.map(toSessionAudit)
+      },
+      async listByOrg(orgID, options = {}) {
+        const { userID, search, limit = 50, offset = 0 } = options
+        const clauses: string[] = ["org_id = ?"]
+        const bindings: (string | number)[] = [orgID]
+
+        if (userID) {
+          clauses.push("user_id = ?")
+          bindings.push(userID)
+        }
+
+        if (search?.trim()) {
+          clauses.push("(title LIKE ? OR summary LIKE ? OR workspace LIKE ? OR session_id LIKE ?)")
+          const term = `%${search.trim()}%`
+          bindings.push(term, term, term, term)
+        }
+
+        bindings.push(limit, offset)
+
+        const rows = await db
+          .prepare(
+            `SELECT * FROM session_audit
+             WHERE ${clauses.join(" AND ")}
+             ORDER BY started_at DESC
+             LIMIT ? OFFSET ?`,
+          )
+          .bind(...bindings)
+          .all<SessionAuditRow>()
+
+        return rows.results.map(toSessionAudit)
+      },
+      async findBySessionID(sessionID) {
+        const row = await db
+          .prepare("SELECT * FROM session_audit WHERE session_id = ?")
+          .bind(sessionID)
+          .first<SessionAuditRow>()
+        return row ? toSessionAudit(row) : undefined
       },
       async getUserKPIs(userID) {
         const row = await db
@@ -1488,6 +1717,94 @@ export function d1Store(db: D1Database): Store {
           totalCostUsd: Number(row?.total_cost_usd ?? 0),
           totalDurationMs: Number(row?.total_duration_ms ?? 0),
         }
+      },
+      async getOrgKPIs(orgID) {
+        const row = await db
+          .prepare(
+            `SELECT
+               COUNT(*) AS total_sessions,
+               SUM(tokens_total) AS total_tokens,
+               SUM(cost_usd) AS total_cost_usd,
+               SUM(duration_ms) AS total_duration_ms
+             FROM session_audit WHERE org_id = ?`,
+          )
+          .bind(orgID)
+          .first<{ total_sessions: number; total_tokens: number; total_cost_usd: number; total_duration_ms: number }>()
+        return {
+          totalSessions: Number(row?.total_sessions ?? 0),
+          totalTokens: Number(row?.total_tokens ?? 0),
+          totalCostUsd: Number(row?.total_cost_usd ?? 0),
+          totalDurationMs: Number(row?.total_duration_ms ?? 0),
+        }
+      },
+      async getUserModelUsage(userID, options = {}) {
+        const { days = 30 } = options
+        const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+        const rows = await db
+          .prepare("SELECT model_usage FROM session_audit WHERE user_id = ? AND started_at >= ?")
+          .bind(userID, cutoff)
+          .all<{ model_usage: string | null }>()
+
+        const summaryMap = new Map<string, ModelUsageSummary>()
+        for (const row of rows.results) {
+          const list = parseModelUsage(row.model_usage)
+          const sessionKeysSeen = new Set<string>()
+          for (const usage of list) {
+            const key = `${usage.providerID}:${usage.modelID}`
+            const existing = summaryMap.get(key) ?? {
+              providerID: usage.providerID,
+              modelID: usage.modelID,
+              tokens: 0,
+              costUsd: 0,
+              calls: 0,
+              sessions: 0,
+            }
+            existing.tokens += usage.tokens
+            existing.costUsd += usage.costUsd
+            existing.calls += usage.calls
+            if (!sessionKeysSeen.has(key)) {
+              existing.sessions += 1
+              sessionKeysSeen.add(key)
+            }
+            summaryMap.set(key, existing)
+          }
+        }
+        return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
+      },
+    },
+    credentials: {
+      async listByUser(userID) {
+        const rows = await db
+          .prepare("SELECT * FROM user_provider_credential WHERE user_id = ? ORDER BY created_at ASC")
+          .bind(userID)
+          .all<UserProviderCredentialRow>()
+        return rows.results.map(toCredential)
+      },
+      async findByUserAndProvider(userID, providerID) {
+        const row = await db
+          .prepare("SELECT * FROM user_provider_credential WHERE user_id = ? AND provider_id = ?")
+          .bind(userID, providerID)
+          .first<UserProviderCredentialRow>()
+        return row ? toCredential(row) : undefined
+      },
+      async set(userID, providerID, apiKey) {
+        const now = new Date().toISOString()
+        await db
+          .prepare(
+            `INSERT INTO user_provider_credential (user_id, provider_id, api_key, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?)
+             ON CONFLICT(user_id, provider_id) DO UPDATE SET
+               api_key = excluded.api_key,
+               updated_at = excluded.updated_at`,
+          )
+          .bind(userID, providerID, apiKey, now, now)
+          .run()
+      },
+      async remove(userID, providerID) {
+        await db
+          .prepare("DELETE FROM user_provider_credential WHERE user_id = ? AND provider_id = ?")
+          .bind(userID, providerID)
+          .run()
       },
     },
     audit: {

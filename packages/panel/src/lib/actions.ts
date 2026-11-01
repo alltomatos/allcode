@@ -11,7 +11,7 @@ import {
   validProviderID,
 } from "./providers"
 import { usePanelSession } from "./session"
-import { store, type PanelUser, type ProviderDefinition, type Role } from "./store"
+import { store, type PanelUser, type ProviderDefinition, type ProviderProtocol, type Role } from "./store"
 import { resolveUserAccess } from "./user-access"
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -61,6 +61,8 @@ function publicUser(user: PanelUser) {
 
 export type PublicUser = ReturnType<typeof publicUser>
 
+export type UserDetail = PublicUser & { groupIDs: string[] }
+
 export const me = query(async () => {
   "use server"
   const user = await currentUser()
@@ -108,6 +110,45 @@ export const getUserKPIs = query(async (id: string) => {
   if (!user || user.orgID !== actor.orgID) return { totalSessions: 0, totalTokens: 0, totalCostUsd: 0, totalDurationMs: 0 }
   return db.sessions.getUserKPIs(id)
 }, "panel.user.kpis")
+
+export const getOrgSessions = query(
+  async (options: { userID?: string; search?: string; limit?: number; offset?: number } = {}) => {
+    "use server"
+    const actor = await requireUser()
+    const db = store()
+    return db.sessions.listByOrg(actor.orgID, options)
+  },
+  "panel.org.sessions",
+)
+
+export const getOrgKPIs = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  return db.sessions.getOrgKPIs(actor.orgID)
+}, "panel.org.kpis")
+
+export const getUserModelUsage = query(async (id: string, days?: number) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const user = await db.users.findByID(id)
+  if (!user || user.orgID !== actor.orgID) return []
+  return db.sessions.getUserModelUsage(id, { days })
+}, "panel.user.models")
+
+export const getSessionAudit = query(async (sessionID: string) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const session = await db.sessions.findBySessionID(sessionID)
+  if (!session || session.orgID !== actor.orgID) return null
+  const user = await db.users.findByID(session.userID)
+  return {
+    session,
+    owner: user ? { id: user.id, name: user.name, email: user.email } : null,
+  }
+}, "panel.session")
 
 export const listAudit = query(async (targetID?: string) => {
   "use server"
@@ -436,6 +477,8 @@ function publicGroup(group: { id: string; name: string; description?: string; ac
   }
 }
 
+export type PublicGroup = ReturnType<typeof publicGroup>
+
 export const listGroups = query(async () => {
   "use server"
   const actor = await requireUser()
@@ -547,7 +590,8 @@ function publicProvider(provider: ProviderDefinition) {
 export type ProviderInput = {
   providerID: string
   displayName: string
-  kind: "builtin" | "custom" | "proxy"
+  kind?: "builtin" | "custom" | "proxy"
+  protocol?: ProviderProtocol
   baseURL?: string
   apiKey?: string
   models?: unknown
@@ -593,6 +637,107 @@ export const getProviderUsage = query(async () => {
   }))
 }, "panel.providers.usage")
 
+export const testProviderConnection = action(
+  async (input: { protocol: ProviderProtocol; baseURL: string; apiKey?: string }) => {
+    "use server"
+    await requireUser()
+    const url = input.baseURL.trim().replace(/\/+$/, "")
+    if (!isHttpUrl(url)) {
+      return { error: "providers.error.invalidUrl" as const }
+    }
+
+    try {
+      const headers: Record<string, string> = {
+        "content-type": "application/json",
+      }
+      let targetUrl = `${url}/models`
+
+      if (input.protocol === "anthropic") {
+        targetUrl = url.endsWith("/v1") ? `${url}/models` : `${url}/v1/models`
+        if (input.apiKey?.trim()) {
+          headers["x-api-key"] = input.apiKey.trim()
+          headers["anthropic-version"] = "2023-06-01"
+        }
+      } else {
+        if (input.apiKey?.trim()) {
+          headers["Authorization"] = `Bearer ${input.apiKey.trim()}`
+        }
+      }
+
+      const response = await fetch(targetUrl, {
+        method: "GET",
+        headers,
+        signal: AbortSignal.timeout(10000),
+      })
+
+      if (!response.ok) {
+        const text = await response.text().catch(() => "")
+        return {
+          error: `HTTP ${response.status}: ${text.slice(0, 200) || response.statusText}`,
+        }
+      }
+
+      const data = (await response.json()) as any
+      let models: Array<{ id: string; name: string }> = []
+      if (Array.isArray(data?.data)) {
+        models = data.data
+          .map((m: any) => ({
+            id: String(m.id || m.model || ""),
+            name: String(m.name || m.display_name || m.id || ""),
+          }))
+          .filter((m: any) => m.id)
+      } else if (Array.isArray(data)) {
+        models = data
+          .map((m: any) => ({
+            id: String(m.id || m.model || m || ""),
+            name: String(m.name || m.id || m || ""),
+          }))
+          .filter((m: any) => m.id)
+      }
+
+      return { ok: true, models }
+    } catch (err: any) {
+      return {
+        error: err.name === "TimeoutError" ? "Timeout ao conectar (10s)" : err.message || "Erro de conexão",
+      }
+    }
+  },
+  "panel.provider.test",
+)
+
+export const listUserCredentials = query(async (targetUserID?: string) => {
+  "use server"
+  const actor = await requireUser()
+  const uid = targetUserID && (actor.role === "owner" || actor.role === "admin") ? targetUserID : actor.id
+  const db = store()
+  const creds = await db.credentials.listByUser(uid)
+  return creds.map((c) => ({
+    providerID: c.providerID,
+    maskedKey: c.apiKey.length > 8 ? `${c.apiKey.slice(0, 3)}...${c.apiKey.slice(-4)}` : "••••••••",
+    updatedAt: c.updatedAt,
+  }))
+}, "panel.user.credentials")
+
+export const saveUserCredential = action(async (input: { userID?: string; providerID: string; apiKey: string }) => {
+  "use server"
+  const actor = await requireUser()
+  const uid = input.userID && (actor.role === "owner" || actor.role === "admin") ? input.userID : actor.id
+  const key = input.apiKey.trim()
+  if (!key) return { error: "A chave de API não pode estar em branco." }
+  const db = store()
+  await db.credentials.set(uid, input.providerID.trim(), key)
+  return { success: true }
+}, "panel.user.credential.save")
+
+export const removeUserCredential = action(async (input: { userID?: string; providerID: string }) => {
+  "use server"
+  const actor = await requireUser()
+  const uid = input.userID && (actor.role === "owner" || actor.role === "admin") ? input.userID : actor.id
+  const db = store()
+  await db.credentials.remove(uid, input.providerID.trim())
+  return { success: true }
+}, "panel.user.credential.remove")
+
 export const createProvider = action(async (input: ProviderInput) => {  "use server"
   const actor = await requireUser()
   if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
@@ -606,18 +751,22 @@ export const createProvider = action(async (input: ProviderInput) => {  "use ser
   if (await db.providers.findByProviderID(actor.orgID, providerID)) return { error: "providers.error.duplicate" as const }
 
   const baseURL = input.baseURL?.trim()
-  if ((input.kind === "custom" || input.kind === "proxy") && (!baseURL || !isHttpUrl(baseURL))) {
+  if (!baseURL || !isHttpUrl(baseURL)) {
     return { error: "providers.error.invalidUrl" as const }
   }
+
+  const protocol: ProviderProtocol = input.protocol === "anthropic" ? "anthropic" : "openai"
+  const npm = protocol === "anthropic" ? "@ai-sdk/anthropic" : "@ai-sdk/openai-compatible"
 
   const created = await db.providers.create({
     orgID: actor.orgID,
     providerID,
     displayName,
-    kind: input.kind,
-    npm: input.kind === "custom" || input.kind === "proxy" ? CUSTOM_PROVIDER_NPM : undefined,
-    baseURL: input.kind === "custom" || input.kind === "proxy" ? baseURL : undefined,
-    apiKey: input.apiKey?.trim() || undefined,
+    kind: "custom",
+    protocol,
+    npm,
+    baseURL,
+    apiKey: undefined,
     models: sanitizeModels(input.models),
     headers: sanitizeHeaders(input.headers),
     env: sanitizeEnv(input.env),
@@ -648,13 +797,17 @@ export const updateProvider = action(async (id: string, input: ProviderInput) =>
   const displayName = input.displayName.trim()
   if (!displayName) return { error: "providers.error.nameRequired" as const }
   const baseURL = (input.baseURL ?? provider.baseURL ?? "").trim()
-  const isProxyOrCustom = provider.kind === "custom" || provider.kind === "proxy"
-  if (isProxyOrCustom && !isHttpUrl(baseURL)) return { error: "providers.error.invalidUrl" as const }
+  if (!isHttpUrl(baseURL)) return { error: "providers.error.invalidUrl" as const }
+
+  const protocol: ProviderProtocol = input.protocol ?? provider.protocol ?? "openai"
+  const npm = protocol === "anthropic" ? "@ai-sdk/anthropic" : "@ai-sdk/openai-compatible"
 
   await db.providers.update(id, {
     displayName,
-    baseURL: isProxyOrCustom ? baseURL : undefined,
-    apiKey: input.apiKey !== undefined ? (input.apiKey.trim() || undefined) : provider.apiKey,
+    protocol,
+    npm,
+    baseURL,
+    apiKey: undefined,
     models: sanitizeModels(input.models),
     headers: sanitizeHeaders(input.headers),
     env: sanitizeEnv(input.env),

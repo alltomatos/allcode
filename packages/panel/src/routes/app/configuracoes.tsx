@@ -15,6 +15,14 @@ export default function SettingsPage() {
   const [pending, setPending] = createSignal(false)
   const [uploading, setUploading] = createSignal(false)
   const [logoUrl, setLogoUrl] = createSignal("")
+  const [selectedProviderID, setSelectedProviderID] = createSignal<string | null>(null)
+  const [selectedModelID, setSelectedModelID] = createSignal<string | null>(null)
+
+  const activeProvider = () =>
+    (providers() ?? []).find(
+      (p) => p.providerID === (selectedProviderID() ?? settings()?.defaultProvider),
+    )
+  const availableModels = () => (activeProvider()?.models ?? []).filter((m) => m.enabled !== false)
 
   async function onUploadFile(e: Event & { currentTarget: HTMLInputElement }) {
     const file = e.currentTarget.files?.[0]
@@ -117,7 +125,11 @@ export default function SettingsPage() {
                     <Select
                       label={i18n.t("access.defaults.provider")}
                       name="defaultProvider"
-                      value={current().defaultProvider ?? ""}
+                      value={selectedProviderID() ?? current().defaultProvider ?? ""}
+                      onSelect={(val) => {
+                        setSelectedProviderID(val)
+                        setSelectedModelID("")
+                      }}
                       disabled={actor()?.role !== "owner"}
                     >
                       <option value="">—</option>
@@ -133,14 +145,34 @@ export default function SettingsPage() {
                         {(provider) => <option value={provider.providerID}>{provider.displayName}</option>}
                       </For>
                     </Select>
-                    <Field
-                      label={i18n.t("access.defaults.model")}
-                      name="defaultModel"
-                      value={current().defaultModel ?? ""}
-                      placeholder="claude-sonnet-4"
-                      autocomplete="off"
-                      disabled={actor()?.role !== "owner"}
-                    />
+
+                    <Show
+                      when={availableModels().length > 0}
+                      fallback={
+                        <Field
+                          label={i18n.t("access.defaults.model")}
+                          name="defaultModel"
+                          value={selectedModelID() ?? current().defaultModel ?? ""}
+                          placeholder="Selecione um provedor com modelos disponíveis"
+                          autocomplete="off"
+                          disabled={actor()?.role !== "owner"}
+                          onInput={(e) => setSelectedModelID(e.currentTarget.value)}
+                        />
+                      }
+                    >
+                      <Select
+                        label={i18n.t("access.defaults.model")}
+                        name="defaultModel"
+                        value={selectedModelID() ?? current().defaultModel ?? ""}
+                        onSelect={setSelectedModelID}
+                        disabled={actor()?.role !== "owner"}
+                      >
+                        <option value="">— Nenhum modelo padrão —</option>
+                        <For each={availableModels()}>
+                          {(model) => <option value={model.id}>{model.name || model.id}</option>}
+                        </For>
+                      </Select>
+                    </Show>
                   </div>
                   <p class="mt-2 text-xs text-slate-500">{i18n.t("access.defaults.hint")}</p>
                 </div>

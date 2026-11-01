@@ -212,6 +212,7 @@ describe("provider policy", () => {
       id: "9router",
       name: "9router Corp",
       kind: "proxy",
+      protocol: "openai",
       npm: "@ai-sdk/openai-compatible",
       baseURL: "http://127.0.0.1:20128/v1",
       apiKey: "sk-9router-corp",

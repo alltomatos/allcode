@@ -51,7 +51,7 @@ export default function ProviderDetailPage() {
   }
 
   return (
-    <div>
+    <div class="max-w-3xl space-y-6">
       <PageHeader
         title={provider()?.displayName ?? i18n.t("providers.form.editTitle")}
         subtitle={provider()?.providerID}
@@ -64,46 +64,57 @@ export default function ProviderDetailPage() {
 
       <Show when={provider()} fallback={<EmptyState>{i18n.t("providers.empty")}</EmptyState>}>
         {(current) => (
-          <Card class="max-w-2xl">
-            <div class="mb-4 flex items-center gap-2">
-              <Badge tone={current().kind === "proxy" ? "brand" : current().kind === "custom" ? "brand" : "neutral"}>
-                {i18n.t(
-                  current().kind === "proxy"
-                    ? "providers.kind.proxy"
-                    : current().kind === "custom"
-                      ? "providers.kind.custom"
-                      : "providers.kind.builtin",
-                )}
+          <div class="space-y-6">
+            <div class="flex items-center gap-2">
+              <Badge tone="brand">
+                {current().protocol === "anthropic" ? "Anthropic Protocol" : "OpenAI Protocol"}
               </Badge>
               <Badge tone={current().enabled ? "success" : "warning"}>
                 {i18n.t(current().enabled ? "providers.status.enabled" : "providers.status.disabled")}
               </Badge>
+              <span class="text-xs text-slate-500 font-mono">
+                {current().baseURL}
+              </span>
             </div>
 
-            <Show when={actor()?.role === "owner" || actor()?.role === "admin"}>
+            <Show
+              when={actor()?.role === "owner" || actor()?.role === "admin"}
+              fallback={
+                <Card>
+                  <p class="text-sm text-slate-500">{i18n.t("users.new.error.forbidden")}</p>
+                </Card>
+              }
+            >
               <ProviderForm
-                kind={current().kind}
                 provider={current()}
                 error={error()}
                 pending={pending()}
                 onSubmit={onSubmit}
               />
+
               <Show when={saved()}>
-                <p class="mt-3 text-xs text-emerald-700">{i18n.t("providers.saved")}</p>
-              </Show>
-              <Show when={isOwner()}>
-                <div class="mt-6 border-t border-slate-100 pt-4">
-                  <Button variant="danger" size="sm" disabled={pending()} onClick={onRemove}>
-                    {i18n.t("providers.form.remove")}
-                  </Button>
+                <div class="rounded-lg bg-emerald-50 px-3 py-2 text-xs font-medium text-emerald-800 ring-1 ring-emerald-200">
+                  {i18n.t("providers.saved")}
                 </div>
               </Show>
-            </Show>
 
-            <Show when={actor()?.role !== "owner" && actor()?.role !== "admin"}>
-              <p class="text-sm text-slate-500">{i18n.t("users.new.error.forbidden")}</p>
+              <Show when={isOwner()}>
+                <Card class="border-rose-200">
+                  <div class="flex items-center justify-between">
+                    <div>
+                      <h4 class="text-sm font-semibold text-rose-900">Remover Provedor</h4>
+                      <p class="text-xs text-slate-500">
+                        Exclui este provedor do catálogo da organização e revoga todas as permissões concedidas.
+                      </p>
+                    </div>
+                    <Button variant="danger" size="sm" disabled={pending()} onClick={onRemove}>
+                      {i18n.t("providers.form.remove")}
+                    </Button>
+                  </div>
+                </Card>
+              </Show>
             </Show>
-          </Card>
+          </div>
         )}
       </Show>
     </div>
