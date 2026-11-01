@@ -3,14 +3,22 @@ import { randomBytes } from "node:crypto"
 import { BrowserWindow } from "electron"
 import { write as writeLog } from "./logging"
 import {
+  captureAccessibilitySnapshot,
   captureScreenshot,
   computerClick,
   computerKey,
   computerMove,
   computerScroll,
   computerType,
+  resolveRef,
+  stopComputerWorker,
 } from "./computer-control"
-import { showComputerOverlay, hideComputerOverlay } from "./computer-overlay"
+import {
+  showComputerOverlay,
+  hideComputerOverlay,
+  highlightOverlayElement,
+  clearOverlayHighlight,
+} from "./computer-overlay"
 import { enterComputerUseCompactMode, exitComputerUseCompactMode } from "./windows"
 
 let sessionResetTimer: NodeJS.Timeout | null = null
@@ -40,7 +48,9 @@ function endSession() {
     clearTimeout(sessionResetTimer)
     sessionResetTimer = null
   }
+  clearOverlayHighlight()
   hideComputerOverlay()
+  stopComputerWorker()
   for (const win of BrowserWindow.getAllWindows()) {
     exitComputerUseCompactMode(win)
   }
@@ -99,6 +109,13 @@ export function startComputerBridge(): Promise<ComputerBridge> {
         return
       }
 
+      if (url.pathname === "/snapshot" && req.method === "GET") {
+        notifySessionActivity()
+        const snapshot = await captureAccessibilitySnapshot()
+        sendJson(res, 200, { ok: true, data: snapshot })
+        return
+      }
+
       if (url.pathname === "/screenshot" && req.method === "GET") {
         notifySessionActivity()
         const png = await captureScreenshot()
@@ -106,43 +123,72 @@ export function startComputerBridge(): Promise<ComputerBridge> {
         res.end(png)
         return
       }
+
       if (url.pathname === "/click" && req.method === "POST") {
         notifySessionActivity()
         const body = await readJson(req)
-        if (typeof body.x !== "number" || typeof body.y !== "number") throw new Error("x and y are required")
-        await computerClick(body.x, body.y)
-        sendJson(res, 200, { ok: true })
+        if (body.ref) {
+          const el = resolveRef(body.ref)
+          if (el) {
+            highlightOverlayElement(el.bounds, `${el.ref}: ${el.name || el.role}`)
+          }
+        } else if (typeof body.x === "number" && typeof body.y === "number") {
+          highlightOverlayElement({ x: body.x - 10, y: body.y - 10, width: 20, height: 20 }, `(${body.x}, ${body.y})`)
+        }
+        const result = await computerClick({ ref: body.ref, x: body.x, y: body.y })
+        sendJson(res, 200, result)
         return
       }
+
       if (url.pathname === "/move" && req.method === "POST") {
         notifySessionActivity()
         const body = await readJson(req)
-        if (typeof body.x !== "number" || typeof body.y !== "number") throw new Error("x and y are required")
-        await computerMove(body.x, body.y)
-        sendJson(res, 200, { ok: true })
+        if (body.ref) {
+          const el = resolveRef(body.ref)
+          if (el) {
+            highlightOverlayElement(el.bounds, `${el.ref}: ${el.name || el.role}`)
+          }
+        }
+        const result = await computerMove({ ref: body.ref, x: body.x, y: body.y })
+        sendJson(res, 200, result)
         return
       }
+
       if (url.pathname === "/type" && req.method === "POST") {
         notifySessionActivity()
         const body = await readJson(req)
         if (typeof body.text !== "string") throw new Error("text is required")
-        await computerType(body.text)
-        sendJson(res, 200, { ok: true })
+        if (body.ref) {
+          const el = resolveRef(body.ref)
+          if (el) {
+            highlightOverlayElement(el.bounds, `${el.ref}: ${el.name || el.role}`)
+          }
+        }
+        const result = await computerType({ text: body.text, ref: body.ref })
+        sendJson(res, 200, result)
         return
       }
+
       if (url.pathname === "/key" && req.method === "POST") {
         notifySessionActivity()
         const body = await readJson(req)
         if (typeof body.key !== "string") throw new Error("key is required")
-        await computerKey(body.key)
-        sendJson(res, 200, { ok: true })
+        const result = await computerKey(body.key)
+        sendJson(res, 200, result)
         return
       }
+
       if (url.pathname === "/scroll" && req.method === "POST") {
         notifySessionActivity()
         const body = await readJson(req)
-        await computerScroll(Number(body.deltaX ?? 0), Number(body.deltaY ?? 0))
-        sendJson(res, 200, { ok: true })
+        if (body.ref) {
+          const el = resolveRef(body.ref)
+          if (el) {
+            highlightOverlayElement(el.bounds, `${el.ref}: ${el.name || el.role}`)
+          }
+        }
+        const result = await computerScroll(Number(body.deltaX ?? 0), Number(body.deltaY ?? 0), body.ref)
+        sendJson(res, 200, result)
         return
       }
 

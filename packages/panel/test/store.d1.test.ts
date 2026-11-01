@@ -39,6 +39,8 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0004_session_audit_and_permissions.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0005_user_app_version.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0006_access_groups.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0007_session_audit_unique.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0008_session_audit_model_usage.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -138,6 +140,7 @@ describe("D1 store", () => {
       costUsd: 0.0045,
       durationMs: 60000,
       messagesCount: 12,
+      modelUsage: [{ providerID: "anthropic", modelID: "claude-sonnet-4-5", tokens: 1500, costUsd: 0.0045, calls: 3 }],
     })
     expect(session.id).toBeDefined()
 
@@ -150,6 +153,66 @@ describe("D1 store", () => {
     expect(kpis.totalTokens).toBe(1500)
     expect(kpis.totalCostUsd).toBeCloseTo(0.0045, 4)
     expect(kpis.totalDurationMs).toBe(60000)
+  })
+
+  test("upserts a session audit row by session_id as the summary evolves", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    expect(owner).toBeTruthy()
+
+    const base = {
+      sessionID: "ses_upsert",
+      userID: owner!.id,
+      orgID: owner!.orgID,
+      title: "First turn",
+      workspace: "D:/dev/allcode",
+      startedAt: new Date(Date.now() - 60000).toISOString(),
+      tokensInput: 100,
+      tokensOutput: 50,
+      tokensReasoning: 0,
+      durationMs: 1000,
+      messagesCount: 2,
+      modelUsage: [{ providerID: "openai", modelID: "gpt-5", tokens: 150, costUsd: 0.001, calls: 1 }],
+    }
+
+    const first = await store.sessions.create({
+      ...base,
+      summary: "Resumo do primeiro turno",
+      tokensTotal: 150,
+      costUsd: 0.001,
+    })
+    const second = await store.sessions.create({
+      ...base,
+      title: "Third turn",
+      summary: "Resumo consolidado da conversa",
+      endedAt: new Date().toISOString(),
+      tokensTotal: 900,
+      costUsd: 0.0042,
+      durationMs: 45000,
+      messagesCount: 8,
+    })
+
+    expect(second.id).toBe(first.id)
+    const list = await store.sessions.listByUser(owner!.id)
+    expect(list.length).toBe(1)
+    expect(list[0]?.summary).toBe("Resumo consolidado da conversa")
+    expect(list[0]?.tokensTotal).toBe(900)
+    expect(list[0]?.messagesCount).toBe(8)
+    expect(list[0]?.startedAt).toBe(base.startedAt)
+
+    const orgKpis = await store.sessions.getOrgKPIs(owner!.orgID)
+    expect(orgKpis.totalSessions).toBe(1)
+    expect(orgKpis.totalTokens).toBe(900)
+
+    const found = await store.sessions.findBySessionID("ses_upsert")
+    expect(found?.summary).toBe("Resumo consolidado da conversa")
+
+    const usage = await store.sessions.getUserModelUsage(owner!.id)
+    expect(usage.length).toBe(1)
+    expect(usage[0]?.providerID).toBe("openai")
+    expect(usage[0]?.modelID).toBe("gpt-5")
+    expect(usage[0]?.tokens).toBe(150)
   })
 
   test("admin password reset replaces the hash and forces a change on next sign-in", async () => {

@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto"
+
 /**
  * Identity headers for the hosted OpenCode free tier (`opencode.ai/inference`).
  *
@@ -21,6 +23,55 @@
  */
 const COMPAT_VERSION = "1.21.65"
 
+const NATIVE_SESSION = /^ses_[0-9a-f]{12}[0-9A-Za-z]{14}$/
+const NATIVE_REQUEST = /^msg_[0-9a-f]{12}[0-9A-Za-z]{14}$/
+const BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+const MAX_TRANSLATED = 1_000
+const translated = new Map<string, string>()
+
+/**
+ * The free-tier gate decodes the 12-hex prefix of session/request IDs as a
+ * native inverted BigInt timestamp. Random (or imported) IDs decode to a
+ * corrupt timestamp and are rejected. Mint a valid prefix plus a deterministic
+ * suffix, cached so retries and follow-up turns keep the same identity.
+ */
+function translate(kind: "session" | "request", value: string) {
+  const prefix = kind === "session" ? "ses" : "msg"
+  const key = `${prefix}:${value}`
+  const cached = translated.get(key)
+  if (cached) return cached
+
+  const now = BigInt(Date.now()) * 0x1000n + 1n
+  // Session IDs travel the native descending path (inverted timestamp);
+  // request IDs are ascending, like the CLI's message IDs.
+  const stamp = kind === "session" ? ~now : now
+  let time = ""
+  for (let index = 0; index < 6; index++) {
+    time += Number((stamp >> BigInt(40 - 8 * index)) & 0xffn)
+      .toString(16)
+      .padStart(2, "0")
+  }
+
+  const digest = createHash("sha256").update(`opencode\0${prefix}\0${value}`).digest()
+  let suffix = ""
+  for (let index = 0; index < 14; index++) suffix += BASE62[digest[index]! % 62]
+  const id = `${prefix}_${time}${suffix}`
+
+  if (translated.size >= MAX_TRANSLATED) translated.delete(translated.keys().next().value!)
+  translated.set(key, id)
+  return id
+}
+
+export function sessionId(value: string) {
+  const id = value.trim()
+  return NATIVE_SESSION.test(id) ? id : translate("session", id)
+}
+
+export function requestId(value: string) {
+  const id = value.trim()
+  return NATIVE_REQUEST.test(id) ? id : translate("request", id)
+}
+
 export function userAgent() {
   const override = process.env.OPENCODE_FREE_USER_AGENT?.trim()
   if (override) return override
@@ -40,11 +91,13 @@ export function fallbackUserAgent() {
 }
 
 export function headers(input: { sessionID: string; requestID: string; projectID?: string }) {
+  const session = sessionId(input.sessionID)
   return {
-    ...(input.projectID ? { "x-opencode-project": input.projectID } : {}),
-    "x-opencode-session": input.sessionID,
-    "x-opencode-session-id": input.sessionID,
-    "x-opencode-request": input.requestID,
+    "x-opencode-project": input.projectID || "global",
+    // The gate requires both headers to be present with the same value.
+    "x-opencode-session": session,
+    "x-opencode-session-id": session,
+    "x-opencode-request": requestId(input.requestID),
     "x-opencode-client": "cli",
     "User-Agent": userAgent(),
   }

@@ -1,9 +1,10 @@
-- Controls the user's actual computer — mouse, keyboard, and screen — not just a sandboxed browser
-- One tool, multiple actions selected via the `action` parameter: screenshot, click, move, type, key, scroll
+- Controls the user's actual computer — mouse, keyboard, and screen — with native accessibility tree and visual fallback
+- One tool, multiple actions selected via the `action` parameter: snapshot, click, move, type, key, scroll, screenshot
 
 Usage notes:
   - Only available in the opencode desktop app. On by default, but the operator can disable "Computer use" in Settings > Experimental
+  - Accessibility-First: Prefer calling "snapshot" first to inspect the active window's UI structure as a compact outline with [ref_N] tags. Then pass that ref (e.g. "ref_3") to "click", "move", "type", or "scroll" for reliable, precise targeting without pixel guessing
+  - Visual coordinate fallback: If an element is not available in the accessibility tree (e.g. custom canvases, games, remote viewers), call "screenshot" to visually inspect pixels and use absolute (x, y) coordinates
+  - "type" types into the target element if "ref" is provided (focusses it first), or into whatever has OS focus right now
   - Every action asks the user for confirmation the first time in a turn; this is real input to the real desktop, so treat it as high-stakes
-  - Coordinates are absolute screen pixels on the primary display. Call "screenshot" first to see the current state and figure out where to click — there is no accessibility-tree snapshot like the browser tool has, so rely on the screenshot image
-  - "type" types into whatever has OS focus right now — call "click" on the target field first
   - This tool can see and interact with whatever is currently on screen, including other applications, private messages, credentials on screen, etc. — treat everything it captures as sensitive, and never take an action you were not explicitly asked to take

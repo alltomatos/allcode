@@ -241,7 +241,9 @@ const layer = Layer.effect(
           tools: {},
           model: mdl,
           sessionID: input.session.id,
-          retries: 2,
+          // The hosted free lane answers quota errors deterministically;
+          // retrying the title burns the same daily allowance three times.
+          retries: input.providerID.startsWith("opencode") ? 0 : 2,
           messages: [{ role: "user", content: "Generate a title for this conversation:\n" }, ...msgs],
         })
         .pipe(
@@ -610,17 +612,26 @@ const layer = Layer.effect(
     // retry once before giving up. A directory that was never a Catalog
     // hit either (e.g. a genuinely wrong model id) just falls through to
     // the original error below, unchanged.
-    const syncFromCatalog = Effect.fnUntraced(function* (providerID: ProviderV2.ID, modelID: ModelV2.ID) {
+    const syncFromCatalog = Effect.fnUntraced(function* (
+      providerID: ProviderV2.ID,
+      modelID: ModelV2.ID,
+      options?: { requireIntegration?: boolean },
+    ) {
       const ctx = yield* InstanceState.context
       return yield* Effect.gen(function* () {
         const internal = yield* PluginInternal.Service
         yield* internal.ready.pipe(Effect.timeout("5 seconds"), Effect.catch(() => Effect.void))
         const catalog = yield* Catalog.Service
         const integrations = yield* Integration.Service
-        const model = yield* catalog.model.get(providerID, modelID)
-        if (!model) return false
         const catalogProvider = yield* catalog.provider.get(providerID)
         if (!catalogProvider) return false
+        // `requireIntegration` is used to refresh an already-known model whose
+        // live provider is still unauthenticated. Only integration-managed
+        // providers have a credential to push, so don't touch plain catalog
+        // entries (they already match the models.dev view).
+        if (options?.requireIntegration && !catalogProvider.integrationID) return false
+        const model = yield* catalog.model.get(providerID, modelID)
+        if (!model) return false
         const integrationID = catalogProvider.integrationID ?? Integration.ID.make(providerID)
         const connections = yield* integrations.connection.list(integrationID)
         const picked = IntegrationRotation.pick(integrationID, connections)
@@ -646,7 +657,22 @@ const layer = Layer.effect(
         modelID = ModelV2.ID.make(resolved.modelID)
       }
       const exit = yield* provider.getModel(providerID, modelID).pipe(Effect.exit)
-      if (Exit.isSuccess(exit)) return exit.value
+      if (Exit.isSuccess(exit)) {
+        // models.dev can list the same provider as a native plugin (the hosted
+        // OpenCode Console is the important case). Its entry carries no auth,
+        // so using it as-is sends `apiKey: "public"` and the gateway answers on
+        // the anonymous lane. Refresh the integration-owned entry whenever the
+        // live provider still has no real credential.
+        const info = yield* provider
+          .getProvider(providerID)
+          .pipe(Effect.orElseSucceed(() => undefined))
+        if (info && !info.key && Provider.isUnauthenticatedKey(info.options?.apiKey)) {
+          yield* syncFromCatalog(providerID, modelID, { requireIntegration: true })
+          const refreshed = yield* provider.getModel(providerID, modelID).pipe(Effect.exit)
+          if (Exit.isSuccess(refreshed)) return refreshed.value
+        }
+        return exit.value
+      }
       let err = Cause.squash(exit.cause)
       if (Provider.ModelNotFoundError.isInstance(err) && (yield* syncFromCatalog(providerID, modelID))) {
         const retry = yield* provider.getModel(providerID, modelID).pipe(Effect.exit)

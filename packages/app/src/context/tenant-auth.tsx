@@ -62,6 +62,14 @@ export interface UserSession {
   defaultModel?: ModelDefault
 }
 
+export interface SessionModelUsage {
+  providerID: string
+  modelID: string
+  tokens: number
+  costUsd: number
+  calls: number
+}
+
 export interface SessionAuditPayload {
   sessionID: string
   title: string
@@ -76,6 +84,7 @@ export interface SessionAuditPayload {
   costUsd: number
   durationMs: number
   messagesCount: number
+  modelUsage: SessionModelUsage[]
 }
 
 export interface TenantAuthState {

@@ -143,9 +143,27 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       const activeIntegrationIDs = new Set(storedCredentials.map((c) => c.integrationID as string))
 
       for (const catalogItem of catalogList) {
-        if (activeIntegrationIDs.has(catalogItem.id) && !providers[catalogItem.id]) {
+        const managed =
+          activeIntegrationIDs.has(catalogItem.id) ||
+          catalogItem.id === "opencode" ||
+          catalogItem.id.startsWith("opencode-")
+        if (!managed) continue
+        const existing = providers[catalogItem.id]
+        if (!existing) {
           providers[catalogItem.id] = catalogItem
+          continue
         }
+        // The OpenCode Console catalog is authoritative for its own free
+        // models and can add ids that models.dev has not picked up yet (or
+        // still marks as deprecated). Merge those into the legacy view so
+        // they stay selectable; paid models keep following the live key.
+        const models = { ...existing.models }
+        for (const [id, model] of Object.entries(catalogItem.models)) {
+          if (model.status === "deprecated") continue
+          if (model.cost.input !== 0) continue
+          models[id] = model
+        }
+        providers[catalogItem.id] = { ...existing, models }
       }
 
       const comboSvc = yield* Combo.Service.pipe(Effect.orElseSucceed(() => undefined))

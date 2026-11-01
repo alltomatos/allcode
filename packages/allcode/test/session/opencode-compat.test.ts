@@ -50,9 +50,30 @@ describe("opencode free tier identity", () => {
     expect(headers["User-Agent"]).toStartWith("opencode/")
   })
 
-  test("omits the project header when there is no project id", () => {
-    const headers = OpencodeCompat.headers({ sessionID: "ses_1", requestID: "msg_1" })
-    expect("x-opencode-project" in headers).toBe(false)
+  test("falls back to the global project header", () => {
+    const headers = OpencodeCompat.headers({ sessionID: "ses_0123456789abABCDEFGHIJKLMN", requestID: "msg_0123456789abABCDEFGHIJKLMN" })
+    expect(headers["x-opencode-project"]).toBe("global")
+  })
+
+  test("translates non-native session and request ids to the native shape", () => {
+    const headers = OpencodeCompat.headers({ sessionID: "ses_imported", requestID: "msg_imported" })
+    expect(headers["x-opencode-session"]).toMatch(/^ses_[0-9a-f]{12}[0-9A-Za-z]{14}$/)
+    expect(headers["x-opencode-session-id"]).toBe(headers["x-opencode-session"])
+    expect(headers["x-opencode-request"]).toMatch(/^msg_[0-9a-f]{12}[0-9A-Za-z]{14}$/)
+  })
+
+  test("keeps translated ids stable across calls", () => {
+    const first = OpencodeCompat.sessionId("ses_imported")
+    const second = OpencodeCompat.sessionId("ses_imported")
+    expect(second).toBe(first)
+    expect(OpencodeCompat.sessionId("ses_other")).not.toBe(first)
+  })
+
+  test("leaves native ids untouched", () => {
+    const session = "ses_0123456789abABCDEFGHIJKLMN"
+    const request = "msg_0123456789abABCDEFGHIJKLMN"
+    expect(OpencodeCompat.sessionId(session)).toBe(session)
+    expect(OpencodeCompat.requestId(request)).toBe(request)
   })
 })
 

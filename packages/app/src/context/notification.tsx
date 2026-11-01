@@ -8,6 +8,7 @@ import { usePlatform } from "@/context/platform"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
 import { useTenantAuth } from "@/context/tenant-auth"
+import type { SessionModelUsage } from "@/context/tenant-auth"
 import { base64Encode } from "@allcode/core/util/encode"
 import { decode64 } from "@/utils/base64"
 import { EventSessionError } from "@allcode/sdk/v2"
@@ -56,6 +57,36 @@ type NotificationIndex = {
 
 const MAX_NOTIFICATIONS = 500
 const NOTIFICATION_TTL_MS = 1000 * 60 * 60 * 24 * 30
+
+type AuditMessage = {
+  role?: string
+  providerID?: string
+  modelID?: string
+  cost?: number
+  tokens?: { input?: number; output?: number; reasoning?: number }
+}
+
+// Agrega o uso real de provedores/modelos a partir das mensagens do assistente
+// já carregadas na sessão, ordenado por tokens consumidos.
+function aggregateModelUsage(messages: readonly AuditMessage[]): SessionModelUsage[] {
+  const map = new Map<string, SessionModelUsage>()
+  for (const message of messages) {
+    if (message.role !== "assistant" || !message.providerID || !message.modelID) continue
+    const key = `${message.providerID}/${message.modelID}`
+    const current = map.get(key) ?? {
+      providerID: message.providerID,
+      modelID: message.modelID,
+      tokens: 0,
+      costUsd: 0,
+      calls: 0,
+    }
+    current.tokens += (message.tokens?.input ?? 0) + (message.tokens?.output ?? 0) + (message.tokens?.reasoning ?? 0)
+    current.costUsd += message.cost ?? 0
+    current.calls += 1
+    map.set(key, current)
+  }
+  return [...map.values()].sort((a, b) => b.tokens - a.tokens)
+}
 
 function pruneNotifications(list: Notification[]) {
   const cutoff = Date.now() - NOTIFICATION_TTL_MS
@@ -251,6 +282,10 @@ function createServerNotificationState(input: {
 
   const meta = { pruned: false, disposed: false }
 
+  // Último resumo executivo enviado ao portal por sessão. O motor de memória
+  // roda a cada turno, mas só vale a pena reenviar quando o resumo muda.
+  const lastAuditSummary = new Map<string, string>()
+
   const updateUnseen = (scope: "session" | "project", key: string, unseen: Notification[]) => {
     setIndex(scope, "unseen", key, unseen)
     setIndex(scope, "unseenCount", key, unseen.length)
@@ -404,15 +439,12 @@ function createServerNotificationState(input: {
         const userMessages = messages.filter((m) => m.role === "user") as any[]
         const lastUserMsg = userMessages[userMessages.length - 1]
 
-        let summary = session.title || "Sessão de desenvolvimento e automação"
-        if (lastUserMsg?.summary?.title) {
-          summary = lastUserMsg.summary.title
-        }
+        const fallbackSummary = lastUserMsg?.summary?.title || session.title || "Sessão de desenvolvimento e automação"
 
-        void tenantAuth.recordSessionAudit({
+        void recordSessionAuditWithSummary({
           sessionID: id,
           title: session.title || "Sessão AllCode",
-          summary,
+          fallbackSummary,
           workspace: directory,
           startedAt,
           endedAt,
@@ -423,8 +455,60 @@ function createServerNotificationState(input: {
           costUsd,
           durationMs,
           messagesCount: messages.length,
+          modelUsage: aggregateModelUsage(messages),
         })
       }
+    })
+  }
+
+  // Gera o resumo executivo com o motor de memória do AllCode e só envia ao
+  // portal quando ele realmente mudou desde o último turno registrado.
+  const recordSessionAuditWithSummary = async (input: {
+    sessionID: string
+    title: string
+    fallbackSummary: string
+    workspace: string
+    startedAt: number
+    endedAt: number
+    tokensTotal: number
+    tokensInput: number
+    tokensOutput: number
+    tokensReasoning: number
+    costUsd: number
+    durationMs: number
+    messagesCount: number
+    modelUsage: SessionModelUsage[]
+  }) => {
+    let summary = input.fallbackSummary
+    try {
+      const result = await serverSDK().client.memory.sessionSummary({
+        sessionID: input.sessionID,
+        directory: input.workspace,
+      })
+      const generated = result.data?.summary?.trim()
+      if (generated) summary = generated
+    } catch {
+      // Motor de memória indisponível: mantém o resumo de fallback
+    }
+
+    if (lastAuditSummary.get(input.sessionID) === summary) return
+    lastAuditSummary.set(input.sessionID, summary)
+
+    void tenantAuth.recordSessionAudit({
+      sessionID: input.sessionID,
+      title: input.title,
+      summary,
+      workspace: input.workspace,
+      startedAt: input.startedAt,
+      endedAt: input.endedAt,
+      tokensTotal: input.tokensTotal,
+      tokensInput: input.tokensInput,
+      tokensOutput: input.tokensOutput,
+      tokensReasoning: input.tokensReasoning,
+      costUsd: input.costUsd,
+      durationMs: input.durationMs,
+      messagesCount: input.messagesCount,
+      modelUsage: input.modelUsage,
     })
   }
 

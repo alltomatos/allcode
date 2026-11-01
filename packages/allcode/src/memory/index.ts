@@ -263,6 +263,11 @@ export interface Interface {
     directory: string
     transcript: string
   }) => Effect.Effect<SummarizeResult, ModelNotConfiguredError | SummarizeFailedError>
+  // Executive summary of a live session, produced by the same summarization
+  // engine used for memory but WITHOUT writing anything to project memory.
+  // Used by the desktop client to feed the corporate audit trail with an
+  // evolving "what this conversation was about" summary on every turn.
+  readonly summarizeSession: (input: { sessionID: string }) => Effect.Effect<{ summary?: string }>
   // Scans previous sessions across projects and synthesizes missing memories
   // into project memory files using the available fallback model.
   readonly backfill: (input?: BackfillInput) => Effect.Effect<BackfillResult>
@@ -430,9 +435,11 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
       return yield* new ModelNotConfiguredError()
     })
 
-    const summarize = Effect.fn("Memory.summarize")(function* (input: { directory: string; transcript: string }) {
-      if (!input.transcript.trim()) return { summarized: false } satisfies SummarizeResult
-
+    // Runs the memory summarization model (with a deterministic heuristic
+    // fallback) over a transcript and returns the summary text. Pure read:
+    // never touches the project memory files, so it is safe to call on every
+    // agent turn for audit purposes.
+    const synthesize = Effect.fn("Memory.synthesize")(function* (transcript: string) {
       const config = yield* InstanceState.get(state).pipe(Effect.map((s) => s.config))
       const candidates = yield* resolveModelCandidates(config.memoryModel)
 
@@ -466,7 +473,7 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
                   "Você resume uma sessão de trabalho com o opencode. Foque em: decisões tomadas, fatos novos, " +
                   "pendências, e correções que o usuário fez sobre o comportamento do agente. Chame a tool " +
                   "save_summary sempre.",
-                prompt: input.transcript,
+                prompt: transcript,
                 tools: { save_summary: saveSummary },
                 toolChoice: "required",
               })
@@ -494,11 +501,18 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
         suggestsGlobal = toolInput.generalTopic ?? false
         globalReason = toolInput.generalReason
       } else {
-        summaryText = extractHeuristicSummary(input.transcript)
+        summaryText = extractHeuristicSummary(transcript)
       }
 
+      return { summary: summaryText, suggestsGlobal, globalReason }
+    })
+
+    const summarize = Effect.fn("Memory.summarize")(function* (input: { directory: string; transcript: string }) {
+      if (!input.transcript.trim()) return { summarized: false } satisfies SummarizeResult
+
+      const result = yield* synthesize(input.transcript)
       const timestamp = new Date().toISOString()
-      const entry = `## ${timestamp}\n\n${summaryText}\n\n`
+      const entry = `## ${timestamp}\n\n${result.summary}\n\n`
 
       const file = path.join(projectDir(input.directory), todayFile())
       yield* Effect.tryPromise({
@@ -508,10 +522,24 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
 
       return {
         summarized: true,
-        summary: summaryText,
-        suggestsGlobal,
-        globalReason,
+        summary: result.summary,
+        suggestsGlobal: result.suggestsGlobal,
+        globalReason: result.globalReason,
       } satisfies SummarizeResult
+    })
+
+    const summarizeSession = Effect.fn("Memory.summarizeSession")(function* (input: { sessionID: string }) {
+      const messages = yield* sessions
+        .messages({ sessionID: input.sessionID as any })
+        .pipe(Effect.orElseSucceed(() => [] as SessionV1.WithParts[]))
+      if (messages.length === 0) return {}
+
+      const transcript = buildTranscript(messages)
+      if (transcript.trim().length < 20) return {}
+
+      const result = yield* synthesize(transcript).pipe(Effect.catch(() => Effect.succeed(undefined)))
+      if (!result?.summary?.trim()) return {}
+      return { summary: result.summary.trim() }
     })
 
     const remember = Effect.fn("Memory.remember")(function* (input: { directory: string; note: string }) {
@@ -683,6 +711,7 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
       get,
       set,
       summarize,
+      summarizeSession,
       backfill,
       promoteGlobal,
       load,

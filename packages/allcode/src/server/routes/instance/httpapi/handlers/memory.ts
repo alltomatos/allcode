@@ -3,7 +3,7 @@ import type { ConfigMemoryV1 } from "@allcode/core/v1/config/memory"
 import { Effect } from "effect"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
 import { InstanceHttpApi } from "../api"
-import type { AddMemoryPayload, BackfillMemoryPayload, ForgetProjectQuery, ProjectEntriesQuery, PromoteMemoryPayload } from "../groups/memory"
+import type { AddMemoryPayload, BackfillMemoryPayload, ForgetProjectQuery, ProjectEntriesQuery, PromoteMemoryPayload, SessionSummaryPayload } from "../groups/memory"
 
 export const memoryHandlers = HttpApiBuilder.group(InstanceHttpApi, "memory", (handlers) =>
   Effect.gen(function* () {
@@ -65,6 +65,12 @@ export const memoryHandlers = HttpApiBuilder.group(InstanceHttpApi, "memory", (h
       })
     })
 
+    const sessionSummary = Effect.fn("MemoryHttpApi.sessionSummary")(function* (ctx: {
+      payload: typeof SessionSummaryPayload.Type
+    }) {
+      return yield* memory.summarizeSession({ sessionID: ctx.payload.sessionID })
+    })
+
     return handlers
       .handle("getConfig", getConfig)
       .handle("setConfig", setConfig)
@@ -75,6 +81,7 @@ export const memoryHandlers = HttpApiBuilder.group(InstanceHttpApi, "memory", (h
       .handle("addEntry", addEntry)
       .handle("promote", promote)
       .handle("backfill", backfill)
+      .handle("sessionSummary", sessionSummary)
   }),
 )
 

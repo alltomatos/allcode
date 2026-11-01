@@ -1498,6 +1498,18 @@ function fromModelsDevModel(provider: ModelsDev.Provider, model: ModelsDev.Model
   }
 }
 
+/**
+ * A provider still has no usable credential when its key is missing, the
+ * hosted free lane's `public` placeholder, or an unresolved `{env:...}`
+ * template. Native integrations in that state must be refreshed from the
+ * catalog: models.dev does not carry the Console token or gateway headers.
+ */
+export function isUnauthenticatedKey(value: unknown) {
+  if (typeof value !== "string") return true
+  const key = value.trim()
+  return key === "" || key === "public" || /^\{env:[^}]+\}$/.test(key)
+}
+
 export function fromModelsDevProvider(provider: ModelsDev.Provider): Info {
   const models: Record<string, Model> = {}
   for (const [key, model] of Object.entries(provider.models)) {
@@ -1582,7 +1594,12 @@ export function fromCatalog(provider: ProviderV2.Info, models: ModelV2.Info[]): 
     source: "custom",
     name: provider.name,
     env: [],
-    options: {},
+    // Native provider plugins own the transport contract (auth keys plus
+    // required gateway headers such as `x-opencode-org-id`). Dropping the
+    // provider-level headers here used to leave requests anonymous even after
+    // the credential was resolved, so keep whatever the catalog registered.
+    options:
+      Object.keys(provider.request?.headers ?? {}).length > 0 ? { headers: { ...provider.request.headers } } : {},
     models: entries,
   }
 }

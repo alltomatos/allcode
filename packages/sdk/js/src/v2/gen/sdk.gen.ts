@@ -190,6 +190,8 @@ import type {
   MemoryProjectMemoryStatusResponses,
   MemoryPromoteErrors,
   MemoryPromoteResponses,
+  MemorySessionSummaryErrors,
+  MemorySessionSummaryResponses,
   MemorySetConfigErrors,
   MemorySetConfigResponses,
   ModelRef,
@@ -6282,6 +6284,47 @@ export class Memory extends HeyApiClient {
     )
     return (options?.client ?? this.client).post<MemoryBackfillResponses, MemoryBackfillErrors, ThrowOnError>({
       url: "/memory/backfill",
+      ...options,
+      ...params,
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers,
+        ...params.headers,
+      },
+    })
+  }
+
+  /**
+   * Summarize a session
+   *
+   * Generates an executive summary of a live session with the memory model, without writing to project memory. Used to feed the corporate audit trail on every agent turn.
+   */
+  public sessionSummary<ThrowOnError extends boolean = false>(
+    parameters?: {
+      directory?: string
+      workspace?: string
+      sessionID?: string
+    },
+    options?: Options<never, ThrowOnError>,
+  ) {
+    const params = buildClientParams(
+      [parameters],
+      [
+        {
+          args: [
+            { in: "query", key: "directory" },
+            { in: "query", key: "workspace" },
+            { in: "body", key: "sessionID" },
+          ],
+        },
+      ],
+    )
+    return (options?.client ?? this.client).post<
+      MemorySessionSummaryResponses,
+      MemorySessionSummaryErrors,
+      ThrowOnError
+    >({
+      url: "/memory/session-summary",
       ...options,
       ...params,
       headers: {

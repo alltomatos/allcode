@@ -66,7 +66,7 @@ export function useProviders(directory: Accessor<string | undefined>) {
           providers().all,
           ([id]) =>
             connected.has(id) &&
-            (id !== "opencode" || Object.values(providers().all.get(id)?.models ?? {}).some((m) => m.cost?.input)),
+            (id !== "opencode" || Object.keys(providers().all.get(id)?.models ?? {}).length > 0),
         ),
       ]
       return paid

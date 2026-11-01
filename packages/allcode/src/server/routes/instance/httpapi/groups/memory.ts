@@ -38,6 +38,14 @@ export const BackfillMemoryPayload = Schema.Struct({
   force: Schema.optional(Schema.Boolean),
 })
 
+export const SessionSummaryPayload = Schema.Struct({
+  sessionID: Schema.String,
+})
+
+export const SessionSummaryResult = Schema.Struct({
+  summary: Schema.optional(Schema.String),
+})
+
 export const BackfillMemoryResult = Schema.Struct({
   totalSessions: Schema.Number,
   processedSessions: Schema.Number,
@@ -58,6 +66,7 @@ export const MemoryPaths = {
   addEntry: "/memory/entry",
   promote: "/memory/promote",
   backfill: "/memory/backfill",
+  sessionSummary: "/memory/session-summary",
 } as const
 
 export const MemoryApi = HttpApi.make("memory")
@@ -157,6 +166,18 @@ export const MemoryApi = HttpApi.make("memory")
             identifier: "memory.backfill",
             summary: "Backfill memory from past sessions",
             description: "Scans past sessions and synthesizes missing memory files using the active fallback model.",
+          }),
+        ),
+        HttpApiEndpoint.post("sessionSummary", MemoryPaths.sessionSummary, {
+          query: WorkspaceRoutingQuery,
+          payload: SessionSummaryPayload,
+          success: described(SessionSummaryResult, "Executive summary of a session"),
+        }).annotateMerge(
+          OpenApi.annotations({
+            identifier: "memory.sessionSummary",
+            summary: "Summarize a session",
+            description:
+              "Generates an executive summary of a live session with the memory model, without writing to project memory. Used to feed the corporate audit trail on every agent turn.",
           }),
         ),
       )

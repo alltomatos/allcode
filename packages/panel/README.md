@@ -43,8 +43,9 @@ No Windows, use build + preview: o worker de dev do Nitro ainda usa socket Unix 
 | `/app` | Visão geral |
 | `/app/usuarios` | Lista, busca e status |
 | `/app/usuarios/novo` | Cria usuário com senha temporária |
-| `/app/usuarios/:id` | Papel, suspender/reativar, remover, histórico |
-| `/app/auditoria` | Eventos de autenticação e ações administrativas |
+| `/app/usuarios/:id` | Visão geral, uso de modelos, sessões e aba de configurações (papel, senha e RBAC) |
+| `/app/sessoes/:id` | Detalhes de uma sessão: resumo completo, KPIs, tokens e modelos usados |
+| `/app/auditoria` | Sessões de IA (resumos executivos, filtros e KPIs) e eventos de segurança |
 | `/app/configuracoes` | Políticas da organização (owner) |
 
 ## Deploy na Cloudflare

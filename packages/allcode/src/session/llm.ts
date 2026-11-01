@@ -83,10 +83,15 @@ const live: Layer.Layer<
     const flags = yield* RuntimeFlags.Service
 
     const run = Effect.fn("LLM.run")(function* (input: StreamRequest) {
-      // The hosted OpenCode free tier rejects `tool_choice: "none"`, so never
-      // send it for those providers.
+      // The hosted OpenCode free tier rejects `tool_choice: "none"` and expects
+      // the fingerprint tool contract. Always advertise `auto` for those
+      // providers, including tool-less helper turns.
       const toolChoice =
-        input.toolChoice === "none" && input.model.providerID.startsWith("opencode") ? "auto" : input.toolChoice
+        input.model.providerID.startsWith("opencode")
+          ? input.toolChoice === "none" || input.toolChoice === undefined
+            ? "auto"
+            : input.toolChoice
+          : input.toolChoice
       yield* Effect.logInfo("stream", {
         providerID: input.model.providerID,
         modelID: input.model.id,

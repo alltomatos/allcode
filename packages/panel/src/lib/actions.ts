@@ -52,6 +52,8 @@ function publicUser(user: PanelUser) {
 
 export type PublicUser = ReturnType<typeof publicUser>
 
+export type UserDetail = PublicUser & { groupIDs: string[] }
+
 export const me = query(async () => {
   "use server"
   const user = await currentUser()
@@ -99,6 +101,45 @@ export const getUserKPIs = query(async (id: string) => {
   if (!user || user.orgID !== actor.orgID) return { totalSessions: 0, totalTokens: 0, totalCostUsd: 0, totalDurationMs: 0 }
   return db.sessions.getUserKPIs(id)
 }, "panel.user.kpis")
+
+export const getOrgSessions = query(
+  async (options: { userID?: string; search?: string; limit?: number; offset?: number }) => {
+    "use server"
+    const actor = await requireUser()
+    const db = store()
+    return db.sessions.listByOrg(actor.orgID, options)
+  },
+  "panel.org.sessions",
+)
+
+export const getOrgKPIs = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  return db.sessions.getOrgKPIs(actor.orgID)
+}, "panel.org.kpis")
+
+export const getUserModelUsage = query(async (id: string, days?: number) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const user = await db.users.findByID(id)
+  if (!user || user.orgID !== actor.orgID) return []
+  return db.sessions.getUserModelUsage(id, { days })
+}, "panel.user.models")
+
+export const getSessionAudit = query(async (sessionID: string) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const session = await db.sessions.findBySessionID(sessionID)
+  if (!session || session.orgID !== actor.orgID) return null
+  const user = await db.users.findByID(session.userID)
+  return {
+    session,
+    owner: user ? { id: user.id, name: user.name, email: user.email } : null,
+  }
+}, "panel.session")
 
 export const listAudit = query(async (targetID?: string) => {
   "use server"
@@ -413,6 +454,8 @@ function publicGroup(group: { id: string; name: string; description?: string; ac
     canOpenSettings: group.canOpenSettings,
   }
 }
+
+export type PublicGroup = ReturnType<typeof publicGroup>
 
 export const listGroups = query(async () => {
   "use server"

@@ -2117,3 +2117,16 @@ it.effect("opencode loader keeps paid models when auth exists", () =>
   }).pipe(provideMultiInstance),
 )
 
+
+test("fromCatalog keeps provider-level request headers", () => {
+  const provider = ProviderV2.Info.make({
+    id: ProviderV2.ID.make("opencode"),
+    name: "OpenCode",
+    api: { type: "aisdk", package: "@ai-sdk/openai-compatible", url: "https://opencode.ai/inference/openai/v1" },
+    request: { headers: { "x-opencode-org-id": "wrk_test" }, body: {} },
+  })
+
+  const info = Provider.fromCatalog(provider, [])
+
+  expect(info.options.headers).toEqual({ "x-opencode-org-id": "wrk_test" })
+})

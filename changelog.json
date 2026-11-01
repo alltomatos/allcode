@@ -1,6 +1,36 @@
 {
   "releases": [
     {
+      "tag": "v1.27.1",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Plano gratuito do OpenCode funcionando de verdade",
+              "description": "O provedor OpenCode agora resolve a credencial ativa do OpenCode Console e envia o token, o header de organização e a identidade de CLI que o gateway gratuito exige. Os IDs de sessão e de requisição seguem o formato nativo e o par de headers de sessão vai sempre consistente, eliminando as rejeições FreeTierError."
+            },
+            {
+              "title": "Modelos gratuitos do OpenCode visíveis e selecionáveis",
+              "description": "Modelos gratuitos publicados pelo catálogo do OpenCode Console passam a aparecer no seletor mesmo quando o provedor não tem modelos pagos, e a lista de provedores deixa de esconder o OpenCode quando só há opções gratuitas."
+            },
+            {
+              "title": "Limite de uso comunicado sem travar a sessão",
+              "description": "Quando o provedor responde 429 com um retry-after longo (cota diária gratuita), a sessão deixa de ficar em estado de espera e mostra o erro real do provedor, com a mensagem de limite e o caminho para o OpenCode Go, sem fallback silencioso para outro provedor."
+            },
+            {
+              "title": "Turnos auxiliares compatíveis com o plano gratuito",
+              "description": "Geração de título e compactação passam a enviar o contrato de tools nativo exigido pelo gateway gratuito, em vez de um tool fictício, evitando falhas silenciosas nesses turnos."
+            },
+            {
+              "title": "Controle de Computador Accessibility-First e Worker de Alta Performance",
+              "description": "O módulo de Computer Use agora suporta inspeção semântica da árvore de acessibilidade do sistema operacional (Windows UIAutomation), permitindo ao agente interagir diretamente por identificadores estáveis [ref_N] com feedback visual pulsante na tela. O mecanismo de injeção de input foi migrado para um worker nativo persistente com aceleração Win32, reduzindo a latência de execução para menos de 35ms por ação e adicionando classificação semântica de entrega e retry seguro."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.0",
       "highlights": [
         {

@@ -7,11 +7,14 @@ import { RuntimeFlags } from "@/effect/runtime-flags"
 const TIMEOUT = 20 * 1000
 
 export const Parameters = Schema.Struct({
-  action: Schema.Literals(["screenshot", "click", "move", "type", "key", "scroll"]).annotate({
-    description: "Which computer action to perform",
+  action: Schema.Literals(["snapshot", "screenshot", "click", "move", "type", "key", "scroll"]).annotate({
+    description: "Which computer action to perform: 'snapshot' (read semantic accessibility tree with refs), 'screenshot' (visual capture), 'click', 'move', 'type', 'key', 'scroll'",
   }),
-  x: Schema.optional(Schema.Number).annotate({ description: "Absolute screen x coordinate (action: click, move)" }),
-  y: Schema.optional(Schema.Number).annotate({ description: "Absolute screen y coordinate (action: click, move)" }),
+  ref: Schema.optional(Schema.String).annotate({
+    description: "Semantic element ref from a prior snapshot, e.g. ref_3 (action: click, move, type, scroll). Preferred over raw coordinates.",
+  }),
+  x: Schema.optional(Schema.Number).annotate({ description: "Absolute screen x coordinate (action: click, move, visual fallback)" }),
+  y: Schema.optional(Schema.Number).annotate({ description: "Absolute screen y coordinate (action: click, move, visual fallback)" }),
   text: Schema.optional(Schema.String).annotate({ description: "Text to type (action: type)" }),
   key: Schema.optional(Schema.String).annotate({
     description: "Key to press, e.g. Enter, Tab, Escape (action: key)",
@@ -20,7 +23,32 @@ export const Parameters = Schema.Struct({
   deltaY: Schema.optional(Schema.Number).annotate({ description: "Vertical scroll amount (action: scroll)" }),
 })
 
-const OkSchema = Schema.Struct({ ok: Schema.Boolean })
+const ActionResponseSchema = Schema.Struct({
+  ok: Schema.Boolean,
+  delivery: Schema.optional(Schema.String),
+  retrySafe: Schema.optional(Schema.Boolean),
+  target: Schema.optional(Schema.Unknown),
+  error: Schema.optional(Schema.String),
+})
+
+const SnapshotResponseSchema = Schema.Struct({
+  ok: Schema.Boolean,
+  data: Schema.Struct({
+    title: Schema.String,
+    app: Schema.String,
+    outline: Schema.String,
+    elements: Schema.Array(Schema.Unknown),
+  }),
+})
+
+type ComputerMetadata = {
+  title?: string
+  app?: string
+  elementCount?: number
+  delivery?: string
+  retrySafe?: boolean
+  target?: unknown
+}
 
 export const ComputerTool = Tool.define(
   "computer",
@@ -32,7 +60,7 @@ export const ComputerTool = Tool.define(
     return {
       description: DESCRIPTION,
       parameters: Parameters,
-      execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context) =>
+      execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context): Effect.Effect<Tool.ExecuteResult<ComputerMetadata>> =>
         Effect.gen(function* () {
           const port = flags.computerBridgePort
           const token = flags.computerBridgeToken
@@ -48,7 +76,7 @@ export const ComputerTool = Tool.define(
             permission: "computer",
             patterns: ["*"],
             always: [],
-            metadata: { action: params.action },
+            metadata: { action: params.action, ref: params.ref },
           })
 
           const post = (path: string, body: unknown) =>
@@ -58,35 +86,98 @@ export const ComputerTool = Tool.define(
                 HttpClientRequest.bodyJson(body),
               )
               const response = yield* httpOk.execute(req)
-              return yield* HttpClientResponse.schemaBodyJson(OkSchema)(response)
+              return yield* HttpClientResponse.schemaBodyJson(ActionResponseSchema)(response)
             }).pipe(
               Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error("Computer action timed out")) }),
             )
 
           switch (params.action) {
+            case "snapshot": {
+              const response = yield* httpOk
+                .execute(HttpClientRequest.get(`${baseUrl}/snapshot`).pipe(HttpClientRequest.setHeaders(headers)))
+                .pipe(
+                  Effect.timeoutOrElse({ duration: TIMEOUT, orElse: () => Effect.die(new Error("Snapshot timed out")) }),
+                )
+              const json = yield* HttpClientResponse.schemaBodyJson(SnapshotResponseSchema)(response)
+              return {
+                title: "Computer snapshot",
+                output: json.data.outline,
+                metadata: {
+                  title: json.data.title,
+                  app: json.data.app,
+                  elementCount: json.data.elements.length,
+                },
+              }
+            }
             case "click": {
-              if (params.x === undefined || params.y === undefined) throw new Error("click requires x and y")
-              yield* post("/click", { x: params.x, y: params.y })
-              return { output: `Clicked at (${params.x}, ${params.y})`, title: "Computer click", metadata: {} }
+              if (!params.ref && (params.x === undefined || params.y === undefined)) {
+                throw new Error("click requires either 'ref' from snapshot or 'x' and 'y' coordinates")
+              }
+              const res = yield* post("/click", { ref: params.ref, x: params.x, y: params.y })
+              const label = params.ref ? `element ${params.ref}` : `(${params.x}, ${params.y})`
+              return {
+                output: `Clicked at ${label}`,
+                title: "Computer click",
+                metadata: {
+                  delivery: res.delivery ?? "delivered_verified",
+                  retrySafe: res.retrySafe ?? false,
+                  target: res.target,
+                },
+              }
             }
             case "move": {
-              if (params.x === undefined || params.y === undefined) throw new Error("move requires x and y")
-              yield* post("/move", { x: params.x, y: params.y })
-              return { output: `Moved to (${params.x}, ${params.y})`, title: "Computer move", metadata: {} }
+              if (!params.ref && (params.x === undefined || params.y === undefined)) {
+                throw new Error("move requires either 'ref' from snapshot or 'x' and 'y' coordinates")
+              }
+              const res = yield* post("/move", { ref: params.ref, x: params.x, y: params.y })
+              const label = params.ref ? `element ${params.ref}` : `(${params.x}, ${params.y})`
+              return {
+                output: `Moved to ${label}`,
+                title: "Computer move",
+                metadata: {
+                  delivery: res.delivery ?? "delivered_verified",
+                  retrySafe: res.retrySafe ?? false,
+                  target: res.target,
+                },
+              }
             }
             case "type": {
               if (!params.text) throw new Error("type requires text")
-              yield* post("/type", { text: params.text })
-              return { output: `Typed "${params.text}"`, title: "Computer type", metadata: {} }
+              const res = yield* post("/type", { text: params.text, ref: params.ref })
+              const targetInfo = params.ref ? ` into ${params.ref}` : ""
+              return {
+                output: `Typed "${params.text}"${targetInfo}`,
+                title: "Computer type",
+                metadata: {
+                  delivery: res.delivery ?? "delivered_verified",
+                  retrySafe: res.retrySafe ?? false,
+                  target: res.target,
+                },
+              }
             }
             case "key": {
               if (!params.key) throw new Error("key requires a key name")
-              yield* post("/key", { key: params.key })
-              return { output: `Pressed ${params.key}`, title: "Computer key", metadata: {} }
+              const res = yield* post("/key", { key: params.key })
+              return {
+                output: `Pressed ${params.key}`,
+                title: "Computer key",
+                metadata: {
+                  delivery: res.delivery ?? "delivered_verified",
+                  retrySafe: res.retrySafe ?? false,
+                },
+              }
             }
             case "scroll": {
-              yield* post("/scroll", { deltaX: params.deltaX ?? 0, deltaY: params.deltaY ?? 0 })
-              return { output: "Scrolled", title: "Computer scroll", metadata: {} }
+              const res = yield* post("/scroll", { deltaX: params.deltaX ?? 0, deltaY: params.deltaY ?? 0, ref: params.ref })
+              const targetInfo = params.ref ? ` on ${params.ref}` : ""
+              return {
+                output: `Scrolled${targetInfo}`,
+                title: "Computer scroll",
+                metadata: {
+                  delivery: res.delivery ?? "delivered_verified",
+                  retrySafe: res.retrySafe ?? false,
+                },
+              }
             }
             case "screenshot": {
               const response = yield* httpOk

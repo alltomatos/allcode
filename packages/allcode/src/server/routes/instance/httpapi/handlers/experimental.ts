@@ -259,7 +259,22 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
       }
 
       const exit = yield* provider.getModel(providerID as any, modelID as any).pipe(Effect.exit)
-      if (Exit.isSuccess(exit)) return exit.value
+      if (Exit.isSuccess(exit)) {
+        // models.dev also lists the hosted OpenCode provider, but without the
+        // Console token or the `x-opencode-org-id` header. Refresh the
+        // integration-owned entry before using an unauthenticated one.
+        const info = yield* provider
+          .getProvider(providerID as any)
+          .pipe(Effect.orElseSucceed(() => undefined))
+        if (info && !info.key && Provider.isUnauthenticatedKey(info.options?.apiKey)) {
+          const synced = yield* syncFromCatalog(providerID as any, modelID as any, directory)
+          if (synced) {
+            const retry = yield* provider.getModel(providerID as any, modelID as any).pipe(Effect.exit)
+            if (Exit.isSuccess(retry)) return retry.value
+          }
+        }
+        return exit.value
+      }
 
       const synced = yield* syncFromCatalog(providerID as any, modelID as any, directory)
       if (synced) {

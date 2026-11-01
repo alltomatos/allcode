@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="100%" height="100%" role="img" aria-label="Logotipo Horizontal AllTomatos">
+  <title>AllTomatos Horizontal Logo</title>
+  <desc>Símbolo do tomate com código à esquerda e o nome AllTomatos em tipografia moderna à direita com fundo transparente.</desc>
+  <defs>
+    <radialGradient id="hTomatoBodyGrad" cx="36%" cy="30%" r="70%" fx="28%" fy="24%">
+      <stop offset="0%" stop-color="#FF5D62" />
+      <stop offset="25%" stop-color="#F03339" />
+      <stop offset="68%" stop-color="#D41B22" />
+      <stop offset="92%" stop-color="#A51017" />
+      <stop offset="100%" stop-color="#840C12" />
+    </radialGradient>
+    <linearGradient id="hTomatoShadowGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#6E080F" stop-opacity="0" />
+      <stop offset="100%" stop-color="#55050A" stop-opacity="0.6" />
+    </linearGradient>
+    <linearGradient id="hLeafRight" x1="15%" y1="85%" x2="80%" y2="15%">
+      <stop offset="0%" stop-color="#388E3C" />
+      <stop offset="60%" stop-color="#4CAF50" />
+      <stop offset="100%" stop-color="#8BC34A" />
+    </linearGradient>
+    <linearGradient id="hLeafLeft" x1="85%" y1="85%" x2="20%" y2="15%">
+      <stop offset="0%" stop-color="#2E7D32" />
+      <stop offset="100%" stop-color="#689F38" />
+    </linearGradient>
+    <linearGradient id="hBrandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FF4D52" />
+      <stop offset="100%" stop-color="#E52E34" />
+    </linearGradient>
+    <filter id="hCodeShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="1.5" flood-color="#4E080C" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <!-- ==================== ÍCONE (ESCALADO) ==================== -->
+  <g transform="translate(10, -5) scale(0.42)">
+    <!-- Tomate -->
+    <path d="M 260,110 C 358,110 442,185 446,285 C 450,388 368,460 260,460 C 152,460 74,388 74,285 C 74,185 162,110 260,110 Z"
+          fill="url(#hTomatoBodyGrad)" stroke="#7A1118" stroke-width="13" stroke-linejoin="round" />
+    <path d="M 80,300 C 80,392 160,455 260,455 C 360,455 440,392 440,300 C 420,385 348,435 260,435 C 172,435 100,385 80,300 Z"
+          fill="url(#hTomatoShadowGrad)" />
+    <path d="M 205,124 C 228,118 260,116 295,120 C 325,124 350,132 370,144"
+          fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="round" opacity="0.65" />
+    <path d="M 174,158 C 192,170 200,192 192,208 C 188,214 180,215 174,209 C 168,202 170,188 158,180 C 150,174 142,172 142,166 C 142,160 156,150 174,158 Z"
+          fill="#FFFFFF" opacity="0.45" />
+    <circle cx="146" cy="228" r="9" fill="#FFFFFF" opacity="0.45" />
+
+    <!-- Folhas -->
+    <g>
+      <path d="M 270,122 C 240,116 205,98 190,105 C 182,109 184,118 195,122 C 220,132 250,132 272,130 Z"
+            fill="url(#hLeafLeft)" stroke="#1D3F12" stroke-width="6.5" stroke-linejoin="round" />
+      <path d="M 276,126 C 272,98 276,70 292,52 C 298,44 310,46 312,56 C 314,68 306,94 300,120 C 298,126 294,132 290,136 Z"
+            fill="url(#hLeafRight)" stroke="#1D3F12" stroke-width="6.5" stroke-linejoin="round" />
+      <path d="M 292,125 C 305,95 328,58 368,36 C 388,24 412,32 414,54 C 416,80 392,118 355,138 C 332,150 306,142 292,125 Z"
+            fill="url(#hLeafRight)" stroke="#1D3F12" stroke-width="7.5" stroke-linejoin="round" />
+      <path d="M 306,128 C 334,106 364,78 396,46" fill="none" stroke="#1B4D12" stroke-width="4.5" stroke-linecap="round" />
+    </g>
+
+    <!-- Código < / > -->
+    <g fill="#FFFFFF" filter="url(#hCodeShadow)">
+      <path d="M 235,232 L 155,292 L 235,352 L 235,322 L 195,292 L 235,262 Z" />
+      <path d="M 308,212 L 338,212 L 260,372 L 230,372 Z" />
+      <path d="M 341,232 L 421,292 L 341,352 L 341,322 L 381,292 L 341,262 Z" />
+    </g>
+  </g>
+
+  <!-- ==================== TIPOGRAFIA DA MARCA ==================== -->
+  <g transform="translate(230, 122)">
+    <text font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif"
+          font-weight="800" font-size="64" letter-spacing="-1.5">
+      <tspan fill="#FFFFFF">All</tspan><tspan fill="url(#hBrandGrad)">Tomatos</tspan>
+    </text>
+    <text y="32" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace"
+          font-weight="600" font-size="19" letter-spacing="4" fill="#A1A1AA">
+      DEV ECOSYSTEM
+    </text>
+  </g>
+</svg>

@@ -67,6 +67,9 @@ export type Event =
   | EventQuestionV2Asked
   | EventQuestionV2Replied
   | EventQuestionV2Rejected
+  | EventScheduleCreated
+  | EventScheduleUpdated
+  | EventScheduleDeleted
   | EventTodoUpdated
   | EventLspUpdated
   | EventPermissionAsked
@@ -140,6 +143,10 @@ export type InvalidRequestError = {
   message: string
   kind?: string
   field?: string
+  provider?: string
+  model?: string
+  reason?: string
+  retryable?: boolean
 }
 
 export type MoveSessionError = {
@@ -1360,6 +1367,27 @@ export type GlobalEvent = {
       }
     | {
         id: string
+        type: "schedule.created"
+        properties: {
+          id: string
+        }
+      }
+    | {
+        id: string
+        type: "schedule.updated"
+        properties: {
+          id: string
+        }
+      }
+    | {
+        id: string
+        type: "schedule.deleted"
+        properties: {
+          id: string
+        }
+      }
+    | {
+        id: string
         type: "todo.updated"
         properties: {
           sessionID: string
@@ -1993,6 +2021,7 @@ export type AgentUiAgent = {
    * Display name
    */
   name: string
+  description?: string
   /**
    * Custom system prompt describing this agent's role/tone
    */
@@ -2023,6 +2052,7 @@ export type AgentUiAgent = {
   filesystemEnabled?: boolean
   terminalEnabled?: boolean
   enabled?: boolean
+  visibility?: "private" | "public"
 }
 
 export type AgentUiConfig = {
@@ -3027,6 +3057,13 @@ export type UnauthorizedError = {
   message: string
 }
 
+export type InvalidRequestError2 = {
+  _tag: "InvalidRequestError"
+  message: string
+  kind?: string
+  field?: string
+}
+
 export type SystemUpdateError = {
   name: "SystemUpdateError"
   message: string
@@ -3043,6 +3080,13 @@ export type SessionsResponse = {
 export type InvalidCursorError = {
   _tag: "InvalidCursorError"
   message: string
+}
+
+export type InvalidRequestError3 = {
+  _tag: "InvalidRequestError"
+  message: string
+  kind?: string
+  field?: string
 }
 
 export type SessionActive = {
@@ -3270,6 +3314,9 @@ export type V2Event =
   | QuestionV2Asked
   | QuestionV2Replied
   | QuestionV2Rejected
+  | ScheduleCreated
+  | ScheduleUpdated
+  | ScheduleDeleted
   | TodoUpdated
   | LspUpdated
   | PermissionAsked
@@ -6180,6 +6227,57 @@ export type QuestionV2Rejected = {
   }
 }
 
+export type ScheduleCreated = {
+  id: string
+  metadata?: {
+    [key: string]: unknown
+  }
+  type: "schedule.created"
+  durable?: {
+    aggregateID: string
+    seq: number
+    version: number
+  }
+  location?: LocationRef
+  data: {
+    id: string
+  }
+}
+
+export type ScheduleUpdated = {
+  id: string
+  metadata?: {
+    [key: string]: unknown
+  }
+  type: "schedule.updated"
+  durable?: {
+    aggregateID: string
+    seq: number
+    version: number
+  }
+  location?: LocationRef
+  data: {
+    id: string
+  }
+}
+
+export type ScheduleDeleted = {
+  id: string
+  metadata?: {
+    [key: string]: unknown
+  }
+  type: "schedule.deleted"
+  durable?: {
+    aggregateID: string
+    seq: number
+    version: number
+  }
+  location?: LocationRef
+  data: {
+    id: string
+  }
+}
+
 export type TodoUpdated = {
   id: string
   metadata?: {
@@ -7358,6 +7456,30 @@ export type EventQuestionV2Rejected = {
   properties: {
     sessionID: string
     requestID: string
+  }
+}
+
+export type EventScheduleCreated = {
+  id: string
+  type: "schedule.created"
+  properties: {
+    id: string
+  }
+}
+
+export type EventScheduleUpdated = {
+  id: string
+  type: "schedule.updated"
+  properties: {
+    id: string
+  }
+}
+
+export type EventScheduleDeleted = {
+  id: string
+  type: "schedule.deleted"
+  properties: {
+    id: string
   }
 }
 
@@ -12614,6 +12736,38 @@ export type MemoryBackfillResponses = {
 
 export type MemoryBackfillResponse = MemoryBackfillResponses[keyof MemoryBackfillResponses]
 
+export type MemorySessionSummaryData = {
+  body?: {
+    sessionID: string
+  }
+  path?: never
+  query?: {
+    directory?: string
+    workspace?: string
+  }
+  url: "/memory/session-summary"
+}
+
+export type MemorySessionSummaryErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type MemorySessionSummaryError = MemorySessionSummaryErrors[keyof MemorySessionSummaryErrors]
+
+export type MemorySessionSummaryResponses = {
+  /**
+   * Executive summary of a session
+   */
+  200: {
+    summary?: string
+  }
+}
+
+export type MemorySessionSummaryResponse = MemorySessionSummaryResponses[keyof MemorySessionSummaryResponses]
+
 export type TuiAppendPromptData = {
   body?: {
     text: string
@@ -13785,7 +13939,7 @@ export type V2HealthGetErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -13819,7 +13973,7 @@ export type V2SystemUpdateErrors = {
   /**
    * SystemUpdateError | InvalidRequestError
    */
-  400: SystemUpdateError | InvalidRequestError
+  400: SystemUpdateError | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -13857,7 +14011,7 @@ export type V2LocationGetErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -13891,7 +14045,7 @@ export type V2AgentListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -13935,7 +14089,7 @@ export type V2SessionListErrors = {
   /**
    * InvalidCursorError | InvalidRequestError
    */
-  400: InvalidCursorError | InvalidRequestError
+  400: InvalidCursorError | InvalidRequestError3 | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -13969,7 +14123,7 @@ export type V2SessionCreateErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14000,7 +14154,7 @@ export type V2SessionActiveErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14035,7 +14189,7 @@ export type V2SessionGetErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14074,7 +14228,7 @@ export type V2SessionSwitchAgentErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14111,7 +14265,7 @@ export type V2SessionSwitchModelErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14151,7 +14305,7 @@ export type V2SessionPromptErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14192,7 +14346,7 @@ export type V2SessionCompactErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14231,7 +14385,7 @@ export type V2SessionWaitErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14273,7 +14427,7 @@ export type V2SessionRevertStageErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14314,7 +14468,7 @@ export type V2SessionRevertClearErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14353,7 +14507,7 @@ export type V2SessionRevertCommitErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14388,7 +14542,7 @@ export type V2SessionContextErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14432,7 +14586,7 @@ export type V2SessionHistoryErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14469,7 +14623,7 @@ export type V2SessionEventsErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14508,7 +14662,7 @@ export type V2SessionInterruptErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14544,7 +14698,7 @@ export type V2SessionMessageErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14588,7 +14742,7 @@ export type V2SessionMessagesErrors = {
   /**
    * InvalidCursorError | InvalidRequestError
    */
-  400: InvalidCursorError | InvalidRequestError
+  400: InvalidCursorError | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14630,7 +14784,7 @@ export type V2ModelListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14671,7 +14825,7 @@ export type V2ProviderListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14714,7 +14868,7 @@ export type V2ProviderGetErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14759,7 +14913,7 @@ export type V2IntegrationListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14798,7 +14952,7 @@ export type V2IntegrationGetErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14840,7 +14994,7 @@ export type V2IntegrationConnectKeyErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError3 | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14882,7 +15036,7 @@ export type V2IntegrationConnectOauthErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError3 | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14922,7 +15076,7 @@ export type V2IntegrationAttemptCancelErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -14959,7 +15113,7 @@ export type V2IntegrationAttemptStatusErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15001,7 +15155,7 @@ export type V2IntegrationAttemptCompleteErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError3 | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15037,7 +15191,7 @@ export type V2CredentialCreateErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15073,7 +15227,7 @@ export type V2CredentialRemoveErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15112,7 +15266,7 @@ export type V2CredentialUpdateErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15146,7 +15300,7 @@ export type V2ScheduleListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15180,7 +15334,7 @@ export type V2ScheduleCreateErrors = {
   /**
    * ScheduleValidationError | InvalidRequestError
    */
-  400: ScheduleValidationError | InvalidRequestError
+  400: ScheduleValidationError | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15216,7 +15370,7 @@ export type V2ScheduleRunErrors = {
   /**
    * ScheduleValidationError | InvalidRequestError
    */
-  400: ScheduleValidationError | InvalidRequestError
+  400: ScheduleValidationError | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15250,7 +15404,7 @@ export type V2ScheduleTestErrors = {
   /**
    * ScheduleValidationError | InvalidRequestError
    */
-  400: ScheduleValidationError | InvalidRequestError
+  400: ScheduleValidationError | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15286,7 +15440,7 @@ export type V2ScheduleRemoveErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15322,7 +15476,7 @@ export type V2ScheduleUpdateErrors = {
   /**
    * ScheduleValidationError | InvalidRequestError
    */
-  400: ScheduleValidationError | InvalidRequestError
+  400: ScheduleValidationError | InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15356,7 +15510,7 @@ export type V2PermissionRequestListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15390,7 +15544,7 @@ export type V2PermissionSavedListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15423,7 +15577,7 @@ export type V2PermissionSavedRemoveErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15454,7 +15608,7 @@ export type V2SessionPermissionListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15501,7 +15655,7 @@ export type V2SessionPermissionCreateErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15543,7 +15697,7 @@ export type V2SessionPermissionGetErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15584,7 +15738,7 @@ export type V2SessionPermissionReplyErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15623,7 +15777,7 @@ export type V2FsReadErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15658,7 +15812,7 @@ export type V2FsListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15698,7 +15852,7 @@ export type V2FsFindErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15735,7 +15889,7 @@ export type V2CommandListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15772,7 +15926,7 @@ export type V2SkillListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15804,7 +15958,7 @@ export type V2EventSubscribeErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15838,7 +15992,7 @@ export type V2PtyListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15883,7 +16037,7 @@ export type V2PtyCreateErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15922,7 +16076,7 @@ export type V2PtyRemoveErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -15962,7 +16116,7 @@ export type V2PtyGetErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16011,7 +16165,7 @@ export type V2PtyUpdateErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16054,7 +16208,7 @@ export type V2PtyConnectTokenErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16101,7 +16255,7 @@ export type V2PtyConnectErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16143,7 +16297,7 @@ export type V2QuestionRequestListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16177,7 +16331,7 @@ export type V2SessionQuestionListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16215,7 +16369,7 @@ export type V2SessionQuestionReplyErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16251,7 +16405,7 @@ export type V2SessionQuestionRejectErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16289,7 +16443,7 @@ export type V2ReferenceListErrors = {
   /**
    * InvalidRequestError
    */
-  400: InvalidRequestError
+  400: InvalidRequestError2
   /**
    * UnauthorizedError
    */
@@ -16331,7 +16485,7 @@ export type V2ProjectCopyRemoveErrors = {
   /**
    * ProjectCopyError | InvalidRequestError
    */
-  400: ProjectCopyError | InvalidRequestError
+  400: ProjectCopyError | InvalidRequestError2
 }
 
 export type V2ProjectCopyRemoveError = V2ProjectCopyRemoveErrors[keyof V2ProjectCopyRemoveErrors]
@@ -16367,7 +16521,7 @@ export type V2ProjectCopyCreateErrors = {
   /**
    * ProjectCopyError | InvalidRequestError
    */
-  400: ProjectCopyError | InvalidRequestError
+  400: ProjectCopyError | InvalidRequestError2
 }
 
 export type V2ProjectCopyCreateError = V2ProjectCopyCreateErrors[keyof V2ProjectCopyCreateErrors]
@@ -16399,7 +16553,7 @@ export type V2ProjectCopyRefreshErrors = {
   /**
    * ProjectCopyError | InvalidRequestError
    */
-  400: ProjectCopyError | InvalidRequestError
+  400: ProjectCopyError | InvalidRequestError2
 }
 
 export type V2ProjectCopyRefreshError = V2ProjectCopyRefreshErrors[keyof V2ProjectCopyRefreshErrors]

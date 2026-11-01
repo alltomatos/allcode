@@ -55,7 +55,20 @@ export type SessionAudit = {
   costUsd: number
   durationMs: number
   messagesCount: number
+  modelUsage: ModelUsageEntry[]
   createdAt: string
+}
+
+export type ModelUsageEntry = {
+  providerID: string
+  modelID: string
+  tokens: number
+  costUsd: number
+  calls: number
+}
+
+export type ModelUsageSummary = ModelUsageEntry & {
+  sessions: number
 }
 
 export type UserKPIs = {
@@ -63,6 +76,13 @@ export type UserKPIs = {
   totalTokens: number
   totalCostUsd: number
   totalDurationMs: number
+}
+
+export type SessionListOptions = {
+  userID?: string
+  search?: string
+  limit?: number
+  offset?: number
 }
 
 export type Organization = {
@@ -209,7 +229,11 @@ export type Store = {
   sessions: {
     create(input: Omit<SessionAudit, "id" | "createdAt">): Promise<SessionAudit>
     listByUser(userID: string, limit?: number): Promise<SessionAudit[]>
+    listByOrg(orgID: string, options?: SessionListOptions): Promise<SessionAudit[]>
+    findBySessionID(sessionID: string): Promise<SessionAudit | undefined>
     getUserKPIs(userID: string): Promise<UserKPIs>
+    getOrgKPIs(orgID: string): Promise<UserKPIs>
+    getUserModelUsage(userID: string, options?: { days?: number }): Promise<ModelUsageSummary[]>
   }
   audit: {
     log(event: Omit<AuditEvent, "id" | "orgID" | "at"> & { orgID?: string }): Promise<AuditEvent>
@@ -249,6 +273,7 @@ function seedPassword() {
 function memoryStore(): Store {
   const users = new Map<string, PanelUser>()
   const events: AuditEvent[] = []
+  const sessionRecords: SessionAudit[] = []
   const orgs = new Map<string, Organization>()
   const groups = new Map<string, AccessGroup>()
   const members = new Map<string, Set<string>>()
@@ -443,23 +468,56 @@ function memoryStore(): Store {
     },
     sessions: {
       async create(input) {
+        const existing = sessionRecords.find((item) => item.sessionID === input.sessionID)
+        if (existing) {
+          Object.assign(existing, input)
+          return existing
+        }
         const item: SessionAudit = {
           ...input,
           id: crypto.randomUUID(),
           createdAt: new Date().toISOString(),
         }
+        sessionRecords.unshift(item)
         return item
       },
       async listByUser(userID, limit = 50) {
-        return []
+        return sessionRecords
+          .filter((item) => item.userID === userID)
+          .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+          .slice(0, limit)
+      },
+      async listByOrg(orgID, options = {}) {
+        const term = options.search?.trim().toLowerCase()
+        return sessionRecords
+          .filter((item) => item.orgID === orgID)
+          .filter((item) => (options.userID ? item.userID === options.userID : true))
+          .filter((item) =>
+            term
+              ? item.summary.toLowerCase().includes(term) ||
+                item.title.toLowerCase().includes(term) ||
+                item.workspace.toLowerCase().includes(term)
+              : true,
+          )
+          .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
+          .slice(options.offset ?? 0, (options.offset ?? 0) + (options.limit ?? 50))
+      },
+      async findBySessionID(sessionID) {
+        return sessionRecords.find((item) => item.sessionID === sessionID)
       },
       async getUserKPIs(userID) {
-        return {
-          totalSessions: 0,
-          totalTokens: 0,
-          totalCostUsd: 0,
-          totalDurationMs: 0,
-        }
+        return aggregateKPIs(sessionRecords.filter((item) => item.userID === userID))
+      },
+      async getOrgKPIs(orgID) {
+        return aggregateKPIs(sessionRecords.filter((item) => item.orgID === orgID))
+      },
+      async getUserModelUsage(userID, options = {}) {
+        const cutoff = options.days && options.days > 0 ? Date.now() - options.days * 24 * 60 * 60 * 1000 : undefined
+        return aggregateModelUsage(
+          sessionRecords
+            .filter((item) => item.userID === userID)
+            .filter((item) => (cutoff ? new Date(item.startedAt).getTime() >= cutoff : true)),
+        )
       },
     },
     audit: {
@@ -565,6 +623,7 @@ type SessionAuditRow = {
   cost_usd: number
   duration_ms: number
   messages_count: number
+  model_usage?: string | null
   created_at: string
 }
 
@@ -626,7 +685,66 @@ function toSessionAudit(row: SessionAuditRow): SessionAudit {
     costUsd: row.cost_usd ?? 0,
     durationMs: row.duration_ms ?? 0,
     messagesCount: row.messages_count ?? 0,
+    modelUsage: parseModelUsage(row.model_usage),
     createdAt: row.created_at,
+  }
+}
+
+function parseModelUsage(value: string | null | undefined): ModelUsageEntry[] {
+  if (!value) return []
+  try {
+    const parsed: unknown = JSON.parse(value)
+    if (!Array.isArray(parsed)) return []
+    return parsed.flatMap((item) => {
+      if (!item || typeof item !== "object") return []
+      const record = item as Record<string, unknown>
+      const providerID = typeof record.providerID === "string" ? record.providerID.trim() : ""
+      const modelID = typeof record.modelID === "string" ? record.modelID.trim() : ""
+      if (!providerID || !modelID) return []
+      return [
+        {
+          providerID,
+          modelID,
+          tokens: Math.max(0, Number(record.tokens ?? 0)),
+          costUsd: Math.max(0, Number(record.costUsd ?? 0)),
+          calls: Math.max(0, Number(record.calls ?? 0)),
+        },
+      ]
+    })
+  } catch {
+    return []
+  }
+}
+
+function aggregateModelUsage(items: Array<{ modelUsage: ModelUsageEntry[] }>): ModelUsageSummary[] {
+  const map = new Map<string, ModelUsageSummary>()
+  for (const item of items) {
+    for (const usage of item.modelUsage) {
+      const key = `${usage.providerID}/${usage.modelID}`
+      const current = map.get(key) ?? {
+        providerID: usage.providerID,
+        modelID: usage.modelID,
+        tokens: 0,
+        costUsd: 0,
+        calls: 0,
+        sessions: 0,
+      }
+      current.tokens += usage.tokens
+      current.costUsd += usage.costUsd
+      current.calls += usage.calls
+      current.sessions += 1
+      map.set(key, current)
+    }
+  }
+  return [...map.values()].sort((a, b) => b.tokens - a.tokens || b.costUsd - a.costUsd)
+}
+
+function aggregateKPIs(items: SessionAudit[]): UserKPIs {
+  return {
+    totalSessions: items.length,
+    totalTokens: items.reduce((total, item) => total + (item.tokensTotal ?? 0), 0),
+    totalCostUsd: items.reduce((total, item) => total + (item.costUsd ?? 0), 0),
+    totalDurationMs: items.reduce((total, item) => total + (item.durationMs ?? 0), 0),
   }
 }
 
@@ -1055,8 +1173,22 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `INSERT INTO session_audit (id, session_id, user_id, org_id, title, summary, workspace, started_at, ended_at, tokens_total, tokens_input, tokens_output, tokens_reasoning, cost_usd, duration_ms, messages_count, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO session_audit (id, session_id, user_id, org_id, title, summary, workspace, started_at, ended_at, tokens_total, tokens_input, tokens_output, tokens_reasoning, cost_usd, duration_ms, messages_count, model_usage, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ON CONFLICT(session_id) DO UPDATE SET
+               title = excluded.title,
+               summary = excluded.summary,
+               workspace = excluded.workspace,
+               started_at = MIN(session_audit.started_at, excluded.started_at),
+               ended_at = excluded.ended_at,
+               tokens_total = excluded.tokens_total,
+               tokens_input = excluded.tokens_input,
+               tokens_output = excluded.tokens_output,
+               tokens_reasoning = excluded.tokens_reasoning,
+               cost_usd = excluded.cost_usd,
+               duration_ms = excluded.duration_ms,
+               messages_count = excluded.messages_count,
+               model_usage = excluded.model_usage`,
           )
           .bind(
             item.id,
@@ -1075,10 +1207,15 @@ export function d1Store(db: D1Database): Store {
             item.costUsd,
             item.durationMs,
             item.messagesCount,
+            JSON.stringify(item.modelUsage ?? []),
             item.createdAt,
           )
           .run()
-        return item
+        const row = await db
+          .prepare("SELECT * FROM session_audit WHERE session_id = ?")
+          .bind(item.sessionID)
+          .first<SessionAuditRow>()
+        return row ? toSessionAudit(row) : item
       },
       async listByUser(userID, limit = 50) {
         const rows = await db
@@ -1086,6 +1223,49 @@ export function d1Store(db: D1Database): Store {
           .bind(userID, limit)
           .all<SessionAuditRow>()
         return rows.results.map(toSessionAudit)
+      },
+      async listByOrg(orgID, options = {}) {
+        const conditions = ["org_id = ?"]
+        const params: unknown[] = [orgID]
+        if (options.userID) {
+          conditions.push("user_id = ?")
+          params.push(options.userID)
+        }
+        const term = options.search?.trim()
+        if (term) {
+          conditions.push("(summary LIKE ? OR title LIKE ? OR workspace LIKE ?)")
+          const pattern = `%${term}%`
+          params.push(pattern, pattern, pattern)
+        }
+        const rows = await db
+          .prepare(
+            `SELECT * FROM session_audit WHERE ${conditions.join(" AND ")} ORDER BY started_at DESC LIMIT ? OFFSET ?`,
+          )
+          .bind(...params, options.limit ?? 50, options.offset ?? 0)
+          .all<SessionAuditRow>()
+        return rows.results.map(toSessionAudit)
+      },
+      async findBySessionID(sessionID) {
+        const row = await db
+          .prepare("SELECT * FROM session_audit WHERE session_id = ?")
+          .bind(sessionID)
+          .first<SessionAuditRow>()
+        return row ? toSessionAudit(row) : undefined
+      },
+      async getUserModelUsage(userID, options = {}) {
+        const cutoff = options.days && options.days > 0 ? new Date(Date.now() - options.days * 24 * 60 * 60 * 1000).toISOString() : undefined
+        const rows = cutoff
+          ? await db
+              .prepare("SELECT model_usage, started_at FROM session_audit WHERE user_id = ? AND started_at >= ?")
+              .bind(userID, cutoff)
+              .all<{ model_usage: string | null; started_at: string }>()
+          : await db
+              .prepare("SELECT model_usage, started_at FROM session_audit WHERE user_id = ?")
+              .bind(userID)
+              .all<{ model_usage: string | null; started_at: string }>()
+        return aggregateModelUsage(
+          rows.results.map((row) => ({ modelUsage: parseModelUsage(row.model_usage) })),
+        )
       },
       async getUserKPIs(userID) {
         const row = await db
@@ -1098,6 +1278,25 @@ export function d1Store(db: D1Database): Store {
              FROM session_audit WHERE user_id = ?`,
           )
           .bind(userID)
+          .first<{ total_sessions: number; total_tokens: number; total_cost_usd: number; total_duration_ms: number }>()
+        return {
+          totalSessions: Number(row?.total_sessions ?? 0),
+          totalTokens: Number(row?.total_tokens ?? 0),
+          totalCostUsd: Number(row?.total_cost_usd ?? 0),
+          totalDurationMs: Number(row?.total_duration_ms ?? 0),
+        }
+      },
+      async getOrgKPIs(orgID) {
+        const row = await db
+          .prepare(
+            `SELECT
+               COUNT(*) AS total_sessions,
+               SUM(tokens_total) AS total_tokens,
+               SUM(cost_usd) AS total_cost_usd,
+               SUM(duration_ms) AS total_duration_ms
+             FROM session_audit WHERE org_id = ?`,
+          )
+          .bind(orgID)
           .first<{ total_sessions: number; total_tokens: number; total_cost_usd: number; total_duration_ms: number }>()
         return {
           totalSessions: Number(row?.total_sessions ?? 0),

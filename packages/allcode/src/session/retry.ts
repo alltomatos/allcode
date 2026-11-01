@@ -29,6 +29,15 @@ export const RETRY_JITTER_FACTOR = 0.25
 export const RETRY_MAX_DELAY_NO_HEADERS = 30_000 // 30 seconds
 export const RETRY_MAX_DELAY = 2_147_483_647 // max 32-bit signed integer for setTimeout
 export const RETRY_MAX_RETRIES = 5
+// A provider can ask us to wait hours (daily free quota, subscription window).
+// Retrying inside the same turn would leave the session "pensando" for that
+// whole period while nothing is actually in flight. Stop and surface the error
+// once the requested wait stops being interactive.
+export const RETRY_MAX_INTERACTIVE_DELAY = 5 * 60_000
+
+export function retryWithinTurn(wait: number) {
+  return wait <= RETRY_MAX_INTERACTIVE_DELAY
+}
 
 const RETRYABLE_MESSAGE_PATTERNS = [
   /429|500|502|503|504|524/i,
@@ -191,8 +200,11 @@ export function policy(opts: {
       const retry = retryable(error, opts.provider)
       if (!retry) return Cause.done(meta.attempt)
       if (meta.attempt > RETRY_MAX_RETRIES) return Cause.done(meta.attempt)
+      const wait = delay(meta.attempt, SessionV1.APIError.isInstance(error) ? error : undefined)
+      // Daily free-quota and subscription windows can ask for hours; do not
+      // park the turn waiting for them.
+      if (!retryWithinTurn(wait)) return Cause.done(meta.attempt)
       return Effect.gen(function* () {
-        const wait = delay(meta.attempt, SessionV1.APIError.isInstance(error) ? error : undefined)
         const now = yield* Clock.currentTimeMillis
         yield* opts.set({
           attempt: meta.attempt,

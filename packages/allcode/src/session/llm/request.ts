@@ -15,6 +15,7 @@ import { jsonSchema, tool as aiTool, type ModelMessage, type Tool } from "ai"
 import type { Plugin } from "@/plugin"
 import { mergeDeep } from "remeda"
 import * as OpencodeCompat from "./opencode-compat"
+import { OpencodeFingerprint } from "./opencode-fingerprint"
 
 const USER_AGENT = `opencode/${InstallationVersion}`
 
@@ -176,19 +177,24 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
   }
   if (input.model.providerID.startsWith("opencode") && Object.keys(tools).length === 0) {
     // The hosted OpenCode free lane only serves requests that carry the agentic
-    // tool contract. Tool-less calls (for example title generation) are
-    // rejected with `FreeUsageLimitError` even when the headers identify the
-    // CLI, so a no-op tool keeps the request shape close to a chat turn.
-    tools["_noop"] = aiTool({
-      description: "Do not call this tool. It exists only for API compatibility and must never be invoked.",
-      inputSchema: jsonSchema({
-        type: "object",
-        properties: {
-          reason: { type: "string", description: "Unused" },
-        },
-      }),
-      execute: async () => ({ output: "", title: "", metadata: {} }),
-    })
+    // tool contract. Tool-less calls (for example title generation or
+    // compaction) are rejected with `FreeTierError` even when the headers
+    // identify the CLI. Free models get the native quartet the gate
+    // fingerprints instead of a dummy tool; paid models keep the no-op.
+    if (OpencodeFingerprint.isFree(input.model)) {
+      Object.assign(tools, OpencodeFingerprint.tools())
+    } else {
+      tools["_noop"] = aiTool({
+        description: "Do not call this tool. It exists only for API compatibility and must never be invoked.",
+        inputSchema: jsonSchema({
+          type: "object",
+          properties: {
+            reason: { type: "string", description: "Unused" },
+          },
+        }),
+        execute: async () => ({ output: "", title: "", metadata: {} }),
+      })
+    }
   }
 
   const opencodeProjectID = input.model.providerID.startsWith("opencode")

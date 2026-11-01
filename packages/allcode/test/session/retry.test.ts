@@ -520,3 +520,36 @@ describe("session.message-v2.fromError", () => {
   })
 })
 
+
+describe("interactive retry budget", () => {
+  test("allows waits inside the interactive budget", () => {
+    expect(SessionRetry.retryWithinTurn(30_000)).toBe(true)
+    expect(SessionRetry.retryWithinTurn(SessionRetry.RETRY_MAX_INTERACTIVE_DELAY)).toBe(true)
+  })
+
+  test("stops when the provider asks for a non-interactive wait", () => {
+    // Daily free quotas and subscription windows ask for hours; parking the turn
+    // for that long is what left the UI stuck on "pensando".
+    expect(SessionRetry.retryWithinTurn(SessionRetry.RETRY_MAX_INTERACTIVE_DELAY + 1)).toBe(false)
+    expect(SessionRetry.retryWithinTurn(42_482_000)).toBe(false)
+  })
+})
+
+describe("free tier quota waits", () => {
+  test("does not park the turn for a daily free-limit retry-after", () => {
+    const error = Schema.decodeUnknownSync(SessionV1.APIError.Schema)(
+      new SessionV1.APIError({
+        message: "Free usage exceeded",
+        isRetryable: true,
+        statusCode: 429,
+        responseHeaders: { "retry-after": "41584" },
+        responseBody: JSON.stringify({
+          type: "error",
+          error: { type: "FreeUsageLimitError", message: "Free usage exceeded" },
+        }),
+      }).toObject(),
+    )
+
+    expect(SessionRetry.retryWithinTurn(SessionRetry.delay(1, error))).toBe(false)
+  })
+})

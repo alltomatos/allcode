@@ -173,7 +173,9 @@ export const ModelPickerV2: Component<ModelPickerV2Props> = (props) => {
     // Filter providers.connected() identically to SettingsProvidersV2:
     // Only keep if it has active connections in integrations or valid configured credentials
     for (const p of providers.connected()) {
-      if (p.id === "opencode" && !Object.values(p.models).find((m) => m.cost?.input)) continue
+      // The hosted provider exposes free-tier models at cost 0. A free-only
+      // provider is still selectable; only an empty model list is hidden.
+      if (p.id === "opencode" && Object.keys(p.models).length === 0) continue
       const integrationID = "integrationID" in p && typeof p.integrationID === "string" ? p.integrationID : undefined
       const integration = integrationMap.get(p.id) ?? (integrationID ? integrationMap.get(integrationID) : undefined)
       if (integration && integration.connections.length === 0) continue
