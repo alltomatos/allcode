@@ -5,6 +5,8 @@ import { cycleModelVariant, getConfiguredAgentVariant, resolveModelVariant } fro
 import { usePrompt } from "@/context/prompt"
 import { useSDK } from "@/context/sdk"
 import { useSync } from "@/context/sync"
+import { useTenantAuth } from "@/context/tenant-auth"
+import { useProviderPolicy } from "@/context/tenant-provider-policy"
 import { useProviders } from "@/hooks/use-providers"
 import { resolveDefaultModel } from "@/hooks/provider-catalog"
 
@@ -13,13 +15,23 @@ export function createPromptModelSelection(input: { agent: () => { model?: Model
   const sync = useSync()
   const models = useModels()
   const prompt = usePrompt()
+  const tenantAuth = useTenantAuth()
+  const providerPolicy = useProviderPolicy()
   const providers = useProviders(() => sdk().directory)
   const connected = createMemo(() => new Set(providers.connected().map((item) => item.id)))
 
-  const valid = (model: ModelKey) => {
+  const valid = (model: { providerID: string; modelID: string }) => {
     if (model.providerID === "combo") return true
+    if (!providerPolicy.allows(model.providerID)) return false
     const provider = providers.all().get(model.providerID)
     return !!provider?.models[model.modelID] && connected().has(model.providerID)
+  }
+
+  const corporate = () => {
+    const def = tenantAuth.defaultModel?.()
+    if (!def?.provider || !def?.model) return undefined
+    const key = { providerID: def.provider, modelID: def.model }
+    return valid(key) ? key : undefined
   }
 
   const configured = () => {
@@ -38,7 +50,28 @@ export function createPromptModelSelection(input: { agent: () => { model?: Model
   }
 
   const current = () => {
-    const key = [prompt.model.current(), input.agent()?.model, configured(), recent(), fallback()].find(
+    const rawSession = prompt.model.current()
+    const sessionModel: ModelKey | undefined = rawSession
+      ? { providerID: rawSession.providerID, modelID: rawSession.modelID, variant: rawSession.variant ?? undefined }
+      : undefined
+    const canOverride = providerPolicy.canOverrideCorporate()
+    const corp = corporate()
+
+    // 1. Session selection (if user has permission to override or model matches corporate provider)
+    if (sessionModel && valid(sessionModel)) {
+      const isCorporateProvider = corp && sessionModel.providerID === corp.providerID
+      if (canOverride || isCorporateProvider) {
+        return models.find(sessionModel)
+      }
+    }
+
+    // 2. Centralized corporate provider
+    if (corp) {
+      return models.find(corp)
+    }
+
+    // 3. Local fallback
+    const key = [input.agent()?.model, configured(), recent(), fallback()].find(
       (item): item is ModelKey => !!item && valid(item),
     )
     if (!key) return
@@ -66,6 +99,13 @@ export function createPromptModelSelection(input: { agent: () => { model?: Model
       if (next) selection.set({ providerID: next.provider.id, modelID: next.id })
     },
     set(item: ModelKey | undefined, options?: { recent?: boolean }) {
+      if (item && !providerPolicy.allows(item.providerID)) return
+      if (item && !providerPolicy.canOverrideCorporate()) {
+        const corp = corporate()
+        if (corp && item.providerID !== corp.providerID) {
+          return
+        }
+      }
       startTransition(() =>
         batch(() => {
           prompt.model.set(item ? { ...item, variant: prompt.model.current()?.variant } : undefined)

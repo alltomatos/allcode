@@ -3,12 +3,14 @@ import { For, Show, type ParentProps } from "solid-js"
 import { useI18n, locales, type Locale } from "~/i18n"
 import { initials, roleKey } from "~/lib/labels"
 import type { PublicUser } from "~/lib/actions"
+import { PANEL_VERSION } from "~/lib/version"
 import { Badge, cx } from "./ui"
 
 const navItems = [
   { href: "/app", label: "nav.overview" },
   { href: "/app/usuarios", label: "nav.users" },
   { href: "/app/grupos", label: "nav.groups" },
+  { href: "/app/provedores", label: "nav.providers" },
   { href: "/app/auditoria", label: "nav.audit" },
   { href: "/app/configuracoes", label: "nav.settings" },
 ] as const
@@ -112,6 +114,10 @@ export function Shell(props: ParentProps<{ user: PublicUser }>) {
                 </button>
               )}
             </For>
+          </div>
+          <div class="mt-2 text-[11px] text-slate-400">
+            <span>{i18n.t("common.version")}: </span>
+            <span class="font-medium text-slate-500">v{PANEL_VERSION}</span>
           </div>
         </div>
       </aside>

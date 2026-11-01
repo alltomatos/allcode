@@ -35,6 +35,7 @@ import { DirectoryDataProvider } from "@/pages/directory-layout"
 import { useServerSync } from "@/context/server-sync"
 import { useLanguage } from "@/context/language"
 import { useTenantAuth } from "@/context/tenant-auth"
+import { useProviderPolicy } from "@/context/tenant-provider-policy"
 import { useLayout } from "@/context/layout"
 import { ModelsProvider } from "@/context/models"
 import { useNotification } from "@/context/notification"
@@ -126,6 +127,7 @@ export default function Page() {
   const dialog = useDialog()
   const language = useLanguage()
   const tenantAuth = useTenantAuth()
+  const providerPolicy = useProviderPolicy()
   const sdk = useSDK()
   const serverSDK = useServerSDK()
   const settings = useSettings()
@@ -314,7 +316,13 @@ export default function Page() {
           fallback?.provider && fallback?.model
             ? { providerID: fallback.provider, modelID: fallback.model }
             : undefined
-        if (restorePromptModel(local, prompt, tenantDefault)) return
+        if (
+          restorePromptModel(local, prompt, tenantDefault, {
+            canOverrideCorporate: tenantAuth.canOverrideCorporate(),
+            isProviderAllowed: providerPolicy.allows,
+          })
+        )
+          return
       }
       syncPromptModel(local, prompt)
   })

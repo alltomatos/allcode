@@ -5,6 +5,7 @@ import { batch, createEffect, createMemo, startTransition } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useModels } from "@/context/models"
 import { useSettings } from "@/context/settings"
+import { useTenantAuth } from "@/context/tenant-auth"
 import { useProviders } from "@/hooks/use-providers"
 import { resolveDefaultModel } from "@/hooks/provider-catalog"
 import { Persist, persisted } from "@/utils/persist"
@@ -66,6 +67,7 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
     const providers = useProviders(() => sdk().directory)
     const models = useModels()
     const settings = useSettings()
+    const tenantAuth = useTenantAuth()
 
     const id = createMemo(() => params.id || undefined)
     const list = createMemo(() => sync().data.agent.filter((item) => item.mode !== "subagent" && !item.hidden))
@@ -150,6 +152,13 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       setStore("promoting", undefined)
     })
 
+    const corporateModel = () => {
+      const def = tenantAuth.defaultModel?.()
+      if (!def?.provider || !def?.model) return
+      const model = { providerID: def.provider, modelID: def.model }
+      if (validModel(model)) return model
+    }
+
     const configuredModel = () => {
       const model = resolveDefaultModel(providers.defaultModel(), sync().data.config.model)
       if (!model) return
@@ -178,7 +187,9 @@ export const { use: useLocal, provider: LocalProvider } = createSimpleContext({
       }
     }
 
-    const fallback = createMemo<ModelKey | undefined>(() => configuredModel() ?? recentModel() ?? defaultModel())
+    const fallback = createMemo<ModelKey | undefined>(
+      () => corporateModel() ?? configuredModel() ?? recentModel() ?? defaultModel(),
+    )
 
     const agent = {
       list,

@@ -1,21 +1,32 @@
 import { A, createAsync, revalidate, useAction, useParams } from "@solidjs/router"
-import { Show, createMemo, createSignal } from "solid-js"
+import { Show, createEffect, createMemo, createSignal } from "solid-js"
 import { EmptyState, PageHeader, cx } from "~/components/ui"
 import { UserOverview } from "~/components/user-overview"
 import { UserSettings } from "~/components/user-settings"
+import {
+  providerGrantDraft,
+  providerGrantPayload,
+  type ProviderGrantDraft,
+} from "~/components/provider-grants"
 import { useI18n } from "~/i18n"
 import {
+  getProviderGrants,
   getUser,
   getUserKPIs,
   getUserModelUsage,
   getUserSessions,
   listAudit,
   listGroups,
+  listProviders,
+  listUserCredentials,
+  removeUser,
+  removeUserCredential,
   requireMe,
   resetUserPassword,
+  saveUserCredential,
+  setProviderGrants,
   setUserRole,
   setUserStatus,
-  removeUser,
   updateUserAccess,
 } from "~/lib/actions"
 import { RESOURCES, type Resource } from "~/lib/access"
@@ -32,6 +43,9 @@ export default function UserDetailPage() {
   const sessions = createAsync(() => getUserSessions(params.id!))
   const history = createAsync(() => listAudit(params.id!))
   const groups = createAsync(() => listGroups())
+  const providers = createAsync(() => listProviders())
+  const credentials = createAsync(() => listUserCredentials(params.id!))
+  const grants = createAsync(() => getProviderGrants("user", params.id!))
 
   const [tab, setTab] = createSignal<Tab>("overview")
   const [modelDays, setModelDays] = createSignal(0)
@@ -42,12 +56,16 @@ export default function UserDetailPage() {
   const remove = useAction(removeUser)
   const saveAccess = useAction(updateUserAccess)
   const resetPassword = useAction(resetUserPassword)
+  const saveGrants = useAction(setProviderGrants)
+  const saveCred = useAction(saveUserCredential)
+  const removeCred = useAction(removeUserCredential)
 
   const [error, setError] = createSignal<string | null>(null)
   const [success, setSuccess] = createSignal<string | null>(null)
   const [confirmEmail, setConfirmEmail] = createSignal("")
   const [pending, setPending] = createSignal(false)
   const [savingPermissions, setSavingPermissions] = createSignal(false)
+  const [savingCredential, setSavingCredential] = createSignal<string | null>(null)
   const [newPassword, setNewPassword] = createSignal("")
   const [resettingPassword, setResettingPassword] = createSignal(false)
   const [issuedPassword, setIssuedPassword] = createSignal<string | null>(null)
@@ -60,11 +78,23 @@ export default function UserDetailPage() {
   const [modelDraft, setModelDraft] = createSignal("")
   const [changePassDraft, setChangePassDraft] = createSignal(true)
   const [accessInitialized, setAccessInitialized] = createSignal(false)
+  const [grantsDraft, setGrantsDraft] = createSignal<ProviderGrantDraft>({})
+  const [grantsInitialized, setGrantsInitialized] = createSignal(false)
+
+  createEffect(() => {
+    if (grantsInitialized()) return
+    const catalog = providers()
+    const current = grants()
+    if (!catalog || !current) return
+    setGrantsDraft(providerGrantDraft(catalog, current))
+    setGrantsInitialized(true)
+  })
 
   const isOwner = createMemo(() => actor()?.role === "owner")
   const canManage = createMemo(() => actor()?.role === "owner" || actor()?.role === "admin")
-  const canRemove = createMemo(() => isOwner() && user()?.role !== "owner")
-  const canChange = createMemo(() => actor()?.id !== user()?.id && user()?.role !== "owner")
+  const isSelf = createMemo(() => actor()?.id === user()?.id)
+  const canRemove = createMemo(() => isOwner() && user()?.role !== "owner" && !isSelf())
+  const canChange = createMemo(() => canManage() && !isSelf() && user()?.role !== "owner")
 
   async function onRole(value: string) {
     const target = user()
@@ -138,17 +168,24 @@ export default function UserDetailPage() {
 
     const result = await saveAccess(target.id, {
       access: overrides,
-      canOpenSettings: settingsDraft() === "inherit" ? undefined : settingsDraft() === "allow",
+      canOpenSettings:
+        settingsDraft() === "inherit" ? undefined : settingsDraft() === "allow",
       canChangePassword: changePassDraft(),
-      defaultProvider: providerDraft().trim() || undefined,
-      defaultModel: modelDraft().trim() || undefined,
+      defaultProvider: providerDraft() || undefined,
+      defaultModel: modelDraft() || undefined,
       groupIds: groupDraft(),
     })
     setSavingPermissions(false)
-    if (result?.error) setError(i18n.t(result.error))
-    else {
+
+    if (result?.error) {
+      setError(i18n.t(result.error))
+    } else {
+      if (canChange()) {
+        await saveGrants("user", target.id, providerGrantPayload(grantsDraft()))
+      }
       setSuccess(i18n.t("user.permissions.saved"))
       revalidate("panel.user")
+      revalidate("panel.users")
       revalidate("panel.audit")
     }
   }
@@ -160,6 +197,27 @@ export default function UserDetailPage() {
     const result = await remove(target.id, confirmEmail())
     setPending(false)
     if (result?.error) setError(i18n.t(result.error))
+  }
+
+  async function onSaveCredential(providerID: string, apiKey: string) {
+    setSavingCredential(providerID)
+    try {
+      const res = await saveCred({ userID: params.id!, providerID, apiKey })
+      if (res && "error" in res && res.error) throw new Error(res.error)
+      revalidate("panel.user.credentials")
+    } finally {
+      setSavingCredential(null)
+    }
+  }
+
+  async function onRemoveCredential(providerID: string) {
+    setSavingCredential(providerID)
+    try {
+      await removeCred({ userID: params.id!, providerID })
+      revalidate("panel.user.credentials")
+    } finally {
+      setSavingCredential(null)
+    }
   }
 
   return (
@@ -195,29 +253,32 @@ export default function UserDetailPage() {
 
           return (
             <div class="space-y-6">
-              <div class="inline-flex rounded-lg bg-slate-100 p-1">
+              {/* Navegação entre abas */}
+              <div class="flex items-center gap-1 border-b border-slate-200 pb-2">
                 <button
                   type="button"
                   onClick={() => setTab("overview")}
                   class={cx(
                     "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition",
-                    tab() === "overview" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900",
+                    tab() === "overview"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
                   )}
                 >
                   {i18n.t("user.tabs.overview")}
                 </button>
-                <Show when={canManage()}>
-                  <button
-                    type="button"
-                    onClick={() => setTab("settings")}
-                    class={cx(
-                      "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition",
-                      tab() === "settings" ? "bg-white text-slate-900 shadow-xs" : "text-slate-600 hover:text-slate-900",
-                    )}
-                  >
-                    {i18n.t("user.tabs.settings")}
-                  </button>
-                </Show>
+                <button
+                  type="button"
+                  onClick={() => setTab("settings")}
+                  class={cx(
+                    "cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium transition",
+                    tab() === "settings"
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100",
+                  )}
+                >
+                  {i18n.t("user.tabs.settings")}
+                </button>
               </div>
 
               <Show
@@ -227,9 +288,14 @@ export default function UserDetailPage() {
                     controller={{
                       user: current(),
                       isOwner: isOwner(),
+                      canManage: canManage(),
                       canChange: canChange(),
                       canRemove: canRemove(),
+                      isSelf: isSelf(),
                       groups: groups(),
+                      providers: providers(),
+                      credentials: credentials(),
+                      grantsDraft: grantsDraft(),
                       accessDraft: accessDraft(),
                       settingsDraft: settingsDraft(),
                       groupDraft: groupDraft(),
@@ -243,8 +309,10 @@ export default function UserDetailPage() {
                       pending: pending(),
                       savingPermissions: savingPermissions(),
                       resettingPassword: resettingPassword(),
+                      savingCredential: savingCredential(),
                       error: error(),
                       success: success(),
+                      setGrantsDraft,
                       setAccessDraft,
                       setSettingsDraft,
                       setGroupDraft,
@@ -259,6 +327,8 @@ export default function UserDetailPage() {
                       onCopyPassword: copyIssuedPassword,
                       onSaveAccess,
                       onRemove,
+                      onSaveCredential,
+                      onRemoveCredential,
                     }}
                   />
                 }

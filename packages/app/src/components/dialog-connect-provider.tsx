@@ -36,6 +36,7 @@ import { useServerSync } from "@/context/server-sync"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
+import { useProviderPolicy } from "@/context/tenant-provider-policy"
 import { createIntegrationFetchApi } from "@/utils/integration-fetch"
 import { CustomProviderForm } from "./dialog-custom-provider"
 import { DialogConnectOmniroute, OMNIROUTE_PROVIDER_ID } from "./dialog-connect-omniroute"
@@ -170,6 +171,7 @@ function ProviderPicker(props: {
   if (settings.general.newLayoutDesigns())
     return <ProviderPickerV2 directory={props.directory} onSelect={props.onSelect} onPrepare={props.onPrepare} />
   const providers = useProviders(() => props.directory?.())
+  const providerPolicy = useProviderPolicy()
   const language = useLanguage()
   const popularGroup = () => language.t("dialog.provider.group.popular")
   const otherGroup = () => language.t("dialog.provider.group.other")
@@ -192,11 +194,18 @@ function ProviderPicker(props: {
       items={() => {
         language.locale()
         const connected = providers.all()
+        const optional = (id: string) => providerPolicy.allows(id)
         return [
-          { id: CUSTOM_ID, name: customLabel() },
-          ...(connected.has(OMNIROUTE_PROVIDER_ID) ? [] : [{ id: OMNIROUTE_PROVIDER_ID, name: "Omniroute" }]),
-          ...(connected.has("google-antigravity") ? [] : [{ id: "google-antigravity", name: "AGY" }]),
-          ...(connected.has("google-antigravity-cli") ? [] : [{ id: "google-antigravity-cli", name: "AGY CLI" }]),
+          ...(providerPolicy.canCreateCustom() ? [{ id: CUSTOM_ID, name: customLabel() }] : []),
+          ...(connected.has(OMNIROUTE_PROVIDER_ID) || !optional(OMNIROUTE_PROVIDER_ID)
+            ? []
+            : [{ id: OMNIROUTE_PROVIDER_ID, name: "Omniroute" }]),
+          ...(connected.has("google-antigravity") || !optional("google-antigravity")
+            ? []
+            : [{ id: "google-antigravity", name: "AGY" }]),
+          ...(connected.has("google-antigravity-cli") || !optional("google-antigravity-cli")
+            ? []
+            : [{ id: "google-antigravity-cli", name: "AGY CLI" }]),
           ...connected.values(),
         ]
       }}
@@ -249,6 +258,7 @@ function ProviderPickerV2(props: {
   onPrepare?: () => void
 }) {
   const providers = useProviders(() => props.directory?.())
+  const providerPolicy = useProviderPolicy()
   const language = useLanguage()
   const [store, setStore] = createStore({
     filter: "",
@@ -272,10 +282,16 @@ function ProviderPickerV2(props: {
     const query = store.filter.trim().toLowerCase()
     const connected = providers.all()
     const values = [
-      custom(),
-      ...(connected.has(OMNIROUTE_PROVIDER_ID) ? [] : [omniroutePlaceholder()]),
-      ...(connected.has("google-antigravity") ? [] : [{ id: "google-antigravity", name: "AGY" }]),
-      ...(connected.has("google-antigravity-cli") ? [] : [{ id: "google-antigravity-cli", name: "AGY CLI" }]),
+      ...(providerPolicy.canCreateCustom() ? [custom()] : []),
+      ...(connected.has(OMNIROUTE_PROVIDER_ID) || !providerPolicy.allows(OMNIROUTE_PROVIDER_ID)
+        ? []
+        : [omniroutePlaceholder()]),
+      ...(connected.has("google-antigravity") || !providerPolicy.allows("google-antigravity")
+        ? []
+        : [{ id: "google-antigravity", name: "AGY" }]),
+      ...(connected.has("google-antigravity-cli") || !providerPolicy.allows("google-antigravity-cli")
+        ? []
+        : [{ id: "google-antigravity-cli", name: "AGY CLI" }]),
       ...connected.values(),
     ]
     if (!query) return values

@@ -41,6 +41,8 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0006_access_groups.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0007_session_audit_unique.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0008_session_audit_model_usage.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0009_provider_policy.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0010_provider_individual_credentials.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -236,5 +238,56 @@ describe("D1 store", () => {
     expect(updated?.mustChangePassword).toBe(true)
     expect(await verifyPassword(reset, updated!.passwordHash)).toBe(true)
     expect(await verifyPassword("original-pass", updated!.passwordHash)).toBe(false)
+  })
+
+  test("manages custom providers with protocol and user individual credentials", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    expect(owner).toBeTruthy()
+
+    // 1. Cria provedor com protocolo
+    const provider = await store.providers.create({
+      orgID: owner!.orgID,
+      providerID: "anthropic-corp",
+      displayName: "Anthropic Corporativo",
+      kind: "custom",
+      protocol: "anthropic",
+      baseURL: "https://api.anthropic.com",
+      models: [
+        { id: "claude-3-5-sonnet", name: "Claude 3.5 Sonnet", enabled: true },
+        { id: "claude-3-haiku", name: "Claude 3 Haiku", enabled: false },
+      ],
+      createdBy: owner!.id,
+    })
+
+    expect(provider.protocol).toBe("anthropic")
+    expect(provider.models).toHaveLength(2)
+
+    // 2. Busca e atualiza
+    const fetched = await store.providers.findByID(provider.id)
+    expect(fetched?.protocol).toBe("anthropic")
+
+    await store.providers.update(provider.id, {
+      displayName: "Claude Corporativo",
+    })
+    const updated = await store.providers.findByID(provider.id)
+    expect(updated?.displayName).toBe("Claude Corporativo")
+    expect(updated?.protocol).toBe("anthropic")
+
+    // 3. Credenciais individuais do usuário
+    await store.credentials.set(owner!.id, "anthropic-corp", "sk-ant-user-key-123")
+    const creds = await store.credentials.listByUser(owner!.id)
+    expect(creds).toHaveLength(1)
+    expect(creds[0]?.providerID).toBe("anthropic-corp")
+    expect(creds[0]?.apiKey).toBe("sk-ant-user-key-123")
+
+    const singleCred = await store.credentials.findByUserAndProvider(owner!.id, "anthropic-corp")
+    expect(singleCred?.apiKey).toBe("sk-ant-user-key-123")
+
+    // 4. Remover credencial
+    await store.credentials.remove(owner!.id, "anthropic-corp")
+    const afterRemove = await store.credentials.findByUserAndProvider(owner!.id, "anthropic-corp")
+    expect(afterRemove).toBeUndefined()
   })
 })

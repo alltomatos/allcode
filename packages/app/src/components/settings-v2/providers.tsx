@@ -20,6 +20,7 @@ import { useServerSync } from "@/context/server-sync"
 import { DialogConnectProvider, useProviderConnectController } from "../dialog-connect-provider"
 import { DialogCustomProvider } from "../dialog-custom-provider"
 import { OMNIROUTE_PROVIDER_ID } from "../dialog-connect-omniroute"
+import { useProviderPolicy } from "@/context/tenant-provider-policy"
 import { SettingsListV2 } from "./parts/list"
 import "./settings-v2.css"
 
@@ -456,6 +457,7 @@ export const SettingsProvidersV2: Component<{
   const protocol = useServerProtocol()
   const serverSync = useServerSync()
   const providers = useProviders(props.directory)
+  const providerPolicy = useProviderPolicy()
   const providerConnect = useProviderConnectController({ onBack: props.onBack })
   const [view, setView] = createSignal<ProviderView>(loadProviderView())
   const [query, setQuery] = createSignal("")
@@ -783,7 +785,7 @@ export const SettingsProvidersV2: Component<{
                   )}
                 </For>
 
-                <Show when={protocol() === "v1"}>
+                <Show when={protocol() === "v1" && providerPolicy.canCreateCustom()}>
                   <div class="settings-v2-provider-row" data-component="custom-provider-section">
                     <div class="settings-v2-provider-lead">
                       <ProviderIcon
@@ -837,7 +839,7 @@ export const SettingsProvidersV2: Component<{
                 )}
               </For>
 
-              <Show when={protocol() === "v1"}>
+              <Show when={protocol() === "v1" && providerPolicy.canCreateCustom()}>
                 <button
                   type="button"
                   class="settings-v2-provider-card"

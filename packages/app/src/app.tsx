@@ -58,6 +58,7 @@ import { WslServersProvider } from "@/wsl/context"
 import { SshServersProvider } from "@/ssh-tunnel/context"
 import DirectoryLayout, { DirectoryDataProvider } from "@/pages/directory-layout"
 import { TenantAuthProvider } from "@/context/tenant-auth"
+import { TenantProviderPolicySync } from "@/context/tenant-provider-policy"
 import { DesktopLoginModal } from "@/components/desktop-login-modal"
 import { GlobalLoading } from "@/components/global-loading"
 import LegacyLayout from "@/pages/layout"
@@ -655,6 +656,7 @@ export function AppInterface(props: {
                     component={props.router ?? Router}
                     root={(routerProps) => (
                       <TabsProvider>
+                        <TenantProviderPolicySync />
                         <PermissionProvider>
                           <NotificationProvider>
                             <ServerShell>

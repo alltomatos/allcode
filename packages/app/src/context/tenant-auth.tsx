@@ -49,6 +49,28 @@ export interface ModelDefault {
   model?: string
 }
 
+export interface ProvisionedProvider {
+  id: string
+  name: string
+  kind: "builtin" | "custom" | "proxy"
+  protocol?: "openai" | "anthropic"
+  npm?: string
+  baseURL?: string
+  apiKey?: string
+  models: Array<{ id: string; name: string; enabled?: boolean }>
+  headers: Record<string, string>
+  env: string[]
+}
+
+export interface ProviderPolicy {
+  restricted: boolean
+  allowLocal: boolean
+  allowed: string[]
+  denied: string[]
+  version: string
+  provisioned?: ProvisionedProvider[]
+}
+
 export interface UserSession {
   id: string
   name: string
@@ -60,6 +82,7 @@ export interface UserSession {
   settings?: Partial<Record<SettingsSection, boolean>>
   canOpenSettings?: boolean
   defaultModel?: ModelDefault
+  providers?: ProviderPolicy
 }
 
 export interface SessionModelUsage {
@@ -157,7 +180,28 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
       return value !== false
     }
 
-    const defaultModel = createMemo(() => store.user?.defaultModel)
+    const defaultModel = createMemo(() => {
+      const explicit = store.user?.defaultModel
+      if (explicit?.provider && explicit?.model) return explicit
+      const firstProvisioned = store.user?.providers?.provisioned?.[0]
+      if (firstProvisioned) {
+        const firstModel = firstProvisioned.models?.[0]?.id ?? "auto"
+        return { provider: firstProvisioned.id, model: firstModel }
+      }
+      return undefined
+    })
+    const providerPolicy = createMemo(() => store.user?.providers)
+
+    const canConfigureProviders = createMemo(() => {
+      const u = store.user
+      if (!u) return true
+      if (isPrivileged()) return true
+      if (canUse("providers") === false) return false
+      const policy = store.user?.providers
+      if (!policy) return true
+      if (policy.restricted && !policy.allowLocal) return false
+      return true
+    })
 
     const login = (user: UserSession, tenant: TenantInfo) => {
       setStore({
@@ -220,6 +264,7 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
             if (data.settings) setStore("user", "settings", data.settings)
             if (typeof data.canOpenSettings === "boolean") setStore("user", "canOpenSettings", data.canOpenSettings)
             if (data.defaultModel) setStore("user", "defaultModel", data.defaultModel)
+            if (data.providers) setStore("user", "providers", data.providers)
           }
         }
       } catch {
@@ -267,12 +312,15 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
       isLoggedIn,
       isFirstLogin,
       canUseAgentUI,
-        canUseRoutines,
-        canChangePassword,
-        canUse,
-        canOpenSettings,
-        canUseSettings,
-        defaultModel,
+      canUseRoutines,
+      canChangePassword,
+      canUse,
+      canOpenSettings,
+      canUseSettings,
+      defaultModel,
+      providerPolicy,
+      canConfigureProviders,
+      canOverrideCorporate: canConfigureProviders,
       login,
       logout,
       switchAccount,

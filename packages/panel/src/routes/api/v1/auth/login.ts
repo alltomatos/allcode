@@ -103,6 +103,7 @@ export async function POST(event: APIEvent) {
           settings: resolved.settings,
           canOpenSettings: resolved.canOpenSettings,
           defaultModel: resolved.defaultModel,
+          providers: resolved.providers,
         },
         tenant: {
           id: tenant.id,

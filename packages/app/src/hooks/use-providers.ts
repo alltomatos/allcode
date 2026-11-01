@@ -1,4 +1,5 @@
 import { useServerSync } from "@/context/server-sync"
+import { useTenantAuth } from "@/context/tenant-auth"
 import { decode64 } from "@/utils/base64"
 import { useParams } from "@solidjs/router"
 import { Iterable, pipe } from "effect"
@@ -19,23 +20,42 @@ const popularProviderSet = new Set(popularProviders)
 
 export function useProviders(directory: Accessor<string | undefined>) {
   const serverSync = useServerSync()
+  const tenantAuth = useTenantAuth()
   const params = useParams()
   const dir = () => (directory ? directory() : decode64(params.dir))
+  const policy = createMemo(() => tenantAuth.providerPolicy())
+  const visible = (providerID: string) => {
+    const current = policy()
+    if (!current) return true
+    if (current.denied.includes(providerID)) return false
+    const prov = (current.provisioned ?? []).find((p) => p.id === providerID)
+    if (prov && !prov.apiKey) return false
+    if (!current.restricted) return true
+    return current.allowLocal || current.allowed.includes(providerID)
+  }
+  const filterCatalog = (catalog: ReturnType<typeof selectProviderCatalog>) => ({
+    ...catalog,
+    all: new Map([...catalog.all].filter(([providerID]) => visible(providerID))),
+  })
   const providers = () => {
     const value = dir()
     const projectStore = value ? serverSync().child(value)[0] : undefined
     if (value)
-      return selectProviderCatalog({
-        explicit: true,
+      return filterCatalog(
+        selectProviderCatalog({
+          explicit: true,
+          directory: value,
+          catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
+        }),
+      )
+    return filterCatalog(
+      selectProviderCatalog({
+        explicit: false,
         directory: value,
         catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-      })
-    return selectProviderCatalog({
-      explicit: false,
-      directory: value,
-      catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-      global: serverSync().data.provider,
-    })
+        global: serverSync().data.provider,
+      }),
+    )
   }
 
   return {

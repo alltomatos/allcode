@@ -1,19 +1,28 @@
 import { createAsync, revalidate, useAction } from "@solidjs/router"
-import { Show, createSignal } from "solid-js"
-import { Button, Card, Field, PageHeader } from "~/components/ui"
+import { For, Show, createSignal } from "solid-js"
+import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { getSettings, requireMe, updateSettings } from "~/lib/actions"
+import { getSettings, listProviders, requireMe, updateSettings } from "~/lib/actions"
 
 export default function SettingsPage() {
   const i18n = useI18n()
   const actor = createAsync(() => requireMe())
   const settings = createAsync(() => getSettings())
+  const providers = createAsync(() => listProviders())
   const update = useAction(updateSettings)
   const [error, setError] = createSignal<string | null>(null)
   const [saved, setSaved] = createSignal(false)
   const [pending, setPending] = createSignal(false)
   const [uploading, setUploading] = createSignal(false)
   const [logoUrl, setLogoUrl] = createSignal("")
+  const [selectedProviderID, setSelectedProviderID] = createSignal<string | null>(null)
+  const [selectedModelID, setSelectedModelID] = createSignal<string | null>(null)
+
+  const activeProvider = () =>
+    (providers() ?? []).find(
+      (p) => p.providerID === (selectedProviderID() ?? settings()?.defaultProvider),
+    )
+  const availableModels = () => (activeProvider()?.models ?? []).filter((m) => m.enabled !== false)
 
   async function onUploadFile(e: Event & { currentTarget: HTMLInputElement }) {
     const file = e.currentTarget.files?.[0]
@@ -113,24 +122,97 @@ export default function SettingsPage() {
                     {i18n.t("access.defaults.title")}
                   </h3>
                   <div class="grid gap-4 sm:grid-cols-2">
-                    <Field
+                    <Select
                       label={i18n.t("access.defaults.provider")}
                       name="defaultProvider"
-                      value={current().defaultProvider ?? ""}
-                      placeholder="anthropic"
-                      autocomplete="off"
+                      value={selectedProviderID() ?? current().defaultProvider ?? ""}
+                      onSelect={(val) => {
+                        setSelectedProviderID(val)
+                        setSelectedModelID("")
+                      }}
                       disabled={actor()?.role !== "owner"}
-                    />
-                    <Field
-                      label={i18n.t("access.defaults.model")}
-                      name="defaultModel"
-                      value={current().defaultModel ?? ""}
-                      placeholder="claude-sonnet-4"
-                      autocomplete="off"
-                      disabled={actor()?.role !== "owner"}
-                    />
+                    >
+                      <option value="">—</option>
+                      <Show
+                        when={
+                          current().defaultProvider &&
+                          !(providers() ?? []).some((provider) => provider.providerID === current().defaultProvider)
+                        }
+                      >
+                        <option value={current().defaultProvider}>{current().defaultProvider}</option>
+                      </Show>
+                      <For each={(providers() ?? []).filter((provider) => provider.enabled)}>
+                        {(provider) => <option value={provider.providerID}>{provider.displayName}</option>}
+                      </For>
+                    </Select>
+
+                    <Show
+                      when={availableModels().length > 0}
+                      fallback={
+                        <Field
+                          label={i18n.t("access.defaults.model")}
+                          name="defaultModel"
+                          value={selectedModelID() ?? current().defaultModel ?? ""}
+                          placeholder="Selecione um provedor com modelos disponíveis"
+                          autocomplete="off"
+                          disabled={actor()?.role !== "owner"}
+                          onInput={(e) => setSelectedModelID(e.currentTarget.value)}
+                        />
+                      }
+                    >
+                      <Select
+                        label={i18n.t("access.defaults.model")}
+                        name="defaultModel"
+                        value={selectedModelID() ?? current().defaultModel ?? ""}
+                        onSelect={setSelectedModelID}
+                        disabled={actor()?.role !== "owner"}
+                      >
+                        <option value="">— Nenhum modelo padrão —</option>
+                        <For each={availableModels()}>
+                          {(model) => <option value={model.id}>{model.name || model.id}</option>}
+                        </For>
+                      </Select>
+                    </Show>
                   </div>
                   <p class="mt-2 text-xs text-slate-500">{i18n.t("access.defaults.hint")}</p>
+                </div>
+
+                <div class="border-t border-slate-100 pt-5">
+                  <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">
+                    {i18n.t("providers.policy.title")}
+                  </h3>
+                  <div class="space-y-3">
+                    <label class="flex items-start gap-3 cursor-pointer rounded-lg border border-slate-100 p-3">
+                      <input
+                        type="checkbox"
+                        name="providerRestricted"
+                        checked={current().providerRestricted}
+                        disabled={actor()?.role !== "owner"}
+                        class="mt-0.5 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span class="text-xs">
+                        <span class="block font-semibold text-slate-900">
+                          {i18n.t("providers.policy.restricted")}
+                        </span>
+                        <span class="text-slate-500">{i18n.t("providers.policy.restrictedHint")}</span>
+                      </span>
+                    </label>
+                    <label class="flex items-start gap-3 cursor-pointer rounded-lg border border-slate-100 p-3">
+                      <input
+                        type="checkbox"
+                        name="allowLocalProviders"
+                        checked={current().allowLocalProviders}
+                        disabled={actor()?.role !== "owner"}
+                        class="mt-0.5 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                      />
+                      <span class="text-xs">
+                        <span class="block font-semibold text-slate-900">
+                          {i18n.t("providers.policy.allowLocal")}
+                        </span>
+                        <span class="text-slate-500">{i18n.t("providers.policy.allowLocalHint")}</span>
+                      </span>
+                    </label>
+                  </div>
                 </div>
 
                 <div class="border-t border-slate-100 pt-5">

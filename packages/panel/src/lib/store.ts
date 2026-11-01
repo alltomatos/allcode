@@ -38,6 +38,47 @@ export type AccessGroup = {
   createdAt: string
 }
 
+export type ProviderKind = "builtin" | "custom" | "proxy"
+export type ProviderEffect = "allow" | "deny"
+export type ProviderProtocol = "openai" | "anthropic"
+
+export type ProviderModel = { id: string; name: string; enabled?: boolean }
+export type ProviderHeader = { key: string; value: string }
+
+export type ProviderDefinition = {
+  id: string
+  orgID: string
+  providerID: string
+  displayName: string
+  kind: ProviderKind
+  protocol: ProviderProtocol
+  npm?: string
+  baseURL?: string
+  apiKey?: string
+  models: ProviderModel[]
+  headers: ProviderHeader[]
+  env: string[]
+  enabled: boolean
+  createdBy?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type ProviderGrant = {
+  scope: "group" | "user"
+  scopeID: string
+  providerID: string
+  effect: ProviderEffect
+}
+
+export type UserProviderCredential = {
+  userID: string
+  providerID: string
+  apiKey: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type SessionAudit = {
   id: string
   sessionID: string
@@ -100,6 +141,10 @@ export type Organization = {
   sessionMaxAgeHours: number
   defaultProvider?: string
   defaultModel?: string
+  /** true = only providers explicitly granted are visible. */
+  providerRestricted: boolean
+  /** When restricted, local-only providers keep working if this is true. */
+  allowLocalProviders: boolean
   createdAt: string
 }
 
@@ -153,6 +198,8 @@ export type OrgPatch = Partial<
     | "sessionMaxAgeHours"
     | "defaultProvider"
     | "defaultModel"
+    | "providerRestricted"
+    | "allowLocalProviders"
   >
 >
 
@@ -226,6 +273,45 @@ export type Store = {
     setMembers(groupID: string, userIDs: string[]): Promise<void>
     setUserGroups(userID: string, groupIDs: string[]): Promise<void>
   }
+  providers: {
+    list(orgID?: string): Promise<ProviderDefinition[]>
+    findByID(id: string): Promise<ProviderDefinition | undefined>
+    findByProviderID(orgID: string, providerID: string): Promise<ProviderDefinition | undefined>
+    create(input: {
+      orgID: string
+      providerID: string
+      displayName: string
+      kind?: ProviderKind
+      protocol?: ProviderProtocol
+      npm?: string
+      baseURL?: string
+      apiKey?: string
+      models?: ProviderModel[]
+      headers?: ProviderHeader[]
+      env?: string[]
+      enabled?: boolean
+      createdBy?: string
+    }): Promise<ProviderDefinition>
+    update(
+      id: string,
+      patch: {
+        displayName?: string
+        protocol?: ProviderProtocol
+        npm?: string
+        baseURL?: string
+        apiKey?: string
+        models?: ProviderModel[]
+        headers?: ProviderHeader[]
+        env?: string[]
+        enabled?: boolean
+      },
+    ): Promise<ProviderDefinition | undefined>
+    remove(id: string): Promise<void>
+    grants(scope: "group" | "user", scopeID: string): Promise<ProviderGrant[]>
+    grantsForScopes(scope: "group" | "user", scopeIDs: string[]): Promise<ProviderGrant[]>
+    setGrants(scope: "group" | "user", scopeID: string, grants: ProviderGrant[]): Promise<void>
+    removeGrantsForProvider(orgID: string, providerID: string): Promise<void>
+  }
   sessions: {
     create(input: Omit<SessionAudit, "id" | "createdAt">): Promise<SessionAudit>
     listByUser(userID: string, limit?: number): Promise<SessionAudit[]>
@@ -234,6 +320,12 @@ export type Store = {
     getUserKPIs(userID: string): Promise<UserKPIs>
     getOrgKPIs(orgID: string): Promise<UserKPIs>
     getUserModelUsage(userID: string, options?: { days?: number }): Promise<ModelUsageSummary[]>
+  }
+  credentials: {
+    listByUser(userID: string): Promise<UserProviderCredential[]>
+    findByUserAndProvider(userID: string, providerID: string): Promise<UserProviderCredential | undefined>
+    set(userID: string, providerID: string, apiKey: string): Promise<void>
+    remove(userID: string, providerID: string): Promise<void>
   }
   audit: {
     log(event: Omit<AuditEvent, "id" | "orgID" | "at"> & { orgID?: string }): Promise<AuditEvent>
@@ -258,6 +350,8 @@ function defaultOrg(): Organization {
     ssoMode: "optional",
     offlineGraceHours: 72,
     sessionMaxAgeHours: 12,
+    providerRestricted: false,
+    allowLocalProviders: true,
     createdAt: new Date().toISOString(),
   }
 }
@@ -273,10 +367,13 @@ function seedPassword() {
 function memoryStore(): Store {
   const users = new Map<string, PanelUser>()
   const events: AuditEvent[] = []
-  const sessionRecords: SessionAudit[] = []
   const orgs = new Map<string, Organization>()
   const groups = new Map<string, AccessGroup>()
   const members = new Map<string, Set<string>>()
+  const providers = new Map<string, ProviderDefinition>()
+  const providerGrants = new Map<string, ProviderGrant[]>()
+  const sessionRecords: SessionAudit[] = []
+  const credentials = new Map<string, UserProviderCredential>()
   const initialOrg = defaultOrg()
   orgs.set(initialOrg.id, initialOrg)
   let seeding: Promise<void> | undefined
@@ -331,6 +428,8 @@ function memoryStore(): Store {
           ssoMode: "optional",
           offlineGraceHours: 72,
           sessionMaxAgeHours: 12,
+          providerRestricted: false,
+          allowLocalProviders: true,
           createdAt: new Date().toISOString(),
         }
         orgs.set(newOrg.id, newOrg)
@@ -466,58 +565,215 @@ function memoryStore(): Store {
         }
       },
     },
+    providers: {
+      async list(orgID) {
+        return [...providers.values()]
+          .filter((provider) => !orgID || provider.orgID === orgID)
+          .sort((left, right) => left.displayName.localeCompare(right.displayName))
+      },
+      async findByID(id) {
+        return providers.get(id)
+      },
+      async findByProviderID(orgID, providerID) {
+        return [...providers.values()].find(
+          (provider) => provider.orgID === orgID && provider.providerID === providerID,
+        )
+      },
+      async create(input) {
+        const now = new Date().toISOString()
+        const provider: ProviderDefinition = {
+          id: crypto.randomUUID(),
+          orgID: input.orgID,
+          providerID: input.providerID,
+          displayName: input.displayName,
+          kind: input.kind ?? "builtin",
+          protocol: input.protocol ?? "openai",
+          npm: input.npm,
+          baseURL: input.baseURL,
+          apiKey: input.apiKey,
+          models: input.models ?? [],
+          headers: input.headers ?? [],
+          env: input.env ?? [],
+          enabled: input.enabled ?? true,
+          createdBy: input.createdBy,
+          createdAt: now,
+          updatedAt: now,
+        }
+        providers.set(provider.id, provider)
+        return provider
+      },
+      async update(id, patch) {
+        const provider = providers.get(id)
+        if (!provider) return
+        Object.assign(provider, patch, { updatedAt: new Date().toISOString() })
+        return provider
+      },
+      async remove(id) {
+        const provider = providers.get(id)
+        providers.delete(id)
+        if (!provider) return
+        const orgGroups = new Set(
+          [...groups.values()].filter((group) => group.orgID === provider.orgID).map((group) => group.id),
+        )
+        const orgUsers = new Set(
+          [...users.values()].filter((user) => user.orgID === provider.orgID).map((user) => user.id),
+        )
+        for (const [key, grants] of providerGrants) {
+          const [scope, scopeID] = key.split(":")
+          if (scope === "group" && !orgGroups.has(scopeID!)) continue
+          if (scope === "user" && !orgUsers.has(scopeID!)) continue
+          providerGrants.set(
+            key,
+            grants.filter((grant) => grant.providerID !== provider.providerID),
+          )
+        }
+      },
+      async grants(scope, scopeID) {
+        return providerGrants.get(`${scope}:${scopeID}`) ?? []
+      },
+      async grantsForScopes(scope, scopeIDs) {
+        return scopeIDs.flatMap((scopeID) => providerGrants.get(`${scope}:${scopeID}`) ?? [])
+      },
+      async setGrants(scope, scopeID, grants) {
+        providerGrants.set(
+          `${scope}:${scopeID}`,
+          grants.map((grant) => ({ ...grant, scope, scopeID })),
+        )
+      },
+      async removeGrantsForProvider(orgID, providerID) {
+        const orgGroups = new Set(
+          [...groups.values()].filter((group) => group.orgID === orgID).map((group) => group.id),
+        )
+        const orgUsers = new Set(
+          [...users.values()].filter((user) => user.orgID === orgID).map((user) => user.id),
+        )
+        for (const [key, grants] of providerGrants) {
+          const [scope, scopeID] = key.split(":")
+          if (scope === "group" && !orgGroups.has(scopeID!)) continue
+          if (scope === "user" && !orgUsers.has(scopeID!)) continue
+          providerGrants.set(
+            key,
+            grants.filter((grant) => grant.providerID !== providerID),
+          )
+        }
+      },
+    },
     sessions: {
       async create(input) {
-        const existing = sessionRecords.find((item) => item.sessionID === input.sessionID)
-        if (existing) {
-          Object.assign(existing, input)
-          return existing
-        }
+        const existingIdx = sessionRecords.findIndex((record) => record.sessionID === input.sessionID)
         const item: SessionAudit = {
           ...input,
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
+          id: existingIdx >= 0 ? sessionRecords[existingIdx].id : crypto.randomUUID(),
+          createdAt: existingIdx >= 0 ? sessionRecords[existingIdx].createdAt : new Date().toISOString(),
         }
-        sessionRecords.unshift(item)
+        if (existingIdx >= 0) {
+          sessionRecords[existingIdx] = item
+        } else {
+          sessionRecords.push(item)
+        }
         return item
       },
       async listByUser(userID, limit = 50) {
         return sessionRecords
-          .filter((item) => item.userID === userID)
+          .filter((record) => record.userID === userID)
           .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
           .slice(0, limit)
       },
       async listByOrg(orgID, options = {}) {
-        const term = options.search?.trim().toLowerCase()
+        const { userID, search, limit = 50, offset = 0 } = options
+        const normalizedSearch = search?.trim().toLowerCase()
         return sessionRecords
-          .filter((item) => item.orgID === orgID)
-          .filter((item) => (options.userID ? item.userID === options.userID : true))
-          .filter((item) =>
-            term
-              ? item.summary.toLowerCase().includes(term) ||
-                item.title.toLowerCase().includes(term) ||
-                item.workspace.toLowerCase().includes(term)
-              : true,
-          )
+          .filter((record) => {
+            if (record.orgID !== orgID) return false
+            if (userID && record.userID !== userID) return false
+            if (normalizedSearch) {
+              const inTitle = record.title.toLowerCase().includes(normalizedSearch)
+              const inSummary = record.summary.toLowerCase().includes(normalizedSearch)
+              const inWorkspace = record.workspace.toLowerCase().includes(normalizedSearch)
+              const inSessionID = record.sessionID.toLowerCase().includes(normalizedSearch)
+              if (!inTitle && !inSummary && !inWorkspace && !inSessionID) return false
+            }
+            return true
+          })
           .sort((a, b) => b.startedAt.localeCompare(a.startedAt))
-          .slice(options.offset ?? 0, (options.offset ?? 0) + (options.limit ?? 50))
+          .slice(offset, offset + limit)
       },
       async findBySessionID(sessionID) {
-        return sessionRecords.find((item) => item.sessionID === sessionID)
+        return sessionRecords.find((record) => record.sessionID === sessionID)
       },
       async getUserKPIs(userID) {
-        return aggregateKPIs(sessionRecords.filter((item) => item.userID === userID))
+        const userSessions = sessionRecords.filter((record) => record.userID === userID)
+        return {
+          totalSessions: userSessions.length,
+          totalTokens: userSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
+          totalCostUsd: userSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
+          totalDurationMs: userSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
+        }
       },
       async getOrgKPIs(orgID) {
-        return aggregateKPIs(sessionRecords.filter((item) => item.orgID === orgID))
+        const orgSessions = sessionRecords.filter((record) => record.orgID === orgID)
+        return {
+          totalSessions: orgSessions.length,
+          totalTokens: orgSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
+          totalCostUsd: orgSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
+          totalDurationMs: orgSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
+        }
       },
       async getUserModelUsage(userID, options = {}) {
-        const cutoff = options.days && options.days > 0 ? Date.now() - options.days * 24 * 60 * 60 * 1000 : undefined
-        return aggregateModelUsage(
-          sessionRecords
-            .filter((item) => item.userID === userID)
-            .filter((item) => (cutoff ? new Date(item.startedAt).getTime() >= cutoff : true)),
+        const { days = 30 } = options
+        const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+        const userSessions = sessionRecords.filter(
+          (record) => record.userID === userID && record.startedAt >= cutoff,
         )
+        const summaryMap = new Map<string, ModelUsageSummary>()
+        for (const session of userSessions) {
+          const sessionKeysSeen = new Set<string>()
+          for (const usage of session.modelUsage || []) {
+            const key = `${usage.providerID}:${usage.modelID}`
+            const existing = summaryMap.get(key) ?? {
+              providerID: usage.providerID,
+              modelID: usage.modelID,
+              tokens: 0,
+              costUsd: 0,
+              calls: 0,
+              sessions: 0,
+            }
+            existing.tokens += usage.tokens
+            existing.costUsd += usage.costUsd
+            existing.calls += usage.calls
+            if (!sessionKeysSeen.has(key)) {
+              existing.sessions += 1
+              sessionKeysSeen.add(key)
+            }
+            summaryMap.set(key, existing)
+          }
+        }
+        return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
+      },
+    },
+    credentials: {
+      async listByUser(userID) {
+        return [...credentials.values()]
+          .filter((cred) => cred.userID === userID)
+          .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+      },
+      async findByUserAndProvider(userID, providerID) {
+        return credentials.get(`${userID}:${providerID}`)
+      },
+      async set(userID, providerID, apiKey) {
+        const key = `${userID}:${providerID}`
+        const existing = credentials.get(key)
+        const now = new Date().toISOString()
+        credentials.set(key, {
+          userID,
+          providerID,
+          apiKey,
+          createdAt: existing?.createdAt ?? now,
+          updatedAt: now,
+        })
+      },
+      async remove(userID, providerID) {
+        credentials.delete(`${userID}:${providerID}`)
       },
     },
     audit: {
@@ -581,6 +837,8 @@ type OrgRow = {
   session_max_age_hours: number
   default_provider?: string | null
   default_model?: string | null
+  provider_policy?: string | null
+  allow_local_providers?: number | null
   created_at: string
 }
 
@@ -592,6 +850,40 @@ type GroupRow = {
   access: string
   can_open_settings: number
   created_at: string
+}
+
+type ProviderRow = {
+  id: string
+  org_id: string
+  provider_id: string
+  display_name: string
+  kind: string
+  protocol: string | null
+  npm: string | null
+  base_url: string | null
+  api_key: string | null
+  models_json: string
+  headers_json: string
+  env_json: string
+  enabled: number
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+type ProviderGrantRow = {
+  scope: string
+  scope_id: string
+  provider_id: string
+  effect: string
+}
+
+type UserProviderCredentialRow = {
+  user_id: string
+  provider_id: string
+  api_key: string
+  created_at: string
+  updated_at: string
 }
 
 type AuditRow = {
@@ -667,6 +959,16 @@ function toGroup(row: GroupRow): AccessGroup {
   }
 }
 
+function parseModelUsage(value: string | null | undefined): ModelUsageEntry[] {
+  if (!value) return []
+  try {
+    const parsed = JSON.parse(value)
+    return Array.isArray(parsed) ? (parsed as ModelUsageEntry[]) : []
+  } catch {
+    return []
+  }
+}
+
 function toSessionAudit(row: SessionAuditRow): SessionAudit {
   return {
     id: row.id,
@@ -690,61 +992,13 @@ function toSessionAudit(row: SessionAuditRow): SessionAudit {
   }
 }
 
-function parseModelUsage(value: string | null | undefined): ModelUsageEntry[] {
-  if (!value) return []
-  try {
-    const parsed: unknown = JSON.parse(value)
-    if (!Array.isArray(parsed)) return []
-    return parsed.flatMap((item) => {
-      if (!item || typeof item !== "object") return []
-      const record = item as Record<string, unknown>
-      const providerID = typeof record.providerID === "string" ? record.providerID.trim() : ""
-      const modelID = typeof record.modelID === "string" ? record.modelID.trim() : ""
-      if (!providerID || !modelID) return []
-      return [
-        {
-          providerID,
-          modelID,
-          tokens: Math.max(0, Number(record.tokens ?? 0)),
-          costUsd: Math.max(0, Number(record.costUsd ?? 0)),
-          calls: Math.max(0, Number(record.calls ?? 0)),
-        },
-      ]
-    })
-  } catch {
-    return []
-  }
-}
-
-function aggregateModelUsage(items: Array<{ modelUsage: ModelUsageEntry[] }>): ModelUsageSummary[] {
-  const map = new Map<string, ModelUsageSummary>()
-  for (const item of items) {
-    for (const usage of item.modelUsage) {
-      const key = `${usage.providerID}/${usage.modelID}`
-      const current = map.get(key) ?? {
-        providerID: usage.providerID,
-        modelID: usage.modelID,
-        tokens: 0,
-        costUsd: 0,
-        calls: 0,
-        sessions: 0,
-      }
-      current.tokens += usage.tokens
-      current.costUsd += usage.costUsd
-      current.calls += usage.calls
-      current.sessions += 1
-      map.set(key, current)
-    }
-  }
-  return [...map.values()].sort((a, b) => b.tokens - a.tokens || b.costUsd - a.costUsd)
-}
-
-function aggregateKPIs(items: SessionAudit[]): UserKPIs {
+function toCredential(row: UserProviderCredentialRow): UserProviderCredential {
   return {
-    totalSessions: items.length,
-    totalTokens: items.reduce((total, item) => total + (item.tokensTotal ?? 0), 0),
-    totalCostUsd: items.reduce((total, item) => total + (item.costUsd ?? 0), 0),
-    totalDurationMs: items.reduce((total, item) => total + (item.durationMs ?? 0), 0),
+    userID: row.user_id,
+    providerID: row.provider_id,
+    apiKey: row.api_key,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
   }
 }
 
@@ -764,8 +1018,46 @@ function toOrg(row: OrgRow): Organization {
     sessionMaxAgeHours: row.session_max_age_hours,
     defaultProvider: row.default_provider ?? undefined,
     defaultModel: row.default_model ?? undefined,
+    providerRestricted: row.provider_policy === "restricted",
+    allowLocalProviders: row.allow_local_providers !== 0,
     createdAt: row.created_at,
   }
+}
+
+function toProvider(row: ProviderRow): ProviderDefinition {
+  return {
+    id: row.id,
+    orgID: row.org_id,
+    providerID: row.provider_id,
+    displayName: row.display_name,
+    kind: row.kind === "custom" ? "custom" : row.kind === "proxy" ? "proxy" : "builtin",
+    protocol: (row.protocol === "anthropic" ? "anthropic" : "openai") as ProviderProtocol,
+    npm: row.npm ?? undefined,
+    baseURL: row.base_url ?? undefined,
+    apiKey: row.api_key ?? undefined,
+    models: parseJsonArray<ProviderModel>(row.models_json),
+    headers: parseJsonArray<ProviderHeader>(row.headers_json),
+    env: parseJsonArray<string>(row.env_json),
+    enabled: row.enabled !== 0,
+    createdBy: row.created_by ?? undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+function toProviderGrant(row: ProviderGrantRow): ProviderGrant {
+  return {
+    scope: row.scope === "user" ? "user" : "group",
+    scopeID: row.scope_id,
+    providerID: row.provider_id,
+    effect: row.effect === "deny" ? "deny" : "allow",
+  }
+}
+
+function parseJsonArray<T>(value: string | null | undefined): T[] {
+  if (!value) return []
+  const parsed: unknown = JSON.parse(value)
+  return Array.isArray(parsed) ? (parsed as T[]) : []
 }
 
 function toAudit(row: AuditRow): AuditEvent {
@@ -867,6 +1159,8 @@ export function d1Store(db: D1Database): Store {
           ssoMode: "optional",
           offlineGraceHours: 72,
           sessionMaxAgeHours: 12,
+          providerRestricted: false,
+          allowLocalProviders: true,
           createdAt: new Date().toISOString(),
         }
         await db
@@ -894,7 +1188,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ? WHERE id = ?`,
+            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -910,6 +1204,8 @@ export function d1Store(db: D1Database): Store {
             next.sessionMaxAgeHours,
             next.defaultProvider ?? null,
             next.defaultModel ?? null,
+            next.providerRestricted ? "restricted" : null,
+            next.allowLocalProviders ? 1 : 0,
             id,
           )
           .run()
@@ -1164,6 +1460,153 @@ export function d1Store(db: D1Database): Store {
         }
       },
     },
+    providers: {
+      async list(orgID) {
+        const query = orgID
+          ? db.prepare("SELECT * FROM provider_definition WHERE org_id = ? ORDER BY display_name ASC").bind(orgID)
+          : db.prepare("SELECT * FROM provider_definition ORDER BY display_name ASC")
+        const rows = await query.all<ProviderRow>()
+        return rows.results.map(toProvider)
+      },
+      async findByID(id) {
+        const row = await db.prepare("SELECT * FROM provider_definition WHERE id = ?").bind(id).first<ProviderRow>()
+        return row ? toProvider(row) : undefined
+      },
+      async findByProviderID(orgID, providerID) {
+        const row = await db
+          .prepare("SELECT * FROM provider_definition WHERE org_id = ? AND provider_id = ?")
+          .bind(orgID, providerID)
+          .first<ProviderRow>()
+        return row ? toProvider(row) : undefined
+      },
+      async create(input) {
+        const now = new Date().toISOString()
+        const provider: ProviderDefinition = {
+          id: crypto.randomUUID(),
+          orgID: input.orgID,
+          providerID: input.providerID,
+          displayName: input.displayName,
+          kind: input.kind ?? "builtin",
+          protocol: input.protocol ?? "openai",
+          npm: input.npm,
+          baseURL: input.baseURL,
+          apiKey: input.apiKey,
+          models: input.models ?? [],
+          headers: input.headers ?? [],
+          env: input.env ?? [],
+          enabled: input.enabled ?? true,
+          createdBy: input.createdBy,
+          createdAt: now,
+          updatedAt: now,
+        }
+        await db
+          .prepare(
+            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, kind, protocol, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .bind(
+            provider.id,
+            provider.orgID,
+            provider.providerID,
+            provider.displayName,
+            provider.kind,
+            provider.protocol,
+            provider.npm ?? null,
+            provider.baseURL ?? null,
+            provider.apiKey ?? null,
+            JSON.stringify(provider.models),
+            JSON.stringify(provider.headers),
+            JSON.stringify(provider.env),
+            provider.enabled ? 1 : 0,
+            provider.createdBy ?? null,
+            provider.createdAt,
+            provider.updatedAt,
+          )
+          .run()
+        return provider
+      },
+      async update(id, patch) {
+        const row = await db.prepare("SELECT * FROM provider_definition WHERE id = ?").bind(id).first<ProviderRow>()
+        if (!row) return
+        const next: ProviderDefinition = {
+          ...toProvider(row),
+          ...patch,
+          updatedAt: new Date().toISOString(),
+        }
+        await db
+          .prepare(
+            `UPDATE provider_definition SET display_name = ?, protocol = ?, npm = ?, base_url = ?, api_key = ?, models_json = ?, headers_json = ?, env_json = ?, enabled = ?, updated_at = ? WHERE id = ?`,
+          )
+          .bind(
+            next.displayName,
+            next.protocol,
+            next.npm ?? null,
+            next.baseURL ?? null,
+            next.apiKey ?? null,
+            JSON.stringify(next.models),
+            JSON.stringify(next.headers),
+            JSON.stringify(next.env),
+            next.enabled ? 1 : 0,
+            next.updatedAt,
+            id,
+          )
+          .run()
+        return next
+      },
+      async remove(id) {
+        const row = await db.prepare("SELECT org_id, provider_id FROM provider_definition WHERE id = ?").bind(id).first<{
+          org_id: string
+          provider_id: string
+        }>()
+        await db.prepare("DELETE FROM provider_definition WHERE id = ?").bind(id).run()
+        if (!row) return
+        await db
+          .prepare(
+            `DELETE FROM provider_grant WHERE provider_id = ? AND (
+               (scope = 'group' AND scope_id IN (SELECT id FROM access_group WHERE org_id = ?)) OR
+               (scope = 'user' AND scope_id IN (SELECT id FROM panel_user WHERE org_id = ?))
+             )`,
+          )
+          .bind(row.provider_id, row.org_id, row.org_id)
+          .run()
+      },
+      async grants(scope, scopeID) {
+        const rows = await db
+          .prepare("SELECT * FROM provider_grant WHERE scope = ? AND scope_id = ?")
+          .bind(scope, scopeID)
+          .all<ProviderGrantRow>()
+        return rows.results.map(toProviderGrant)
+      },
+      async grantsForScopes(scope, scopeIDs) {
+        if (scopeIDs.length === 0) return []
+        const placeholders = scopeIDs.map(() => "?").join(", ")
+        const rows = await db
+          .prepare(`SELECT * FROM provider_grant WHERE scope = ? AND scope_id IN (${placeholders})`)
+          .bind(scope, ...scopeIDs)
+          .all<ProviderGrantRow>()
+        return rows.results.map(toProviderGrant)
+      },
+      async setGrants(scope, scopeID, grants) {
+        await db.prepare("DELETE FROM provider_grant WHERE scope = ? AND scope_id = ?").bind(scope, scopeID).run()
+        for (const grant of grants) {
+          await db
+            .prepare("INSERT OR REPLACE INTO provider_grant (scope, scope_id, provider_id, effect, created_at) VALUES (?, ?, ?, ?, ?)")
+            .bind(scope, scopeID, grant.providerID, grant.effect, new Date().toISOString())
+            .run()
+        }
+      },
+      async removeGrantsForProvider(orgID, providerID) {
+        await db
+          .prepare(
+            `DELETE FROM provider_grant WHERE provider_id = ? AND (
+               (scope = 'group' AND scope_id IN (SELECT id FROM access_group WHERE org_id = ?)) OR
+               (scope = 'user' AND scope_id IN (SELECT id FROM panel_user WHERE org_id = ?))
+             )`,
+          )
+          .bind(providerID, orgID, orgID)
+          .run()
+      },
+    },
     sessions: {
       async create(input) {
         const item: SessionAudit = {
@@ -1179,7 +1622,6 @@ export function d1Store(db: D1Database): Store {
                title = excluded.title,
                summary = excluded.summary,
                workspace = excluded.workspace,
-               started_at = MIN(session_audit.started_at, excluded.started_at),
                ended_at = excluded.ended_at,
                tokens_total = excluded.tokens_total,
                tokens_input = excluded.tokens_input,
@@ -1225,24 +1667,33 @@ export function d1Store(db: D1Database): Store {
         return rows.results.map(toSessionAudit)
       },
       async listByOrg(orgID, options = {}) {
-        const conditions = ["org_id = ?"]
-        const params: unknown[] = [orgID]
-        if (options.userID) {
-          conditions.push("user_id = ?")
-          params.push(options.userID)
+        const { userID, search, limit = 50, offset = 0 } = options
+        const clauses: string[] = ["org_id = ?"]
+        const bindings: (string | number)[] = [orgID]
+
+        if (userID) {
+          clauses.push("user_id = ?")
+          bindings.push(userID)
         }
-        const term = options.search?.trim()
-        if (term) {
-          conditions.push("(summary LIKE ? OR title LIKE ? OR workspace LIKE ?)")
-          const pattern = `%${term}%`
-          params.push(pattern, pattern, pattern)
+
+        if (search?.trim()) {
+          clauses.push("(title LIKE ? OR summary LIKE ? OR workspace LIKE ? OR session_id LIKE ?)")
+          const term = `%${search.trim()}%`
+          bindings.push(term, term, term, term)
         }
+
+        bindings.push(limit, offset)
+
         const rows = await db
           .prepare(
-            `SELECT * FROM session_audit WHERE ${conditions.join(" AND ")} ORDER BY started_at DESC LIMIT ? OFFSET ?`,
+            `SELECT * FROM session_audit
+             WHERE ${clauses.join(" AND ")}
+             ORDER BY started_at DESC
+             LIMIT ? OFFSET ?`,
           )
-          .bind(...params, options.limit ?? 50, options.offset ?? 0)
+          .bind(...bindings)
           .all<SessionAuditRow>()
+
         return rows.results.map(toSessionAudit)
       },
       async findBySessionID(sessionID) {
@@ -1251,21 +1702,6 @@ export function d1Store(db: D1Database): Store {
           .bind(sessionID)
           .first<SessionAuditRow>()
         return row ? toSessionAudit(row) : undefined
-      },
-      async getUserModelUsage(userID, options = {}) {
-        const cutoff = options.days && options.days > 0 ? new Date(Date.now() - options.days * 24 * 60 * 60 * 1000).toISOString() : undefined
-        const rows = cutoff
-          ? await db
-              .prepare("SELECT model_usage, started_at FROM session_audit WHERE user_id = ? AND started_at >= ?")
-              .bind(userID, cutoff)
-              .all<{ model_usage: string | null; started_at: string }>()
-          : await db
-              .prepare("SELECT model_usage, started_at FROM session_audit WHERE user_id = ?")
-              .bind(userID)
-              .all<{ model_usage: string | null; started_at: string }>()
-        return aggregateModelUsage(
-          rows.results.map((row) => ({ modelUsage: parseModelUsage(row.model_usage) })),
-        )
       },
       async getUserKPIs(userID) {
         const row = await db
@@ -1304,6 +1740,75 @@ export function d1Store(db: D1Database): Store {
           totalCostUsd: Number(row?.total_cost_usd ?? 0),
           totalDurationMs: Number(row?.total_duration_ms ?? 0),
         }
+      },
+      async getUserModelUsage(userID, options = {}) {
+        const { days = 30 } = options
+        const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+        const rows = await db
+          .prepare("SELECT model_usage FROM session_audit WHERE user_id = ? AND started_at >= ?")
+          .bind(userID, cutoff)
+          .all<{ model_usage: string | null }>()
+
+        const summaryMap = new Map<string, ModelUsageSummary>()
+        for (const row of rows.results) {
+          const list = parseModelUsage(row.model_usage)
+          const sessionKeysSeen = new Set<string>()
+          for (const usage of list) {
+            const key = `${usage.providerID}:${usage.modelID}`
+            const existing = summaryMap.get(key) ?? {
+              providerID: usage.providerID,
+              modelID: usage.modelID,
+              tokens: 0,
+              costUsd: 0,
+              calls: 0,
+              sessions: 0,
+            }
+            existing.tokens += usage.tokens
+            existing.costUsd += usage.costUsd
+            existing.calls += usage.calls
+            if (!sessionKeysSeen.has(key)) {
+              existing.sessions += 1
+              sessionKeysSeen.add(key)
+            }
+            summaryMap.set(key, existing)
+          }
+        }
+        return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
+      },
+    },
+    credentials: {
+      async listByUser(userID) {
+        const rows = await db
+          .prepare("SELECT * FROM user_provider_credential WHERE user_id = ? ORDER BY created_at ASC")
+          .bind(userID)
+          .all<UserProviderCredentialRow>()
+        return rows.results.map(toCredential)
+      },
+      async findByUserAndProvider(userID, providerID) {
+        const row = await db
+          .prepare("SELECT * FROM user_provider_credential WHERE user_id = ? AND provider_id = ?")
+          .bind(userID, providerID)
+          .first<UserProviderCredentialRow>()
+        return row ? toCredential(row) : undefined
+      },
+      async set(userID, providerID, apiKey) {
+        const now = new Date().toISOString()
+        await db
+          .prepare(
+            `INSERT INTO user_provider_credential (user_id, provider_id, api_key, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?)
+             ON CONFLICT(user_id, provider_id) DO UPDATE SET
+               api_key = excluded.api_key,
+               updated_at = excluded.updated_at`,
+          )
+          .bind(userID, providerID, apiKey, now, now)
+          .run()
+      },
+      async remove(userID, providerID) {
+        await db
+          .prepare("DELETE FROM user_provider_credential WHERE user_id = ? AND provider_id = ?")
+          .bind(userID, providerID)
+          .run()
       },
     },
     audit: {
