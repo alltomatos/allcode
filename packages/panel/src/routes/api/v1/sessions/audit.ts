@@ -1,5 +1,5 @@
 import type { APIEvent } from "@solidjs/start"
-import { store, type ModelUsageEntry } from "~/lib/store"
+import { store, isTrialExpired, type ModelUsageEntry } from "~/lib/store"
 
 function normalizeModelUsage(value: unknown): ModelUsageEntry[] {
   if (!Array.isArray(value)) return []
@@ -88,6 +88,14 @@ export async function POST(event: APIEvent) {
     if (!user || user.orgID !== orgID) {
       return new Response(JSON.stringify({ error: "userID does not belong to orgID" }), {
         status: 400,
+        headers: { "content-type": "application/json" },
+      })
+    }
+
+    const org = await db.org.get(orgID)
+    if (org.status === "suspended" || isTrialExpired(org)) {
+      return new Response(JSON.stringify({ error: "Company account is suspended or trial expired." }), {
+        status: 403,
         headers: { "content-type": "application/json" },
       })
     }

@@ -14,6 +14,8 @@ export type PanelUser = {
   passwordHash: string
   mustChangePassword: boolean
   isPlatformAdmin: boolean
+  isReseller?: boolean
+  resellerID?: string
   canUseAgentUI: boolean
   canUseRoutines: boolean
   canChangePassword: boolean
@@ -145,7 +147,67 @@ export type Organization = {
   providerRestricted: boolean
   /** When restricted, local-only providers keep working if this is true. */
   allowLocalProviders: boolean
+  resellerID?: string
+  planType: "trial" | "paid"
+  trialEndsAt?: string
   createdAt: string
+}
+
+export type Reseller = {
+  id: string
+  name: string
+  slug: string
+  contactName?: string
+  contactEmail: string
+  contactPhone?: string
+  commissionRate: number
+  status: "active" | "suspended"
+  createdAt: string
+}
+
+export type ResellerPatch = Partial<
+  Pick<
+    Reseller,
+    | "name"
+    | "slug"
+    | "contactName"
+    | "contactEmail"
+    | "contactPhone"
+    | "commissionRate"
+    | "status"
+  >
+>
+
+export type ResellerStats = {
+  totalTenants: number
+  activeTenants: number
+  trialTenants: number
+  expiredTenants: number
+  suspendedTenants: number
+  totalUsers: number
+  estimatedMonthlyRevenue: number
+  commissionRate: number
+  estimatedCommission: number
+}
+
+export function isTrialExpired(org: { planType?: string; trialEndsAt?: string | null }): boolean {
+  if (org.planType !== "trial" || !org.trialEndsAt) return false
+  return new Date(org.trialEndsAt).getTime() < Date.now()
+}
+
+export function getTrialDaysRemaining(org: { planType?: string; trialEndsAt?: string | null }): number | null {
+  if (org.planType !== "trial" || !org.trialEndsAt) return null
+  const diff = new Date(org.trialEndsAt).getTime() - Date.now()
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)))
+}
+
+export function getEffectiveOrgStatus(org: Organization): "active" | "trial" | "expired" | "suspended" {
+  if (org.status === "suspended") return "suspended"
+  if (org.planType === "trial") {
+    if (isTrialExpired(org)) return "expired"
+    return "trial"
+  }
+  return "active"
 }
 
 export type AuditEvent = {
@@ -172,6 +234,8 @@ export type UserPatch = Partial<
     | "lastLoginAt"
     | "appVersion"
     | "appVersionAt"
+    | "isReseller"
+    | "resellerID"
     | "canUseAgentUI"
     | "canUseRoutines"
     | "canChangePassword"
@@ -200,12 +264,17 @@ export type OrgPatch = Partial<
     | "defaultModel"
     | "providerRestricted"
     | "allowLocalProviders"
+    | "resellerID"
+    | "planType"
+    | "trialEndsAt"
   >
 >
 
 export type TenantStats = {
   totalTenants: number
   activeTenants: number
+  trialTenants: number
+  expiredTenants: number
   suspendedTenants: number
   totalUsersAcrossTenants: number
 }
@@ -215,18 +284,42 @@ export type Store = {
   org: {
     get(id?: string): Promise<Organization>
     list(): Promise<Organization[]>
+    listByReseller(resellerID: string): Promise<Organization[]>
     findBySlug(slug: string): Promise<Organization | undefined>
     create(input: {
       name: string
       slug: string
       maxUsers?: number
       contactEmail?: string
+      logoUrl?: string
+      welcomeMessage?: string
+      brandColor?: string
+      resellerID?: string
+      planType?: "trial" | "paid"
+      trialDays?: number
+      trialEndsAt?: string
     }): Promise<Organization>
     update(id: string, patch: OrgPatch): Promise<Organization>
     stats(): Promise<TenantStats>
   }
+  resellers: {
+    list(): Promise<Reseller[]>
+    findByID(id: string): Promise<Reseller | undefined>
+    findBySlug(slug: string): Promise<Reseller | undefined>
+    create(input: {
+      name: string
+      slug: string
+      contactName?: string
+      contactEmail: string
+      contactPhone?: string
+      commissionRate?: number
+    }): Promise<Reseller>
+    update(id: string, patch: ResellerPatch): Promise<Reseller | undefined>
+    stats(resellerID: string): Promise<ResellerStats>
+  }
   users: {
     list(orgID?: string): Promise<PanelUser[]>
+    listByReseller(resellerID: string): Promise<PanelUser[]>
     findByID(id: string): Promise<PanelUser | undefined>
     findByEmail(email: string): Promise<PanelUser | undefined>
     create(input: {
@@ -237,6 +330,8 @@ export type Store = {
       passwordHash: string
       mustChangePassword: boolean
       isPlatformAdmin?: boolean
+      isReseller?: boolean
+      resellerID?: string
       canUseAgentUI?: boolean
       canUseRoutines?: boolean
       canChangePassword?: boolean
@@ -350,8 +445,13 @@ function defaultOrg(): Organization {
     ssoMode: "optional",
     offlineGraceHours: 72,
     sessionMaxAgeHours: 12,
+    defaultProvider: undefined,
+    defaultModel: undefined,
     providerRestricted: false,
     allowLocalProviders: true,
+    planType: "paid",
+    trialEndsAt: undefined,
+    resellerID: undefined,
     createdAt: new Date().toISOString(),
   }
 }
@@ -368,6 +468,7 @@ function memoryStore(): Store {
   const users = new Map<string, PanelUser>()
   const events: AuditEvent[] = []
   const orgs = new Map<string, Organization>()
+  const resellers = new Map<string, Reseller>()
   const groups = new Map<string, AccessGroup>()
   const members = new Map<string, Set<string>>()
   const providers = new Map<string, ProviderDefinition>()
@@ -397,6 +498,7 @@ function memoryStore(): Store {
           passwordHash: await hashPassword(seedPassword()),
           mustChangePassword: false,
           isPlatformAdmin: true,
+          isReseller: false,
           canUseAgentUI: true,
           canUseRoutines: true,
           canChangePassword: true,
@@ -414,10 +516,19 @@ function memoryStore(): Store {
       async list() {
         return [...orgs.values()].sort((a, b) => a.name.localeCompare(b.name))
       },
+      async listByReseller(resellerID: string) {
+        return [...orgs.values()]
+          .filter((o) => o.resellerID === resellerID)
+          .sort((a, b) => a.name.localeCompare(b.name))
+      },
       async findBySlug(slug) {
         return [...orgs.values()].find((o) => o.slug === slug.trim().toLowerCase())
       },
       async create(input) {
+        const trialDays = input.trialDays ?? (input.trialEndsAt ? undefined : input.planType === "paid" ? undefined : 14)
+        const trialEndsAt = input.trialEndsAt ?? (trialDays ? new Date(Date.now() + trialDays * 86400000).toISOString() : undefined)
+        const planType = input.planType ?? (trialEndsAt ? "trial" : "paid")
+
         const newOrg: Organization = {
           id: crypto.randomUUID(),
           name: input.name,
@@ -425,11 +536,17 @@ function memoryStore(): Store {
           status: "active",
           maxUsers: input.maxUsers ?? 10,
           contactEmail: input.contactEmail,
+          logoUrl: input.logoUrl,
+          welcomeMessage: input.welcomeMessage,
+          brandColor: input.brandColor ?? "#10b981",
           ssoMode: "optional",
           offlineGraceHours: 72,
           sessionMaxAgeHours: 12,
           providerRestricted: false,
           allowLocalProviders: true,
+          resellerID: input.resellerID,
+          planType,
+          trialEndsAt,
           createdAt: new Date().toISOString(),
         }
         orgs.set(newOrg.id, newOrg)
@@ -444,11 +561,78 @@ function memoryStore(): Store {
       async stats() {
         const list = [...orgs.values()]
         const totalUsers = [...users.values()].filter((u) => u.status !== "deleted").length
+        const trialTenants = list.filter((o) => o.planType === "trial" && !isTrialExpired(o) && o.status === "active").length
+        const expiredTenants = list.filter((o) => isTrialExpired(o) || o.status === "suspended").length
         return {
           totalTenants: list.length,
-          activeTenants: list.filter((o) => o.status === "active").length,
+          activeTenants: list.filter((o) => o.status === "active" && !isTrialExpired(o)).length,
+          trialTenants,
+          expiredTenants,
           suspendedTenants: list.filter((o) => o.status === "suspended").length,
           totalUsersAcrossTenants: totalUsers,
+        }
+      },
+    },
+    resellers: {
+      async list() {
+        return [...resellers.values()].sort((a, b) => a.name.localeCompare(b.name))
+      },
+      async findByID(id) {
+        return resellers.get(id)
+      },
+      async findBySlug(slug) {
+        return [...resellers.values()].find((r) => r.slug === slug.trim().toLowerCase())
+      },
+      async create(input) {
+        const reseller: Reseller = {
+          id: crypto.randomUUID(),
+          name: input.name,
+          slug: input.slug.trim().toLowerCase(),
+          contactName: input.contactName,
+          contactEmail: input.contactEmail.toLowerCase(),
+          contactPhone: input.contactPhone,
+          commissionRate: input.commissionRate ?? 0.20,
+          status: "active",
+          createdAt: new Date().toISOString(),
+        }
+        resellers.set(reseller.id, reseller)
+        return reseller
+      },
+      async update(id, patch) {
+        const current = resellers.get(id)
+        if (!current) return undefined
+        Object.assign(current, patch)
+        resellers.set(id, current)
+        return { ...current }
+      },
+      async stats(resellerID: string) {
+        const reseller = resellers.get(resellerID)
+        const clientOrgs = [...orgs.values()].filter((o) => o.resellerID === resellerID)
+        const clientOrgIDs = new Set(clientOrgs.map((o) => o.id))
+        const clientUsers = [...users.values()].filter((u) => clientOrgIDs.has(u.orgID) && u.status !== "deleted")
+        const totalTenants = clientOrgs.length
+        const activeTenants = clientOrgs.filter((o) => o.status === "active" && o.planType === "paid").length
+        const trialTenants = clientOrgs.filter((o) => o.planType === "trial" && !isTrialExpired(o) && o.status === "active").length
+        const expiredTenants = clientOrgs.filter((o) => isTrialExpired(o) || o.status === "suspended").length
+        const suspendedTenants = clientOrgs.filter((o) => o.status === "suspended").length
+        const totalUsers = clientUsers.length
+        const SEAT_PRICE = 50
+        const billableSeats = clientOrgs
+          .filter((o) => o.status === "active" && o.planType === "paid")
+          .reduce((acc, o) => acc + o.maxUsers, 0)
+        const estimatedMonthlyRevenue = billableSeats * SEAT_PRICE
+        const commissionRate = reseller?.commissionRate ?? 0.20
+        const estimatedCommission = estimatedMonthlyRevenue * commissionRate
+        return {
+          totalTenants,
+          activeTenants,
+          trialTenants,
+          expiredTenants,
+          suspendedTenants,
+          totalUsers,
+          estimatedMonthlyRevenue,
+          commissionRate,
+          estimatedCommission,
         }
       },
     },
@@ -456,6 +640,13 @@ function memoryStore(): Store {
       async list(orgID) {
         return [...users.values()]
           .filter((user) => user.status !== "deleted" && (!orgID || user.orgID === orgID))
+          .sort((left, right) => left.name.localeCompare(right.name))
+      },
+      async listByReseller(resellerID: string) {
+        const clientOrgs = [...orgs.values()].filter((o) => o.resellerID === resellerID)
+        const clientOrgIDs = new Set(clientOrgs.map((o) => o.id))
+        return [...users.values()]
+          .filter((user) => user.status !== "deleted" && clientOrgIDs.has(user.orgID))
           .sort((left, right) => left.name.localeCompare(right.name))
       },
       async findByID(id) {
@@ -475,6 +666,8 @@ function memoryStore(): Store {
           passwordHash: input.passwordHash,
           mustChangePassword: input.mustChangePassword,
           isPlatformAdmin: input.isPlatformAdmin ?? false,
+          isReseller: input.isReseller ?? false,
+          resellerID: input.resellerID,
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
@@ -809,6 +1002,8 @@ type UserRow = {
   password_hash: string
   must_change_password: number
   is_platform_admin?: number
+  is_reseller?: number
+  reseller_id?: string | null
   can_use_agentui?: number
   can_use_routines?: number
   can_change_password?: number
@@ -839,6 +1034,21 @@ type OrgRow = {
   default_model?: string | null
   provider_policy?: string | null
   allow_local_providers?: number | null
+  reseller_id?: string | null
+  plan_type?: string | null
+  trial_ends_at?: string | null
+  created_at: string
+}
+
+type ResellerRow = {
+  id: string
+  name: string
+  slug: string
+  contact_name: string | null
+  contact_email: string
+  contact_phone: string | null
+  commission_rate: number
+  status: string
   created_at: string
 }
 
@@ -930,6 +1140,8 @@ function toUser(row: UserRow): PanelUser {
     passwordHash: row.password_hash,
     mustChangePassword: row.must_change_password === 1,
     isPlatformAdmin: row.is_platform_admin === 1,
+    isReseller: row.is_reseller === 1,
+    resellerID: row.reseller_id ?? undefined,
     canUseAgentUI: row.can_use_agentui !== 0,
     canUseRoutines: row.can_use_routines !== 0,
     canChangePassword: row.can_change_password !== 0,
@@ -1020,6 +1232,23 @@ function toOrg(row: OrgRow): Organization {
     defaultModel: row.default_model ?? undefined,
     providerRestricted: row.provider_policy === "restricted",
     allowLocalProviders: row.allow_local_providers !== 0,
+    resellerID: row.reseller_id ?? undefined,
+    planType: row.plan_type === "paid" ? "paid" : "trial",
+    trialEndsAt: row.trial_ends_at ?? undefined,
+    createdAt: row.created_at,
+  }
+}
+
+function toReseller(row: ResellerRow): Reseller {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    contactName: row.contact_name ?? undefined,
+    contactEmail: row.contact_email,
+    contactPhone: row.contact_phone ?? undefined,
+    commissionRate: row.commission_rate ?? 0.20,
+    status: row.status === "suspended" ? "suspended" : "active",
     createdAt: row.created_at,
   }
 }
@@ -1144,11 +1373,22 @@ export function d1Store(db: D1Database): Store {
         const rows = await db.prepare("SELECT * FROM organization ORDER BY name ASC").all<OrgRow>()
         return rows.results.map(toOrg)
       },
+      async listByReseller(resellerID: string) {
+        const rows = await db
+          .prepare("SELECT * FROM organization WHERE reseller_id = ? ORDER BY name ASC")
+          .bind(resellerID)
+          .all<OrgRow>()
+        return rows.results.map(toOrg)
+      },
       async findBySlug(slug: string) {
         const row = await db.prepare("SELECT * FROM organization WHERE slug = ?").bind(slug.trim().toLowerCase()).first<OrgRow>()
         return row ? toOrg(row) : undefined
       },
       async create(input) {
+        const trialDays = input.trialDays ?? (input.trialEndsAt ? undefined : input.planType === "paid" ? undefined : 14)
+        const trialEndsAt = input.trialEndsAt ?? (trialDays ? new Date(Date.now() + trialDays * 86400000).toISOString() : undefined)
+        const planType = input.planType ?? (trialEndsAt ? "trial" : "paid")
+
         const newOrg: Organization = {
           id: crypto.randomUUID(),
           name: input.name,
@@ -1156,17 +1396,23 @@ export function d1Store(db: D1Database): Store {
           status: "active",
           maxUsers: input.maxUsers ?? 10,
           contactEmail: input.contactEmail,
+          logoUrl: input.logoUrl,
+          welcomeMessage: input.welcomeMessage,
+          brandColor: input.brandColor ?? "#10b981",
           ssoMode: "optional",
           offlineGraceHours: 72,
           sessionMaxAgeHours: 12,
           providerRestricted: false,
           allowLocalProviders: true,
+          resellerID: input.resellerID,
+          planType,
+          trialEndsAt,
           createdAt: new Date().toISOString(),
         }
         await db
           .prepare(
-            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, sso_mode, offline_grace_hours, session_max_age_hours, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, logo_url, welcome_message, brand_color, sso_mode, offline_grace_hours, session_max_age_hours, reseller_id, plan_type, trial_ends_at, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             newOrg.id,
@@ -1175,9 +1421,15 @@ export function d1Store(db: D1Database): Store {
             newOrg.status,
             newOrg.maxUsers,
             newOrg.contactEmail ?? null,
+            newOrg.logoUrl ?? null,
+            newOrg.welcomeMessage ?? null,
+            newOrg.brandColor ?? null,
             newOrg.ssoMode,
             newOrg.offlineGraceHours,
             newOrg.sessionMaxAgeHours,
+            newOrg.resellerID ?? null,
+            newOrg.planType,
+            newOrg.trialEndsAt ?? null,
             newOrg.createdAt,
           )
           .run()
@@ -1188,7 +1440,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ? WHERE id = ?`,
+            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ?, reseller_id = ?, plan_type = ?, trial_ends_at = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -1206,31 +1458,135 @@ export function d1Store(db: D1Database): Store {
             next.defaultModel ?? null,
             next.providerRestricted ? "restricted" : null,
             next.allowLocalProviders ? 1 : 0,
+            next.resellerID ?? null,
+            next.planType,
+            next.trialEndsAt ?? null,
             id,
           )
           .run()
         return next
       },
       async stats() {
-        const orgStats = await db
-          .prepare(
-            `SELECT
-               COUNT(*) as total_tenants,
-               SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_tenants,
-               SUM(CASE WHEN status = 'suspended' THEN 1 ELSE 0 END) as suspended_tenants
-             FROM organization`,
-          )
-          .first<{ total_tenants: number; active_tenants: number; suspended_tenants: number }>()
-
+        const rows = await db.prepare("SELECT * FROM organization").all<OrgRow>()
+        const list = rows.results.map(toOrg)
         const userCount = await db
           .prepare("SELECT COUNT(*) as total FROM panel_user WHERE status != 'deleted'")
           .first<{ total: number }>()
 
+        const totalTenants = list.length
+        const activeTenants = list.filter((o) => o.status === "active" && o.planType === "paid").length
+        const trialTenants = list.filter((o) => o.planType === "trial" && !isTrialExpired(o) && o.status === "active").length
+        const expiredTenants = list.filter((o) => isTrialExpired(o) || o.status === "suspended").length
+        const suspendedTenants = list.filter((o) => o.status === "suspended").length
+
         return {
-          totalTenants: Number(orgStats?.total_tenants ?? 0),
-          activeTenants: Number(orgStats?.active_tenants ?? 0),
-          suspendedTenants: Number(orgStats?.suspended_tenants ?? 0),
+          totalTenants,
+          activeTenants,
+          trialTenants,
+          expiredTenants,
+          suspendedTenants,
           totalUsersAcrossTenants: Number(userCount?.total ?? 0),
+        }
+      },
+    },
+    resellers: {
+      async list() {
+        const rows = await db.prepare("SELECT * FROM reseller ORDER BY name ASC").all<ResellerRow>()
+        return rows.results.map(toReseller)
+      },
+      async findByID(id) {
+        const row = await db.prepare("SELECT * FROM reseller WHERE id = ?").bind(id).first<ResellerRow>()
+        return row ? toReseller(row) : undefined
+      },
+      async findBySlug(slug) {
+        const row = await db.prepare("SELECT * FROM reseller WHERE slug = ?").bind(slug.trim().toLowerCase()).first<ResellerRow>()
+        return row ? toReseller(row) : undefined
+      },
+      async create(input) {
+        const reseller: Reseller = {
+          id: crypto.randomUUID(),
+          name: input.name,
+          slug: input.slug.trim().toLowerCase(),
+          contactName: input.contactName,
+          contactEmail: input.contactEmail.toLowerCase(),
+          contactPhone: input.contactPhone,
+          commissionRate: input.commissionRate ?? 0.20,
+          status: "active",
+          createdAt: new Date().toISOString(),
+        }
+        await db
+          .prepare(
+            `INSERT INTO reseller (id, name, slug, contact_name, contact_email, contact_phone, commission_rate, status, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .bind(
+            reseller.id,
+            reseller.name,
+            reseller.slug,
+            reseller.contactName ?? null,
+            reseller.contactEmail,
+            reseller.contactPhone ?? null,
+            reseller.commissionRate,
+            reseller.status,
+            reseller.createdAt,
+          )
+          .run()
+        return reseller
+      },
+      async update(id, patch) {
+        const current = await db.prepare("SELECT * FROM reseller WHERE id = ?").bind(id).first<ResellerRow>()
+        if (!current) return undefined
+        const res = toReseller(current)
+        const next = { ...res, ...patch }
+        await db
+          .prepare(
+            `UPDATE reseller SET name = ?, slug = ?, contact_name = ?, contact_email = ?, contact_phone = ?, commission_rate = ?, status = ? WHERE id = ?`,
+          )
+          .bind(
+            next.name,
+            next.slug,
+            next.contactName ?? null,
+            next.contactEmail,
+            next.contactPhone ?? null,
+            next.commissionRate,
+            next.status,
+            id,
+          )
+          .run()
+        return next
+      },
+      async stats(resellerID: string) {
+        const resRow = await db.prepare("SELECT * FROM reseller WHERE id = ?").bind(resellerID).first<ResellerRow>()
+        const reseller = resRow ? toReseller(resRow) : undefined
+        const orgRows = await db.prepare("SELECT * FROM organization WHERE reseller_id = ?").bind(resellerID).all<OrgRow>()
+        const clientOrgs = orgRows.results.map(toOrg)
+        const clientOrgIDs = new Set(clientOrgs.map((o) => o.id))
+        const userRows = await db.prepare("SELECT org_id FROM panel_user WHERE status != 'deleted'").all<{ org_id: string }>()
+        const clientUsersCount = userRows.results.filter((u) => clientOrgIDs.has(u.org_id)).length
+
+        const totalTenants = clientOrgs.length
+        const activeTenants = clientOrgs.filter((o) => o.status === "active" && o.planType === "paid").length
+        const trialTenants = clientOrgs.filter((o) => o.planType === "trial" && !isTrialExpired(o) && o.status === "active").length
+        const expiredTenants = clientOrgs.filter((o) => isTrialExpired(o) || o.status === "suspended").length
+        const suspendedTenants = clientOrgs.filter((o) => o.status === "suspended").length
+        const totalUsers = clientUsersCount
+        const SEAT_PRICE = 50
+        const billableSeats = clientOrgs
+          .filter((o) => o.status === "active" && o.planType === "paid")
+          .reduce((acc, o) => acc + o.maxUsers, 0)
+        const estimatedMonthlyRevenue = billableSeats * SEAT_PRICE
+        const commissionRate = reseller?.commissionRate ?? 0.20
+        const estimatedCommission = estimatedMonthlyRevenue * commissionRate
+        return {
+          totalTenants,
+          activeTenants,
+          trialTenants,
+          expiredTenants,
+          suspendedTenants,
+          totalUsers,
+          estimatedMonthlyRevenue,
+          commissionRate,
+          estimatedCommission,
         }
       },
     },
@@ -1241,6 +1597,15 @@ export function d1Store(db: D1Database): Store {
           : db.prepare("SELECT * FROM panel_user WHERE status != 'deleted' ORDER BY name ASC")
         const rows = await query.all<UserRow>()
         return rows.results.map(toUser)
+      },
+      async listByReseller(resellerID: string) {
+        const orgRows = await db
+          .prepare("SELECT id FROM organization WHERE reseller_id = ?")
+          .bind(resellerID)
+          .all<{ id: string }>()
+        const orgIDs = new Set(orgRows.results.map((o) => o.id))
+        const rows = await db.prepare("SELECT * FROM panel_user WHERE status != 'deleted' ORDER BY name ASC").all<UserRow>()
+        return rows.results.filter((u) => orgIDs.has(u.org_id)).map(toUser)
       },
       findByID: userFindByID,
       async findByEmail(email) {
@@ -1261,6 +1626,8 @@ export function d1Store(db: D1Database): Store {
           passwordHash: input.passwordHash,
           mustChangePassword: input.mustChangePassword,
           isPlatformAdmin: input.isPlatformAdmin ?? false,
+          isReseller: input.isReseller ?? false,
+          resellerID: input.resellerID,
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
@@ -1272,8 +1639,8 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, can_use_agentui, can_use_routines, can_change_password, can_open_settings, default_provider, default_model, access_overrides, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, is_reseller, reseller_id, can_use_agentui, can_use_routines, can_change_password, can_open_settings, default_provider, default_model, access_overrides, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             user.id,
@@ -1285,6 +1652,8 @@ export function d1Store(db: D1Database): Store {
             user.passwordHash,
             user.mustChangePassword ? 1 : 0,
             user.isPlatformAdmin ? 1 : 0,
+            user.isReseller ? 1 : 0,
+            user.resellerID ?? null,
             user.canUseAgentUI ? 1 : 0,
             user.canUseRoutines ? 1 : 0,
             user.canChangePassword ? 1 : 0,
@@ -1303,7 +1672,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, can_open_settings = ?, default_provider = ?, default_model = ?, access_overrides = ?, app_version = ?, app_version_at = ? WHERE id = ?`,
+            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, can_open_settings = ?, default_provider = ?, default_model = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -1322,6 +1691,8 @@ export function d1Store(db: D1Database): Store {
             next.accessOverrides ?? "{}",
             next.appVersion ?? null,
             next.appVersionAt ?? null,
+            next.isReseller ? 1 : 0,
+            next.resellerID ?? null,
             id,
           )
           .run()

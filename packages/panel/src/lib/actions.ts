@@ -1,5 +1,5 @@
 import { action, query, redirect } from "@solidjs/router"
-import { canManageOrganization, canManageUsers, canRemoveUsers, currentUser, requirePlatformAdmin, requireUser } from "./auth"
+import { canManageOrganization, canManageUsers, canRemoveUsers, currentUser, requirePlatformAdmin, requireReseller, requireUser } from "./auth"
 import { generatePassword, hashPassword, verifyPassword } from "./crypto"
 import { parseOverrides, RESOURCES, isProviderAllowed, type AccessOverrides, type ProviderEffect } from "./access"
 import {
@@ -11,7 +11,7 @@ import {
   validProviderID,
 } from "./providers"
 import { usePanelSession } from "./session"
-import { store, type PanelUser, type ProviderDefinition, type ProviderProtocol, type Role } from "./store"
+import { store, isTrialExpired, DEFAULT_ORG_ID, type PanelUser, type ProviderDefinition, type ProviderProtocol, type Role } from "./store"
 import { resolveUserAccess } from "./user-access"
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -45,6 +45,8 @@ function publicUser(user: PanelUser) {
     status: user.status,
     mustChangePassword: user.mustChangePassword,
     isPlatformAdmin: user.isPlatformAdmin,
+    isReseller: user.isReseller ?? false,
+    resellerID: user.resellerID,
     canUseAgentUI: user.canUseAgentUI,
     canUseRoutines: user.canUseRoutines,
     canChangePassword: user.canChangePassword,
@@ -172,6 +174,25 @@ export const getSettings = query(async () => {
   await db.ensureSeed()
   return db.org.get(actor.orgID)
 }, "panel.settings")
+
+export const getCurrentOrg = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  await db.ensureSeed()
+  const org = await db.org.get(actor.orgID)
+  if (!org) return null
+  return {
+    id: org.id,
+    name: org.name,
+    slug: org.slug,
+    logoUrl: org.logoUrl,
+    welcomeMessage: org.welcomeMessage,
+    brandColor: org.brandColor,
+    planType: org.planType,
+    trialEndsAt: org.trialEndsAt,
+  }
+}, "panel.currentOrg")
 
 export const login = action(async (form: FormData) => {
   "use server"
@@ -921,6 +942,12 @@ export const createTenant = action(async (form: FormData) => {
   const maxUsers = Math.max(1, Number(form.get("maxUsers") ?? 10))
   const ownerName = String(form.get("ownerName") ?? "").trim()
   const ownerEmail = String(form.get("ownerEmail") ?? "").trim().toLowerCase()
+  const logoUrl = String(form.get("logoUrl") ?? "").trim() || undefined
+  const welcomeMessage = String(form.get("welcomeMessage") ?? "").trim() || undefined
+  const planType = String(form.get("planType") ?? "trial") === "paid" ? "paid" : "trial"
+  const trialDaysRaw = Number(form.get("trialDays") ?? 14)
+  const trialDays = planType === "trial" ? (isNaN(trialDaysRaw) || trialDaysRaw <= 0 ? 14 : trialDaysRaw) : undefined
+  const resellerID = String(form.get("resellerID") ?? "").trim() || undefined
 
   if (!name) return { error: "admin.tenants.error.nameRequired" as const }
   if (!slug) return { error: "admin.tenants.error.slugRequired" as const }
@@ -934,15 +961,20 @@ export const createTenant = action(async (form: FormData) => {
   const existingUser = await db.users.findByEmail(ownerEmail)
   if (existingUser) return { error: "users.new.error.emailTaken" as const }
 
-  // 1. Criar Organização / Tenant
+  // 1. Criar Organização / Empresa
   const org = await db.org.create({
     name,
     slug,
     maxUsers,
     contactEmail: ownerEmail,
+    logoUrl,
+    welcomeMessage,
+    planType,
+    trialDays,
+    resellerID,
   })
 
-  // 2. Criar Gestor / Proprietário do Tenant com senha temporária
+  // 2. Criar Gestor / Proprietário da Empresa com senha temporária
   const tempPassword = generatePassword(16)
   const user = await db.users.create({
     orgID: org.id,
@@ -1006,3 +1038,362 @@ export const updateTenantLimits = action(async (orgID: string, maxUsers: number)
   })
   return { error: undefined }
 }, "panel.admin.tenant.limits")
+
+export const extendTenantTrial = action(async (orgID: string, days: number) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+  if (isNaN(days) || days <= 0) return { error: "admin.trial.invalidDays" as const }
+
+  const db = store()
+  const org = await db.org.get(orgID)
+  const baseTime = org.trialEndsAt ? Math.max(Date.now(), new Date(org.trialEndsAt).getTime()) : Date.now()
+  const newEndsAt = new Date(baseTime + days * 86400000).toISOString()
+
+  await db.org.update(orgID, {
+    planType: "trial",
+    trialEndsAt: newEndsAt,
+    status: "active",
+  })
+
+  await db.audit.log({
+    orgID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: "tenant.trial_extended",
+    result: "allow",
+    targetType: "org",
+    targetID: orgID,
+  })
+
+  return { error: undefined, newEndsAt }
+}, "panel.admin.tenant.extendTrial")
+
+export const setTenantPlanType = action(async (orgID: string, planType: "trial" | "paid", trialDays = 14) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+  const db = store()
+  const trialEndsAt = planType === "trial" ? new Date(Date.now() + trialDays * 86400000).toISOString() : undefined
+
+  await db.org.update(orgID, {
+    planType,
+    trialEndsAt,
+    status: "active",
+  })
+
+  await db.audit.log({
+    orgID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: "tenant.plan_updated",
+    result: "allow",
+    targetType: "org",
+    targetID: orgID,
+  })
+
+  return { error: undefined }
+}, "panel.admin.tenant.planType")
+
+// ==========================================
+// MÓDULO DE GESTÃO DE REVENDEDORES (RESELLERS)
+// ==========================================
+
+export const listResellers = query(async () => {
+  "use server"
+  await requirePlatformAdmin()
+  const db = store()
+  return db.resellers.list()
+}, "panel.admin.resellers.list")
+
+export const getReseller = query(async (id: string) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  if (!actor.isPlatformAdmin && (!actor.isReseller || actor.resellerID !== id)) {
+    throw redirect("/app")
+  }
+  const reseller = await db.resellers.findByID(id)
+  if (!reseller) return null
+  const stats = await db.resellers.stats(id)
+  const clientOrgs = await db.org.listByReseller(id)
+  return { reseller, stats, clientOrgs }
+}, "panel.reseller.get")
+
+export const createReseller = action(async (form: FormData) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+
+  const name = String(form.get("name") ?? "").trim()
+  const slug = String(form.get("slug") ?? "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "-")
+  const contactName = String(form.get("contactName") ?? "").trim() || undefined
+  const contactEmail = String(form.get("contactEmail") ?? "").trim().toLowerCase()
+  const contactPhone = String(form.get("contactPhone") ?? "").trim() || undefined
+  const commissionRateRaw = Number(form.get("commissionRate") ?? 20)
+  const commissionRate = isNaN(commissionRateRaw) ? 0.20 : commissionRateRaw / 100
+
+  if (!name) return { error: "admin.resellers.error.nameRequired" as const }
+  if (!slug) return { error: "admin.resellers.error.slugRequired" as const }
+  if (!EMAIL.test(contactEmail)) return { error: "users.new.error.invalidEmail" as const }
+
+  const db = store()
+  const existing = await db.resellers.findBySlug(slug)
+  if (existing) return { error: "admin.resellers.error.slugTaken" as const }
+
+  const existingUser = await db.users.findByEmail(contactEmail)
+  if (existingUser) return { error: "users.new.error.emailTaken" as const }
+
+  const reseller = await db.resellers.create({
+    name,
+    slug,
+    contactName,
+    contactEmail,
+    contactPhone,
+    commissionRate,
+  })
+
+  // Cria usuário para o revendedor acessar o painel de revenda
+  const tempPassword = generatePassword(16)
+  const user = await db.users.create({
+    orgID: DEFAULT_ORG_ID,
+    name: contactName || name,
+    email: contactEmail,
+    role: "admin",
+    passwordHash: await hashPassword(tempPassword),
+    mustChangePassword: true,
+    isReseller: true,
+    resellerID: reseller.id,
+  })
+
+  await db.audit.log({
+    orgID: DEFAULT_ORG_ID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: "reseller.created",
+    result: "allow",
+    targetType: "reseller",
+    targetID: reseller.id,
+  })
+
+  return {
+    error: undefined,
+    resellerId: reseller.id,
+    resellerName: reseller.name,
+    contactEmail: user.email,
+    tempPassword,
+  }
+}, "panel.admin.reseller.create")
+
+export const requireResellerMe = query(async () => {
+  "use server"
+  const actor = await requireReseller()
+  const db = store()
+  await db.ensureSeed()
+  const resellerID = actor.resellerID || (await db.resellers.list())[0]?.id
+  const reseller = resellerID ? await db.resellers.findByID(resellerID) : null
+  return {
+    user: publicUser(actor),
+    reseller,
+  }
+}, "panel.reseller.me")
+
+export const getResellerDashboard = query(async () => {
+  "use server"
+  const actor = await requireReseller()
+  const db = store()
+  const resellerID = actor.resellerID || (await db.resellers.list())[0]?.id
+  if (!resellerID) {
+    return {
+      reseller: null,
+      stats: {
+        totalTenants: 0,
+        activeTenants: 0,
+        trialTenants: 0,
+        expiredTenants: 0,
+        suspendedTenants: 0,
+        totalUsers: 0,
+        estimatedMonthlyRevenue: 0,
+        commissionRate: 0.20,
+        estimatedCommission: 0,
+      },
+      tenants: [],
+    }
+  }
+
+  const reseller = await db.resellers.findByID(resellerID)
+  const stats = await db.resellers.stats(resellerID)
+  const tenants = await db.org.listByReseller(resellerID)
+
+  return {
+    reseller,
+    stats,
+    tenants,
+  }
+}, "panel.reseller.dashboard")
+
+export const getResellerTenant = query(async (id: string) => {
+  "use server"
+  const actor = await requireReseller()
+  const db = store()
+  const org = await db.org.get(id)
+
+  // Isolamento multi-tenant rigoroso: revendedor só pode acessar empresas associadas a ele
+  if (!actor.isPlatformAdmin && org.resellerID !== actor.resellerID) {
+    throw redirect("/revenda")
+  }
+
+  const users = await db.users.list(id)
+  return { org, users: users.map(publicUser) }
+}, "panel.reseller.tenant")
+
+export const createTenantByReseller = action(async (form: FormData) => {
+  "use server"
+  const actor = await requireReseller()
+  const db = store()
+
+  const resellerID = actor.resellerID
+  if (!resellerID && !actor.isPlatformAdmin) {
+    return { error: "reseller.error.unauthorized" as const }
+  }
+
+  const name = String(form.get("name") ?? "").trim()
+  const slug = String(form.get("slug") ?? "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "-")
+  const maxUsers = Math.max(1, Number(form.get("maxUsers") ?? 10))
+  const ownerName = String(form.get("ownerName") ?? "").trim()
+  const ownerEmail = String(form.get("ownerEmail") ?? "").trim().toLowerCase()
+  const logoUrl = String(form.get("logoUrl") ?? "").trim() || undefined
+  const welcomeMessage = String(form.get("welcomeMessage") ?? "").trim() || undefined
+  const trialDaysRaw = Number(form.get("trialDays") ?? 14)
+  const trialDays = isNaN(trialDaysRaw) || trialDaysRaw <= 0 ? 14 : trialDaysRaw
+
+  if (!name) return { error: "admin.tenants.error.nameRequired" as const }
+  if (!slug) return { error: "admin.tenants.error.slugRequired" as const }
+  if (!ownerName) return { error: "users.new.error.nameRequired" as const }
+  if (!EMAIL.test(ownerEmail)) return { error: "users.new.error.invalidEmail" as const }
+
+  const existingOrg = await db.org.findBySlug(slug)
+  if (existingOrg) return { error: "admin.tenants.error.slugTaken" as const }
+
+  const existingUser = await db.users.findByEmail(ownerEmail)
+  if (existingUser) return { error: "users.new.error.emailTaken" as const }
+
+  // Provisiona a nova empresa cliente atribuída a esta revenda
+  const org = await db.org.create({
+    name,
+    slug,
+    maxUsers,
+    contactEmail: ownerEmail,
+    logoUrl,
+    welcomeMessage,
+    planType: "trial",
+    trialDays,
+    resellerID: resellerID || undefined,
+  })
+
+  // Cria o gestor inicial da empresa cliente
+  const tempPassword = generatePassword(16)
+  const user = await db.users.create({
+    orgID: org.id,
+    name: ownerName,
+    email: ownerEmail,
+    role: "owner",
+    passwordHash: await hashPassword(tempPassword),
+    mustChangePassword: true,
+  })
+
+  await db.audit.log({
+    orgID: org.id,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "tenant.created_by_reseller",
+    result: "allow",
+    targetType: "org",
+    targetID: org.id,
+  })
+
+  return {
+    error: undefined,
+    tenantId: org.id,
+    tenantName: org.name,
+    ownerEmail: user.email,
+    tempPassword,
+  }
+}, "panel.reseller.tenant.create")
+
+export const setResellerTenantStatus = action(async (orgID: string, status: "active" | "suspended") => {
+  "use server"
+  const actor = await requireReseller()
+  const db = store()
+  const org = await db.org.get(orgID)
+
+  if (!actor.isPlatformAdmin && org.resellerID !== actor.resellerID) {
+    return { error: "reseller.error.unauthorized" as const }
+  }
+
+  await db.org.update(orgID, { status })
+  await db.audit.log({
+    orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: status === "suspended" ? "tenant.suspended" : "tenant.reactivated",
+    result: "allow",
+    targetType: "org",
+    targetID: orgID,
+  })
+  return { error: undefined }
+}, "panel.reseller.tenant.status")
+
+export const updateResellerTenantLimits = action(async (orgID: string, maxUsers: number) => {
+  "use server"
+  const actor = await requireReseller()
+  const db = store()
+  const org = await db.org.get(orgID)
+
+  if (!actor.isPlatformAdmin && org.resellerID !== actor.resellerID) {
+    return { error: "reseller.error.unauthorized" as const }
+  }
+
+  await db.org.update(orgID, { maxUsers })
+  await db.audit.log({
+    orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "tenant.limits_updated",
+    result: "allow",
+    targetType: "org",
+    targetID: orgID,
+  })
+  return { error: undefined }
+}, "panel.reseller.tenant.limits")
+
+export const extendResellerTenantTrial = action(async (orgID: string, days: number) => {
+  "use server"
+  const actor = await requireReseller()
+  if (isNaN(days) || days <= 0) return { error: "admin.trial.invalidDays" as const }
+
+  const db = store()
+  const org = await db.org.get(orgID)
+
+  if (!actor.isPlatformAdmin && org.resellerID !== actor.resellerID) {
+    return { error: "reseller.error.unauthorized" as const }
+  }
+
+  const baseTime = org.trialEndsAt ? Math.max(Date.now(), new Date(org.trialEndsAt).getTime()) : Date.now()
+  const newEndsAt = new Date(baseTime + days * 86400000).toISOString()
+
+  await db.org.update(orgID, {
+    planType: "trial",
+    trialEndsAt: newEndsAt,
+    status: "active",
+  })
+
+  await db.audit.log({
+    orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "tenant.trial_extended",
+    result: "allow",
+    targetType: "org",
+    targetID: orgID,
+  })
+
+  return { error: undefined, newEndsAt }
+}, "panel.reseller.tenant.extendTrial")

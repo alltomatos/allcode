@@ -1,5 +1,5 @@
 import type { APIEvent } from "@solidjs/start"
-import { store } from "~/lib/store"
+import { store, isTrialExpired, getTrialDaysRemaining } from "~/lib/store"
 import { verifyPassword } from "~/lib/crypto"
 import { resolveUserAccess } from "~/lib/user-access"
 
@@ -61,10 +61,20 @@ export async function POST(event: APIEvent) {
     // Busca o Tenant associado
     const tenant = await db.org.get(user.orgID)
     if (tenant.status === "suspended") {
-      return new Response(JSON.stringify({ error: "Company account is suspended." }), {
+      return new Response(JSON.stringify({ error: "A conta da empresa está suspensa." }), {
         status: 403,
         headers: { "content-type": "application/json" },
       })
+    }
+
+    if (isTrialExpired(tenant)) {
+      return new Response(
+        JSON.stringify({ error: "O período de avaliação desta empresa expirou. Entre em contato para reativação." }),
+        {
+          status: 403,
+          headers: { "content-type": "application/json" },
+        },
+      )
     }
 
     await db.users.update(user.id, {
@@ -113,6 +123,10 @@ export async function POST(event: APIEvent) {
           welcomeMessage: tenant.welcomeMessage ?? null,
           brandColor: tenant.brandColor ?? "#10b981",
           offlineGraceHours: tenant.offlineGraceHours,
+          planType: tenant.planType,
+          trialEndsAt: tenant.trialEndsAt ?? null,
+          isTrial: tenant.planType === "trial",
+          trialDaysRemaining: getTrialDaysRemaining(tenant),
         },
       }),
       {

@@ -1,5 +1,5 @@
 import type { APIEvent } from "@solidjs/start"
-import { store } from "~/lib/store"
+import { store, isTrialExpired, getTrialDaysRemaining } from "~/lib/store"
 import { resolveUserAccess } from "~/lib/user-access"
 
 async function resolveStatus(userId?: string, email?: string, appVersion?: string) {
@@ -64,7 +64,26 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
         active: false,
         status: "suspended",
         reason: "tenant_suspended",
-        error: "Company account is suspended.",
+        error: "A conta da empresa está suspensa.",
+      }),
+      {
+        status: 403,
+        headers: {
+          "content-type": "application/json",
+          "access-control-allow-origin": "*",
+        },
+      },
+    )
+  }
+
+  if (isTrialExpired(tenant)) {
+    return new Response(
+      JSON.stringify({
+        ok: false,
+        active: false,
+        status: "trial_expired",
+        reason: "trial_expired",
+        error: "O período de avaliação desta empresa expirou. Entre em contato para reativação do plano.",
       }),
       {
         status: 403,
@@ -121,6 +140,10 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
         welcomeMessage: tenant.welcomeMessage ?? null,
         brandColor: tenant.brandColor ?? "#10b981",
         offlineGraceHours: tenant.offlineGraceHours,
+        planType: tenant.planType,
+        trialEndsAt: tenant.trialEndsAt ?? null,
+        isTrial: tenant.planType === "trial",
+        trialDaysRemaining: getTrialDaysRemaining(tenant),
       },
     }),
     {

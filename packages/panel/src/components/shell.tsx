@@ -1,8 +1,9 @@
-import { A, useLocation } from "@solidjs/router"
+import { A, createAsync, useLocation } from "@solidjs/router"
 import { For, Show, type ParentProps } from "solid-js"
 import { useI18n, locales, type Locale } from "~/i18n"
 import { initials, roleKey } from "~/lib/labels"
-import type { PublicUser } from "~/lib/actions"
+import { getCurrentOrg, type PublicUser } from "~/lib/actions"
+import { getTrialDaysRemaining } from "~/lib/store"
 import { PANEL_VERSION } from "~/lib/version"
 import { Badge, cx } from "./ui"
 
@@ -34,20 +35,33 @@ export function Logo(props: { compact?: boolean }) {
 export function Shell(props: ParentProps<{ user: PublicUser }>) {
   const i18n = useI18n()
   const location = useLocation()
+  const org = createAsync(() => getCurrentOrg())
 
   return (
     <div class="min-h-screen bg-slate-50 lg:grid lg:grid-cols-[260px_1fr]">
       <aside class="flex flex-col border-b border-slate-200 bg-white lg:min-h-screen lg:border-r lg:border-b-0">
-        <div class="flex h-16 items-center px-5">
-          <A href="/" class="flex items-center gap-2">
-            <Logo />
-            <span class="rounded-md bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-              Panel
-            </span>
+        <div class="flex h-16 items-center justify-between px-5 border-b border-slate-100">
+          <A href="/" class="flex items-center gap-2.5 min-w-0">
+            <Show
+              when={org()?.logoUrl}
+              fallback={<Logo compact />}
+            >
+              <div class="h-8 max-w-[120px] flex items-center justify-center">
+                <img src={org()!.logoUrl!} alt={org()?.name ?? "Logo"} class="max-h-8 max-w-[120px] object-contain" />
+              </div>
+            </Show>
+            <div class="truncate text-sm font-bold text-slate-900">
+              {org()?.name ?? "AllCode"}
+            </div>
           </A>
+          <Show when={org()?.planType === "trial"}>
+            <span class="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-300">
+              {getTrialDaysRemaining(org()!) ?? 0}d trial
+            </span>
+          </Show>
         </div>
 
-        <nav class="flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:overflow-visible">
+        <nav class="flex gap-1 overflow-x-auto p-3 lg:flex-col lg:overflow-visible">
           <For each={navItems}>
             {(item) => (
               <A
@@ -64,18 +78,33 @@ export function Shell(props: ParentProps<{ user: PublicUser }>) {
             )}
           </For>
 
+          <Show when={props.user.isReseller}>
+            <div class="my-2 border-t border-slate-100 hidden lg:block" />
+            <A
+              href="/revenda"
+              class={cx(
+                "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition flex items-center gap-1.5",
+                location.pathname.startsWith("/revenda")
+                  ? "bg-emerald-600 text-white"
+                  : "text-emerald-700 hover:bg-emerald-50",
+              )}
+            >
+              <span>🤝</span> Painel de Revenda
+            </A>
+          </Show>
+
           <Show when={props.user.isPlatformAdmin}>
             <div class="my-2 border-t border-slate-100 hidden lg:block" />
             <A
               href="/4dm1n"
               class={cx(
-                "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition",
+                "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition flex items-center gap-1.5",
                 location.pathname.startsWith("/4dm1n")
                   ? "bg-indigo-600 text-white"
                   : "text-indigo-600 hover:bg-indigo-50",
               )}
             >
-              ★ {i18n.t("nav.adminArea")}
+              <span>★</span> {i18n.t("nav.adminArea")}
             </A>
           </Show>
         </nav>
@@ -93,7 +122,7 @@ export function Shell(props: ParentProps<{ user: PublicUser }>) {
           <div class="mt-3 flex items-center justify-between gap-2">
             <Badge tone="brand">{i18n.t(roleKey(props.user.role))}</Badge>
             <form method="post" action="/api/logout">
-              <button type="submit" class="text-xs font-medium text-slate-500 hover:text-slate-900">
+              <button type="submit" class="text-xs font-medium text-slate-500 hover:text-slate-900 cursor-pointer">
                 {i18n.t("nav.logout")}
               </button>
             </form>

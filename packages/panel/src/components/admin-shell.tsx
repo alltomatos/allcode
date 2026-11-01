@@ -26,7 +26,7 @@ export function AdminShell(props: ParentProps<{ user: PublicUser }>) {
 
         <div class="p-3">
           <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-3 py-1">
-            {i18n.t("admin.nav.title")}
+            Plataforma AllCode
           </div>
           <nav class="flex flex-col gap-1 mt-1">
             <A
@@ -38,13 +38,24 @@ export function AdminShell(props: ParentProps<{ user: PublicUser }>) {
                   : "text-slate-300 hover:bg-slate-800/60 hover:text-white",
               )}
             >
-              🏢 {i18n.t("admin.nav.tenants")}
+              🏢 Gestão de Empresas
+            </A>
+            <A
+              href="/4dm1n/revendedores"
+              class={cx(
+                "rounded-lg px-3 py-2 text-sm font-medium transition",
+                location.pathname.startsWith("/4dm1n/revendedores")
+                  ? "bg-slate-800 text-white shadow-xs"
+                  : "text-slate-300 hover:bg-slate-800/60 hover:text-white",
+              )}
+            >
+              🤝 Revendedores Parceiros
             </A>
             <A
               href="/app"
               class="rounded-lg px-3 py-2 text-sm font-medium text-slate-400 hover:bg-slate-800/60 hover:text-white transition"
             >
-              ← {i18n.t("nav.overview")}
+              ← Painel da Minha Empresa
             </A>
           </nav>
         </div>

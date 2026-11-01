@@ -1,7 +1,7 @@
 import { Database } from "bun:sqlite"
 import { describe, expect, test } from "bun:test"
 import { generatePassword, hashPassword, verifyPassword } from "../src/lib/crypto"
-import { d1Store } from "../src/lib/store"
+import { d1Store, isTrialExpired, getTrialDaysRemaining, getEffectiveOrgStatus } from "../src/lib/store"
 
 function d1From(db: Database) {
   return {
@@ -43,6 +43,7 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0008_session_audit_model_usage.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0009_provider_policy.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0010_provider_individual_credentials.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0011_resellers_and_trials.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -289,5 +290,143 @@ describe("D1 store", () => {
     await store.credentials.remove(owner!.id, "anthropic-corp")
     const afterRemove = await store.credentials.findByUserAndProvider(owner!.id, "anthropic-corp")
     expect(afterRemove).toBeUndefined()
+  })
+
+  test("trial lifecycle: verifies status, expiration, and remaining days", async () => {
+    const now = Date.now()
+    const activePaidOrg = {
+      id: "org-1",
+      name: "Org Paga",
+      slug: "org-paga",
+      status: "active" as const,
+      maxUsers: 10,
+      ssoMode: "optional" as const,
+      offlineGraceHours: 72,
+      sessionMaxAgeHours: 24,
+      providerRestricted: false,
+      allowLocalProviders: true,
+      planType: "paid" as const,
+      createdAt: new Date(now).toISOString(),
+    }
+    expect(isTrialExpired(activePaidOrg)).toBe(false)
+    expect(getTrialDaysRemaining(activePaidOrg)).toBeNull()
+    expect(getEffectiveOrgStatus(activePaidOrg)).toBe("active")
+
+    const activeTrialOrg = {
+      ...activePaidOrg,
+      id: "org-2",
+      name: "Org Trial Ativo",
+      planType: "trial" as const,
+      trialEndsAt: new Date(now + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 dias no futuro
+    }
+    expect(isTrialExpired(activeTrialOrg)).toBe(false)
+    expect(getTrialDaysRemaining(activeTrialOrg)).toBe(5)
+    expect(getEffectiveOrgStatus(activeTrialOrg)).toBe("trial")
+
+    const expiredTrialOrg = {
+      ...activePaidOrg,
+      id: "org-3",
+      name: "Org Trial Expirado",
+      planType: "trial" as const,
+      trialEndsAt: new Date(now - 1000).toISOString(), // expirou 1s atrás
+    }
+    expect(isTrialExpired(expiredTrialOrg)).toBe(true)
+    expect(getTrialDaysRemaining(expiredTrialOrg)).toBe(0)
+    expect(getEffectiveOrgStatus(expiredTrialOrg)).toBe("expired")
+
+    const suspendedOrg = {
+      ...activeTrialOrg,
+      id: "org-4",
+      status: "suspended" as const,
+    }
+    expect(getEffectiveOrgStatus(suspendedOrg)).toBe("suspended")
+  })
+
+  test("resellers: creates reseller, isolates tenants, and calculates stats", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+
+    // 1. Cria revendedor
+    const reseller = await store.resellers.create({
+      name: "Alfa Parceiro Tech",
+      slug: "alfa-tech",
+      contactName: "Roberto",
+      contactEmail: "roberto@alfatech.com.br",
+      commissionRate: 0.25,
+    })
+    expect(reseller.id).toBeDefined()
+    expect(reseller.name).toBe("Alfa Parceiro Tech")
+    expect(reseller.commissionRate).toBe(0.25)
+
+    // 2. Busca revendedor
+    const bySlug = await store.resellers.findBySlug("alfa-tech")
+    expect(bySlug?.id).toBe(reseller.id)
+    const byId = await store.resellers.findByID(reseller.id)
+    expect(byId?.slug).toBe("alfa-tech")
+
+    // 3. Cria empresas vinculadas ao revendedor
+    const now = Date.now()
+    const orgTrial = await store.org.create({
+      name: "Cliente Trial da Alfa",
+      slug: "cliente-trial-alfa",
+      maxUsers: 5,
+      contactEmail: "cliente@trial.com",
+      resellerID: reseller.id,
+      planType: "trial",
+      trialEndsAt: new Date(now + 14 * 24 * 60 * 60 * 1000).toISOString(),
+    })
+
+    const orgPaid = await store.org.create({
+      name: "Cliente Pago da Alfa",
+      slug: "cliente-pago-alfa",
+      maxUsers: 10,
+      contactEmail: "cliente@pago.com",
+      resellerID: reseller.id,
+      planType: "paid",
+    })
+
+    // Empresa independente (sem revendedor)
+    await store.org.create({
+      name: "Cliente Direto",
+      slug: "cliente-direto",
+      maxUsers: 20,
+      planType: "paid",
+    })
+
+    // 4. Testa isolamento: listByReseller
+    const alfaTenants = await store.org.listByReseller(reseller.id)
+    expect(alfaTenants).toHaveLength(2)
+    const ids = alfaTenants.map((t) => t.id)
+    expect(ids).toContain(orgTrial.id)
+    expect(ids).toContain(orgPaid.id)
+
+    // 5. Adiciona colaboradores para validar métricas
+    await store.users.create({
+      orgID: orgPaid.id,
+      email: "user1@pago.com",
+      passwordHash: "hash",
+      name: "Colaborador 1",
+      role: "member",
+      mustChangePassword: false,
+    })
+    await store.users.create({
+      orgID: orgPaid.id,
+      email: "user2@pago.com",
+      passwordHash: "hash",
+      name: "Colaborador 2",
+      role: "member",
+      mustChangePassword: false,
+    })
+
+    // 6. Verifica estatísticas agregadas do revendedor
+    const stats = await store.resellers.stats(reseller.id)
+    expect(stats.totalTenants).toBe(2)
+    expect(stats.activeTenants).toBe(1) // orgPaid
+    expect(stats.trialTenants).toBe(1) // orgTrial
+    expect(stats.totalUsers).toBe(2)
+    expect(stats.commissionRate).toBe(0.25)
+    // 10 assentos contratados * 50 = 500 MRR; comissão de 25% = 125
+    expect(stats.estimatedMonthlyRevenue).toBe(500)
+    expect(stats.estimatedCommission).toBe(125)
   })
 })

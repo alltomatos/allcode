@@ -2,19 +2,14 @@ import type { APIEvent } from "@solidjs/start"
 import { bindings } from "~/lib/env"
 import { currentUser } from "~/lib/auth"
 
+const MAX_SIZE_BYTES = 5 * 1024 * 1024 // 5MB
+const ALLOWED_EXTENSIONS = ["png", "jpg", "jpeg", "svg", "webp"]
+
 export async function POST(event: APIEvent) {
   const user = await currentUser()
-  if (!user || (user.role !== "owner" && !user.isPlatformAdmin)) {
-    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+  if (!user || (user.role !== "owner" && user.role !== "admin" && !user.isPlatformAdmin && !user.isReseller)) {
+    return new Response(JSON.stringify({ error: "Não autorizado para envio de logo" }), {
       status: 401,
-      headers: { "content-type": "application/json" },
-    })
-  }
-
-  const bucket = bindings().ASSETS_BUCKET
-  if (!bucket) {
-    return new Response(JSON.stringify({ error: "Storage not configured" }), {
-      status: 500,
       headers: { "content-type": "application/json" },
     })
   }
@@ -22,27 +17,51 @@ export async function POST(event: APIEvent) {
   const formData = await event.request.formData()
   const file = formData.get("file") as File | null
   if (!file || typeof file === "string") {
-    return new Response(JSON.stringify({ error: "No file provided" }), {
+    return new Response(JSON.stringify({ error: "Nenhum arquivo enviado" }), {
+      status: 400,
+      headers: { "content-type": "application/json" },
+    })
+  }
+
+  // Validação de tamanho (máximo 5MB)
+  if (file.size > MAX_SIZE_BYTES) {
+    return new Response(JSON.stringify({ error: "O tamanho da imagem não pode ultrapassar 5MB." }), {
       status: 400,
       headers: { "content-type": "application/json" },
     })
   }
 
   const ext = file.name.split(".").pop()?.toLowerCase() || "png"
-  if (!["png", "jpg", "jpeg", "svg", "webp"].includes(ext)) {
-    return new Response(JSON.stringify({ error: "Invalid image format. Allowed: PNG, JPG, SVG, WEBP" }), {
-      status: 400,
+  if (!ALLOWED_EXTENSIONS.includes(ext)) {
+    return new Response(
+      JSON.stringify({ error: "Formato de imagem inválido. Formatos aceitos: PNG, JPG, JPEG, SVG e WEBP." }),
+      {
+        status: 400,
+        headers: { "content-type": "application/json" },
+      },
+    )
+  }
+
+  const reqOrgID = formData.get("orgId")
+  const targetOrgID = typeof reqOrgID === "string" && reqOrgID.trim() ? reqOrgID.trim() : (user.orgID || "empresa")
+  const key = `logos/${targetOrgID}-${Date.now()}.${ext}`
+  const arrayBuffer = await file.arrayBuffer()
+  const mime = file.type || `image/${ext === "svg" ? "svg+xml" : ext}`
+
+  const bucket = bindings().ASSETS_BUCKET
+  if (!bucket) {
+    // Fallback gracioso para desenvolvimento e ambientes locais sem R2 configurado
+    const base64 = Buffer.from(arrayBuffer).toString("base64")
+    const url = `data:${mime};base64,${base64}`
+    return new Response(JSON.stringify({ ok: true, url, key }), {
+      status: 200,
       headers: { "content-type": "application/json" },
     })
   }
 
-  const orgID = user.orgID
-  const key = `logos/${orgID}-${Date.now()}.${ext}`
-
-  const arrayBuffer = await file.arrayBuffer()
   await bucket.put(key, arrayBuffer, {
     httpMetadata: {
-      contentType: file.type || `image/${ext === "svg" ? "svg+xml" : ext}`,
+      contentType: mime,
     },
   })
 

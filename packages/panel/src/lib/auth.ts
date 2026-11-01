@@ -28,6 +28,16 @@ export async function requirePlatformAdmin() {
   return user
 }
 
+export async function requireReseller() {
+  const user = await requireUser()
+  if (!user.isReseller && !user.isPlatformAdmin) throw redirect("/app")
+  return user
+}
+
+export function isResellerOrAdmin(user: PanelUser) {
+  return Boolean(user.isPlatformAdmin || user.isReseller)
+}
+
 export function canManageUsers(user: PanelUser) {
   return user.role === "owner" || user.role === "admin"
 }
