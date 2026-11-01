@@ -98,6 +98,7 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
       settings: resolved.settings,
       canOpenSettings: resolved.canOpenSettings,
       defaultModel: resolved.defaultModel,
+      providers: resolved.providers,
       appVersion: version ?? user.appVersion,
       user: {
         id: user.id,
@@ -110,6 +111,7 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
         settings: resolved.settings,
         canOpenSettings: resolved.canOpenSettings,
         defaultModel: resolved.defaultModel,
+        providers: resolved.providers,
       },
       tenant: {
         id: tenant.id,

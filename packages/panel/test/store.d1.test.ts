@@ -39,6 +39,9 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0004_session_audit_and_permissions.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0005_user_app_version.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0006_access_groups.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0007_session_audit_unique.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0008_session_audit_model_usage.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0009_provider_policy.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 

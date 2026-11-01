@@ -1,15 +1,24 @@
 import { A, createAsync, revalidate, useAction, useParams } from "@solidjs/router"
-import { For, Show, createMemo, createSignal } from "solid-js"
+import { For, Show, createEffect, createMemo, createSignal } from "solid-js"
 import { Badge, Button, Card, EmptyState, PageHeader, Select, StatGrid } from "~/components/ui"
+import {
+  ProviderGrantRows,
+  providerGrantDraft,
+  providerGrantPayload,
+  type ProviderGrantDraft,
+} from "~/components/provider-grants"
 import { useI18n } from "~/i18n"
 import {
+  getProviderGrants,
   getUser,
   getUserKPIs,
   getUserSessions,
   listAudit,
   listGroups,
+  listProviders,
   requireMe,
   resetUserPassword,
+  setProviderGrants,
   setUserRole,
   setUserStatus,
   removeUser,
@@ -49,6 +58,9 @@ export default function UserDetailPage() {
   const saveAccess = useAction(updateUserAccess)
   const resetPassword = useAction(resetUserPassword)
   const groups = createAsync(() => listGroups())
+  const providers = createAsync(() => listProviders())
+  const grants = createAsync(() => getProviderGrants("user", params.id!))
+  const saveGrants = useAction(setProviderGrants)
 
   const [error, setError] = createSignal<string | null>(null)
   const [success, setSuccess] = createSignal<string | null>(null)
@@ -68,6 +80,17 @@ export default function UserDetailPage() {
   const [modelDraft, setModelDraft] = createSignal("")
   const [changePassDraft, setChangePassDraft] = createSignal(true)
   const [accessInitialized, setAccessInitialized] = createSignal(false)
+  const [grantDraft, setGrantDraft] = createSignal<ProviderGrantDraft>({})
+  const [grantsInitialized, setGrantsInitialized] = createSignal(false)
+
+  createEffect(() => {
+    if (grantsInitialized()) return
+    const catalog = providers()
+    const current = grants()
+    if (!catalog || !current) return
+    setGrantDraft(providerGrantDraft(catalog, current))
+    setGrantsInitialized(true)
+  })
 
   const isOwner = createMemo(() => actor()?.role === "owner")
   const canRemove = createMemo(() => isOwner() && user()?.role !== "owner")
@@ -157,6 +180,7 @@ export default function UserDetailPage() {
     if (result?.error) {
       setError(i18n.t(result.error))
     } else {
+      if (canChange()) await saveGrants("user", target.id, providerGrantPayload(grantDraft()))
       setSuccess(i18n.t("user.permissions.saved"))
       revalidate("panel.user")
       revalidate("panel.users")
@@ -605,12 +629,25 @@ export default function UserDetailPage() {
                           <p class="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
                             {i18n.t("access.defaults.title")}
                           </p>
-                          <input
-                            class="h-9 w-full rounded-lg bg-white px-3 font-mono text-xs ring-1 ring-slate-300 ring-inset outline-none placeholder:font-sans focus:ring-2 focus:ring-indigo-500"
-                            placeholder={i18n.t("access.defaults.provider")}
+                          <Select
+                            label={i18n.t("access.defaults.provider")}
+                            name="defaultProvider"
                             value={providerDraft()}
-                            onInput={(e) => setProviderDraft(e.currentTarget.value)}
-                          />
+                            onSelect={(value) => setProviderDraft(value)}
+                          >
+                            <option value="">—</option>
+                            <Show
+                              when={
+                                providerDraft() &&
+                                !(providers() ?? []).some((provider) => provider.providerID === providerDraft())
+                              }
+                            >
+                              <option value={providerDraft()}>{providerDraft()}</option>
+                            </Show>
+                            <For each={(providers() ?? []).filter((provider) => provider.enabled)}>
+                              {(provider) => <option value={provider.providerID}>{provider.displayName}</option>}
+                            </For>
+                          </Select>
                           <input
                             class="h-9 w-full rounded-lg bg-white px-3 font-mono text-xs ring-1 ring-slate-300 ring-inset outline-none placeholder:font-sans focus:ring-2 focus:ring-indigo-500"
                             placeholder={i18n.t("access.defaults.model")}
@@ -618,6 +655,21 @@ export default function UserDetailPage() {
                             onInput={(e) => setModelDraft(e.currentTarget.value)}
                           />
                           <p class="text-[11px] text-slate-500">{i18n.t("access.defaults.hint")}</p>
+                        </div>
+
+                        <div class="mt-4 space-y-2 border-t border-slate-100 pt-3">
+                          <p class="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
+                            {i18n.t("providers.grants.title")}
+                          </p>
+                          <ProviderGrantRows
+                            providers={providers() ?? []}
+                            value={grantDraft()}
+                            disabled={savingPermissions()}
+                            onChange={(providerID, value) =>
+                              setGrantDraft({ ...grantDraft(), [providerID]: value })
+                            }
+                          />
+                          <p class="text-[11px] text-slate-500">{i18n.t("providers.grants.hint")}</p>
                         </div>
 
                         <div class="mt-4 space-y-2 border-t border-slate-100 pt-3">

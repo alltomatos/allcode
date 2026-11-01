@@ -2,10 +2,12 @@ import { describe, expect, test } from "bun:test"
 import {
   FULL_ACCESS,
   NO_ACCESS,
+  isProviderAllowed,
   parseOverrides,
   resolveAccess,
   resolveCanOpenSettings,
   resolveDefaultModel,
+  resolveProviderPolicy,
   settingsAccess,
 } from "../src/lib/access"
 
@@ -103,8 +105,124 @@ describe("settings visibility", () => {
   })
 })
 
-describe("override parsing", () => {
-  test("ignores unknown keys and non-boolean values", () => {
+describe("provider policy", () => {
+  const catalog = [
+    { providerID: "anthropic", enabled: true },
+    { providerID: "openai", enabled: true },
+    { providerID: "legacy", enabled: false },
+  ]
+
+  test("unrestricted tenants keep every provider unless one is explicitly denied", () => {
+    const policy = resolveProviderPolicy({ catalog, restricted: false, allowLocal: true })
+    expect(policy.restricted).toBe(false)
+    expect(policy.allowed).toEqual([])
+    expect(isProviderAllowed(policy, "openai")).toBe(true)
+    expect(isProviderAllowed(policy, "local-only")).toBe(true)
+
+    const denied = resolveProviderPolicy({
+      catalog,
+      restricted: false,
+      allowLocal: true,
+      individualGrants: [{ providerID: "openai", effect: "deny" }],
+    })
+    expect(isProviderAllowed(denied, "openai")).toBe(false)
+    expect(isProviderAllowed(denied, "anthropic")).toBe(true)
+  })
+
+  test("restricted tenants only see enabled catalog providers", () => {
+    const policy = resolveProviderPolicy({ catalog, restricted: true, allowLocal: false })
+    expect(policy.allowed).toEqual(["anthropic", "openai"])
+    expect(isProviderAllowed(policy, "anthropic")).toBe(true)
+    expect(isProviderAllowed(policy, "legacy")).toBe(false)
+    expect(isProviderAllowed(policy, "local-only")).toBe(false)
+  })
+
+  test("group denies beat catalog defaults and individual allows beat group denies", () => {
+    const policy = resolveProviderPolicy({
+      catalog,
+      restricted: true,
+      allowLocal: false,
+      groupGrants: [
+        { providerID: "openai", effect: "deny" },
+        { providerID: "anthropic", effect: "deny" },
+      ],
+      individualGrants: [{ providerID: "anthropic", effect: "allow" }],
+    })
+    expect(isProviderAllowed(policy, "openai")).toBe(false)
+    expect(isProviderAllowed(policy, "anthropic")).toBe(true)
+  })
+
+  test("grants outside the enabled catalog are ignored when restricted", () => {
+    const policy = resolveProviderPolicy({
+      catalog,
+      restricted: true,
+      allowLocal: false,
+      individualGrants: [{ providerID: "legacy", effect: "allow" }],
+    })
+    expect(isProviderAllowed(policy, "legacy")).toBe(false)
+  })
+
+  test("version changes when the effective policy changes", () => {
+    const base = resolveProviderPolicy({ catalog, restricted: true, allowLocal: false })
+    const denied = resolveProviderPolicy({
+      catalog,
+      restricted: true,
+      allowLocal: false,
+      individualGrants: [{ providerID: "openai", effect: "deny" }],
+    })
+    expect(base.version).not.toBe(denied.version)
+  })
+
+  test("provisions proxy and custom providers with connection settings when allowed", () => {
+    const proxyCatalog = [
+      {
+        providerID: "9router",
+        displayName: "9router Corp",
+        kind: "proxy" as const,
+        baseURL: "http://127.0.0.1:20128/v1",
+        apiKey: "sk-9router-corp",
+        models: [{ id: "auto", name: "Auto Routing" }],
+        headers: [{ key: "X-Title", value: "AllCode" }],
+        enabled: true,
+      },
+      {
+        providerID: "omniroute",
+        displayName: "OmniRoute",
+        kind: "proxy" as const,
+        baseURL: "http://127.0.0.1:20128/v1",
+        enabled: true,
+      },
+      {
+        providerID: "anthropic",
+        displayName: "Anthropic",
+        kind: "builtin" as const,
+        enabled: true,
+      },
+    ]
+
+    const policy = resolveProviderPolicy({
+      catalog: proxyCatalog,
+      restricted: true,
+      allowLocal: false,
+      individualGrants: [{ providerID: "omniroute", effect: "deny" }],
+    })
+
+    expect(policy.provisioned).toHaveLength(1)
+    expect(policy.provisioned[0]).toEqual({
+      id: "9router",
+      name: "9router Corp",
+      kind: "proxy",
+      npm: "@ai-sdk/openai-compatible",
+      baseURL: "http://127.0.0.1:20128/v1",
+      apiKey: "sk-9router-corp",
+      models: [{ id: "auto", name: "Auto Routing" }],
+      headers: { "X-Title": "AllCode" },
+      env: [],
+    })
+  })
+})
+
+describe("override parsing", () => {  test("ignores unknown keys and non-boolean values", () => {
     expect(parseOverrides('{"agentui":false,"models":"yes","unknown":true}')).toEqual({ agentui: false })
   })
 

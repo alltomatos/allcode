@@ -38,6 +38,37 @@ export type AccessGroup = {
   createdAt: string
 }
 
+export type ProviderKind = "builtin" | "custom" | "proxy"
+export type ProviderEffect = "allow" | "deny"
+
+export type ProviderModel = { id: string; name: string }
+export type ProviderHeader = { key: string; value: string }
+
+export type ProviderDefinition = {
+  id: string
+  orgID: string
+  providerID: string
+  displayName: string
+  kind: ProviderKind
+  npm?: string
+  baseURL?: string
+  apiKey?: string
+  models: ProviderModel[]
+  headers: ProviderHeader[]
+  env: string[]
+  enabled: boolean
+  createdBy?: string
+  createdAt: string
+  updatedAt: string
+}
+
+export type ProviderGrant = {
+  scope: "group" | "user"
+  scopeID: string
+  providerID: string
+  effect: ProviderEffect
+}
+
 export type SessionAudit = {
   id: string
   sessionID: string
@@ -80,6 +111,10 @@ export type Organization = {
   sessionMaxAgeHours: number
   defaultProvider?: string
   defaultModel?: string
+  /** true = only providers explicitly granted are visible. */
+  providerRestricted: boolean
+  /** When restricted, local-only providers keep working if this is true. */
+  allowLocalProviders: boolean
   createdAt: string
 }
 
@@ -133,6 +168,8 @@ export type OrgPatch = Partial<
     | "sessionMaxAgeHours"
     | "defaultProvider"
     | "defaultModel"
+    | "providerRestricted"
+    | "allowLocalProviders"
   >
 >
 
@@ -206,6 +243,43 @@ export type Store = {
     setMembers(groupID: string, userIDs: string[]): Promise<void>
     setUserGroups(userID: string, groupIDs: string[]): Promise<void>
   }
+  providers: {
+    list(orgID?: string): Promise<ProviderDefinition[]>
+    findByID(id: string): Promise<ProviderDefinition | undefined>
+    findByProviderID(orgID: string, providerID: string): Promise<ProviderDefinition | undefined>
+    create(input: {
+      orgID: string
+      providerID: string
+      displayName: string
+      kind?: ProviderKind
+      npm?: string
+      baseURL?: string
+      apiKey?: string
+      models?: ProviderModel[]
+      headers?: ProviderHeader[]
+      env?: string[]
+      enabled?: boolean
+      createdBy?: string
+    }): Promise<ProviderDefinition>
+    update(
+      id: string,
+      patch: {
+        displayName?: string
+        npm?: string
+        baseURL?: string
+        apiKey?: string
+        models?: ProviderModel[]
+        headers?: ProviderHeader[]
+        env?: string[]
+        enabled?: boolean
+      },
+    ): Promise<ProviderDefinition | undefined>
+    remove(id: string): Promise<void>
+    grants(scope: "group" | "user", scopeID: string): Promise<ProviderGrant[]>
+    grantsForScopes(scope: "group" | "user", scopeIDs: string[]): Promise<ProviderGrant[]>
+    setGrants(scope: "group" | "user", scopeID: string, grants: ProviderGrant[]): Promise<void>
+    removeGrantsForProvider(orgID: string, providerID: string): Promise<void>
+  }
   sessions: {
     create(input: Omit<SessionAudit, "id" | "createdAt">): Promise<SessionAudit>
     listByUser(userID: string, limit?: number): Promise<SessionAudit[]>
@@ -234,6 +308,8 @@ function defaultOrg(): Organization {
     ssoMode: "optional",
     offlineGraceHours: 72,
     sessionMaxAgeHours: 12,
+    providerRestricted: false,
+    allowLocalProviders: true,
     createdAt: new Date().toISOString(),
   }
 }
@@ -252,6 +328,8 @@ function memoryStore(): Store {
   const orgs = new Map<string, Organization>()
   const groups = new Map<string, AccessGroup>()
   const members = new Map<string, Set<string>>()
+  const providers = new Map<string, ProviderDefinition>()
+  const providerGrants = new Map<string, ProviderGrant[]>()
   const initialOrg = defaultOrg()
   orgs.set(initialOrg.id, initialOrg)
   let seeding: Promise<void> | undefined
@@ -306,6 +384,8 @@ function memoryStore(): Store {
           ssoMode: "optional",
           offlineGraceHours: 72,
           sessionMaxAgeHours: 12,
+          providerRestricted: false,
+          allowLocalProviders: true,
           createdAt: new Date().toISOString(),
         }
         orgs.set(newOrg.id, newOrg)
@@ -441,6 +521,98 @@ function memoryStore(): Store {
         }
       },
     },
+    providers: {
+      async list(orgID) {
+        return [...providers.values()]
+          .filter((provider) => !orgID || provider.orgID === orgID)
+          .sort((left, right) => left.displayName.localeCompare(right.displayName))
+      },
+      async findByID(id) {
+        return providers.get(id)
+      },
+      async findByProviderID(orgID, providerID) {
+        return [...providers.values()].find(
+          (provider) => provider.orgID === orgID && provider.providerID === providerID,
+        )
+      },
+      async create(input) {
+        const now = new Date().toISOString()
+        const provider: ProviderDefinition = {
+          id: crypto.randomUUID(),
+          orgID: input.orgID,
+          providerID: input.providerID,
+          displayName: input.displayName,
+          kind: input.kind ?? "builtin",
+          npm: input.npm,
+          baseURL: input.baseURL,
+          apiKey: input.apiKey,
+          models: input.models ?? [],
+          headers: input.headers ?? [],
+          env: input.env ?? [],
+          enabled: input.enabled ?? true,
+          createdBy: input.createdBy,
+          createdAt: now,
+          updatedAt: now,
+        }
+        providers.set(provider.id, provider)
+        return provider
+      },
+      async update(id, patch) {
+        const provider = providers.get(id)
+        if (!provider) return
+        Object.assign(provider, patch, { updatedAt: new Date().toISOString() })
+        return provider
+      },
+      async remove(id) {
+        const provider = providers.get(id)
+        providers.delete(id)
+        if (!provider) return
+        const orgGroups = new Set(
+          [...groups.values()].filter((group) => group.orgID === provider.orgID).map((group) => group.id),
+        )
+        const orgUsers = new Set(
+          [...users.values()].filter((user) => user.orgID === provider.orgID).map((user) => user.id),
+        )
+        for (const [key, grants] of providerGrants) {
+          const [scope, scopeID] = key.split(":")
+          if (scope === "group" && !orgGroups.has(scopeID!)) continue
+          if (scope === "user" && !orgUsers.has(scopeID!)) continue
+          providerGrants.set(
+            key,
+            grants.filter((grant) => grant.providerID !== provider.providerID),
+          )
+        }
+      },
+      async grants(scope, scopeID) {
+        return providerGrants.get(`${scope}:${scopeID}`) ?? []
+      },
+      async grantsForScopes(scope, scopeIDs) {
+        return scopeIDs.flatMap((scopeID) => providerGrants.get(`${scope}:${scopeID}`) ?? [])
+      },
+      async setGrants(scope, scopeID, grants) {
+        providerGrants.set(
+          `${scope}:${scopeID}`,
+          grants.map((grant) => ({ ...grant, scope, scopeID })),
+        )
+      },
+      async removeGrantsForProvider(orgID, providerID) {
+        const orgGroups = new Set(
+          [...groups.values()].filter((group) => group.orgID === orgID).map((group) => group.id),
+        )
+        const orgUsers = new Set(
+          [...users.values()].filter((user) => user.orgID === orgID).map((user) => user.id),
+        )
+        for (const [key, grants] of providerGrants) {
+          const [scope, scopeID] = key.split(":")
+          if (scope === "group" && !orgGroups.has(scopeID!)) continue
+          if (scope === "user" && !orgUsers.has(scopeID!)) continue
+          providerGrants.set(
+            key,
+            grants.filter((grant) => grant.providerID !== providerID),
+          )
+        }
+      },
+    },
     sessions: {
       async create(input) {
         const item: SessionAudit = {
@@ -523,6 +695,8 @@ type OrgRow = {
   session_max_age_hours: number
   default_provider?: string | null
   default_model?: string | null
+  provider_policy?: string | null
+  allow_local_providers?: number | null
   created_at: string
 }
 
@@ -534,6 +708,31 @@ type GroupRow = {
   access: string
   can_open_settings: number
   created_at: string
+}
+
+type ProviderRow = {
+  id: string
+  org_id: string
+  provider_id: string
+  display_name: string
+  kind: string
+  npm: string | null
+  base_url: string | null
+  api_key: string | null
+  models_json: string
+  headers_json: string
+  env_json: string
+  enabled: number
+  created_by: string | null
+  created_at: string
+  updated_at: string
+}
+
+type ProviderGrantRow = {
+  scope: string
+  scope_id: string
+  provider_id: string
+  effect: string
 }
 
 type AuditRow = {
@@ -608,8 +807,7 @@ function toGroup(row: GroupRow): AccessGroup {
   }
 }
 
-function toSessionAudit(row: SessionAuditRow): SessionAudit {
-  return {
+function toSessionAudit(row: SessionAuditRow): SessionAudit {  return {
     id: row.id,
     sessionID: row.session_id,
     userID: row.user_id,
@@ -646,8 +844,45 @@ function toOrg(row: OrgRow): Organization {
     sessionMaxAgeHours: row.session_max_age_hours,
     defaultProvider: row.default_provider ?? undefined,
     defaultModel: row.default_model ?? undefined,
+    providerRestricted: row.provider_policy === "restricted",
+    allowLocalProviders: row.allow_local_providers !== 0,
     createdAt: row.created_at,
   }
+}
+
+function toProvider(row: ProviderRow): ProviderDefinition {
+  return {
+    id: row.id,
+    orgID: row.org_id,
+    providerID: row.provider_id,
+    displayName: row.display_name,
+    kind: row.kind === "custom" ? "custom" : row.kind === "proxy" ? "proxy" : "builtin",
+    npm: row.npm ?? undefined,
+    baseURL: row.base_url ?? undefined,
+    apiKey: row.api_key ?? undefined,
+    models: parseJsonArray<ProviderModel>(row.models_json),
+    headers: parseJsonArray<ProviderHeader>(row.headers_json),
+    env: parseJsonArray<string>(row.env_json),
+    enabled: row.enabled !== 0,
+    createdBy: row.created_by ?? undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+function toProviderGrant(row: ProviderGrantRow): ProviderGrant {
+  return {
+    scope: row.scope === "user" ? "user" : "group",
+    scopeID: row.scope_id,
+    providerID: row.provider_id,
+    effect: row.effect === "deny" ? "deny" : "allow",
+  }
+}
+
+function parseJsonArray<T>(value: string | null | undefined): T[] {
+  if (!value) return []
+  const parsed: unknown = JSON.parse(value)
+  return Array.isArray(parsed) ? (parsed as T[]) : []
 }
 
 function toAudit(row: AuditRow): AuditEvent {
@@ -749,6 +984,8 @@ export function d1Store(db: D1Database): Store {
           ssoMode: "optional",
           offlineGraceHours: 72,
           sessionMaxAgeHours: 12,
+          providerRestricted: false,
+          allowLocalProviders: true,
           createdAt: new Date().toISOString(),
         }
         await db
@@ -776,7 +1013,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ? WHERE id = ?`,
+            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -792,6 +1029,8 @@ export function d1Store(db: D1Database): Store {
             next.sessionMaxAgeHours,
             next.defaultProvider ?? null,
             next.defaultModel ?? null,
+            next.providerRestricted ? "restricted" : null,
+            next.allowLocalProviders ? 1 : 0,
             id,
           )
           .run()
@@ -1044,6 +1283,150 @@ export function d1Store(db: D1Database): Store {
             .bind(groupID, userID, new Date().toISOString())
             .run()
         }
+      },
+    },
+    providers: {
+      async list(orgID) {
+        const query = orgID
+          ? db.prepare("SELECT * FROM provider_definition WHERE org_id = ? ORDER BY display_name ASC").bind(orgID)
+          : db.prepare("SELECT * FROM provider_definition ORDER BY display_name ASC")
+        const rows = await query.all<ProviderRow>()
+        return rows.results.map(toProvider)
+      },
+      async findByID(id) {
+        const row = await db.prepare("SELECT * FROM provider_definition WHERE id = ?").bind(id).first<ProviderRow>()
+        return row ? toProvider(row) : undefined
+      },
+      async findByProviderID(orgID, providerID) {
+        const row = await db
+          .prepare("SELECT * FROM provider_definition WHERE org_id = ? AND provider_id = ?")
+          .bind(orgID, providerID)
+          .first<ProviderRow>()
+        return row ? toProvider(row) : undefined
+      },
+      async create(input) {
+        const now = new Date().toISOString()
+        const provider: ProviderDefinition = {
+          id: crypto.randomUUID(),
+          orgID: input.orgID,
+          providerID: input.providerID,
+          displayName: input.displayName,
+          kind: input.kind ?? "builtin",
+          npm: input.npm,
+          baseURL: input.baseURL,
+          apiKey: input.apiKey,
+          models: input.models ?? [],
+          headers: input.headers ?? [],
+          env: input.env ?? [],
+          enabled: input.enabled ?? true,
+          createdBy: input.createdBy,
+          createdAt: now,
+          updatedAt: now,
+        }
+        await db
+          .prepare(
+            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, kind, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .bind(
+            provider.id,
+            provider.orgID,
+            provider.providerID,
+            provider.displayName,
+            provider.kind,
+            provider.npm ?? null,
+            provider.baseURL ?? null,
+            provider.apiKey ?? null,
+            JSON.stringify(provider.models),
+            JSON.stringify(provider.headers),
+            JSON.stringify(provider.env),
+            provider.enabled ? 1 : 0,
+            provider.createdBy ?? null,
+            provider.createdAt,
+            provider.updatedAt,
+          )
+          .run()
+        return provider
+      },
+      async update(id, patch) {
+        const row = await db.prepare("SELECT * FROM provider_definition WHERE id = ?").bind(id).first<ProviderRow>()
+        if (!row) return
+        const next: ProviderDefinition = {
+          ...toProvider(row),
+          ...patch,
+          updatedAt: new Date().toISOString(),
+        }
+        await db
+          .prepare(
+            `UPDATE provider_definition SET display_name = ?, npm = ?, base_url = ?, api_key = ?, models_json = ?, headers_json = ?, env_json = ?, enabled = ?, updated_at = ? WHERE id = ?`,
+          )
+          .bind(
+            next.displayName,
+            next.npm ?? null,
+            next.baseURL ?? null,
+            next.apiKey ?? null,
+            JSON.stringify(next.models),
+            JSON.stringify(next.headers),
+            JSON.stringify(next.env),
+            next.enabled ? 1 : 0,
+            next.updatedAt,
+            id,
+          )
+          .run()
+        return next
+      },
+      async remove(id) {
+        const row = await db.prepare("SELECT org_id, provider_id FROM provider_definition WHERE id = ?").bind(id).first<{
+          org_id: string
+          provider_id: string
+        }>()
+        await db.prepare("DELETE FROM provider_definition WHERE id = ?").bind(id).run()
+        if (!row) return
+        await db
+          .prepare(
+            `DELETE FROM provider_grant WHERE provider_id = ? AND (
+               (scope = 'group' AND scope_id IN (SELECT id FROM access_group WHERE org_id = ?)) OR
+               (scope = 'user' AND scope_id IN (SELECT id FROM panel_user WHERE org_id = ?))
+             )`,
+          )
+          .bind(row.provider_id, row.org_id, row.org_id)
+          .run()
+      },
+      async grants(scope, scopeID) {
+        const rows = await db
+          .prepare("SELECT * FROM provider_grant WHERE scope = ? AND scope_id = ?")
+          .bind(scope, scopeID)
+          .all<ProviderGrantRow>()
+        return rows.results.map(toProviderGrant)
+      },
+      async grantsForScopes(scope, scopeIDs) {
+        if (scopeIDs.length === 0) return []
+        const placeholders = scopeIDs.map(() => "?").join(", ")
+        const rows = await db
+          .prepare(`SELECT * FROM provider_grant WHERE scope = ? AND scope_id IN (${placeholders})`)
+          .bind(scope, ...scopeIDs)
+          .all<ProviderGrantRow>()
+        return rows.results.map(toProviderGrant)
+      },
+      async setGrants(scope, scopeID, grants) {
+        await db.prepare("DELETE FROM provider_grant WHERE scope = ? AND scope_id = ?").bind(scope, scopeID).run()
+        for (const grant of grants) {
+          await db
+            .prepare("INSERT OR REPLACE INTO provider_grant (scope, scope_id, provider_id, effect, created_at) VALUES (?, ?, ?, ?, ?)")
+            .bind(scope, scopeID, grant.providerID, grant.effect, new Date().toISOString())
+            .run()
+        }
+      },
+      async removeGrantsForProvider(orgID, providerID) {
+        await db
+          .prepare(
+            `DELETE FROM provider_grant WHERE provider_id = ? AND (
+               (scope = 'group' AND scope_id IN (SELECT id FROM access_group WHERE org_id = ?)) OR
+               (scope = 'user' AND scope_id IN (SELECT id FROM panel_user WHERE org_id = ?))
+             )`,
+          )
+          .bind(providerID, orgID, orgID)
+          .run()
       },
     },
     sessions: {

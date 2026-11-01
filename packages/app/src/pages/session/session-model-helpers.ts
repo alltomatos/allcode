@@ -51,24 +51,42 @@ export const restorePromptModel = (
   local: ModelSelection,
   prompt: PromptState,
   fallback?: { providerID: string; modelID: string },
+  options?: {
+    canOverrideCorporate?: boolean
+    isProviderAllowed?: (providerID: string) => boolean
+  },
 ) => {
   const model = prompt.model.current()
-  if (!model) {
-    // No personal choice saved yet: the tenant default from the portal applies.
-    if (!fallback) return false
+  const canOverride = options?.canOverrideCorporate ?? true
+  const isAllowed = options?.isProviderAllowed ?? (() => true)
+
+  // 1. Session selection (User with Permission)
+  if (model) {
+    const modelAllowed = isAllowed(model.providerID)
+    const isCorporate = fallback && model.providerID === fallback.providerID
+    if (modelAllowed && (canOverride || isCorporate)) {
+      const current = local.model.current()
+      if (
+        current?.provider.id === model.providerID &&
+        current.id === model.modelID &&
+        local.model.variant.current() === (model.variant ?? undefined)
+      ) {
+        return true
+      }
+      local.model.set({ providerID: model.providerID, modelID: model.modelID })
+      local.model.variant.set(model.variant ?? undefined)
+      return true
+    }
+  }
+
+  // 2. Centralized corporate provider (Portal)
+  if (fallback && isAllowed(fallback.providerID)) {
     local.model.set({ providerID: fallback.providerID, modelID: fallback.modelID })
     local.model.variant.set(undefined)
     return true
   }
-  const current = local.model.current()
-  if (
-    current?.provider.id === model.providerID &&
-    current.id === model.modelID &&
-    local.model.variant.current() === (model.variant ?? undefined)
-  )
-    return true
-  local.model.set({ providerID: model.providerID, modelID: model.modelID })
-  local.model.variant.set(model.variant ?? undefined)
-  return true
+
+  // 3. Local fallback
+  return false
 }
 

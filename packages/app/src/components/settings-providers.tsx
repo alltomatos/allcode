@@ -11,6 +11,7 @@ import { useServerProtocol, useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
 import { DialogConnectProvider, useProviderConnectController } from "./dialog-connect-provider"
 import { DialogCustomProvider } from "./dialog-custom-provider"
+import { useProviderPolicy } from "@/context/tenant-provider-policy"
 import { SettingsList } from "./settings-list"
 import { SettingsServerPicker, SettingsServerScope } from "./settings-server-picker"
 
@@ -43,6 +44,7 @@ const SettingsProvidersContent: Component<{ onBack?: () => void }> = (props) => 
   const protocol = useServerProtocol()
   const serverSync = useServerSync()
   const providers = useProviders(() => undefined)
+  const providerPolicy = useProviderPolicy()
   const providerConnect = useProviderConnectController({ onBack: props.onBack })
   const [disconnecting, setDisconnecting] = createSignal<Set<string>>(new Set())
 
@@ -244,7 +246,7 @@ const SettingsProvidersContent: Component<{ onBack?: () => void }> = (props) => 
               )}
             </For>
 
-            <Show when={protocol() === "v1"}>
+            <Show when={protocol() === "v1" && providerPolicy.canCreateCustom()}>
               <div
                 class="flex items-center justify-between gap-4 min-h-16 border-b border-border-weak-base last:border-none flex-wrap py-3"
                 data-component="custom-provider-section"

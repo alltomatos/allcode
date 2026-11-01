@@ -1,9 +1,18 @@
 import { action, query, redirect } from "@solidjs/router"
 import { canManageOrganization, canManageUsers, canRemoveUsers, currentUser, requirePlatformAdmin, requireUser } from "./auth"
 import { generatePassword, hashPassword, verifyPassword } from "./crypto"
-import { parseOverrides, RESOURCES, type AccessOverrides } from "./access"
+import { parseOverrides, RESOURCES, isProviderAllowed, type AccessOverrides, type ProviderEffect } from "./access"
+import {
+  CUSTOM_PROVIDER_NPM,
+  isHttpUrl,
+  sanitizeEnv,
+  sanitizeHeaders,
+  sanitizeModels,
+  validProviderID,
+} from "./providers"
 import { usePanelSession } from "./session"
-import { store, type PanelUser, type Role } from "./store"
+import { store, type PanelUser, type ProviderDefinition, type Role } from "./store"
+import { resolveUserAccess } from "./user-access"
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const CREATABLE_ROLES: Role[] = ["admin", "member"]
@@ -246,6 +255,7 @@ export const updateUserAccess = action(async (
   const db = store()
   const target = await db.users.findByID(id)
   if (!target || target.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  if (target.role === "owner" && actor.role !== "owner") return { error: "users.new.error.forbidden" as const }
 
   await db.users.update(id, {
     accessOverrides: JSON.stringify(input.access),
@@ -375,9 +385,19 @@ export const updateSettings = action(async (form: FormData) => {
   const brandColor = String(form.get("brandColor") ?? "").trim()
   const defaultProvider = String(form.get("defaultProvider") ?? "").trim()
   const defaultModel = String(form.get("defaultModel") ?? "").trim()
+  const providerRestricted = form.get("providerRestricted") === "on" || form.get("providerRestricted") === "true"
+  const allowLocalProviders = form.get("allowLocalProviders") === "on" || form.get("allowLocalProviders") === "true"
 
   if (!name) return { error: "users.new.error.nameRequired" as const }
   const db = store()
+  if (defaultProvider) {
+    const catalog = await db.providers.list(actor.orgID)
+    // Tenants that never configured a catalog keep the legacy free-text default.
+    if (catalog.length > 0) {
+      const entry = catalog.find((provider) => provider.providerID === defaultProvider && provider.enabled)
+      if (!entry) return { error: "providers.error.unknownDefault" as const }
+    }
+  }
   await db.org.update(actor.orgID, {
     name,
     ssoMode,
@@ -388,6 +408,8 @@ export const updateSettings = action(async (form: FormData) => {
     brandColor: brandColor || "#10b981",
     defaultProvider: defaultProvider || undefined,
     defaultModel: defaultModel || undefined,
+    providerRestricted,
+    allowLocalProviders,
   })
   await db.audit.log({
     orgID: actor.orgID,
@@ -513,6 +535,196 @@ export const setGroupMembers = action(async (id: string, userIDs: string[]) => {
   await db.groups.setMembers(id, userIDs.filter((userID) => allowed.has(userID)))
   return { error: undefined }
 }, "panel.group.members")
+
+// ==========================================
+// CATÁLOGO DE PROVEDORES E PERMISSÕES
+// ==========================================
+
+function publicProvider(provider: ProviderDefinition) {
+  return provider
+}
+
+export type ProviderInput = {
+  providerID: string
+  displayName: string
+  kind: "builtin" | "custom" | "proxy"
+  baseURL?: string
+  apiKey?: string
+  models?: unknown
+  headers?: unknown
+  env?: unknown
+  enabled?: boolean
+}
+
+export const listProviders = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  return (await db.providers.list(actor.orgID)).map(publicProvider)
+}, "panel.providers")
+
+export const getProvider = query(async (id: string) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const provider = await db.providers.findByID(id)
+  if (!provider || provider.orgID !== actor.orgID) return null
+  return publicProvider(provider)
+}, "panel.provider")
+
+export const getProviderGrants = query(async (scope: "group" | "user", scopeID: string) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const provider = scope === "group" ? await db.groups.findByID(scopeID) : await db.users.findByID(scopeID)
+  if (!provider || provider.orgID !== actor.orgID) return []
+  return db.providers.grants(scope, scopeID)
+}, "panel.provider.grants")
+
+export const getProviderUsage = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const [users, providers] = await Promise.all([db.users.list(actor.orgID), db.providers.list(actor.orgID)])
+  const resolved = await Promise.all(users.map((user) => resolveUserAccess(user)))
+  return providers.map((provider) => ({
+    providerID: provider.providerID,
+    count: resolved.filter((entry) => isProviderAllowed(entry.providers, provider.providerID)).length,
+  }))
+}, "panel.providers.usage")
+
+export const createProvider = action(async (input: ProviderInput) => {  "use server"
+  const actor = await requireUser()
+  if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+
+  const providerID = input.providerID.trim().toLowerCase()
+  const displayName = input.displayName.trim()
+  if (!validProviderID(providerID)) return { error: "providers.error.invalidId" as const }
+  if (!displayName) return { error: "providers.error.nameRequired" as const }
+
+  const db = store()
+  if (await db.providers.findByProviderID(actor.orgID, providerID)) return { error: "providers.error.duplicate" as const }
+
+  const baseURL = input.baseURL?.trim()
+  if ((input.kind === "custom" || input.kind === "proxy") && (!baseURL || !isHttpUrl(baseURL))) {
+    return { error: "providers.error.invalidUrl" as const }
+  }
+
+  const created = await db.providers.create({
+    orgID: actor.orgID,
+    providerID,
+    displayName,
+    kind: input.kind,
+    npm: input.kind === "custom" || input.kind === "proxy" ? CUSTOM_PROVIDER_NPM : undefined,
+    baseURL: input.kind === "custom" || input.kind === "proxy" ? baseURL : undefined,
+    apiKey: input.apiKey?.trim() || undefined,
+    models: sanitizeModels(input.models),
+    headers: sanitizeHeaders(input.headers),
+    env: sanitizeEnv(input.env),
+    enabled: input.enabled ?? true,
+    createdBy: actor.id,
+  })
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "provider.created",
+    result: "allow",
+    targetType: "provider",
+    targetID: created.id,
+  })
+  return { error: undefined, id: created.id }
+}, "panel.provider.create")
+
+export const updateProvider = action(async (id: string, input: ProviderInput) => {
+  "use server"
+  const actor = await requireUser()
+  if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+
+  const db = store()
+  const provider = await db.providers.findByID(id)
+  if (!provider || provider.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+
+  const displayName = input.displayName.trim()
+  if (!displayName) return { error: "providers.error.nameRequired" as const }
+  const baseURL = (input.baseURL ?? provider.baseURL ?? "").trim()
+  const isProxyOrCustom = provider.kind === "custom" || provider.kind === "proxy"
+  if (isProxyOrCustom && !isHttpUrl(baseURL)) return { error: "providers.error.invalidUrl" as const }
+
+  await db.providers.update(id, {
+    displayName,
+    baseURL: isProxyOrCustom ? baseURL : undefined,
+    apiKey: input.apiKey !== undefined ? (input.apiKey.trim() || undefined) : provider.apiKey,
+    models: sanitizeModels(input.models),
+    headers: sanitizeHeaders(input.headers),
+    env: sanitizeEnv(input.env),
+    enabled: input.enabled ?? provider.enabled,
+  })
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "provider.updated",
+    result: "allow",
+    targetType: "provider",
+    targetID: id,
+  })
+  return { error: undefined }
+}, "panel.provider.update")
+
+export const removeProvider = action(async (id: string) => {
+  "use server"
+  const actor = await requireUser()
+  if (!canManageOrganization(actor)) return { error: "users.new.error.forbidden" as const }
+  const db = store()
+  const provider = await db.providers.findByID(id)
+  if (!provider || provider.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  await db.providers.remove(id)
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "provider.removed",
+    result: "allow",
+    targetType: "provider",
+    targetID: id,
+  })
+  return { error: undefined }
+}, "panel.provider.remove")
+
+export const setProviderGrants = action(
+  async (
+    scope: "group" | "user",
+    scopeID: string,
+    grants: Array<{ providerID: string; effect: ProviderEffect }>,
+  ) => {
+    "use server"
+    const actor = await requireUser()
+    if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+    const db = store()
+    const target = scope === "group" ? await db.groups.findByID(scopeID) : await db.users.findByID(scopeID)
+    if (!target || target.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+
+    const catalog = new Set((await db.providers.list(actor.orgID)).map((provider) => provider.providerID))
+    const clean = grants.filter((grant) => catalog.has(grant.providerID))
+    await db.providers.setGrants(
+      scope,
+      scopeID,
+      clean.map((grant) => ({ scope, scopeID, providerID: grant.providerID, effect: grant.effect })),
+    )
+    await db.audit.log({
+      orgID: actor.orgID,
+      actorID: actor.id,
+      actorEmail: actor.email,
+      action: "provider.access_changed",
+      result: "allow",
+      targetType: scope,
+      targetID: scopeID,
+    })
+    return { error: undefined }
+  },
+  "panel.provider.grants.set",
+)
 
 // ==========================================
 // AÇÕES DO SUPER-ADMIN (GESTÃO DE TENANTS)

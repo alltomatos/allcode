@@ -2,7 +2,7 @@ import { A, createAsync, revalidate, useAction } from "@solidjs/router"
 import { For, Show, createSignal } from "solid-js"
 import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { createUser, listGroups } from "~/lib/actions"
+import { createUser, listGroups, listProviders } from "~/lib/actions"
 
 type Issued = { email: string; password: string }
 
@@ -10,6 +10,7 @@ export default function NewUserPage() {
   const i18n = useI18n()
   const create = useAction(createUser)
   const groups = createAsync(() => listGroups())
+  const providers = createAsync(() => listProviders())
   const [issued, setIssued] = createSignal<Issued | null>(null)
   const [error, setError] = createSignal<string | null>(null)
   const [pending, setPending] = createSignal(false)
@@ -121,12 +122,12 @@ export default function NewUserPage() {
                 <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">
                   {i18n.t("access.defaults.title")}
                 </span>
-                <Field
-                  label={i18n.t("access.defaults.provider")}
-                  name="defaultProvider"
-                  placeholder="anthropic"
-                  autocomplete="off"
-                />
+                <Select label={i18n.t("access.defaults.provider")} name="defaultProvider">
+                  <option value="">—</option>
+                  <For each={(providers() ?? []).filter((provider) => provider.enabled)}>
+                    {(provider) => <option value={provider.providerID}>{provider.displayName}</option>}
+                  </For>
+                </Select>
                 <Field
                   label={i18n.t("access.defaults.model")}
                   name="defaultModel"

@@ -1,8 +1,23 @@
 import { A, createAsync, revalidate, useAction, useParams } from "@solidjs/router"
 import { For, Show, createEffect, createSignal } from "solid-js"
 import { Button, Card, EmptyState, PageHeader, Select } from "~/components/ui"
+import {
+  ProviderGrantRows,
+  providerGrantDraft,
+  providerGrantPayload,
+  type ProviderGrantDraft,
+} from "~/components/provider-grants"
 import { useI18n } from "~/i18n"
-import { getGroup, listUsers, removeGroup, setGroupMembers, updateGroup } from "~/lib/actions"
+import {
+  getGroup,
+  getProviderGrants,
+  listProviders,
+  listUsers,
+  removeGroup,
+  setGroupMembers,
+  setProviderGrants,
+  updateGroup,
+} from "~/lib/actions"
 import { RESOURCES, type Resource } from "~/lib/access"
 
 export default function GroupDetailPage() {
@@ -10,13 +25,17 @@ export default function GroupDetailPage() {
   const params = useParams()
   const group = createAsync(() => getGroup(params.id!))
   const users = createAsync(() => listUsers())
+  const providers = createAsync(() => listProviders())
+  const grants = createAsync(() => getProviderGrants("group", params.id!))
   const save = useAction(updateGroup)
   const saveMembers = useAction(setGroupMembers)
+  const saveGrants = useAction(setProviderGrants)
   const remove = useAction(removeGroup)
 
   const [draft, setDraft] = createSignal<Record<string, "inherit" | "allow" | "deny"> | null>(null)
   const [settings, setSettings] = createSignal<"inherit" | "allow" | "deny">("allow")
   const [memberDraft, setMemberDraft] = createSignal<string[] | null>(null)
+  const [providerDraft, setProviderDraft] = createSignal<ProviderGrantDraft>({})
   const [error, setError] = createSignal<string | null>(null)
   const [success, setSuccess] = createSignal<string | null>(null)
   const [pending, setPending] = createSignal(false)
@@ -34,6 +53,17 @@ export default function GroupDetailPage() {
     setMemberDraft(current.memberIDs ?? [])
   }
 
+  const [providerInitialized, setProviderInitialized] = createSignal(false)
+
+  function ensureProviderDraft() {
+    if (providerInitialized()) return
+    if (!providers() || !grants()) return
+    setProviderDraft(providerGrantDraft(providers()!, grants()!))
+    setProviderInitialized(true)
+  }
+
+  createEffect(ensureProviderDraft)
+
   createEffect(ensureDraft)
 
   async function onSave() {
@@ -47,6 +77,7 @@ export default function GroupDetailPage() {
     setPending(true)
     const result = await save(current.id, { access: overrides, canOpenSettings: settings() === "allow" })
     if (!result?.error) await saveMembers(current.id, memberDraft() ?? [])
+    if (!result?.error) await saveGrants("group", current.id, providerGrantPayload(providerDraft()))
     setPending(false)
     if (result?.error) {
       setError(i18n.t(result.error))
@@ -118,6 +149,21 @@ export default function GroupDetailPage() {
                     <option value="allow">{i18n.t("access.tristate.allow")}</option>
                     <option value="deny">{i18n.t("access.tristate.deny")}</option>
                   </Select>
+                </div>
+
+                <div class="mt-4 border-t border-slate-100 pt-3">
+                  <p class="mb-2 text-[11px] font-semibold uppercase tracking-wide text-slate-600">
+                    {i18n.t("providers.grants.title")}
+                  </p>
+                  <ProviderGrantRows
+                    providers={providers() ?? []}
+                    value={providerDraft()}
+                    disabled={pending()}
+                    onChange={(providerID, value) =>
+                      setProviderDraft({ ...providerDraft(), [providerID]: value })
+                    }
+                  />
+                  <p class="mt-2 text-[11px] text-slate-500">{i18n.t("providers.grants.hint")}</p>
                 </div>
 
                 <div class="mt-4 flex gap-2">
