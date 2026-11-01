@@ -25,6 +25,18 @@
             {
               "title": "Controle de Computador Accessibility-First e Worker de Alta Performance",
               "description": "O módulo de Computer Use agora suporta inspeção semântica da árvore de acessibilidade do sistema operacional (Windows UIAutomation), permitindo ao agente interagir diretamente por identificadores estáveis [ref_N] com feedback visual pulsante na tela. O mecanismo de injeção de input foi migrado para um worker nativo persistente com aceleração Win32, reduzindo a latência de execução para menos de 35ms por ação e adicionando classificação semântica de entrega e retry seguro."
+            },
+            {
+              "title": "Catálogo de Provedores por Protocolo e Provedores Customizados",
+              "description": "O portal agora permite aos gestores cadastrar provedores corporativos personalizados escolhendo entre os protocolos OpenAI e Anthropic compatíveis, sem a exigência de cadastrar uma chave de API global compartilhada. Inclui ferramenta de teste de conexão em tempo real que consulta o endpoint remoto e lista automaticamente os modelos disponíveis."
+            },
+            {
+              "title": "Controle Granular de Modelos e Credenciais Individuais",
+              "description": "Gestores podem ativar ou desativar modelos individualmente para o tenant. Cada colaborador pode agora configurar sua própria chave de API para os provedores permitidos diretamente no seu perfil do portal, e o AllCode Desktop sincroniza e bloqueia automaticamente provedores sem chave pessoal configurada."
+            },
+            {
+              "title": "Auditoria de Sessões de IA e Monitoramento de Uso",
+              "description": "Nova interface de Auditoria de Sessões no portal do tenant com métricas consolidadas (KPIs de sessões, tokens totais, custo em USD e duração), busca textual, filtros por colaborador e detalhamento individual do consumo por modelo em cada sessão."
             }
           ]
         }
