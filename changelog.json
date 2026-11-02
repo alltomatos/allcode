@@ -1,6 +1,32 @@
 {
   "releases": [
     {
+      "tag": "v1.27.3",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Planos e preços configuráveis no portal",
+              "description": "O super-admin agora cria planos comerciais com dois modelos: cobrança por usuário (ex.: R$ 65,00 por colaborador/mês) ou pacote fechado com assentos inclusos e valor opcional por usuário extra. Cada plano tem mínimo e máximo de assentos, descrição e status ativo/inativo, e é atribuído por empresa no cadastro, na tela da empresa e no painel da revenda. A receita mensal estimada e a comissão do parceiro passam a usar o preço real do plano contratado."
+            },
+            {
+              "title": "Limite de assentos realmente aplicado",
+              "description": "Criar um colaborador acima do limite contratado agora é bloqueado com mensagem clara, e os limites mínimo e máximo do plano são validados ao atribuir um plano ou alterar assentos — em vez de apenas informados na interface. Em empresas sem plano, continua valendo o preço padrão por assento."
+            },
+            {
+              "title": "Desktop explica o bloqueio e avisa antes do fim do trial",
+              "description": "Quando a empresa entra em período de avaliação, o AllCode Desktop exibe uma faixa com os dias restantes e reforça o aviso nos últimos três dias. Se o trial expirar ou a empresa for suspensa durante o uso, o app passa a mostrar o motivo correto — período de avaliação expirado ou acesso da empresa suspenso — em vez do aviso genérico de sessão revogada, mantendo plano e dias restantes sempre sincronizados com o portal."
+            },
+            {
+              "title": "Plano comercial visível na conta do usuário",
+              "description": "O modal de conta no desktop mostra o plano contratado, os dias restantes de avaliação e a quantidade de assentos da empresa."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.2",
       "highlights": [
         {
