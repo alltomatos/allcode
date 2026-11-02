@@ -417,6 +417,8 @@ function ServerScopedProviders(props: ServerScopedShellProps) {
   return (
     <LayoutProvider>
       {props.serverScoped}
+      {/* Must live under ServerSyncProvider: it reads server config and denies. */}
+      <TenantProviderPolicySync />
       <ModelsProvider directory={props.directory}>{props.children}</ModelsProvider>
     </LayoutProvider>
   )
@@ -656,7 +658,6 @@ export function AppInterface(props: {
                     component={props.router ?? Router}
                     root={(routerProps) => (
                       <TabsProvider>
-                        <TenantProviderPolicySync />
                         <PermissionProvider>
                           <NotificationProvider>
                             <ServerShell>
