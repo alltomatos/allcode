@@ -165,11 +165,11 @@ function getConfig() {
         ...base,
         appId,
         productName: "AllCode Dev",
-        // Same repo as prod, separate electron-updater channel ("dev" instead
-        // of "latest") — CI publishes here on every push to the dev branch so
+        // Public release feed repo, separate electron-updater channel ("dev"
+        // instead of "latest"). CI publishes here on every push to dev so
         // testers can install this build and get auto-updates that track dev,
         // without touching the prod release feed at all.
-        publish: { provider: "github", owner: "alltomatos", repo: "allcode", channel: "dev" },
+        publish: { provider: "github", owner: "alltomatos", repo: "allcode-release", channel: "dev" },
         deb: { fpm: [metainfoFpm(appId)] },
         rpm: { packageName: "allcode-dev", fpm: [metainfoFpm(appId)] },
       }
@@ -191,7 +191,10 @@ function getConfig() {
         appId,
         productName: "AllCode",
         protocols: { name: "AllCode", schemes: ["allcode"] },
-        publish: { provider: "github", owner: "alltomatos", repo: "allcode", channel: "latest" },
+        // The source repo is private; installers and update metadata live in
+        // the public release feed repo so electron-updater can fetch them
+        // without credentials.
+        publish: { provider: "github", owner: "alltomatos", repo: "allcode-release", channel: "latest" },
         deb: { fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },
         rpm: { packageName: "allcode", fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },
       }

@@ -21,46 +21,8 @@
           "source": "desktop",
           "items": [
             {
-              "title": "Planos e preços configuráveis no portal",
-              "description": "O super-admin agora cria planos comerciais com dois modelos: cobrança por usuário (ex.: R$ 65,00 por colaborador/mês) ou pacote fechado com assentos inclusos e valor opcional por usuário extra. Cada plano tem mínimo e máximo de assentos, descrição e status ativo/inativo, e é atribuído por empresa no cadastro, na tela da empresa e no painel da revenda. A receita mensal estimada e a comissão do parceiro passam a usar o preço real do plano contratado."
-            },
-            {
-              "title": "Limite de assentos realmente aplicado",
-              "description": "Criar um colaborador acima do limite contratado agora é bloqueado com mensagem clara, e os limites mínimo e máximo do plano são validados ao atribuir um plano ou alterar assentos — em vez de apenas informados na interface. Em empresas sem plano, continua valendo o preço padrão por assento."
-            },
-            {
               "title": "Desktop explica o bloqueio e avisa antes do fim do trial",
               "description": "Quando a empresa entra em período de avaliação, o AllCode Desktop exibe uma faixa com os dias restantes e reforça o aviso nos últimos três dias. Se o trial expirar ou a empresa for suspensa durante o uso, o app passa a mostrar o motivo correto — período de avaliação expirado ou acesso da empresa suspenso — em vez do aviso genérico de sessão revogada, mantendo plano e dias restantes sempre sincronizados com o portal."
-            },
-            {
-              "title": "Plano comercial visível na conta do usuário",
-              "description": "O modal de conta no desktop mostra o plano contratado, os dias restantes de avaliação e a quantidade de assentos da empresa."
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "tag": "v1.27.2",
-      "highlights": [
-        {
-          "source": "desktop",
-          "items": [
-            {
-              "title": "Módulo de revendas com painel próprio e comissões",
-              "description": "O portal ganhou um módulo completo de revendedores parceiros: o super-admin cadastra a revenda e recebe as credenciais de acesso, e o parceiro passa a ter um painel exclusivo para criar empresas clientes com logo, mensagem de boas-vindas e período de avaliação. O dashboard de revenda consolida empresas ativas, trials em andamento, trials expirados, colaboradores atendidos, receita mensal estimada da carteira e a comissão prevista, com isolamento rígido por revenda."
-            },
-            {
-              "title": "Período de avaliação com bloqueio automático",
-              "description": "Empresas criadas em modo trial passam a ter data de expiração controlada. Ao vencer o prazo, o acesso é bloqueado automaticamente: as chamadas de API respondem 403 com aviso de trial expirado e o portal redireciona os colaboradores para a tela de reativação, sem derrubar o ambiente nem perder dados. Administradores e revendas podem prorrogar o trial em +7, +14 ou +30 dias e converter a empresa para plano pago a qualquer momento."
-            },
-            {
-              "title": "Identidade visual e boas-vindas por empresa",
-              "description": "Cada empresa pode ter logo própria (PNG, JPG, SVG ou WEBP até 5MB) exibida no cabeçalho do portal e nas listagens, além de uma mensagem de boas-vindas que aparece em destaque no dashboard dos colaboradores no primeiro acesso."
-            },
-            {
-              "title": "Portal fala a língua do cliente",
-              "description": "Toda a interface do portal e as traduções em português, espanhol e inglês deixaram de usar o termo técnico \"tenant\" e passaram a falar \"empresa\", incluindo telas de gestão, auditoria, licenças e provedores."
             }
           ]
         }
@@ -91,18 +53,6 @@
             {
               "title": "Controle de Computador Accessibility-First e Worker de Alta Performance",
               "description": "O módulo de Computer Use agora suporta inspeção semântica da árvore de acessibilidade do sistema operacional (Windows UIAutomation), permitindo ao agente interagir diretamente por identificadores estáveis [ref_N] com feedback visual pulsante na tela. O mecanismo de injeção de input foi migrado para um worker nativo persistente com aceleração Win32, reduzindo a latência de execução para menos de 35ms por ação e adicionando classificação semântica de entrega e retry seguro."
-            },
-            {
-              "title": "Catálogo de Provedores por Protocolo e Provedores Customizados",
-              "description": "O portal agora permite aos gestores cadastrar provedores corporativos personalizados escolhendo entre os protocolos OpenAI e Anthropic compatíveis, sem a exigência de cadastrar uma chave de API global compartilhada. Inclui ferramenta de teste de conexão em tempo real que consulta o endpoint remoto e lista automaticamente os modelos disponíveis."
-            },
-            {
-              "title": "Controle Granular de Modelos e Credenciais Individuais",
-              "description": "Gestores podem ativar ou desativar modelos individualmente para o tenant. Cada colaborador pode agora configurar sua própria chave de API para os provedores permitidos diretamente no seu perfil do portal, e o AllCode Desktop sincroniza e bloqueia automaticamente provedores sem chave pessoal configurada."
-            },
-            {
-              "title": "Auditoria de Sessões de IA e Monitoramento de Uso",
-              "description": "Nova interface de Auditoria de Sessões no portal do tenant com métricas consolidadas (KPIs de sessões, tokens totais, custo em USD e duração), busca textual, filtros por colaborador e detalhamento individual do consumo por modelo em cada sessão."
             }
           ]
         }
@@ -115,20 +65,8 @@
           "source": "desktop",
           "items": [
             {
-              "title": "Perfis de acesso reutilizáveis (grupos) no Portal do Tenant",
-              "description": "O portal ganhou grupos de perfil com permissões por recurso (AgentUI, rotinas, servidores, provedores, modelos, combos, skills, memórias e MCP). Cada grupo pode ser atribuído a vários colaboradores e as permissões se somam sem revogar acessos concedidos por outro grupo."
-            },
-            {
-              "title": "Acesso individual, modelos padrão e bloqueio de Configurações",
-              "description": "Administradores podem definir overrides individuais que vencem os grupos, escolher o modelo padrão por colaborador e por tenant, e fechar o acesso às Configurações do Desktop. Os padrões aparecem automaticamente na primeira mensagem de cada sessão."
-            },
-            {
               "title": "Troca de senha no próprio aplicativo",
               "description": "O Desktop agora permite trocar a senha em um novo menu de conta, validando a senha atual e reportando erros localizados. Quando o administrador desativa a troca de senha, a opção some do menu."
-            },
-            {
-              "title": "Versão do aplicativo reportada ao portal",
-              "description": "Cada login e verificação de status envia a versão do AllCode Desktop em execução. O portal exibe a versão e a data do último reporte por colaborador para facilitar o suporte."
             }
           ]
         }
@@ -140,14 +78,6 @@
         {
           "source": "desktop",
           "items": [
-            {
-              "title": "Portal do Tenant: Dashboard de KPIs e Auditoria Executiva de Sessões",
-              "description": "O portal corporativo (allcode.alltomatos.dev.br) ganhou módulo de auditoria com resumos executivos, caminhos de workspace locais, timestamps e métricas de consumo (tokens de input/output/reasoning e custo USD). As páginas de colaborador exibem um grid de KPIs consolidados de produtividade e gasto de IA."
-            },
-            {
-              "title": "Controle Granular de Permissões (RBAC) e Bloqueio Imediato",
-              "description": "Administradores podem configurar permissões granulares por colaborador para uso de AgentUI, Rotinas e alteração própria de senha. O bloqueio ou suspensão de conta revoga o acesso imediatamente no desktop, desconectando o usuário e impedindo novas operações."
-            },
             {
               "title": "Proteção e Sincronização Dinâmica no Desktop",
               "description": "O AllCode Desktop sincroniza o status e as permissões ativas em segundo plano, ocultando ou bloqueando automaticamente abas e rotas restritas e reportando os dados de auditoria ao término de cada sessão de trabalho."

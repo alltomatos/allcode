@@ -1,17 +1,22 @@
 name: release-desktop
 
-# Builds and publishes the desktop app for Windows, macOS, and Linux whenever
-# the prod branch is promoted (or manually, as a retry/backfill). The version
-# comes from packages/desktop/package.json as committed on prod — bump it
-# there before promoting, the same way this fork already does locally.
+# Builds and publishes the desktop app for Windows, macOS, and Linux whenever a
+# release tag (vX.Y.Z) is pushed from dev (or manually, as a retry/backfill).
+# The version comes from packages/desktop/package.json and must match the tag.
+# Artifacts are published to the public feed repo alltomatos/allcode-release so
+# electron-updater works while the source repo stays private.
 on:
   push:
-    branches:
-      - prod
+    tags:
+      - "v*"
   workflow_dispatch: {}
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
@@ -43,6 +48,10 @@ jobs:
         shell: bash
         run: |
           version=$(node -p "require('./package.json').version")
+          if [ "${{ github.ref_type }}" = "tag" ] && [ "v${version}" != "${GITHUB_REF_NAME}" ]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match packages/desktop/package.json (v${version})" >&2
+            exit 1
+          fi
           echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Build and publish
@@ -56,7 +65,9 @@ jobs:
         env:
           OPENCODE_CHANNEL: prod
           OPENCODE_VERSION: ${{ steps.version.outputs.version }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # PAT with contents:write on alltomatos/allcode-release (the source
+          # repo is private, so GITHUB_TOKEN cannot publish there).
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
           CSC_IDENTITY_AUTO_DISCOVERY: false
           # macos-latest (arm64) OOM'd mid-build (V8 heap exhaustion) building
           # the --universal (arm64+x64) mac target — the main-process bundle
@@ -73,7 +84,7 @@ jobs:
     # electron-updater ignores draft releases, so without this step the
     # prod channel silently stops auto-updating. Un-draft only after all
     # three platform builds succeed, so a partial/failed build never ships
-    # as if complete.
+    # as if complete. Also syncs changelog.json to the public feed repo.
     needs: build
     if: github.repository == 'alltomatos/allcode'
     runs-on: ubuntu-latest
@@ -81,7 +92,23 @@ jobs:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       - name: Publish the prod release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         run: |
           version=$(node -p "require('./packages/desktop/package.json').version")
-          gh release edit "v${version}" --draft=false --latest --repo alltomatos/allcode
+          gh release edit "v${version}" --draft=false --latest --repo alltomatos/allcode-release
+      - name: Sync changelog to the public feed repo
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+        run: |
+          version=$(node -p "require('./packages/desktop/package.json').version")
+          content=$(base64 -w0 changelog.json)
+          sha=$(gh api repos/alltomatos/allcode-release/contents/changelog.json --jq .sha 2>/dev/null || true)
+          if [ -n "$sha" ]; then
+            gh api --method PUT repos/alltomatos/allcode-release/contents/changelog.json \
+              -f message="chore: sync changelog for v${version}" \
+              -f content="$content" -f branch=main -f sha="$sha" > /dev/null
+          else
+            gh api --method PUT repos/alltomatos/allcode-release/contents/changelog.json \
+              -f message="chore: sync changelog for v${version}" \
+              -f content="$content" -f branch=main > /dev/null
+          fi

@@ -7,14 +7,10 @@ import { useSettings } from "@/context/settings"
 import { persisted } from "@/utils/persist"
 import { DialogReleaseNotes, type Highlight } from "@/components/dialog-release-notes"
 
-// Each channel ships its own changelog: prod/beta/latest builds only ever
-// contain what actually landed on `prod` (see the release-promotion flow in
-// ORCHESTRATOR-ROADMAP.md), while every other channel (dev, and per-branch
-// preview builds) tracks unreleased work on `dev`. Pointing every channel at
-// `dev`'s changelog.json — the previous behavior — showed prod users
-// highlights for a version that isn't the one they're running.
-const CHANGELOG_BRANCH = ["prod", "beta", "latest"].includes(import.meta.env.VITE_OPENCODE_CHANNEL ?? "") ? "prod" : "dev"
-const CHANGELOG_URL = `https://raw.githubusercontent.com/alltomatos/allcode/${CHANGELOG_BRANCH}/changelog.json`
+// The source repository is private, so the release feed lives in the public
+// allcode-release repo. `changelog.json` there is synced by the release
+// workflow; both stable and dev builds read the same published changelog.
+const CHANGELOG_URL = "https://raw.githubusercontent.com/alltomatos/allcode-release/main/changelog.json"
 
 type Store = {
   version?: string

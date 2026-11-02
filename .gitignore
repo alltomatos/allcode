@@ -41,3 +41,11 @@ tsconfig.tsbuildinfo
 # the negation below — a trailing-slash directory ignore is a full-subtree prune.
 .claude/*
 !.claude/skills
+
+# Local credentials / env files
+.npmrc
+.dev.vars
+*.pem
+*.p12
+*.pfx
+

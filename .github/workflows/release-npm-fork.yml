@@ -13,14 +13,15 @@ on:
   push:
     branches:
       - dev
-      - prod
+    tags:
+      - "v*"
   workflow_dispatch: {}
 
 # A superseded dev-channel publish is never worth finishing — the newer push
-# publishes its own version anyway.
+# publishes its own version anyway. Tags (stable releases) are not cancelled.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
 
 permissions:
   contents: read
@@ -43,8 +44,12 @@ jobs:
         id: version
         run: |
           base=$(node -p "require('./packages/desktop/package.json').version")
-          if [ "${{ github.ref_name }}" = "prod" ]; then
-            echo "version=$base" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            if [ "v${base}" != "${GITHUB_REF_NAME}" ]; then
+              echo "Tag ${GITHUB_REF_NAME} does not match packages/desktop/package.json (v${base})" >&2
+              exit 1
+            fi
+            echo "version=${base}" >> "$GITHUB_OUTPUT"
             echo "tag=latest" >> "$GITHUB_OUTPUT"
           else
             echo "version=${base}-dev.${{ github.run_number }}" >> "$GITHUB_OUTPUT"

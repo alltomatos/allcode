@@ -1,6 +1,6 @@
 # Orchestrator Roadmap
 
-GitHub (alltomatos/allcode, branch default `prod`, trabalho em `dev`) é a fonte persistente de rastreamento; este arquivo é a visão estratégica. Branch `prod` só recebe promoções de release do app desktop. Links de issues de E01–E16 apontam para o repositório histórico `alltomatos/opencode`, onde foram publicadas.
+GitHub (alltomatos/allcode, branch default `dev`) é a fonte persistente de rastreamento; este arquivo é a visão estratégica. Releases saem de tags `vX.Y.Z` criadas em `dev`; a branch `prod` está congelada. Links de issues de E01–E16 apontam para o repositório histórico `alltomatos/opencode`, onde foram publicadas.
 
 ## Epics ativos e backlog
 
@@ -62,15 +62,16 @@ Já implementamos como **padrão de referência** o menu de "Modos" do composer 
 A partir de agora, mudanças de UI/UX se acumulam em `dev` e são publicadas em **lotes** (não uma versão por item). Números de versão podem pular (ex: v1.20.16 → v1.20.30) — o número em si não importa, só o conteúdo do release.
 
 **Branches:**
-- `dev` — branch de desenvolvimento. Todo o trabalho do dia a dia (features, correções, issues desta epic) é commitado aqui. Nada é publicado/lançado a partir daqui diretamente.
-- `prod` — branch de produção. Só builds e releases do app desktop saem daqui. Fica parada até `dev` estar "maduro" o suficiente pra promover.
+- `dev` — branch de desenvolvimento e única branch ativa. Todo o trabalho do dia a dia é commitado aqui.
+- `prod` — congelada como snapshot histórico. Não recebe mais promoções nem dispara releases.
+- **Release estável** — tag anotada `vX.Y.Z` criada a partir de `dev`.
 
-**Fluxo de promoção (dev → prod):**
+**Fluxo de release (tag a partir de `dev`):**
 1. Trabalhar e validar na `dev` (o app roda em modo dev com `OPENCODE_CHANNEL=dev`, sem afetar usuários).
-2. Antes de promover, bumpar a versão em `packages/desktop/package.json` (e `packages/app/package.json`) e commitar na `dev`.
-3. Quando o conjunto de mudanças estiver maduro e testado, promover: `git checkout prod && git merge dev` (fast-forward, já que `prod` nunca diverge por conta própria) `&& git push origin prod`.
-4. **O push pra `prod` dispara sozinho** o workflow [`release-desktop.yml`](./.github/workflows/release-desktop.yml), que builda Windows/macOS/Linux em paralelo e publica os três num único release do GitHub — não precisa mais buildar nada manualmente.
-5. Isso garante que ninguém recebe update com trabalho pela metade — o auto-updater do app aponta pros releases do GitHub, que só devem ser criados depois da promoção.
+2. Bumpar a versão em `packages/allcode`, `packages/app` e `packages/desktop` (mesmo número) e atualizar o `changelog.json`; commitar na `dev`.
+3. Criar a tag anotada no commit de release e empurrar: `git tag -a vX.Y.Z -m "vX.Y.Z" && git push origin dev && git push origin vX.Y.Z`.
+4. **O push da tag dispara sozinho** os workflows [`release-npm-fork.yml`](./.github/workflows/release-npm-fork.yml) (canal `latest` no npm) e [`release-desktop.yml`](./.github/workflows/release-desktop.yml), que builda Windows/macOS/Linux em paralelo e publica no feed público `alltomatos/allcode-release`.
+5. Isso garante que ninguém recebe update com trabalho pela metade — o auto-updater aponta para os releases do feed público, criados apenas a partir de tags.
 
 Nota: o workflow de CI em `.github/workflows/publish.yml` é herdado do projeto original e só roda quando `github.repository == 'anomalyco/opencode'` — no nosso fork ele nunca dispara (é diferente do nosso `release-desktop.yml`, que é próprio deste fork e não tem esse gate).
 

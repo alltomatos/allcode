@@ -1,47 +1,34 @@
-# Security
+# Security Policy
 
-## IMPORTANT
+## Reporting a vulnerability
 
-We do not accept AI generated security reports. We receive a large number of
-these and we absolutely do not have the resources to review them all. If you
-submit one that will be an automatic ban from the project.
+The AllCode repository is private and maintained by Alltomatos. Please **do not** open public issues for security problems.
 
-## Threat Model
+Report privately through either channel:
 
-### Overview
+- GitHub Security Advisories: <https://github.com/alltomatos/allcode/security/advisories/new>
+- Email: security@alltomatos.com (include reproduction steps, affected version/commit and impact)
 
-OpenCode is an AI-powered coding assistant that runs locally on your machine. It provides an agent system with access to powerful tools including shell execution, file operations, and web access.
+You will get an acknowledgement within 72 hours. Please give us reasonable time to ship a fix before any disclosure.
 
-### No Sandbox
+## Scope
 
-OpenCode does **not** sandbox the agent. The permission system exists as a UX feature to help users stay aware of what actions the agent is taking - it prompts for confirmation before executing commands, writing files, etc. However, it is not designed to provide security isolation.
+In scope:
 
-If you need true isolation, run OpenCode inside a Docker container or VM.
+- The desktop app (`packages/desktop`, `packages/app`), the CLI/server (`packages/allcode`, `packages/core`, `packages/llm`) and the tenant portal (`packages/panel`).
+- Release and update infrastructure (npm packages, GitHub releases, update feeds).
+- CI workflows and repository configuration.
 
-### Server Mode
+Out of scope:
 
-Server mode is opt-in only. When enabled, set `OPENCODE_SERVER_PASSWORD` to require HTTP Basic Auth. Without this, the server runs unauthenticated (with a warning). It is the end user's responsibility to secure the server - any functionality it provides is not a vulnerability.
+- The AI agent's lack of sandboxing. The permission system is a UX safeguard, not a security boundary; for real isolation run the agent in a container/VM.
+- Self-hosted server mode left unauthenticated without `OPENCODE_SERVER_PASSWORD`.
+- Vulnerabilities that require an attacker to already control the local machine or the operator account.
 
-### Out of Scope
+## Supported versions
 
-| Category                        | Rationale                                                               |
-| ------------------------------- | ----------------------------------------------------------------------- |
-| **Server access when opted-in** | If you enable server mode, API access is expected behavior              |
-| **Sandbox escapes**             | The permission system is not a sandbox (see above)                      |
-| **LLM provider data handling**  | Data sent to your configured LLM provider is governed by their policies |
-| **MCP server behavior**         | External MCP servers you configure are outside our trust boundary       |
-| **Malicious config files**      | Users control their own config; modifying it is not an attack vector    |
+Only the newest `prod` release (and the current `dev` prerelease channel) receive fixes. Older published versions are not patched; upgrade to the latest release.
 
----
+## Handling secrets
 
-# Reporting Security Issues
-
-We appreciate your efforts to responsibly disclose your findings, and will make every effort to acknowledge your contributions.
-
-To report a security issue, please use the GitHub Security Advisory ["Report a Vulnerability"](https://github.com/anomalyco/opencode/security/advisories/new) tab.
-
-The team will send a response indicating the next steps in handling your report. After the initial reply to your report, the security team will keep you informed of the progress towards a fix and full announcement, and may ask for additional information or guidance.
-
-## Escalation
-
-If you do not receive an acknowledgement of your report within 6 business days, you may send an email to security@anoma.ly
+Never include real credentials, tokens or customer data in a report. Redact them.

@@ -5,8 +5,11 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
+    "predev": "bun ./script/fix-solid-start-windows.ts",
     "dev": "vite dev",
+    "prebuild": "bun ./script/fix-solid-start-windows.ts",
     "build": "vite build",
+    "prebuild:cloudflare": "bun ./script/fix-solid-start-windows.ts",
     "build:cloudflare": "vite build && bun ./script/finalize.ts",
     "bump": "bun ./script/bump.ts",
     "bump:patch": "bun ./script/bump.ts patch",

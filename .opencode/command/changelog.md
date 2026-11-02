@@ -26,6 +26,7 @@ Rules:
 - Omit empty subsections
 - Keep one bullet per commit you keep
 - Skip commits that are entirely internal, CI, tests, refactors, or otherwise not user-facing
+- Never include tenant/portal changes. Anything whose primary surface is the SaaS portal (`packages/panel`: companies/tenants, users, plans, billing, trials, seats, resellers, branding, portal audit, admin area) must be omitted entirely. If a commit touches both the desktop app and the portal, describe only the desktop effect.
 - Start each bullet with a capital letter
 - Prefer what changed for users over what code changed internally
 - Do not copy raw commit prefixes like `fix:` or `feat:` or trailing PR numbers like `(#123)`

@@ -32,32 +32,33 @@ Este é um fork pessoal do [OpenCode](https://github.com/anomalyco/opencode), ma
 
 ### Branches
 
-Este fork trabalha com duas branches:
+Este fork trabalha com **uma branch de desenvolvimento** e releases por tag:
 
-- **`prod`** — branch de produção. Só ela gera releases publicados (o app instalado e o auto-updater apontam pra cá). É pra onde `dev` é promovida quando um lote de mudanças está maduro.
-- **`dev`** — branch de desenvolvimento. Todo o trabalho novo (features, correções, UI/UX) acontece aqui primeiro, roda em modo dev localmente pra validar, e só depois é promovida pra `prod`.
+- **`dev`** — branch de desenvolvimento. Todo o trabalho novo (features, correções, UI/UX) acontece aqui.
+- **`prod`** — congelada como snapshot histórico. Não recebe mais promoções e não dispara releases.
+- **Release estável** — criada a partir de `dev` com uma tag anotada `vX.Y.Z`. O push da tag dispara os workflows de publicação.
 
 ### App Desktop (produção)
 
-Baixe o instalador direto na [página de releases](https://github.com/alltomatos/allcode/releases/latest) — sempre gerado a partir da branch `prod`.
+Baixe o instalador na [página de releases](https://github.com/alltomatos/allcode-release/releases/latest) — o feed público `alltomatos/allcode-release` hospeda os instaladores e os metadados do updater; o código-fonte fica no repositório privado.
 
 | Plataforma       | Download                                  |
 | ---------------- | ------------------------------------------ |
-| Windows          | `opencode-desktop-win-x64.exe` (instalador NSIS) |
-| macOS (Intel/ARM) | `opencode-desktop-mac-x64.dmg` / `opencode-desktop-mac-arm64.dmg` |
-| Linux (Debian/Ubuntu) | `opencode-desktop-linux-x64.deb`      |
-| Linux (Fedora/RHEL)   | `opencode-desktop-linux-x64.rpm`      |
-| Linux (universal)     | `opencode-desktop-linux-x64.AppImage` |
+| Windows          | `allcode-desktop-win-x64.exe` (instalador NSIS) |
+| macOS (Intel/ARM) | `allcode-desktop-mac-universal.dmg` |
+| Linux (Debian/Ubuntu) | `allcode-desktop-linux-amd64.deb`      |
+| Linux (Fedora/RHEL)   | `allcode-desktop-linux-x86_64.rpm`      |
+| Linux (universal)     | `allcode-desktop-linux-x86_64.AppImage` |
 
-No Windows, baixe e rode o `opencode-desktop-win-x64.exe` (instalador NSIS) — sem necessidade de script. No macOS e Linux, baixe o instalador correspondente e instale manualmente (`.dmg`, `dpkg -i *.deb`, `rpm -i *.rpm`, ou dê permissão de execução no `.AppImage`).
+No Windows, baixe e rode o `.exe` (instalador NSIS) — sem necessidade de script. No macOS e Linux, baixe o instalador correspondente e instale manualmente (`.dmg`, `dpkg -i *.deb`, `rpm -i *.rpm`, ou dê permissão de execução no `.AppImage`).
 
 > **Nota (macOS):** os builds de Mac não são assinados/notarizados por este fork (não temos uma conta Apple Developer configurada). Na primeira abertura o Gatekeeper vai avisar que o app "não pode ser verificado" — clique com o botão direito no app → **Abrir** para liberar manualmente.
 
-O app verifica atualizações automaticamente contra este repositório (`alltomatos/allcode`), não contra o projeto original.
+O app verifica atualizações automaticamente contra o feed público (`alltomatos/allcode-release`), não contra o projeto original nem contra o repositório de código.
 
 ### Rodando em desenvolvimento
 
-Pra validar mudanças antes de promover `dev` pra `prod`, rode o app desktop localmente a partir da branch `dev`:
+Rode o app desktop localmente a partir da branch `dev`:
 
 ```bash
 git clone https://github.com/alltomatos/allcode.git
@@ -80,7 +81,7 @@ bun run package:linux   # Linux — precisa de dpkg/rpm/fpm disponíveis
 
 O instalador gerado fica em `packages/desktop/dist/`.
 
-**Publicação real é automática**: assim que a branch `prod` recebe um push (a promoção `dev` → `prod`), o workflow [`release-desktop.yml`](./.github/workflows/release-desktop.yml) dispara sozinho e builda Windows/macOS/Linux em paralelo (`windows-latest`/`macos-latest`/`ubuntu-latest`), publicando os três num único release do GitHub com a versão que estiver em `packages/desktop/package.json` no momento do push. Não precisa mais buildar nada manualmente nesta máquina — só bumpar a versão, commitar, e promover. Pra reexecutar manualmente (ex: retry de uma plataforma que falhou), use `gh workflow run release-desktop.yml`.
+**Publicação real é automática**: ao empurrar uma tag anotada `vX.Y.Z` criada em `dev`, o workflow [`release-desktop.yml`](./.github/workflows/release-desktop.yml) dispara e builda Windows/macOS/Linux em paralelo (`windows-latest`/`macos-latest`/`ubuntu-latest`), publicando os três num único release do feed público `alltomatos/allcode-release`. A tag precisa bater com a versão de `packages/desktop/package.json`. Pra reexecutar manualmente (ex: retry de uma plataforma que falhou), use `gh workflow run release-desktop.yml`.
 
 ### CLI via npm (canais dev/prod)
 
@@ -88,10 +89,10 @@ Além do app desktop, o CLI deste fork é publicado direto no npm sob o escopo `
 
 ```bash
 npm install -g @alltomatos/allcode@dev     # última publicada a cada push em dev
-npm install -g @alltomatos/allcode@latest  # última publicada a cada push em prod
+npm install -g @alltomatos/allcode@latest  # última publicada a cada tag vX.Y.Z
 ```
 
-Publicação é automática pelo workflow [`release-npm-fork.yml`](./.github/workflows/release-npm-fork.yml): builda os binários (cross-compilados num único runner) e publica com a tag correspondente à branch. Útil pra testar mudanças de `dev` via CLI/servidor sem precisar instalar o app desktop.
+Publicação é automática pelo workflow [`release-npm-fork.yml`](./.github/workflows/release-npm-fork.yml): push em `dev` publica no canal `dev`; push de tag `vX.Y.Z` publica no canal `latest`. Útil pra testar mudanças de `dev` via CLI/servidor sem precisar instalar o app desktop.
 
 ### Memória entre sessões
 
