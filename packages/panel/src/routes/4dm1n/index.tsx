@@ -4,7 +4,7 @@ import { Badge, EmptyState, PageHeader, StatGrid, buttonClass } from "~/componen
 import { useI18n } from "~/i18n"
 import { getPlatformStats, listTenants } from "~/lib/actions"
 import { getEffectiveOrgStatus, getTrialDaysRemaining } from "~/lib/store"
-import { formatDate } from "~/lib/labels"
+import { formatBRL, formatDate } from "~/lib/labels"
 
 export default function PlatformTenantsPage() {
   const i18n = useI18n()
@@ -26,6 +26,9 @@ export default function PlatformTenantsPage() {
         subtitle="Controle todas as empresas clientes, personalizações, ciclos de trial e licenças."
         actions={
           <div class="flex items-center gap-2">
+            <A href="/4dm1n/planos" class={buttonClass("secondary", "md")}>
+              💰 Planos e Preços
+            </A>
             <A href="/4dm1n/revendedores" class={buttonClass("secondary", "md")}>
               🤝 Revendedores
             </A>
@@ -46,6 +49,10 @@ export default function PlatformTenantsPage() {
                 { label: "Em Período de Trial", value: current().trialTenants },
                 { label: "Expiradas / Suspensas", value: current().expiredTenants },
                 { label: "Total de Colaboradores", value: current().totalUsersAcrossTenants },
+                {
+                  label: "Receita Mensal Estimada",
+                  value: formatBRL(current().estimatedMonthlyRevenue),
+                },
               ]}
             />
           </div>

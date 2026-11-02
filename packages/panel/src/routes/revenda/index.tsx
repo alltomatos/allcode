@@ -4,7 +4,7 @@ import { Badge, EmptyState, PageHeader, StatGrid, buttonClass } from "~/componen
 import { useI18n } from "~/i18n"
 import { getResellerDashboard } from "~/lib/actions"
 import { getEffectiveOrgStatus, getTrialDaysRemaining } from "~/lib/store"
-import { formatDate } from "~/lib/labels"
+import { formatDate, formatBRL } from "~/lib/labels"
 
 export default function ResellerDashboardPage() {
   const i18n = useI18n()
@@ -17,10 +17,6 @@ export default function ResellerDashboardPage() {
     if (!term) return list
     return list.filter((t) => t.name.toLowerCase().includes(term) || t.slug.toLowerCase().includes(term))
   })
-
-  function formatBRL(amount: number) {
-    return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(amount)
-  }
 
   return (
     <div>

@@ -17,6 +17,29 @@ import { resolveUserAccess } from "./user-access"
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const CREATABLE_ROLES: Role[] = ["admin", "member"]
 
+/** Accepts "65", "65,00", "65.00" and "1.234,56" and returns cents. */
+export function parseCurrencyToCents(input: unknown): number {
+  const raw = String(input ?? "").trim().replace(/[R$\s]/g, "")
+  if (!raw) return 0
+  const normalized = raw.includes(",") ? raw.replace(/\./g, "").replace(",", ".") : raw
+  const value = Number(normalized)
+  if (!Number.isFinite(value) || value < 0) return 0
+  return Math.round(value * 100)
+}
+
+type SeatLimits = { minUsers?: number; maxUsers?: number }
+
+/** Validates a seat count against the assigned plan bounds. */
+export function seatLimitError(plan: SeatLimits | null | undefined, seats: number) {
+  if (!plan) return undefined
+  const min = plan.minUsers ?? 1
+  if (seats < min) return { error: "admin.plans.error.belowMinUsers" as const, min }
+  if (plan.maxUsers && seats > plan.maxUsers) {
+    return { error: "admin.plans.error.aboveMaxUsers" as const, max: plan.maxUsers }
+  }
+  return undefined
+}
+
 /** Reads the tri-state access matrix rendered by the portal forms. */
 export function accessFromForm(form: FormData): AccessOverrides {
   const overrides: AccessOverrides = {}
@@ -271,6 +294,12 @@ export const createUser = action(async (form: FormData) => {
   if (!CREATABLE_ROLES.includes(role)) return { error: "users.new.error.forbidden" as const }
 
   const db = store()
+  const org = await db.org.get(actor.orgID)
+  const seats = await db.users.count(actor.orgID)
+  if (seats.total >= org.maxUsers) {
+    return { error: "users.new.error.seatLimit" as const, limit: org.maxUsers, used: seats.total }
+  }
+
   const password = generatePassword()
   const created = await db.users.create({
     orgID: actor.orgID,
@@ -933,6 +962,183 @@ export const getPlatformStats = query(async () => {
   return db.org.stats()
 }, "panel.admin.stats")
 
+export const listPlans = query(async (activeOnly?: boolean) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  return db.plans.list({ activeOnly: activeOnly ?? !actor.isPlatformAdmin })
+}, "panel.plans")
+
+export const createPlan = action(async (form: FormData) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+  const db = store()
+
+  const name = String(form.get("name") ?? "").trim()
+  const slug = String(form.get("slug") ?? "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "-")
+  const description = String(form.get("description") ?? "").trim() || undefined
+  const pricingMode = String(form.get("pricingMode") ?? "per_user") === "package" ? "package" : "per_user"
+  const priceCents = parseCurrencyToCents(form.get("price"))
+  const includedUsersRaw = Number(form.get("includedUsers") ?? 0)
+  const includedUsers = pricingMode === "package" ? Math.max(1, includedUsersRaw || 1) : undefined
+  const extraUserPriceCents =
+    pricingMode === "package" ? parseCurrencyToCents(form.get("extraUserPrice")) : undefined
+  const minUsersRaw = Number(form.get("minUsers") ?? 1)
+  const minUsers = Math.max(1, minUsersRaw || 1)
+  const maxUsersRaw = Number(form.get("maxUsers") ?? 0)
+  const maxUsers = maxUsersRaw > 0 ? Math.max(minUsers, maxUsersRaw) : undefined
+  const isActive = form.get("isActive") !== null
+  const sortOrderRaw = Number(form.get("sortOrder") ?? 0)
+  const sortOrder = Number.isFinite(sortOrderRaw) ? sortOrderRaw : 0
+
+  if (!name) return { error: "admin.plans.error.nameRequired" as const }
+  if (!slug) return { error: "admin.plans.error.slugRequired" as const }
+  if (priceCents <= 0) return { error: "admin.plans.error.priceRequired" as const }
+  if (await db.plans.findBySlug(slug)) return { error: "admin.plans.error.slugTaken" as const }
+
+  const plan = await db.plans.create({
+    name,
+    slug,
+    description,
+    pricingMode,
+    priceCents,
+    includedUsers,
+    extraUserPriceCents,
+    minUsers,
+    maxUsers,
+    isActive,
+    sortOrder,
+  })
+
+  await db.audit.log({
+    orgID: admin.orgID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: "plan.created",
+    result: "allow",
+    targetType: "plan",
+    targetID: plan.id,
+  })
+
+  return { error: undefined, planId: plan.id, planName: plan.name }
+}, "panel.admin.plan.create")
+
+export const updatePlan = action(async (planID: string, form: FormData) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+  const db = store()
+
+  const current = await db.plans.findByID(planID)
+  if (!current) return { error: "admin.plans.error.notFound" as const }
+
+  const name = String(form.get("name") ?? "").trim()
+  const slug = String(form.get("slug") ?? "").trim().toLowerCase().replace(/[^a-z0-9-]/g, "-")
+  const description = String(form.get("description") ?? "").trim() || undefined
+  const pricingMode = String(form.get("pricingMode") ?? "per_user") === "package" ? "package" : "per_user"
+  const priceCents = parseCurrencyToCents(form.get("price"))
+  const includedUsersRaw = Number(form.get("includedUsers") ?? 0)
+  const includedUsers = pricingMode === "package" ? Math.max(1, includedUsersRaw || 1) : undefined
+  const extraUserPriceCents =
+    pricingMode === "package" ? parseCurrencyToCents(form.get("extraUserPrice")) : undefined
+  const minUsersRaw = Number(form.get("minUsers") ?? 1)
+  const minUsers = Math.max(1, minUsersRaw || 1)
+  const maxUsersRaw = Number(form.get("maxUsers") ?? 0)
+  const maxUsers = maxUsersRaw > 0 ? Math.max(minUsers, maxUsersRaw) : undefined
+  const isActive = form.get("isActive") !== null
+  const sortOrderRaw = Number(form.get("sortOrder") ?? 0)
+  const sortOrder = Number.isFinite(sortOrderRaw) ? sortOrderRaw : 0
+
+  if (!name) return { error: "admin.plans.error.nameRequired" as const }
+  if (!slug) return { error: "admin.plans.error.slugRequired" as const }
+  if (priceCents <= 0) return { error: "admin.plans.error.priceRequired" as const }
+  const slugOwner = await db.plans.findBySlug(slug)
+  if (slugOwner && slugOwner.id !== planID) return { error: "admin.plans.error.slugTaken" as const }
+
+  await db.plans.update(planID, {
+    name,
+    slug,
+    description,
+    pricingMode,
+    priceCents,
+    includedUsers,
+    extraUserPriceCents,
+    minUsers,
+    maxUsers,
+    isActive,
+    sortOrder,
+  })
+
+  await db.audit.log({
+    orgID: admin.orgID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: "plan.updated",
+    result: "allow",
+    targetType: "plan",
+    targetID: planID,
+  })
+
+  return { error: undefined }
+}, "panel.admin.plan.update")
+
+export const setPlanActive = action(async (planID: string, isActive: boolean) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+  const db = store()
+  await db.plans.update(planID, { isActive })
+  await db.audit.log({
+    orgID: admin.orgID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: isActive ? "plan.activated" : "plan.deactivated",
+    result: "allow",
+    targetType: "plan",
+    targetID: planID,
+  })
+  return { error: undefined }
+}, "panel.admin.plan.active")
+
+export const removePlan = action(async (planID: string) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+  const db = store()
+  await db.plans.remove(planID)
+  await db.audit.log({
+    orgID: admin.orgID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: "plan.removed",
+    result: "allow",
+    targetType: "plan",
+    targetID: planID,
+  })
+  return { error: undefined }
+}, "panel.admin.plan.remove")
+
+export const setTenantPlan = action(async (orgID: string, planID: string) => {
+  "use server"
+  const admin = await requirePlatformAdmin()
+  const db = store()
+  const org = await db.org.get(orgID)
+  if (planID) {
+    const plan = await db.plans.findByID(planID)
+    if (!plan) return { error: "admin.plans.error.notFound" as const }
+    const limitError = seatLimitError(plan, org.maxUsers)
+    if (limitError) return limitError
+  }
+  await db.org.update(orgID, { planID: planID || undefined })
+  await db.audit.log({
+    orgID,
+    actorID: admin.id,
+    actorEmail: admin.email,
+    action: "tenant.plan_changed",
+    result: "allow",
+    targetType: "org",
+    targetID: orgID,
+  })
+  return { error: undefined }
+}, "panel.admin.tenant.plan")
+
 export const createTenant = action(async (form: FormData) => {
   "use server"
   const admin = await requirePlatformAdmin()
@@ -944,6 +1150,7 @@ export const createTenant = action(async (form: FormData) => {
   const ownerEmail = String(form.get("ownerEmail") ?? "").trim().toLowerCase()
   const logoUrl = String(form.get("logoUrl") ?? "").trim() || undefined
   const welcomeMessage = String(form.get("welcomeMessage") ?? "").trim() || undefined
+  const planID = String(form.get("planID") ?? "").trim() || undefined
   const planType = String(form.get("planType") ?? "trial") === "paid" ? "paid" : "trial"
   const trialDaysRaw = Number(form.get("trialDays") ?? 14)
   const trialDays = planType === "trial" ? (isNaN(trialDaysRaw) || trialDaysRaw <= 0 ? 14 : trialDaysRaw) : undefined
@@ -961,6 +1168,11 @@ export const createTenant = action(async (form: FormData) => {
   const existingUser = await db.users.findByEmail(ownerEmail)
   if (existingUser) return { error: "users.new.error.emailTaken" as const }
 
+  const plan = planID ? await db.plans.findByID(planID) : undefined
+  if (planID && !plan) return { error: "admin.plans.error.notFound" as const }
+  const planLimitError = seatLimitError(plan, maxUsers)
+  if (planLimitError) return planLimitError
+
   // 1. Criar Organização / Empresa
   const org = await db.org.create({
     name,
@@ -972,6 +1184,7 @@ export const createTenant = action(async (form: FormData) => {
     planType,
     trialDays,
     resellerID,
+    planID,
   })
 
   // 2. Criar Gestor / Proprietário da Empresa com senha temporária
@@ -1026,6 +1239,10 @@ export const updateTenantLimits = action(async (orgID: string, maxUsers: number)
   "use server"
   const admin = await requirePlatformAdmin()
   const db = store()
+  const org = await db.org.get(orgID)
+  const plan = org.planID ? await db.plans.findByID(org.planID) : undefined
+  const limitError = seatLimitError(plan, maxUsers)
+  if (limitError) return limitError
   await db.org.update(orgID, { maxUsers })
   await db.audit.log({
     orgID,
@@ -1261,6 +1478,7 @@ export const createTenantByReseller = action(async (form: FormData) => {
   const ownerEmail = String(form.get("ownerEmail") ?? "").trim().toLowerCase()
   const logoUrl = String(form.get("logoUrl") ?? "").trim() || undefined
   const welcomeMessage = String(form.get("welcomeMessage") ?? "").trim() || undefined
+  const planID = String(form.get("planID") ?? "").trim() || undefined
   const trialDaysRaw = Number(form.get("trialDays") ?? 14)
   const trialDays = isNaN(trialDaysRaw) || trialDaysRaw <= 0 ? 14 : trialDaysRaw
 
@@ -1275,6 +1493,13 @@ export const createTenantByReseller = action(async (form: FormData) => {
   const existingUser = await db.users.findByEmail(ownerEmail)
   if (existingUser) return { error: "users.new.error.emailTaken" as const }
 
+  const plan = planID ? await db.plans.findByID(planID) : undefined
+  if (planID && (!plan || (!plan.isActive && !actor.isPlatformAdmin))) {
+    return { error: "admin.plans.error.notFound" as const }
+  }
+  const planLimitError = seatLimitError(plan, maxUsers)
+  if (planLimitError) return planLimitError
+
   // Provisiona a nova empresa cliente atribuída a esta revenda
   const org = await db.org.create({
     name,
@@ -1286,6 +1511,7 @@ export const createTenantByReseller = action(async (form: FormData) => {
     planType: "trial",
     trialDays,
     resellerID: resellerID || undefined,
+    planID,
   })
 
   // Cria o gestor inicial da empresa cliente
@@ -1317,6 +1543,38 @@ export const createTenantByReseller = action(async (form: FormData) => {
     tempPassword,
   }
 }, "panel.reseller.tenant.create")
+
+export const setResellerTenantPlan = action(async (orgID: string, planID: string) => {
+  "use server"
+  const actor = await requireReseller()
+  const db = store()
+  const org = await db.org.get(orgID)
+
+  if (!actor.isPlatformAdmin && org.resellerID !== actor.resellerID) {
+    return { error: "reseller.error.unauthorized" as const }
+  }
+
+  if (planID) {
+    const plan = await db.plans.findByID(planID)
+    if (!plan || (!plan.isActive && !actor.isPlatformAdmin)) {
+      return { error: "admin.plans.error.notFound" as const }
+    }
+    const limitError = seatLimitError(plan, org.maxUsers)
+    if (limitError) return limitError
+  }
+
+  await db.org.update(orgID, { planID: planID || undefined })
+  await db.audit.log({
+    orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "tenant.plan_changed",
+    result: "allow",
+    targetType: "org",
+    targetID: orgID,
+  })
+  return { error: undefined }
+}, "panel.reseller.tenant.plan")
 
 export const setResellerTenantStatus = action(async (orgID: string, status: "active" | "suspended") => {
   "use server"
@@ -1350,6 +1608,10 @@ export const updateResellerTenantLimits = action(async (orgID: string, maxUsers:
   if (!actor.isPlatformAdmin && org.resellerID !== actor.resellerID) {
     return { error: "reseller.error.unauthorized" as const }
   }
+
+  const plan = org.planID ? await db.plans.findByID(org.planID) : undefined
+  const limitError = seatLimitError(plan, maxUsers)
+  if (limitError) return limitError
 
   await db.org.update(orgID, { maxUsers })
   await db.audit.log({

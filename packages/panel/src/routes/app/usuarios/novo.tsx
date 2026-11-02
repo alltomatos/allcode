@@ -31,6 +31,12 @@ export default function NewUserPage() {
     setPending(false)
     if (!result) return
     if (result.error) {
+      if (result.error === "users.new.error.seatLimit") {
+        setError(
+          `Limite de ${result.limit} colaboradores do plano atingido (${result.used} em uso). Aumente os assentos no portal ou remova um usuário.`,
+        )
+        return
+      }
       setError(i18n.t(result.error))
       return
     }

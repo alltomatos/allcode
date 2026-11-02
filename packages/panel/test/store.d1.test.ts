@@ -1,7 +1,14 @@
 import { Database } from "bun:sqlite"
 import { describe, expect, test } from "bun:test"
 import { generatePassword, hashPassword, verifyPassword } from "../src/lib/crypto"
-import { d1Store, isTrialExpired, getTrialDaysRemaining, getEffectiveOrgStatus } from "../src/lib/store"
+import {
+  d1Store,
+  isTrialExpired,
+  getTrialDaysRemaining,
+  getEffectiveOrgStatus,
+  computePlanMonthlyCents,
+  DEFAULT_SEAT_PRICE_CENTS,
+} from "../src/lib/store"
 
 function d1From(db: Database) {
   return {
@@ -44,6 +51,7 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0009_provider_policy.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0010_provider_individual_credentials.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0011_resellers_and_trials.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0012_plans.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -425,8 +433,67 @@ describe("D1 store", () => {
     expect(stats.trialTenants).toBe(1) // orgTrial
     expect(stats.totalUsers).toBe(2)
     expect(stats.commissionRate).toBe(0.25)
-    // 10 assentos contratados * 50 = 500 MRR; comissão de 25% = 125
-    expect(stats.estimatedMonthlyRevenue).toBe(500)
-    expect(stats.estimatedCommission).toBe(125)
+    // 10 assentos * R$50 padrão = R$500 = 50000 centavos; comissão de 25% = 12500
+    expect(stats.estimatedMonthlyRevenue).toBe(50000)
+    expect(stats.estimatedCommission).toBe(12500)
+  })
+
+  test("plans: seeds default plan, supports per-user and package pricing", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+
+    // 1. Plano padrão semeado pela migration
+    const seeded = await store.plans.list()
+    expect(seeded.length).toBe(1)
+    expect(seeded[0]!.pricingMode).toBe("per_user")
+    expect(seeded[0]!.priceCents).toBe(6500)
+
+    // 2. Preço por usuário
+    const perUser = await store.plans.create({
+      name: "Licença 65",
+      slug: "licenca-65",
+      pricingMode: "per_user",
+      priceCents: 6500,
+      minUsers: 1,
+    })
+    expect(computePlanMonthlyCents({ maxUsers: 15 }, perUser)).toBe(97500)
+
+    // 3. Pacote fechado com assento extra
+    const pack = await store.plans.create({
+      name: "Pacote 10",
+      slug: "pacote-10",
+      pricingMode: "package",
+      priceCents: 55000,
+      includedUsers: 10,
+      extraUserPriceCents: 6500,
+    })
+    expect(computePlanMonthlyCents({ maxUsers: 10 }, pack)).toBe(55000)
+    expect(computePlanMonthlyCents({ maxUsers: 13 }, pack)).toBe(55000 + 3 * 6500)
+
+    // 4. Sem plano usa o preço padrão por assento
+    expect(computePlanMonthlyCents({ maxUsers: 4 })).toBe(4 * DEFAULT_SEAT_PRICE_CENTS)
+
+    // 5. Atualização e desativação
+    const updated = await store.plans.update(pack.id, { priceCents: 60000, isActive: false })
+    expect(updated?.priceCents).toBe(60000)
+    expect(updated?.isActive).toBe(false)
+    expect((await store.plans.list({ activeOnly: true })).map((p) => p.id)).not.toContain(pack.id)
+    expect((await store.plans.findBySlug("pacote-10"))?.id).toBe(pack.id)
+
+    // 6. Empresa com plano reflete na receita estimada do admin
+    const org = await store.org.create({
+      name: "Empresa Plano",
+      slug: "empresa-plano",
+      maxUsers: 15,
+      planType: "paid",
+      planID: perUser.id,
+    })
+    expect(org.planID).toBe(perUser.id)
+    const stats = await store.org.stats()
+    expect(stats.estimatedMonthlyRevenue).toBe(97500)
+
+    // 7. Remover plano desvincula a empresa
+    await store.plans.remove(perUser.id)
+    expect((await store.org.get(org.id)).planID).toBeUndefined()
   })
 })

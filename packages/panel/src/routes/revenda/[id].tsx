@@ -1,18 +1,27 @@
 import { A, createAsync, revalidate, useAction, useParams } from "@solidjs/router"
 import { For, Show, createSignal } from "solid-js"
-import { Badge, Button, Card, EmptyState, Field, PageHeader } from "~/components/ui"
+import { Badge, Button, Card, EmptyState, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { getResellerTenant, setResellerTenantStatus, updateResellerTenantLimits, extendResellerTenantTrial } from "~/lib/actions"
-import { getEffectiveOrgStatus, getTrialDaysRemaining } from "~/lib/store"
-import { formatDate, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
+import {
+  getResellerTenant,
+  setResellerTenantStatus,
+  updateResellerTenantLimits,
+  extendResellerTenantTrial,
+  listPlans,
+  setResellerTenantPlan,
+} from "~/lib/actions"
+import { getEffectiveOrgStatus, getTrialDaysRemaining, computePlanMonthlyCents } from "~/lib/store"
+import { formatDate, formatBRL, planErrorMessage, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
 
 export default function ResellerTenantDetailPage() {
   const i18n = useI18n()
   const params = useParams()
   const data = createAsync(() => getResellerTenant(params.id!))
+  const plans = createAsync(() => listPlans(false))
   const changeStatus = useAction(setResellerTenantStatus)
   const changeLimits = useAction(updateResellerTenantLimits)
   const extendTrialAction = useAction(extendResellerTenantTrial)
+  const changePlanAction = useAction(setResellerTenantPlan)
 
   const [error, setError] = createSignal<string | null>(null)
   const [success, setSuccess] = createSignal<string | null>(null)
@@ -38,7 +47,7 @@ export default function ResellerTenantDetailPage() {
     const limit = Number(newLimit() || org.maxUsers)
     if (limit <= 0) return
     const res = await changeLimits(org.id, limit)
-    if (res?.error) setError("Erro ao atualizar limite de colaboradores.")
+    if (res?.error) setError(planErrorMessage(res))
     else {
       setNewLimit("")
       setSuccess("Limite de licenças atualizado com sucesso!")
@@ -47,8 +56,22 @@ export default function ResellerTenantDetailPage() {
     }
   }
 
-  async function onExtendTrial(days: number) {
+  async function onAssignPlan(planID: string) {
     const org = data()?.org
+    if (!org) return
+    setError(null)
+    setSuccess(null)
+    const res = await changePlanAction(org.id, planID)
+    if (res?.error) {
+      setError(planErrorMessage(res))
+      return
+    }
+    setSuccess("Plano comercial atualizado!")
+    revalidate("panel.reseller.tenant")
+    revalidate("panel.reseller.dashboard")
+  }
+
+  async function onExtendTrial(days: number) {    const org = data()?.org
     if (!org) return
     setExtending(true)
     setError(null)
@@ -80,6 +103,9 @@ export default function ResellerTenantDetailPage() {
         {(current) => {
           const effective = () => getEffectiveOrgStatus(current().org)
           const daysLeft = () => getTrialDaysRemaining(current().org)
+          const currentPlan = () => (plans() ?? []).find((plan) => plan.id === current().org.planID)
+          const assignablePlans = () =>
+            (plans() ?? []).filter((plan) => plan.isActive || plan.id === current().org.planID)
           return (
             <div class="space-y-6">
               <div class="grid gap-6 lg:grid-cols-3">
@@ -120,6 +146,18 @@ export default function ResellerTenantDetailPage() {
                       <dt class="text-xs text-slate-500">Tipo de Contrato</dt>
                       <dd class="mt-0.5 font-medium text-slate-900">
                         {current().org.planType === "paid" ? "Licenciamento Pago" : "Período de Demonstração (Trial)"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt class="text-xs text-slate-500">Plano Comercial</dt>
+                      <dd class="mt-0.5 font-medium text-slate-900">
+                        {currentPlan()?.name ?? "Preço padrão por assento"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt class="text-xs text-slate-500">Mensalidade</dt>
+                      <dd class="mt-0.5 font-medium text-slate-900">
+                        {formatBRL(computePlanMonthlyCents(current().org, currentPlan()))} / mês
                       </dd>
                     </div>
 
@@ -203,6 +241,40 @@ export default function ResellerTenantDetailPage() {
                         Salvar Assentos
                       </Button>
                     </form>
+
+                    <div class="border-t border-slate-100 pt-4 space-y-2">
+                      <div class="text-xs font-semibold text-slate-900">Plano Comercial</div>
+                      <div class="rounded-lg bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
+                        <div class="flex items-center justify-between">
+                          <span>Mensalidade</span>
+                          <strong class="text-slate-900">
+                            {formatBRL(computePlanMonthlyCents(current().org, currentPlan()))} / mês
+                          </strong>
+                        </div>
+                        <div class="mt-0.5 text-slate-500">
+                          {currentPlan()
+                            ? currentPlan()!.name
+                            : "Sem plano atribuído (preço padrão por assento)"}
+                        </div>
+                      </div>
+                      <Select
+                        label="Alterar plano"
+                        name="planID"
+                        value={current().org.planID || ""}
+                        onSelect={(value) => onAssignPlan(value)}
+                      >
+                        <option value="">— Sem plano (preço padrão) —</option>
+                        <For each={assignablePlans()}>
+                          {(plan) => (
+                            <option value={plan.id}>
+                              {plan.name} — {formatBRL(plan.priceCents)}
+                              {plan.pricingMode === "package" ? " / pacote" : " / usuário"}
+                              {plan.isActive ? "" : " (inativo)"}
+                            </option>
+                          )}
+                        </For>
+                      </Select>
+                    </div>
 
                     <div class="border-t border-slate-100 pt-4">
                       <Button

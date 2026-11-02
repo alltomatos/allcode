@@ -150,8 +150,61 @@ export type Organization = {
   resellerID?: string
   planType: "trial" | "paid"
   trialEndsAt?: string
+  planID?: string
   createdAt: string
 }
+
+export type PlanPricingMode = "per_user" | "package"
+
+export type Plan = {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  pricingMode: PlanPricingMode
+  /** Monthly price. Per user when pricingMode is "per_user", total when "package". */
+  priceCents: number
+  /** Seats included in a fixed package. */
+  includedUsers?: number
+  /** Price per seat beyond the package allowance. */
+  extraUserPriceCents?: number
+  minUsers: number
+  maxUsers?: number
+  isActive: boolean
+  sortOrder: number
+  createdAt: string
+}
+
+export type PlanInput = {
+  name: string
+  slug: string
+  description?: string
+  pricingMode?: PlanPricingMode
+  priceCents?: number
+  includedUsers?: number
+  extraUserPriceCents?: number
+  minUsers?: number
+  maxUsers?: number
+  isActive?: boolean
+  sortOrder?: number
+}
+
+export type PlanPatch = Partial<
+  Pick<
+    Plan,
+    | "name"
+    | "slug"
+    | "description"
+    | "pricingMode"
+    | "priceCents"
+    | "includedUsers"
+    | "extraUserPriceCents"
+    | "minUsers"
+    | "maxUsers"
+    | "isActive"
+    | "sortOrder"
+  >
+>
 
 export type Reseller = {
   id: string
@@ -188,6 +241,21 @@ export type ResellerStats = {
   estimatedMonthlyRevenue: number
   commissionRate: number
   estimatedCommission: number
+}
+
+/** Fallback seat price used when an organization has no plan assigned. */
+export const DEFAULT_SEAT_PRICE_CENTS = 5000
+
+export function computePlanMonthlyCents(
+  org: { maxUsers: number },
+  plan?: Pick<Plan, "pricingMode" | "priceCents" | "includedUsers" | "extraUserPriceCents"> | null,
+): number {
+  if (!plan) return org.maxUsers * DEFAULT_SEAT_PRICE_CENTS
+  if (plan.pricingMode === "package") {
+    const extraSeats = Math.max(0, org.maxUsers - (plan.includedUsers ?? 0))
+    return plan.priceCents + extraSeats * (plan.extraUserPriceCents ?? 0)
+  }
+  return plan.priceCents * org.maxUsers
 }
 
 export function isTrialExpired(org: { planType?: string; trialEndsAt?: string | null }): boolean {
@@ -267,6 +335,7 @@ export type OrgPatch = Partial<
     | "resellerID"
     | "planType"
     | "trialEndsAt"
+    | "planID"
   >
 >
 
@@ -277,6 +346,7 @@ export type TenantStats = {
   expiredTenants: number
   suspendedTenants: number
   totalUsersAcrossTenants: number
+  estimatedMonthlyRevenue: number
 }
 
 export type Store = {
@@ -298,9 +368,18 @@ export type Store = {
       planType?: "trial" | "paid"
       trialDays?: number
       trialEndsAt?: string
+      planID?: string
     }): Promise<Organization>
     update(id: string, patch: OrgPatch): Promise<Organization>
     stats(): Promise<TenantStats>
+  }
+  plans: {
+    list(options?: { activeOnly?: boolean }): Promise<Plan[]>
+    findByID(id: string): Promise<Plan | undefined>
+    findBySlug(slug: string): Promise<Plan | undefined>
+    create(input: PlanInput): Promise<Plan>
+    update(id: string, patch: PlanPatch): Promise<Plan | undefined>
+    remove(id: string): Promise<void>
   }
   resellers: {
     list(): Promise<Reseller[]>
@@ -452,6 +531,22 @@ function defaultOrg(): Organization {
     planType: "paid",
     trialEndsAt: undefined,
     resellerID: undefined,
+    planID: undefined,
+    createdAt: new Date().toISOString(),
+  }
+}
+
+function defaultPlan(): Plan {
+  return {
+    id: "plan_user_65",
+    name: "Licença por Usuário",
+    slug: "licenca-por-usuario",
+    description: "Cobrança mensal por colaborador ativo.",
+    pricingMode: "per_user",
+    priceCents: 6500,
+    minUsers: 1,
+    isActive: true,
+    sortOrder: 10,
     createdAt: new Date().toISOString(),
   }
 }
@@ -475,8 +570,11 @@ function memoryStore(): Store {
   const providerGrants = new Map<string, ProviderGrant[]>()
   const sessionRecords: SessionAudit[] = []
   const credentials = new Map<string, UserProviderCredential>()
+  const plans = new Map<string, Plan>()
   const initialOrg = defaultOrg()
   orgs.set(initialOrg.id, initialOrg)
+  const seedPlan = defaultPlan()
+  plans.set(seedPlan.id, seedPlan)
   let seeding: Promise<void> | undefined
 
   function find(id: string) {
@@ -547,6 +645,7 @@ function memoryStore(): Store {
           resellerID: input.resellerID,
           planType,
           trialEndsAt,
+          planID: input.planID,
           createdAt: new Date().toISOString(),
         }
         orgs.set(newOrg.id, newOrg)
@@ -563,6 +662,9 @@ function memoryStore(): Store {
         const totalUsers = [...users.values()].filter((u) => u.status !== "deleted").length
         const trialTenants = list.filter((o) => o.planType === "trial" && !isTrialExpired(o) && o.status === "active").length
         const expiredTenants = list.filter((o) => isTrialExpired(o) || o.status === "suspended").length
+        const estimatedMonthlyRevenue = list
+          .filter((o) => o.status === "active" && o.planType === "paid")
+          .reduce((acc, o) => acc + computePlanMonthlyCents(o, o.planID ? plans.get(o.planID) : undefined), 0)
         return {
           totalTenants: list.length,
           activeTenants: list.filter((o) => o.status === "active" && !isTrialExpired(o)).length,
@@ -570,6 +672,53 @@ function memoryStore(): Store {
           expiredTenants,
           suspendedTenants: list.filter((o) => o.status === "suspended").length,
           totalUsersAcrossTenants: totalUsers,
+          estimatedMonthlyRevenue,
+        }
+      },
+    },
+    plans: {
+      async list(options) {
+        const list = [...plans.values()].sort(
+          (a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name),
+        )
+        return options?.activeOnly ? list.filter((plan) => plan.isActive) : list
+      },
+      async findByID(id) {
+        return plans.get(id)
+      },
+      async findBySlug(slug) {
+        return [...plans.values()].find((plan) => plan.slug === slug.trim().toLowerCase())
+      },
+      async create(input) {
+        const plan: Plan = {
+          id: crypto.randomUUID(),
+          name: input.name,
+          slug: input.slug.trim().toLowerCase(),
+          description: input.description,
+          pricingMode: input.pricingMode ?? "per_user",
+          priceCents: input.priceCents ?? 0,
+          includedUsers: input.includedUsers,
+          extraUserPriceCents: input.extraUserPriceCents,
+          minUsers: input.minUsers ?? 1,
+          maxUsers: input.maxUsers,
+          isActive: input.isActive ?? true,
+          sortOrder: input.sortOrder ?? 0,
+          createdAt: new Date().toISOString(),
+        }
+        plans.set(plan.id, plan)
+        return plan
+      },
+      async update(id, patch) {
+        const current = plans.get(id)
+        if (!current) return undefined
+        Object.assign(current, patch)
+        plans.set(id, current)
+        return { ...current }
+      },
+      async remove(id) {
+        plans.delete(id)
+        for (const org of orgs.values()) {
+          if (org.planID === id) org.planID = undefined
         }
       },
     },
@@ -616,11 +765,11 @@ function memoryStore(): Store {
         const expiredTenants = clientOrgs.filter((o) => isTrialExpired(o) || o.status === "suspended").length
         const suspendedTenants = clientOrgs.filter((o) => o.status === "suspended").length
         const totalUsers = clientUsers.length
-        const SEAT_PRICE = 50
-        const billableSeats = clientOrgs
-          .filter((o) => o.status === "active" && o.planType === "paid")
-          .reduce((acc, o) => acc + o.maxUsers, 0)
-        const estimatedMonthlyRevenue = billableSeats * SEAT_PRICE
+        const billableOrgs = clientOrgs.filter((o) => o.status === "active" && o.planType === "paid")
+        const estimatedMonthlyRevenue = billableOrgs.reduce(
+          (acc, o) => acc + computePlanMonthlyCents(o, o.planID ? plans.get(o.planID) : undefined),
+          0,
+        )
         const commissionRate = reseller?.commissionRate ?? 0.20
         const estimatedCommission = estimatedMonthlyRevenue * commissionRate
         return {
@@ -1037,6 +1186,23 @@ type OrgRow = {
   reseller_id?: string | null
   plan_type?: string | null
   trial_ends_at?: string | null
+  plan_id?: string | null
+  created_at: string
+}
+
+type PlanRow = {
+  id: string
+  name: string
+  slug: string
+  description: string | null
+  pricing_mode: string
+  price_cents: number
+  included_users: number | null
+  extra_user_price_cents: number | null
+  min_users: number
+  max_users: number | null
+  is_active: number
+  sort_order: number
   created_at: string
 }
 
@@ -1235,6 +1401,25 @@ function toOrg(row: OrgRow): Organization {
     resellerID: row.reseller_id ?? undefined,
     planType: row.plan_type === "paid" ? "paid" : "trial",
     trialEndsAt: row.trial_ends_at ?? undefined,
+    planID: row.plan_id ?? undefined,
+    createdAt: row.created_at,
+  }
+}
+
+function toPlan(row: PlanRow): Plan {
+  return {
+    id: row.id,
+    name: row.name,
+    slug: row.slug,
+    description: row.description ?? undefined,
+    pricingMode: row.pricing_mode === "package" ? "package" : "per_user",
+    priceCents: row.price_cents ?? 0,
+    includedUsers: row.included_users ?? undefined,
+    extraUserPriceCents: row.extra_user_price_cents ?? undefined,
+    minUsers: row.min_users ?? 1,
+    maxUsers: row.max_users ?? undefined,
+    isActive: row.is_active !== 0,
+    sortOrder: row.sort_order ?? 0,
     createdAt: row.created_at,
   }
 }
@@ -1314,6 +1499,11 @@ export function d1Store(db: D1Database): Store {
   const userFindByID = async (id: string) => {
     const row = await db.prepare("SELECT * FROM panel_user WHERE id = ?").bind(id).first<UserRow>()
     return row ? toUser(row) : undefined
+  }
+
+  const planFindByID = async (id: string) => {
+    const row = await db.prepare("SELECT * FROM plan WHERE id = ?").bind(id).first<PlanRow>()
+    return row ? toPlan(row) : undefined
   }
 
   return {
@@ -1407,12 +1597,13 @@ export function d1Store(db: D1Database): Store {
           resellerID: input.resellerID,
           planType,
           trialEndsAt,
+          planID: input.planID,
           createdAt: new Date().toISOString(),
         }
         await db
           .prepare(
-            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, logo_url, welcome_message, brand_color, sso_mode, offline_grace_hours, session_max_age_hours, reseller_id, plan_type, trial_ends_at, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, logo_url, welcome_message, brand_color, sso_mode, offline_grace_hours, session_max_age_hours, reseller_id, plan_type, trial_ends_at, plan_id, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             newOrg.id,
@@ -1430,6 +1621,7 @@ export function d1Store(db: D1Database): Store {
             newOrg.resellerID ?? null,
             newOrg.planType,
             newOrg.trialEndsAt ?? null,
+            newOrg.planID ?? null,
             newOrg.createdAt,
           )
           .run()
@@ -1440,7 +1632,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ?, reseller_id = ?, plan_type = ?, trial_ends_at = ? WHERE id = ?`,
+            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ?, reseller_id = ?, plan_type = ?, trial_ends_at = ?, plan_id = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -1461,6 +1653,7 @@ export function d1Store(db: D1Database): Store {
             next.resellerID ?? null,
             next.planType,
             next.trialEndsAt ?? null,
+            next.planID ?? null,
             id,
           )
           .run()
@@ -1469,6 +1662,8 @@ export function d1Store(db: D1Database): Store {
       async stats() {
         const rows = await db.prepare("SELECT * FROM organization").all<OrgRow>()
         const list = rows.results.map(toOrg)
+        const planRows = await db.prepare("SELECT * FROM plan").all<PlanRow>()
+        const planByID = new Map(planRows.results.map((row) => [row.id, toPlan(row)]))
         const userCount = await db
           .prepare("SELECT COUNT(*) as total FROM panel_user WHERE status != 'deleted'")
           .first<{ total: number }>()
@@ -1478,6 +1673,9 @@ export function d1Store(db: D1Database): Store {
         const trialTenants = list.filter((o) => o.planType === "trial" && !isTrialExpired(o) && o.status === "active").length
         const expiredTenants = list.filter((o) => isTrialExpired(o) || o.status === "suspended").length
         const suspendedTenants = list.filter((o) => o.status === "suspended").length
+        const estimatedMonthlyRevenue = list
+          .filter((o) => o.status === "active" && o.planType === "paid")
+          .reduce((acc, o) => acc + computePlanMonthlyCents(o, o.planID ? planByID.get(o.planID) : undefined), 0)
 
         return {
           totalTenants,
@@ -1486,7 +1684,92 @@ export function d1Store(db: D1Database): Store {
           expiredTenants,
           suspendedTenants,
           totalUsersAcrossTenants: Number(userCount?.total ?? 0),
+          estimatedMonthlyRevenue,
         }
+      },
+    },
+    plans: {
+      async list(options) {
+        const rows = options?.activeOnly
+          ? await db.prepare("SELECT * FROM plan WHERE is_active = 1 ORDER BY sort_order ASC, name ASC").all<PlanRow>()
+          : await db.prepare("SELECT * FROM plan ORDER BY sort_order ASC, name ASC").all<PlanRow>()
+        return rows.results.map(toPlan)
+      },
+      async findByID(id) {
+        const row = await db.prepare("SELECT * FROM plan WHERE id = ?").bind(id).first<PlanRow>()
+        return row ? toPlan(row) : undefined
+      },
+      async findBySlug(slug) {
+        const row = await db.prepare("SELECT * FROM plan WHERE slug = ?").bind(slug.trim().toLowerCase()).first<PlanRow>()
+        return row ? toPlan(row) : undefined
+      },
+      async create(input) {
+        const plan: Plan = {
+          id: crypto.randomUUID(),
+          name: input.name,
+          slug: input.slug.trim().toLowerCase(),
+          description: input.description,
+          pricingMode: input.pricingMode ?? "per_user",
+          priceCents: input.priceCents ?? 0,
+          includedUsers: input.includedUsers,
+          extraUserPriceCents: input.extraUserPriceCents,
+          minUsers: input.minUsers ?? 1,
+          maxUsers: input.maxUsers,
+          isActive: input.isActive ?? true,
+          sortOrder: input.sortOrder ?? 0,
+          createdAt: new Date().toISOString(),
+        }
+        await db
+          .prepare(
+            `INSERT INTO plan (id, name, slug, description, pricing_mode, price_cents, included_users, extra_user_price_cents, min_users, max_users, is_active, sort_order, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          )
+          .bind(
+            plan.id,
+            plan.name,
+            plan.slug,
+            plan.description ?? null,
+            plan.pricingMode,
+            plan.priceCents,
+            plan.includedUsers ?? null,
+            plan.extraUserPriceCents ?? null,
+            plan.minUsers,
+            plan.maxUsers ?? null,
+            plan.isActive ? 1 : 0,
+            plan.sortOrder,
+            plan.createdAt,
+          )
+          .run()
+        return plan
+      },
+      async update(id, patch) {
+        const current = await planFindByID(id)
+        if (!current) return undefined
+        const next = { ...current, ...patch }
+        await db
+          .prepare(
+            `UPDATE plan SET name = ?, slug = ?, description = ?, pricing_mode = ?, price_cents = ?, included_users = ?, extra_user_price_cents = ?, min_users = ?, max_users = ?, is_active = ?, sort_order = ? WHERE id = ?`,
+          )
+          .bind(
+            next.name,
+            next.slug,
+            next.description ?? null,
+            next.pricingMode,
+            next.priceCents,
+            next.includedUsers ?? null,
+            next.extraUserPriceCents ?? null,
+            next.minUsers,
+            next.maxUsers ?? null,
+            next.isActive ? 1 : 0,
+            next.sortOrder,
+            id,
+          )
+          .run()
+        return next
+      },
+      async remove(id) {
+        await db.prepare("UPDATE organization SET plan_id = NULL WHERE plan_id = ?").bind(id).run()
+        await db.prepare("DELETE FROM plan WHERE id = ?").bind(id).run()
       },
     },
     resellers: {
@@ -1570,11 +1853,11 @@ export function d1Store(db: D1Database): Store {
         const expiredTenants = clientOrgs.filter((o) => isTrialExpired(o) || o.status === "suspended").length
         const suspendedTenants = clientOrgs.filter((o) => o.status === "suspended").length
         const totalUsers = clientUsersCount
-        const SEAT_PRICE = 50
-        const billableSeats = clientOrgs
+        const planRows = await db.prepare("SELECT * FROM plan").all<PlanRow>()
+        const planByID = new Map(planRows.results.map((row) => [row.id, toPlan(row)]))
+        const estimatedMonthlyRevenue = clientOrgs
           .filter((o) => o.status === "active" && o.planType === "paid")
-          .reduce((acc, o) => acc + o.maxUsers, 0)
-        const estimatedMonthlyRevenue = billableSeats * SEAT_PRICE
+          .reduce((acc, o) => acc + computePlanMonthlyCents(o, o.planID ? planByID.get(o.planID) : undefined), 0)
         const commissionRate = reseller?.commissionRate ?? 0.20
         const estimatedCommission = estimatedMonthlyRevenue * commissionRate
         return {

@@ -1,23 +1,41 @@
 import { A, createAsync, revalidate, useAction, useParams } from "@solidjs/router"
 import { For, Show, createSignal } from "solid-js"
-import { Badge, Button, Card, EmptyState, Field, PageHeader } from "~/components/ui"
+import { Badge, Button, Card, EmptyState, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { getTenant, setTenantStatus, updateTenantLimits, extendTenantTrial, setTenantPlanType } from "~/lib/actions"
-import { isTrialExpired, getTrialDaysRemaining, getEffectiveOrgStatus } from "~/lib/store"
-import { formatDate, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
+import { getTenant, setTenantStatus, updateTenantLimits, extendTenantTrial, setTenantPlanType, listPlans, setTenantPlan } from "~/lib/actions"
+import { getTrialDaysRemaining, getEffectiveOrgStatus, computePlanMonthlyCents } from "~/lib/store"
+import { formatDate, formatBRL, planErrorMessage, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
 
 export default function TenantDetailPage() {
   const i18n = useI18n()
   const params = useParams()
   const data = createAsync(() => getTenant(params.id!))
+  const plans = createAsync(() => listPlans(false))
   const changeStatus = useAction(setTenantStatus)
   const changeLimits = useAction(updateTenantLimits)
   const extendTrialAction = useAction(extendTenantTrial)
   const changePlanTypeAction = useAction(setTenantPlanType)
+  const changePlanAction = useAction(setTenantPlan)
   const [error, setError] = createSignal<string | null>(null)
   const [success, setSuccess] = createSignal<string | null>(null)
   const [newLimit, setNewLimit] = createSignal("")
   const [extending, setExtending] = createSignal(false)
+
+  async function onAssignPlan(planID: string) {
+    const org = data()?.org
+    if (!org) return
+    setError(null)
+    setSuccess(null)
+    const res = await changePlanAction(org.id, planID)
+    if (res?.error) {
+      setError(planErrorMessage(res))
+      return
+    }
+    setSuccess("Plano comercial atualizado com sucesso!")
+    revalidate("panel.admin.tenant")
+    revalidate("panel.admin.tenants")
+    revalidate("panel.admin.stats")
+  }
 
   async function onToggleStatus() {
     const org = data()?.org
@@ -39,7 +57,7 @@ export default function TenantDetailPage() {
     const limit = Number(newLimit() || org.maxUsers)
     if (limit <= 0) return
     const res = await changeLimits(org.id, limit)
-    if (res?.error) setError(res.error)
+    if (res?.error) setError(planErrorMessage(res))
     else {
       setNewLimit("")
       revalidate("panel.admin.tenant")
@@ -97,6 +115,7 @@ export default function TenantDetailPage() {
         {(current) => {
           const effective = () => getEffectiveOrgStatus(current().org)
           const daysLeft = () => getTrialDaysRemaining(current().org)
+          const currentPlan = () => (plans() ?? []).find((plan) => plan.id === current().org.planID)
           return (
             <div class="space-y-6">
               <div class="grid gap-6 lg:grid-cols-3">
@@ -137,6 +156,12 @@ export default function TenantDetailPage() {
                       <dt class="text-xs text-slate-500">Tipo de Plano</dt>
                       <dd class="mt-0.5 font-medium text-slate-900">
                         {current().org.planType === "paid" ? "Plano Corporativo Definitivo" : "Período de Avaliação / Trial"}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt class="text-xs text-slate-500">Plano Comercial</dt>
+                      <dd class="mt-0.5 font-medium text-slate-900">
+                        {currentPlan()?.name ?? "Preço padrão por assento"}
                       </dd>
                     </div>
 
@@ -257,6 +282,49 @@ export default function TenantDetailPage() {
                         {i18n.t("common.save")}
                       </Button>
                     </form>
+
+                    <div class="border-t border-slate-100 pt-4 space-y-2">
+                      <div class="flex items-center justify-between">
+                        <span class="text-xs font-semibold text-slate-900">Plano Comercial</span>
+                        <A href="/4dm1n/planos" class="text-[11px] font-medium text-indigo-600 hover:underline">
+                          Gerenciar planos
+                        </A>
+                      </div>
+
+                      <div class="rounded-lg bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
+                        <div class="flex items-center justify-between">
+                          <span>Mensalidade atual</span>
+                          <strong class="text-slate-900">{formatBRL(computePlanMonthlyCents(current().org, currentPlan()))} / mês</strong>
+                        </div>
+                        <div class="mt-0.5 text-slate-500">
+                          {currentPlan()
+                            ? `${currentPlan()!.name} · ${
+                                currentPlan()!.pricingMode === "package"
+                                  ? `pacote de ${currentPlan()!.includedUsers ?? 0} usuários`
+                                  : `${formatBRL(currentPlan()!.priceCents)} por usuário`
+                              }`
+                            : "Sem plano atribuído (preço padrão por assento)"}
+                        </div>
+                      </div>
+
+                      <Select
+                        label="Alterar plano"
+                        name="planID"
+                        value={current().org.planID || ""}
+                        onSelect={(value) => onAssignPlan(value)}
+                      >
+                        <option value="">— Sem plano (preço padrão) —</option>
+                        <For each={plans() ?? []}>
+                          {(plan) => (
+                            <option value={plan.id}>
+                              {plan.name} — {formatBRL(plan.priceCents)}
+                              {plan.pricingMode === "package" ? " / pacote" : " / usuário"}
+                              {plan.isActive ? "" : " (inativo)"}
+                            </option>
+                          )}
+                        </For>
+                      </Select>
+                    </div>
                   </div>
 
                   <Show when={error()}>

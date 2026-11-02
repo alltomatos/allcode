@@ -2,7 +2,8 @@ import { A, createAsync, revalidate, useAction } from "@solidjs/router"
 import { For, Show, createSignal } from "solid-js"
 import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { createTenant, listResellers } from "~/lib/actions"
+import { createTenant, listPlans, listResellers } from "~/lib/actions"
+import { formatBRL } from "~/lib/labels"
 
 type IssuedTenant = {
   tenantId: string
@@ -15,6 +16,7 @@ export default function NewTenantPage() {
   const i18n = useI18n()
   const create = useAction(createTenant)
   const resellers = createAsync(() => listResellers())
+  const plans = createAsync(() => listPlans(true))
   const [issued, setIssued] = createSignal<IssuedTenant | null>(null)
   const [error, setError] = createSignal<string | null>(null)
   const [pending, setPending] = createSignal(false)
@@ -23,6 +25,20 @@ export default function NewTenantPage() {
   const [logoUrl, setLogoUrl] = createSignal("")
   const [uploading, setUploading] = createSignal(false)
   const [planType, setPlanType] = createSignal("trial")
+  const [planID, setPlanID] = createSignal("")
+  const [seats, setSeats] = createSignal("15")
+
+  const selectedPlan = () => (plans() ?? []).find((plan) => plan.id === planID())
+  const estimatedMonthly = () => {
+    const plan = selectedPlan()
+    const seatsCount = Math.max(1, Number(seats()) || 1)
+    if (!plan) return 0
+    if (plan.pricingMode === "package") {
+      const extra = Math.max(0, seatsCount - (plan.includedUsers ?? 0))
+      return plan.priceCents + extra * (plan.extraUserPriceCents ?? 0)
+    }
+    return plan.priceCents * seatsCount
+  }
 
   function onNameInput(e: InputEvent & { currentTarget: HTMLInputElement }) {
     const val = e.currentTarget.value
@@ -63,6 +79,18 @@ export default function NewTenantPage() {
     setPending(false)
     if (!result) return
     if (result.error) {
+      if (result.error === "admin.plans.error.belowMinUsers") {
+        setError(`Este plano exige no mínimo ${result.min} colaboradores.`)
+        return
+      }
+      if (result.error === "admin.plans.error.aboveMaxUsers") {
+        setError(`Este plano permite no máximo ${result.max} colaboradores.`)
+        return
+      }
+      if (result.error === "admin.plans.error.notFound") {
+        setError("Plano comercial indisponível. Atualize a página e escolha outro plano.")
+        return
+      }
       setError(i18n.t(result.error))
       return
     }
@@ -76,6 +104,8 @@ export default function NewTenantPage() {
       form.reset()
       setSlug("")
       setLogoUrl("")
+      setPlanID("")
+      setSeats("15")
       revalidate("panel.admin.tenants")
       revalidate("panel.admin.stats")
     }
@@ -130,7 +160,8 @@ export default function NewTenantPage() {
                     label="Limite de assentos / colaboradores"
                     name="maxUsers"
                     type="number"
-                    value="15"
+                    value={seats()}
+                    onInput={(e) => setSeats(e.currentTarget.value)}
                     required
                   />
                   <Select
@@ -143,6 +174,32 @@ export default function NewTenantPage() {
                     <option value="paid">Plano Definitivo (Pago)</option>
                   </Select>
                 </div>
+
+                <Show when={(plans() ?? []).length > 0}>
+                  <Select
+                    label="Plano Comercial"
+                    name="planID"
+                    value={planID()}
+                    onSelect={(val) => setPlanID(val)}
+                  >
+                    <option value="">— Preço padrão por assento —</option>
+                    <For each={plans() ?? []}>
+                      {(plan) => (
+                        <option value={plan.id}>
+                          {plan.name} — {formatBRL(plan.priceCents)}
+                          {plan.pricingMode === "package" ? ` por pacote (${plan.includedUsers ?? 0} usuários)` : " por usuário"}
+                        </option>
+                      )}
+                    </For>
+                  </Select>
+
+                  <Show when={selectedPlan()}>
+                    <div class="flex items-center justify-between rounded-lg border border-indigo-100 bg-indigo-50/60 px-3 py-2 text-xs">
+                      <span class="text-indigo-900 font-medium">Mensalidade estimada da empresa</span>
+                      <strong class="text-indigo-950">{formatBRL(estimatedMonthly())} / mês</strong>
+                    </div>
+                  </Show>
+                </Show>
 
                 <Show when={planType() === "trial"}>
                   <div class="rounded-lg bg-amber-50/60 p-3 ring-1 ring-amber-200">

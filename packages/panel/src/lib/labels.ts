@@ -50,6 +50,17 @@ export function formatDate(value?: string, locale = "pt-BR") {
   return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(date)
 }
 
+export function formatBRL(cents: number) {
+  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format((cents ?? 0) / 100)
+}
+
+export function planErrorMessage(res: { error?: string; min?: number; max?: number }): string {
+  if (res.error === "admin.plans.error.belowMinUsers") return `Este plano exige no mínimo ${res.min} colaboradores.`
+  if (res.error === "admin.plans.error.aboveMaxUsers") return `Este plano permite no máximo ${res.max} colaboradores.`
+  if (res.error === "admin.plans.error.notFound") return "Plano comercial indisponível. Atualize a página e tente novamente."
+  return "Não foi possível aplicar o plano."
+}
+
 export function initials(name: string) {
   return name
     .split(/\s+/)

@@ -1,17 +1,33 @@
-import { A, useAction } from "@solidjs/router"
-import { Show, createSignal } from "solid-js"
-import { Button, Card, Field, PageHeader } from "~/components/ui"
+import { A, createAsync, useAction } from "@solidjs/router"
+import { For, Show, createSignal } from "solid-js"
+import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { createTenantByReseller } from "~/lib/actions"
+import { createTenantByReseller, listPlans } from "~/lib/actions"
+import { formatBRL } from "~/lib/labels"
 
 export default function ResellerNewTenantPage() {
   const i18n = useI18n()
   const create = useAction(createTenantByReseller)
+  const plans = createAsync(() => listPlans(true))
   const [pending, setPending] = createSignal(false)
   const [error, setError] = createSignal<string | null>(null)
   const [logoUrl, setLogoUrl] = createSignal<string>("")
   const [uploadingLogo, setUploadingLogo] = createSignal(false)
   const [planType, setPlanType] = createSignal<"trial" | "paid">("trial")
+  const [planID, setPlanID] = createSignal("")
+  const [seats, setSeats] = createSignal("10")
+
+  const selectedPlan = () => (plans() ?? []).find((plan) => plan.id === planID())
+  const estimatedMonthly = () => {
+    const plan = selectedPlan()
+    const seatsCount = Math.max(1, Number(seats()) || 1)
+    if (!plan) return 0
+    if (plan.pricingMode === "package") {
+      const extra = Math.max(0, seatsCount - (plan.includedUsers ?? 0))
+      return plan.priceCents + extra * (plan.extraUserPriceCents ?? 0)
+    }
+    return plan.priceCents * seatsCount
+  }
   const [issued, setIssued] = createSignal<{
     tenantName: string
     adminEmail: string
@@ -217,7 +233,8 @@ export default function ResellerNewTenantPage() {
                         label="Limite de Colaboradores (Assentos)"
                         name="maxUsers"
                         type="number"
-                        value="10"
+                        value={seats()}
+                        onInput={(e) => setSeats(e.currentTarget.value)}
                         required
                         hint="Total de contas que podem ser criadas."
                       />
@@ -230,10 +247,41 @@ export default function ResellerNewTenantPage() {
                         label="Limite de Colaboradores Contratados"
                         name="maxUsers"
                         type="number"
-                        value="20"
+                        value={seats()}
+                        onInput={(e) => setSeats(e.currentTarget.value)}
                         required
                         hint="Assentos corporativos liberados para este cliente."
                       />
+                    </div>
+                  </Show>
+
+                  <Show when={(plans() ?? []).length > 0}>
+                    <div class="pt-2 space-y-2">
+                      <Select
+                        label="Plano Comercial"
+                        name="planID"
+                        value={planID()}
+                        onSelect={(value) => setPlanID(value)}
+                      >
+                        <option value="">— Preço padrão por assento —</option>
+                        <For each={plans() ?? []}>
+                          {(plan) => (
+                            <option value={plan.id}>
+                              {plan.name} — {formatBRL(plan.priceCents)}
+                              {plan.pricingMode === "package"
+                                ? ` por pacote (${plan.includedUsers ?? 0} usuários)`
+                                : " por usuário"}
+                            </option>
+                          )}
+                        </For>
+                      </Select>
+
+                      <Show when={selectedPlan()}>
+                        <div class="flex items-center justify-between rounded-lg border border-emerald-200 bg-white px-3 py-2 text-xs">
+                          <span class="text-emerald-900 font-medium">Mensalidade estimada</span>
+                          <strong class="text-emerald-950">{formatBRL(estimatedMonthly())} / mês</strong>
+                        </div>
+                      </Show>
                     </div>
                   </Show>
                 </div>

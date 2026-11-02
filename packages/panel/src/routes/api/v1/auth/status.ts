@@ -96,6 +96,7 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
   }
 
   const resolved = await resolveUserAccess(user)
+  const plan = tenant.planID ? await db.plans.findByID(tenant.planID) : undefined
   const permissions = {
     agentui: resolved.access.agentui,
     routines: resolved.access.routines,
@@ -140,10 +141,19 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
         welcomeMessage: tenant.welcomeMessage ?? null,
         brandColor: tenant.brandColor ?? "#10b981",
         offlineGraceHours: tenant.offlineGraceHours,
+        maxUsers: tenant.maxUsers,
         planType: tenant.planType,
         trialEndsAt: tenant.trialEndsAt ?? null,
         isTrial: tenant.planType === "trial",
         trialDaysRemaining: getTrialDaysRemaining(tenant),
+        plan: plan
+          ? {
+              id: plan.id,
+              name: plan.name,
+              pricingMode: plan.pricingMode,
+              priceCents: plan.priceCents,
+            }
+          : null,
       },
     }),
     {
