@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.27.4",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Correção de inicialização do AllCode",
+              "description": "O AllCode voltou a iniciar normalmente. O sincronizador de políticas de provedores do tenant agora é montado dentro do escopo do servidor, eliminando o erro de contexto que impedia a aplicação de carregar nas versões 1.27.1 a 1.27.3."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.3",
       "highlights": [
         {
