@@ -4,6 +4,7 @@ import { DebugBar } from "@/components/debug-bar"
 import { GlobalLoading } from "@/components/global-loading"
 import { TabsInfoPopup } from "@/components/help-button"
 import { Titlebar, type TitlebarUpdate } from "@/components/titlebar"
+import { TrialBanner } from "@/components/trial-banner"
 import { UpdateAvailableToast } from "@/components/update-available-toast"
 import { usePlatform } from "@/context/platform"
 import { setV2Toast, ToastRegion } from "@/utils/toast"
@@ -46,6 +47,7 @@ export default function NewLayout(props: ParentProps) {
       <Show when={updateVersion() !== undefined}>
         <UpdateAvailableToast version={updateVersion() ?? ""} install={installUpdate} />
       </Show>
+      <TrialBanner />
       <div class="flex-1 min-h-0 min-w-0 flex flex-row items-stretch">
         <AppProjectSidebar />
         <main class="flex-1 min-h-0 min-w-0 overflow-x-hidden flex flex-col items-start contain-strict">

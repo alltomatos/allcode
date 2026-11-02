@@ -6,6 +6,13 @@ import { usePlatform } from "@/context/platform"
 
 const DEFAULT_AUTH_URL = "https://allcode.alltomatos.dev.br"
 
+export interface TenantPlan {
+  id: string
+  name: string
+  pricingMode: "per_user" | "package"
+  priceCents: number
+}
+
 export interface TenantInfo {
   id: string
   name: string
@@ -14,7 +21,15 @@ export interface TenantInfo {
   welcomeMessage?: string | null
   brandColor?: string
   offlineGraceHours?: number
+  maxUsers?: number
+  planType?: "trial" | "paid"
+  trialEndsAt?: string | null
+  isTrial?: boolean
+  trialDaysRemaining?: number | null
+  plan?: TenantPlan | null
 }
+
+export type BlockReason = "trial_expired" | "tenant_suspended" | "account_suspended" | "account_deleted" | "revoked"
 
 export interface UserPermissions {
   agentui: boolean
@@ -116,6 +131,7 @@ export interface TenantAuthState {
   isLoggedIn: boolean
   lastEmail?: string
   revokedNotice?: boolean
+  blockReason?: BlockReason
 }
 
 const DEFAULT_STATE: TenantAuthState = {
@@ -210,14 +226,16 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
         isLoggedIn: true,
         lastEmail: user.email,
         revokedNotice: false,
+        blockReason: undefined,
       })
     }
 
-    const logout = (revoked = false) => {
+    const logout = (revoked = false, reason?: BlockReason) => {
       setStore({
         user: undefined,
         isLoggedIn: false,
         revokedNotice: revoked,
+        blockReason: revoked ? (reason ?? "revoked") : undefined,
       })
     }
 
@@ -228,11 +246,21 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
         isLoggedIn: false,
         lastEmail: undefined,
         revokedNotice: false,
+        blockReason: undefined,
       })
     }
 
     const clearRevokedNotice = () => {
-      setStore("revokedNotice", false)
+      setStore({ revokedNotice: false, blockReason: undefined })
+    }
+
+    const blockReasonFrom = (data: unknown): BlockReason => {
+      const reason = typeof data === "object" && data !== null ? (data as { reason?: unknown }).reason : undefined
+      if (reason === "trial_expired") return "trial_expired"
+      if (reason === "tenant_suspended") return "tenant_suspended"
+      if (reason === "deleted") return "account_deleted"
+      if (reason === "suspended") return "account_suspended"
+      return "revoked"
     }
 
     // Checagem de status no backend (revogação imediata / bloqueio)
@@ -246,26 +274,46 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
         const query = new URLSearchParams({ userId: u.id, orgId: t.id })
         if (version) query.set("appVersion", version)
         const res = await fetch(`${DEFAULT_AUTH_URL}/api/v1/auth/status?${query.toString()}`)
+        const body = (await res.json().catch(() => null)) as {
+          ok?: boolean
+          status?: string
+          reason?: string
+          tenant?: TenantInfo
+          permissions?: UserPermissions
+          access?: Partial<Record<AccessResource, boolean>>
+          settings?: Partial<Record<SettingsSection, boolean>>
+          canOpenSettings?: boolean
+          defaultModel?: ModelDefault
+          providers?: ProviderPolicy
+        } | null
+
         if (!res.ok) {
           if (res.status === 403 || res.status === 401) {
-            logout(true)
+            // Distingue trial expirado, empresa suspensa e revogação de conta
+            // para que o usuário veja o motivo real do bloqueio.
+            logout(true, blockReasonFrom(body))
           }
           return
         }
-        const data = (await res.json()) as any
-        if (data.ok && data.status) {
-          if (data.status === "suspended" || data.status === "deleted") {
-            // Acesso revogado imediatamente pelo administrador
-            logout(true)
-          } else if (data.permissions) {
-            // Sincroniza permissões RBAC caso o administrador tenha alterado no portal
-            setStore("user", "permissions", data.permissions)
-            if (data.access) setStore("user", "access", data.access)
-            if (data.settings) setStore("user", "settings", data.settings)
-            if (typeof data.canOpenSettings === "boolean") setStore("user", "canOpenSettings", data.canOpenSettings)
-            if (data.defaultModel) setStore("user", "defaultModel", data.defaultModel)
-            if (data.providers) setStore("user", "providers", data.providers)
-          }
+
+        if (!body) return
+        if (body.status === "suspended" || body.status === "deleted") {
+          // Acesso revogado imediatamente pelo administrador
+          logout(true, body.status === "deleted" ? "account_deleted" : "account_suspended")
+          return
+        }
+
+        // Mantém branding, plano e janela de trial atualizados no app
+        if (body.tenant) setStore("tenant", body.tenant)
+
+        if (body.permissions) {
+          // Sincroniza permissões RBAC caso o administrador tenha alterado no portal
+          setStore("user", "permissions", body.permissions)
+          if (body.access) setStore("user", "access", body.access)
+          if (body.settings) setStore("user", "settings", body.settings)
+          if (typeof body.canOpenSettings === "boolean") setStore("user", "canOpenSettings", body.canOpenSettings)
+          if (body.defaultModel) setStore("user", "defaultModel", body.defaultModel)
+          if (body.providers) setStore("user", "providers", body.providers)
         }
       } catch {
         // Modo offline / falha transitória de rede: respeita o token em cache

@@ -1,4 +1,4 @@
-import { For, Show, createSignal, onCleanup, onMount } from "solid-js"
+import { For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useTenantAuth } from "@/context/tenant-auth"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
@@ -25,6 +25,16 @@ export function AccountModal(props: { onClose: () => void }) {
   const user = () => tenantAuth.store.user
   const tenant = () => tenantAuth.store.tenant
   const initials = () => (user()?.name || user()?.email || "?").slice(0, 2).toUpperCase()
+
+  const planLabel = createMemo(() => {
+    const current = tenant()
+    if (!current) return language.t("account.plan.none")
+    if (current.plan?.name) return current.plan.name
+    if (current.planType === "trial") return language.t("account.plan.trial")
+    if (current.planType === "paid") return language.t("account.plan.paid")
+    return language.t("account.plan.none")
+  })
+  const showPlan = createMemo(() => Boolean(tenant()?.plan || tenant()?.planType))
 
   const onKeyDown = (event: KeyboardEvent) => {
     if (event.key !== "Escape") return
@@ -240,6 +250,24 @@ export function AccountModal(props: { onClose: () => void }) {
           }
         >
           <div class="flex flex-col gap-1 p-2">
+            <Show when={showPlan()}>
+              <div class="mb-1 flex flex-col gap-0.5 rounded-lg bg-v2-background-bg-layer-01 px-3 py-2">
+                <span class="text-11-regular uppercase tracking-wide text-v2-text-text-faint">
+                  {language.t("account.plan.title")}
+                </span>
+                <span class="text-12-medium text-v2-text-text-base">{planLabel()}</span>
+                <Show when={tenant()?.planType === "trial" && (tenant()?.trialDaysRemaining ?? 0) > 0}>
+                  <span class="text-11-regular text-v2-text-text-muted">
+                    {language.t("trial.banner.days", { days: tenant()?.trialDaysRemaining ?? 0 })}
+                  </span>
+                </Show>
+                <Show when={tenant()?.maxUsers}>
+                  <span class="text-11-regular text-v2-text-text-muted">
+                    {language.t("account.plan.seats", { count: tenant()?.maxUsers ?? 0 })}
+                  </span>
+                </Show>
+              </div>
+            </Show>
             <Show when={tenantAuth.canChangePassword()}>
               <button
                 type="button"

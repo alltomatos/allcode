@@ -1952,6 +1952,18 @@ export const dict = {
   "login.error.connection": "Could not reach the AllCode portal.", // TODO: translate (auto-filled from en)
   "login.revoked.title": "Access revoked or suspended", // TODO: translate (auto-filled from en)
   "login.revoked.body": "Your AllCode Desktop access was disabled by your organization administrator. Contact your internal support.", // TODO: translate (auto-filled from en)
+  "login.revoked.trial.title": "Evaluation period expired",
+  "login.revoked.trial.body": "Your company's evaluation period ended. Contact your administrator or support to reactivate the plan.",
+  "login.revoked.companySuspended.title": "Company access suspended",
+  "login.revoked.companySuspended.body": "Your company's account is suspended. Contact your administrator or support to restore access.",
+  "trial.banner.title": "Trial period",
+  "trial.banner.days": "Days left: {{days}}. Activate the plan to keep access for your team.",
+  "trial.banner.lastDay": "Ends today. Activate the plan to keep access.",
+  "account.plan.title": "Commercial plan",
+  "account.plan.trial": "Trial period",
+  "account.plan.paid": "Paid subscription",
+  "account.plan.none": "No plan assigned",
+  "account.plan.seats": "Seats: {{count}}",
   "sidebar.account.title": "Account", // TODO: translate (auto-filled from en)
   "sidebar.account.manage": "Manage account", // TODO: translate (auto-filled from en)
   "sidebar.account.signOut": "Sign out", // TODO: translate (auto-filled from en)

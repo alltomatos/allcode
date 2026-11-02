@@ -1,4 +1,4 @@
-import { Show, createSignal } from "solid-js"
+import { Show, createMemo, createSignal } from "solid-js"
 import { useTenantAuth } from "@/context/tenant-auth"
 import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
@@ -21,6 +21,17 @@ export function DesktopLoginModal() {
 
   const tenant = () => tenantAuth.store.tenant
   const isRecognized = () => Boolean(tenant() && tenantAuth.store.lastEmail)
+
+  const revokedCopy = createMemo(() => {
+    const reason = tenantAuth.store.blockReason
+    if (reason === "trial_expired") {
+      return { title: "login.revoked.trial.title", body: "login.revoked.trial.body" } as const
+    }
+    if (reason === "tenant_suspended") {
+      return { title: "login.revoked.companySuspended.title", body: "login.revoked.companySuspended.body" } as const
+    }
+    return { title: "login.revoked.title", body: "login.revoked.body" } as const
+  })
 
   async function handleLogin(e: SubmitEvent) {
     e.preventDefault()
@@ -258,8 +269,8 @@ export function DesktopLoginModal() {
                 <div class="flex items-start gap-2.5 rounded-lg border border-v2-border-border-base bg-surface-critical-weak p-3 text-12-regular text-text-on-critical-base">
                   <Icon name="warning" size="small" class="mt-0.5 shrink-0" />
                   <div class="flex flex-col gap-0.5">
-                    <span class="text-12-medium">{language.t("login.revoked.title")}</span>
-                    <span>{language.t("login.revoked.body")}</span>
+                    <span class="text-12-medium">{language.t(revokedCopy().title)}</span>
+                    <span>{language.t(revokedCopy().body)}</span>
                   </div>
                 </div>
               </Show>
