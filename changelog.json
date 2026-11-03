@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.27.5",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Inicialização até 60 segundos mais rápida",
+              "description": "O atraso inicial do agendador de tarefas deixou de bloquear a subida do servidor local. Antes, o sidecar ficava até 60 segundos sem responder enquanto esse atraso era aguardado; agora ele sobe em cerca de 1 segundo."
+            },
+            {
+              "title": "Fim dos fechamentos inesperados por falta de memória",
+              "description": "O catálogo de provedores deixou de ser recalculado a cada leitura reativa, que elevava o consumo de memória do renderer até o limite e fechava o app. As consultas de cota dos provedores também passaram a ser reaproveitadas por 60 segundos, evitando refazer todas as chamadas ao abrir as configurações."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.4",
       "highlights": [
         {
