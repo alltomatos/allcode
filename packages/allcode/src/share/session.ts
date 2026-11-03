@@ -53,6 +53,7 @@ export const node = LayerNode.make({
   service: Service,
   layer: layer,
   deps: [Config.node, Session.node, ShareNext.node, RuntimeFlags.node],
+  lazy: true,
 })
 
 export * as SessionShare from "./session"

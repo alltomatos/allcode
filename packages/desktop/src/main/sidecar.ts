@@ -1,5 +1,6 @@
 import * as http from "node:http"
 import * as tls from "node:tls"
+import { monitorEventLoopDelay } from "node:perf_hooks"
 
 type NodeHttpWithEnvProxy = typeof http & {
   setGlobalProxyFromEnv: () => void
@@ -54,6 +55,7 @@ async function start(command: StartCommand) {
     ensureLoopbackNoProxy()
     useSystemCertificates()
     useEnvProxy()
+    startEventLoopMonitor()
     const imported = Date.now()
     const { Server } = await import("virtual:opencode-server")
     console.log(`[sidecar] módulo do servidor carregado em ${Date.now() - imported}ms`)
@@ -82,6 +84,23 @@ async function stop() {
     parentPort.postMessage({ type: "stopped" })
     setImmediate(() => process.exit(0))
   }
+}
+
+function startEventLoopMonitor() {
+  if (process.env.OPENCODE_EVENT_LOOP_MONITOR === "0") return
+  const histogram = monitorEventLoopDelay({ resolution: 20 })
+  histogram.enable()
+  const timer = setInterval(() => {
+    const mean = histogram.mean / 1e6
+    const p99 = histogram.percentile(99) / 1e6
+    const max = histogram.max / 1e6
+    histogram.reset()
+    if (p99 < 200 && max < 1000) return
+    console.warn(
+      `[sidecar] event loop lag mean=${mean.toFixed(0)}ms p99=${p99.toFixed(0)}ms max=${max.toFixed(0)}ms`,
+    )
+  }, 30_000)
+  timer.unref()
 }
 
 function prepareSidecarEnv(password: string, userDataPath: string) {

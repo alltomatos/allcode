@@ -618,6 +618,7 @@ export const node = LayerNode.make({
   service: Service,
   layer: layer,
   deps: [FSUtil.node, path, AppProcess.node, Git.node, Project.node, InstanceStore.node, Database.node],
+  lazy: true,
 })
 
 export * as Worktree from "."

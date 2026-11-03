@@ -314,7 +314,7 @@ const layer = Layer.effect(
   }),
 )
 
-export const node = LayerNode.make({ service: Service, layer: layer, deps: [FSUtil.node, MCP.node] })
+export const node = LayerNode.make({ service: Service, layer: layer, deps: [FSUtil.node, MCP.node], lazy: true })
 
 export * as MailAccounts from "."
 

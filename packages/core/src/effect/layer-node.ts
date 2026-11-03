@@ -1,4 +1,5 @@
 import { Brand, Context, Layer } from "effect"
+import { lazyLayer } from "./lazy-layer"
 
 type AnyNode = Node<unknown, unknown, any>
 type RuntimeLayer = Layer.Layer<never, unknown, unknown>
@@ -26,6 +27,8 @@ export interface Node<A, E = never, T extends Tag | undefined = undefined> {
   readonly implementation?: Layer.Any
   readonly dependencies: readonly AnyNode[]
   readonly tag?: T
+  /** Build the service on first method use instead of during graph acquisition. */
+  readonly lazy?: boolean
   readonly [$OutputType]?: () => A
   readonly [$ErrorType]?: () => E
 }
@@ -76,6 +79,7 @@ type MakeInput<
   readonly layer: Implementation
   readonly deps: Items & CheckDependencies<Implementation, NoInfer<Items>>
   readonly tag?: T
+  readonly lazy?: boolean
 }
 
 export function make<
@@ -92,6 +96,7 @@ export function make<
     implementation: input.layer,
     dependencies: input.deps,
     tag: input.tag,
+    lazy: input.lazy,
   }
 }
 
@@ -268,9 +273,11 @@ export function compile<A, E, const Items extends Replacements = readonly []>(
         if (node.kind === "unbound") throw new Error(`Unbound layer node: ${node.name}`)
         const dependencies = node.dependencies.flatMap(flatten).map(context.visit)
         const implementation = node.implementation! as RuntimeLayer
-        return dependencies.length === 0
-          ? implementation
-          : implementation.pipe(Layer.provide(dependencies as [RuntimeLayer, ...RuntimeLayer[]]))
+        const resolved =
+          dependencies.length === 0
+            ? implementation
+            : implementation.pipe(Layer.provide(dependencies as [RuntimeLayer, ...RuntimeLayer[]]))
+        return node.lazy && node.service ? lazyLayer(node.service, resolved) : resolved
       },
       { cache, resolve: (node) => replacementMap.get(node.name) ?? node },
     )

@@ -6,6 +6,7 @@ import { SessionID, MessageID, PartID } from "./schema"
 import { Provider } from "@/provider/provider"
 import { MessageV2 } from "./message-v2"
 import { Token } from "@/util/token"
+import { WorkerPool } from "@/worker/pool"
 import { SessionProcessor } from "./processor"
 import { Agent } from "@/agent/agent"
 import { Plugin } from "@/plugin"
@@ -215,8 +216,13 @@ const layer = Layer.effect(
     const estimate = Effect.fn("SessionCompaction.estimate")(function* (input: {
       messages: SessionV1.WithParts[]
       model: Provider.Model
+      offload?: boolean
     }) {
       const msgs = yield* MessageV2.toModelMessagesEffect(input.messages, input.model)
+      // Offload large serializations to a worker so a big session cannot block
+      // the sidecar event loop; small turns stay inline to avoid round-trip cost.
+      const offload = input.offload ?? input.messages.length >= 128
+      if (offload) return yield* WorkerPool.estimateJsonTokensEffect(msgs)
       return Token.estimate(JSON.stringify(msgs))
     })
 

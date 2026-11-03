@@ -728,5 +728,6 @@ export const node = LayerNode.make({
   service: Service,
   layer,
   deps: [Config.node, Provider.node, Session.node, Combo.node],
+  lazy: true,
 })
 
