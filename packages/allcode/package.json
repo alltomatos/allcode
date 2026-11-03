@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "1.27.5",
+  "version": "1.27.6",
   "name": "allcode",
   "type": "module",
   "license": "MIT",

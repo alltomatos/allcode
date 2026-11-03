@@ -1,6 +1,24 @@
 {
   "releases": [
     {
+      "tag": "v1.27.6",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Serviços ociosos deixam de pesar no background",
+              "description": "Serviços que só são necessários sob demanda (atualização, túnel, contas de e-mail, descoberta de skills, memória, worktree, compartilhamento e terminal) passaram a ser inicializados no primeiro uso, reduzindo trabalho e memória em segundo plano quando o app está ocioso."
+            },
+            {
+              "title": "Trabalho pesado fora da thread principal",
+              "description": "A serialização de sessões grandes para estimativa de tokens agora roda em um pool de workers, com fallback automático para a execução inline. O sidecar também passou a monitorar o atraso do event loop, facilitando diagnosticar qualquer operação que bloqueie o app."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.5",
       "highlights": [
         {
