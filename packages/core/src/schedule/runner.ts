@@ -748,8 +748,13 @@ const tickLayer = Layer.effectDiscard(
     // Heartbeat independente do tick: mantém a liderança mesmo com ações longas.
     yield* heartbeatLoop.pipe(Effect.forkIn(scope))
 
-    yield* Effect.sleep(Duration.seconds(STARTUP_DELAY_SECONDS))
-    yield* tickLoop(scope).pipe(Effect.forkIn(scope))
+    // O atraso inicial roda dentro da fiber do tick. Antes ele era aguardado
+    // (yield*) durante a aquisição do layer, o que travava o `Server.listen`
+    // inteiro por STARTUP_DELAY_SECONDS (60s) antes do sidecar responder.
+    yield* Effect.gen(function* () {
+      yield* Effect.sleep(Duration.seconds(STARTUP_DELAY_SECONDS))
+      yield* tickLoop(scope)
+    }).pipe(Effect.forkIn(scope))
   }),
 )
 
