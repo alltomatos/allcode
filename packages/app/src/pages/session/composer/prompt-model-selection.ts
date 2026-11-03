@@ -18,38 +18,39 @@ export function createPromptModelSelection(input: { agent: () => { model?: Model
   const tenantAuth = useTenantAuth()
   const providerPolicy = useProviderPolicy()
   const providers = useProviders(() => sdk().directory)
+  const allProviders = createMemo(() => providers.all())
   const connected = createMemo(() => new Set(providers.connected().map((item) => item.id)))
 
   const valid = (model: { providerID: string; modelID: string }) => {
     if (model.providerID === "combo") return true
     if (!providerPolicy.allows(model.providerID)) return false
-    const provider = providers.all().get(model.providerID)
+    const provider = allProviders().get(model.providerID)
     return !!provider?.models[model.modelID] && connected().has(model.providerID)
   }
 
-  const corporate = () => {
+  const corporate = createMemo(() => {
     const def = tenantAuth.defaultModel?.()
     if (!def?.provider || !def?.model) return undefined
     const key = { providerID: def.provider, modelID: def.model }
     return valid(key) ? key : undefined
-  }
+  })
 
-  const configured = () => {
+  const configured = createMemo(() => {
     const model = resolveDefaultModel(providers.defaultModel(), sync().data.config.model)
-    if (!model) return
-    if (valid(model)) return model
-  }
+    if (!model) return undefined
+    return valid(model) ? model : undefined
+  })
 
-  const recent = () => models.recent.list().find(valid)
-  const fallback = () => {
+  const recent = createMemo(() => models.recent.list().find(valid))
+  const fallback = createMemo(() => {
     const defaults = providers.default()
     return providers.connected().flatMap((provider) => {
       const modelID = defaults[provider.id] ?? Object.values(provider.models)[0]?.id
       return modelID ? [{ providerID: provider.id, modelID }] : []
     })[0]
-  }
+  })
 
-  const current = () => {
+  const current = createMemo(() => {
     const rawSession = prompt.model.current()
     const sessionModel: ModelKey | undefined = rawSession
       ? { providerID: rawSession.providerID, modelID: rawSession.modelID, variant: rawSession.variant ?? undefined }
@@ -74,9 +75,9 @@ export function createPromptModelSelection(input: { agent: () => { model?: Model
     const key = [input.agent()?.model, configured(), recent(), fallback()].find(
       (item): item is ModelKey => !!item && valid(item),
     )
-    if (!key) return
+    if (!key) return undefined
     return models.find(key)
-  }
+  })
   const recentModels = createMemo(() =>
     models.recent
       .list()

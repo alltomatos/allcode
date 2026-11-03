@@ -1,9 +1,10 @@
 import { useServerSync } from "@/context/server-sync"
 import { useTenantAuth } from "@/context/tenant-auth"
 import { decode64 } from "@/utils/base64"
+import type { NormalizedProviderListResponse } from "@allcode/session-ui/context"
 import { useParams } from "@solidjs/router"
-import { Iterable, pipe } from "effect"
-import { createEffect, createMemo, type Accessor } from "solid-js"
+import { Iterable } from "effect"
+import { createMemo, type Accessor } from "solid-js"
 import { selectProviderCatalog } from "./provider-catalog"
 
 export const popularProviders = [
@@ -18,78 +19,101 @@ export const popularProviders = [
 ]
 const popularProviderSet = new Set(popularProviders)
 
+type ProviderPolicy = ReturnType<ReturnType<typeof useTenantAuth>["providerPolicy"]>
+
+function isVisible(policy: ProviderPolicy, providerID: string) {
+  if (!policy) return true
+  if (policy.denied.includes(providerID)) return false
+  const prov = (policy.provisioned ?? []).find((p) => p.id === providerID)
+  if (prov && !prov.apiKey) return false
+  if (!policy.restricted) return true
+  return policy.allowLocal || policy.allowed.includes(providerID)
+}
+
 export function useProviders(directory: Accessor<string | undefined>) {
   const serverSync = useServerSync()
   const tenantAuth = useTenantAuth()
   const params = useParams()
   const dir = () => (directory ? directory() : decode64(params.dir))
   const policy = createMemo(() => tenantAuth.providerPolicy())
-  const visible = (providerID: string) => {
-    const current = policy()
-    if (!current) return true
-    if (current.denied.includes(providerID)) return false
-    const prov = (current.provisioned ?? []).find((p) => p.id === providerID)
-    if (prov && !prov.apiKey) return false
-    if (!current.restricted) return true
-    return current.allowLocal || current.allowed.includes(providerID)
-  }
-  const filterCatalog = (catalog: ReturnType<typeof selectProviderCatalog>) => ({
-    ...catalog,
-    all: new Map([...catalog.all].filter(([providerID]) => visible(providerID))),
-  })
-  const providers = () => {
+
+  // The raw catalog only changes when the directory, the project store or the
+  // global provider store changes. Memoizing it avoids re-selecting (and
+  // re-allocating) the catalog on every accessor call.
+  const catalog = createMemo<NormalizedProviderListResponse>(() => {
     const value = dir()
     const projectStore = value ? serverSync().child(value)[0] : undefined
-    if (value)
-      return filterCatalog(
-        selectProviderCatalog({
-          explicit: true,
-          directory: value,
-          catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-        }),
-      )
-    return filterCatalog(
-      selectProviderCatalog({
-        explicit: false,
+    const projectCatalog = projectStore && {
+      ready: projectStore.provider_ready,
+      providers: projectStore.provider,
+    }
+    if (value) {
+      return selectProviderCatalog({
+        explicit: true,
         directory: value,
-        catalog: projectStore && { ready: projectStore.provider_ready, providers: projectStore.provider },
-        global: serverSync().data.provider,
-      }),
+        catalog: projectCatalog,
+      })
+    }
+    return selectProviderCatalog({
+      explicit: false,
+      directory: value,
+      catalog: projectCatalog,
+      global: serverSync().data.provider,
+    })
+  })
+
+  // Filtering by policy is the expensive part (it rebuilds the Map). Cache it
+  // and reuse the original catalog when the policy hides nothing.
+  const filtered = createMemo<NormalizedProviderListResponse>(() => {
+    const current = policy()
+    const value = catalog()
+    if (!current) return value
+    const entries = Array.from(value.all).filter(([providerID]) => isVisible(current, providerID))
+    if (entries.length === value.all.size) return value
+    return { ...value, all: new Map(entries) }
+  })
+
+  const all = createMemo(() => filtered().all)
+  const defaults = createMemo(() => filtered().default)
+  const defaultModel = createMemo(() => filtered().defaultModel)
+  const connectedIDs = createMemo(() => new Set(filtered().connected))
+
+  const connected = createMemo(() =>
+    Array.from(
+      Iterable.filter(
+        Iterable.map(all(), ([, provider]) => provider),
+        (provider) => connectedIDs().has(provider.id),
+      ),
+    ),
+  )
+
+  const popular = createMemo(() =>
+    Array.from(
+      Iterable.filter(
+        Iterable.map(all(), ([, provider]) => provider),
+        (provider) => popularProviderSet.has(provider.id),
+      ),
+    ),
+  )
+
+  const paid = createMemo(() => {
+    const connected = connectedIDs()
+    const providers = all()
+    return Array.from(
+      Iterable.filter(
+        providers,
+        ([id]) =>
+          connected.has(id) && (id !== "opencode" || Object.keys(providers.get(id)?.models ?? {}).length > 0),
+      ),
     )
-  }
+  })
 
   return {
-    all: () => providers().all,
-    default: () => providers().default,
-    defaultModel: () => providers().defaultModel,
-    popular: () =>
-      pipe(
-        providers().all,
-        Iterable.map(([, p]) => p),
-        Iterable.filter((p) => popularProviderSet.has(p.id)),
-        (v) => Array.from(v),
-      ),
-    connected: () => {
-      const all = providers().all
-      const rawConnected = new Set(providers().connected)
-      return pipe(
-        all,
-        Iterable.map(([, p]) => p),
-        Iterable.filter((p) => rawConnected.has(p.id)),
-        (v) => Array.from(v),
-      )
-    },
-    paid: () => {
-      const connected = new Set(providers().connected)
-      const paid = [
-        ...Iterable.filter(
-          providers().all,
-          ([id]) =>
-            connected.has(id) &&
-            (id !== "opencode" || Object.keys(providers().all.get(id)?.models ?? {}).length > 0),
-        ),
-      ]
-      return paid
-    },
+    all,
+    default: defaults,
+    defaultModel,
+    popular,
+    connected,
+    paid,
   }
 }

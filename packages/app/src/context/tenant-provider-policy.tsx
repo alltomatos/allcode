@@ -54,9 +54,9 @@ export function TenantProviderPolicySync() {
       return
     }
 
-    const known = [...serverSync().data.provider.all.keys()]
     const previousApplied = readApplied(serverKey)
     const previousProvisioned = readProvisioned(serverKey)
+    const known = [...serverSync().data.provider.all.keys()]
 
     // 1. Resolve provisioned providers (e.g. 9router, OmniRoute)
     const currentProvisioned = policy.provisioned ?? []
@@ -100,11 +100,12 @@ export function TenantProviderPolicySync() {
     }
 
     // 2. Resolve allowlist / denylist
-    const desired = desiredDenies(policy, known)
-    const baseline = (config.disabled_providers ?? []).filter(
-      (id) => !previousApplied.includes(id) && !policy.denied.includes(id),
-    )
-    const applied = [...new Set([...baseline, ...desired])].sort()
+    const { desired, applied } = nextDisabledProviders({
+      policy,
+      known,
+      previousApplied,
+      disabled: config.disabled_providers ?? [],
+    })
     const currentDisabled = [...(config.disabled_providers ?? [])].sort()
     const disabledChanged = !sameList(applied, currentDisabled)
 
@@ -150,6 +151,24 @@ export function useProviderPolicy() {
       return current.allowLocal || current.allowed.includes(providerID)
     },
   }
+}
+
+export function nextDisabledProviders(input: {
+  policy: ProviderPolicy
+  known: string[]
+  previousApplied: string[]
+  disabled: string[]
+}) {
+  // Disabled providers disappear from the live catalog, so the deny universe
+  // must also include what this client already applied. Otherwise the next
+  // pass recomputes an empty deny list, re-enables them, and starts an
+  // endless config-write/refetch loop.
+  const universe = [...new Set([...input.known, ...input.previousApplied])]
+  const desired = desiredDenies(input.policy, universe)
+  const baseline = input.disabled.filter(
+    (id) => !input.previousApplied.includes(id) && !input.policy.denied.includes(id),
+  )
+  return { desired, applied: [...new Set([...baseline, ...desired])].sort() }
 }
 
 function desiredDenies(policy: ProviderPolicy, known: string[]) {

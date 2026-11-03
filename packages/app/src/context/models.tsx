@@ -156,7 +156,17 @@ export const { use: useModels, provider: ModelsProvider } = createSimpleContext(
       })),
     )
 
-    const find = (key: ModelKey) => list().find((m) => m.id === key.modelID && m.provider.id === key.providerID)
+    // `find` is called from render paths (composer model control, session
+    // fallbacks), so keep an index instead of scanning the full model list on
+    // every lookup.
+    const byKey = createMemo(
+      () =>
+        new Map(
+          list().map((model) => [modelKey({ providerID: model.provider.id, modelID: model.id }), model] as const),
+        ),
+    )
+
+    const find = (key: ModelKey) => byKey().get(modelKey(key))
 
     function update(model: ModelKey, state: Visibility) {
       const index = store.user.findIndex((x) => x.modelID === model.modelID && x.providerID === model.providerID)

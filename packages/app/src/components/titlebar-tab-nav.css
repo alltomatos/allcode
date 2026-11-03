@@ -108,7 +108,10 @@
   --tab-title-fade-offset: 24px;
 }
 
-[data-titlebar-tab][data-title-overflow="true"]:not(:hover):not([data-active="true"]):not([data-editing="true"])
+/* Keep this independent of [data-title-overflow]: changing padding in response
+   to the measured overflow changes the title's clientWidth, which flips the
+   measurement and drives a ResizeObserver feedback loop. */
+[data-titlebar-tab]:not(:hover):not([data-active="true"]):not([data-editing="true"])
   [data-slot="tab-link"] {
   padding-inline-end: 0;
 }
