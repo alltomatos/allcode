@@ -12,6 +12,14 @@
 - Versão exibida no rodapé vem de `PANEL_VERSION` (`packages/panel/src/lib/version.ts`).
 - **Windows**: o build do painel depende do script `packages/panel/script/fix-solid-start-windows.ts` (rodado por `predev`/`prebuild`/`prebuild:cloudflare`). Ele normaliza caminhos do `@solidjs/start` instalado porque o patch do pacote não é aplicado de forma confiável a dependências resolvidas por URL.
 
+## Instalação e upgrade do CLI
+
+- O script de instalação e a checagem de última versão apontam para o feed público:
+  - `https://raw.githubusercontent.com/alltomatos/allcode-release/main/install` (e `install.ps1`)
+  - `https://api.github.com/repos/alltomatos/allcode-release/releases/latest`
+- `install`/`install.ps1` no repo são espelhados manualmente em `allcode-release/main` a cada mudança; se alterar um deles, replique via API de contents.
+- `packages/allcode/src/installation/index.ts` é o consumidor dessas URLs no CLI.
+
 ## Segredos e onde vivem
 
 - CI: GitHub Actions secrets (`NPM_TOKEN`, `DISCORD_WEBHOOK`, e os herdados do upstream).

@@ -286,12 +286,12 @@ export const DESKTOP_MENU: DesktopMenu[] = [
       {
         type: "item",
         labelKey: "desktop.menu.shareFeedback",
-        href: "https://github.com/alltomatos/allcode/issues/new?template=feature-request.yml",
+        href: "https://github.com/alltomatos/allcode-release/issues/new",
       },
       {
         type: "item",
         labelKey: "desktop.menu.reportBug",
-        href: "https://github.com/alltomatos/allcode/issues/new?template=bug-report.yml",
+        href: "https://github.com/alltomatos/allcode-release/issues/new",
       },
     ],
   },

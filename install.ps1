@@ -7,12 +7,12 @@
   Downloads the latest release installer from GitHub and runs it silently.
 
 .EXAMPLE
-  irm https://raw.githubusercontent.com/alltomatos/allcode/prod/install.ps1 | iex
+  irm https://raw.githubusercontent.com/alltomatos/allcode-release/main/install.ps1 | iex
 #>
 
 $ErrorActionPreference = "Stop"
 
-$repo = "alltomatos/allcode"
+$repo = "alltomatos/allcode-release"
 $assetName = "opencode-desktop-win-x64.exe"
 
 Write-Host "OpenCode Desktop installer (fork by Alltomatos)" -ForegroundColor Cyan

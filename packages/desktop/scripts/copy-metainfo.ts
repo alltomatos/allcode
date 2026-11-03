@@ -31,9 +31,8 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 
   <content_rating type="oars-1.1" />
 
-  <url type="bugtracker">https://github.com/alltomatos/allcode/issues</url>
-  <url type="homepage">https://allcode.alltomatos.com</url>
-  <url type="vcs-browser">https://github.com/alltomatos/allcode</url>
+  <url type="bugtracker">https://github.com/alltomatos/allcode-release/issues</url>
+  <url type="homepage">https://allcode.alltomatos.com</url>
 
   <screenshots>
     <screenshot type="default">

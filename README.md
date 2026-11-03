@@ -28,7 +28,7 @@
 
 ---
 
-Este é um fork pessoal do [OpenCode](https://github.com/anomalyco/opencode), mantido por [Alltomatos](https://github.com/alltomatos), com o foco no app desktop para Windows e ajustes de UI/UX específicos deste fork (sidebar de projetos, terminal e browser embutidos no cabeçalho da sessão, seed de skills padrão, entre outros — veja o [changelog](./changelog.json) e as [releases](https://github.com/alltomatos/allcode/releases) para o histórico completo).
+Este é um fork pessoal do [OpenCode](https://github.com/anomalyco/opencode), mantido por [Alltomatos](https://github.com/alltomatos), com o foco no app desktop para Windows e ajustes de UI/UX específicos deste fork (sidebar de projetos, terminal e browser embutidos no cabeçalho da sessão, seed de skills padrão, entre outros — veja o [changelog](./changelog.json) e as [releases](https://github.com/alltomatos/allcode-release/releases) para o histórico completo). Dúvidas, bugs e sugestões: [issues do feed de releases](https://github.com/alltomatos/allcode-release/issues).
 
 ### Branches
 
