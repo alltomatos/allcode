@@ -105,6 +105,21 @@ const PROVIDER_NOTES = [
 ] as const
 
 const PROVIDER_ICON_SIZE = 16
+const QUOTA_CACHE_TTL = 60_000
+
+// Quota probes hit the upstream provider, so keep the last result around across
+// settings remounts instead of refetching every account each time the page opens.
+const quotaCache = new Map<string, { data: AccountQuotaModalData; expires: number }>()
+
+function readQuotaCache(key: string) {
+  const entry = quotaCache.get(key)
+  if (!entry) return
+  if (entry.expires <= Date.now()) {
+    quotaCache.delete(key)
+    return
+  }
+  return entry.data
+}
 
 // Providers backed by the Integration/Credential service (see
 // packages/core/src/integration.ts) can hold more than one connected
@@ -131,8 +146,16 @@ const ProviderAccountList: Component<{
   const [quotas, setQuotas] = createSignal<Record<string, AccountQuotaModalData>>({})
   const [loadingQuota, setLoadingQuota] = createSignal<Set<string>>(new Set())
 
-  const fetchQuota = async (account: { id: string; label?: string }) => {
+  const fetchQuota = async (account: { id: string; label?: string }, options?: { force?: boolean }) => {
     if (loadingQuota().has(account.id)) return
+    const cacheKey = `${serverSdk().url}\0${props.integrationID}\0${account.id}`
+    if (!options?.force) {
+      const cached = readQuotaCache(cacheKey)
+      if (cached) {
+        setQuotas((prev) => ({ ...prev, [account.id]: cached }))
+        return
+      }
+    }
     setLoadingQuota((prev) => new Set(prev).add(account.id))
     try {
       const res = await serverSdk().client.provider.quota({
@@ -155,6 +178,7 @@ const ProviderAccountList: Component<{
             resetTime: b.resetTime ?? null,
           })),
         }
+        quotaCache.set(cacheKey, { data: details, expires: Date.now() + QUOTA_CACHE_TTL })
         setQuotas((prev) => ({ ...prev, [account.id]: details }))
       }
     } catch {
