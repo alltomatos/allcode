@@ -92,6 +92,7 @@ export interface UserSession {
   email: string
   role: string
   mustChangePassword?: boolean
+  auditExempt?: boolean
   permissions?: UserPermissions
   access?: Partial<Record<AccessResource, boolean>>
   settings?: Partial<Record<SettingsSection, boolean>>
@@ -285,6 +286,7 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
           canOpenSettings?: boolean
           defaultModel?: ModelDefault
           providers?: ProviderPolicy
+          user?: { auditExempt?: boolean }
         } | null
 
         if (!res.ok) {
@@ -315,6 +317,9 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
           if (body.defaultModel) setStore("user", "defaultModel", body.defaultModel)
           if (body.providers) setStore("user", "providers", body.providers)
         }
+        if (typeof body.user?.auditExempt === "boolean") {
+          setStore("user", "auditExempt", body.user.auditExempt)
+        }
       } catch {
         // Modo offline / falha transitória de rede: respeita o token em cache
       }
@@ -324,7 +329,7 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
     const recordSessionAudit = async (payload: SessionAuditPayload) => {
       const u = store.user
       const t = store.tenant
-      if (!u || !t) return
+      if (!u || !t || u.auditExempt) return
 
       try {
         await fetch(`${DEFAULT_AUTH_URL}/api/v1/sessions/audit`, {

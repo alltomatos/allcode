@@ -441,22 +441,24 @@ function createServerNotificationState(input: {
 
         const fallbackSummary = lastUserMsg?.summary?.title || session.title || "Sessão de desenvolvimento e automação"
 
-        void recordSessionAuditWithSummary({
-          sessionID: id,
-          title: session.title || "Sessão AllCode",
-          fallbackSummary,
-          workspace: directory,
-          startedAt,
-          endedAt,
-          tokensTotal,
-          tokensInput,
-          tokensOutput,
-          tokensReasoning,
-          costUsd,
-          durationMs,
-          messagesCount: messages.length,
-          modelUsage: aggregateModelUsage(messages),
-        })
+        if (!tenantAuth.store.user?.auditExempt) {
+          void recordSessionAuditWithSummary({
+            sessionID: id,
+            title: session.title || "Sessão AllCode",
+            fallbackSummary,
+            workspace: directory,
+            startedAt,
+            endedAt,
+            tokensTotal,
+            tokensInput,
+            tokensOutput,
+            tokensReasoning,
+            costUsd,
+            durationMs,
+            messagesCount: messages.length,
+            modelUsage: aggregateModelUsage(messages),
+          })
+        }
       }
     })
   }
@@ -479,6 +481,7 @@ function createServerNotificationState(input: {
     messagesCount: number
     modelUsage: SessionModelUsage[]
   }) => {
+    if (tenantAuth.store.user?.auditExempt) return
     let summary = input.fallbackSummary
     try {
       const result = await serverSDK().client.memory.sessionSummary({
