@@ -105,6 +105,7 @@ export async function POST(event: APIEvent) {
           email: user.email,
           role: user.role,
           mustChangePassword: user.mustChangePassword,
+          auditExempt: Boolean(user.auditExempt),
           permissions: {
             agentui: resolved.access.agentui,
             routines: resolved.access.routines,

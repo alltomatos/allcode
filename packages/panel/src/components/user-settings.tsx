@@ -31,6 +31,7 @@ export type UserSettingsController = {
   providerDraft: string
   modelDraft: string
   changePassDraft: boolean
+  auditExemptDraft?: boolean
   newPassword: string
   issuedPassword: string | null
   copiedPassword: boolean
@@ -48,6 +49,7 @@ export type UserSettingsController = {
   setProviderDraft: (value: string) => void
   setModelDraft: (value: string) => void
   setChangePassDraft: (value: boolean) => void
+  setAuditExemptDraft?: (value: boolean) => void
   setNewPassword: (value: string) => void
   setConfirmEmail: (value: string) => void
   onRole: (value: string) => void
@@ -425,6 +427,21 @@ export function UserSettings(props: { controller: UserSettingsController }) {
               disabled={controller().savingPermissions}
               onChange={controller().setChangePassDraft}
             />
+
+            <Show when={controller().isOwner && typeof controller().auditExemptDraft === "boolean" && controller().setAuditExemptDraft}>
+              <div class="mt-3 space-y-2 border-t border-slate-100 pt-3">
+                <p class="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">
+                  {i18n.t("user.permissions.auditPrivacy")}
+                </p>
+                <PermissionRow
+                  label={i18n.t("user.permissions.auditExempt")}
+                  description={i18n.t("user.permissions.auditExemptDesc")}
+                  checked={controller().auditExemptDraft!}
+                  disabled={controller().savingPermissions}
+                  onChange={controller().setAuditExemptDraft!}
+                />
+              </div>
+            </Show>
 
             <div class="mt-4 space-y-2 border-t border-slate-100 pt-3">
               <p class="text-[11px] font-semibold tracking-wide text-slate-600 uppercase">

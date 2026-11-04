@@ -2,13 +2,14 @@ import { A, createAsync, revalidate, useAction } from "@solidjs/router"
 import { For, Show, createSignal } from "solid-js"
 import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { createUser, listGroups, listProviders } from "~/lib/actions"
+import { createUser, listGroups, listProviders, me } from "~/lib/actions"
 
 type Issued = { email: string; password: string }
 
 export default function NewUserPage() {
   const i18n = useI18n()
   const create = useAction(createUser)
+  const actor = createAsync(() => me())
   const groups = createAsync(() => listGroups())
   const providers = createAsync(() => listProviders())
   const [issued, setIssued] = createSignal<Issued | null>(null)
@@ -128,6 +129,22 @@ export default function NewUserPage() {
                   <span class="text-slate-500">{i18n.t("user.permissions.changePasswordDesc")}</span>
                 </div>
               </label>
+
+              <Show when={actor()?.role === "owner"}>
+                <div class="mt-2 border-t border-slate-200/60 pt-2">
+                  <label class="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="auditExempt"
+                      class="mt-1 size-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <div class="text-xs">
+                      <span class="font-semibold text-slate-900 block">{i18n.t("user.permissions.auditExempt")}</span>
+                      <span class="text-slate-500">{i18n.t("user.permissions.auditExemptDesc")}</span>
+                    </div>
+                  </label>
+                </div>
+              </Show>
             </div>
 
               <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">

@@ -105,6 +105,16 @@ export async function POST(event: APIEvent) {
       await db.users.update(user.id, { appVersion: version, appVersionAt: new Date().toISOString() })
     }
 
+    if (user.auditExempt) {
+      return new Response(JSON.stringify({ ok: true, exempt: true, session: null }), {
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "access-control-allow-origin": "*",
+        },
+      })
+    }
+
     const sessionRecord = await db.sessions.create({
       sessionID,
       userID,

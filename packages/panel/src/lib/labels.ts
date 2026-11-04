@@ -36,6 +36,7 @@ export function actionKey(action: string): Key | undefined {
   if (action === "user.suspended") return "event.user.suspended"
   if (action === "user.reactivated") return "event.user.reactivated"
   if (action === "user.removed") return "event.user.removed"
+  if (action === "user.audit_exemption_updated") return "event.user.audit_exemption_updated"
   if (action === "org.updated") return "event.org.updated"
   if (action === "tenant.created") return "event.tenant.created"
   if (action === "tenant.suspended") return "event.tenant.suspended"

@@ -126,6 +126,7 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
         email: user.email,
         role: user.role,
         mustChangePassword: user.mustChangePassword,
+        auditExempt: Boolean(user.auditExempt),
         permissions,
         access: resolved.access,
         settings: resolved.settings,

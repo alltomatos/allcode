@@ -40,6 +40,9 @@ export function UserOverview(props: {
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="text-sm font-semibold text-slate-900">{i18n.t("user.detail.profile")}</h2>
             <div class="flex items-center gap-2">
+              <Show when={props.user.auditExempt}>
+                <Badge tone="brand">{i18n.t("user.badge.auditExempt")}</Badge>
+              </Show>
               <Badge tone={roleTone(props.user.role)}>{i18n.t(roleKey(props.user.role))}</Badge>
               <Badge tone={statusTone(props.user.status)}>{i18n.t(statusKey(props.user.status))}</Badge>
             </div>

@@ -77,6 +77,7 @@ export default function UserDetailPage() {
   const [providerDraft, setProviderDraft] = createSignal("")
   const [modelDraft, setModelDraft] = createSignal("")
   const [changePassDraft, setChangePassDraft] = createSignal(true)
+  const [auditExemptDraft, setAuditExemptDraft] = createSignal(false)
   const [accessInitialized, setAccessInitialized] = createSignal(false)
   const [grantsDraft, setGrantsDraft] = createSignal<ProviderGrantDraft>({})
   const [grantsInitialized, setGrantsInitialized] = createSignal(false)
@@ -174,6 +175,7 @@ export default function UserDetailPage() {
       defaultProvider: providerDraft() || undefined,
       defaultModel: modelDraft() || undefined,
       groupIds: groupDraft(),
+      auditExempt: isOwner() ? auditExemptDraft() : undefined,
     })
     setSavingPermissions(false)
 
@@ -248,6 +250,7 @@ export default function UserDetailPage() {
             setProviderDraft(current().defaultProvider ?? "")
             setModelDraft(current().defaultModel ?? "")
             setChangePassDraft(current().canChangePassword)
+            setAuditExemptDraft(Boolean(current().auditExempt))
             setAccessInitialized(true)
           }
 
@@ -302,6 +305,7 @@ export default function UserDetailPage() {
                       providerDraft: providerDraft(),
                       modelDraft: modelDraft(),
                       changePassDraft: changePassDraft(),
+                      auditExemptDraft: auditExemptDraft(),
                       newPassword: newPassword(),
                       issuedPassword: issuedPassword(),
                       copiedPassword: copiedPassword(),
@@ -319,6 +323,7 @@ export default function UserDetailPage() {
                       setProviderDraft,
                       setModelDraft,
                       setChangePassDraft,
+                      setAuditExemptDraft,
                       setNewPassword,
                       setConfirmEmail,
                       onRole,
