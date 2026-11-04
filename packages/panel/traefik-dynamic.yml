@@ -1,0 +1,22 @@
+tcp:
+  routers:
+    postgres-router:
+      entryPoints:
+        - postgres
+      rule: "HostSNI(`*`)"
+      service: postgres-service
+    redis-router:
+      entryPoints:
+        - redis
+      rule: "HostSNI(`*`)"
+      service: redis-service
+
+  services:
+    postgres-service:
+      loadBalancer:
+        servers:
+          - address: "data_postgres:5432"
+    redis-service:
+      loadBalancer:
+        servers:
+          - address: "data_redis:6379"
