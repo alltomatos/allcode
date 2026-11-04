@@ -52,6 +52,7 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0010_provider_individual_credentials.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0011_resellers_and_trials.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0012_plans.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0013_user_audit_exempt.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -162,8 +163,14 @@ describe("D1 store", () => {
     const kpis = await store.sessions.getUserKPIs(owner!.id)
     expect(kpis.totalSessions).toBe(1)
     expect(kpis.totalTokens).toBe(1500)
+    expect(kpis.tokensInput).toBe(1000)
+    expect(kpis.tokensOutput).toBe(500)
     expect(kpis.totalCostUsd).toBeCloseTo(0.0045, 4)
     expect(kpis.totalDurationMs).toBe(60000)
+    expect(kpis.referenceCostAnthropic).toBeGreaterThan(0)
+    expect(kpis.referenceCostOpenAI).toBeGreaterThan(0)
+    expect(kpis.referenceMarketCost).toBeGreaterThan(0)
+    expect(kpis.savingsUsd).toBeGreaterThanOrEqual(0)
   })
 
   test("upserts a session audit row by session_id as the summary evolves", async () => {
@@ -224,6 +231,84 @@ describe("D1 store", () => {
     expect(usage[0]?.providerID).toBe("openai")
     expect(usage[0]?.modelID).toBe("gpt-5")
     expect(usage[0]?.tokens).toBe(150)
+  })
+
+  test("computes consolidated organization KPIs and comparative savings across multiple users and sessions", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    expect(owner).toBeTruthy()
+
+    const userB = await store.users.create({
+      name: "Dev Alpha",
+      email: "alpha@test.dev",
+      role: "member",
+      passwordHash: await hashPassword("pass"),
+      mustChangePassword: false,
+    })
+
+    // Sessão do Owner: 1.000.000 input, 200.000 output, 2 horas (7.200.000ms), custo real $1.00
+    await store.sessions.create({
+      sessionID: "ses_owner_large",
+      userID: owner!.id,
+      orgID: owner!.orgID,
+      title: "Large refactor",
+      summary: "Refactored payment gateway",
+      workspace: "D:/dev/payment",
+      startedAt: new Date(Date.now() - 7200000).toISOString(),
+      endedAt: new Date().toISOString(),
+      tokensTotal: 1_200_000,
+      tokensInput: 1_000_000,
+      tokensOutput: 200_000,
+      tokensReasoning: 0,
+      costUsd: 1.00,
+      durationMs: 7_200_000,
+      messagesCount: 40,
+      modelUsage: [{ providerID: "custom", modelID: "local-coder", tokens: 1_200_000, costUsd: 1.00, calls: 20 }],
+    })
+
+    // Sessão do Dev Alpha: 500.000 input, 100.000 output, 1 hora (3.600.000ms), custo real $0.50
+    await store.sessions.create({
+      sessionID: "ses_alpha_feature",
+      userID: userB.id,
+      orgID: owner!.orgID,
+      title: "Feature login",
+      summary: "Created login flows",
+      workspace: "D:/dev/auth",
+      startedAt: new Date(Date.now() - 3600000).toISOString(),
+      endedAt: new Date().toISOString(),
+      tokensTotal: 600_000,
+      tokensInput: 500_000,
+      tokensOutput: 100_000,
+      tokensReasoning: 0,
+      costUsd: 0.50,
+      durationMs: 3_600_000,
+      messagesCount: 15,
+      modelUsage: [{ providerID: "custom", modelID: "local-coder", tokens: 600_000, costUsd: 0.50, calls: 10 }],
+    })
+
+    const orgKpis = await store.sessions.getOrgKPIs(owner!.orgID)
+
+    // Agregação global:
+    expect(orgKpis.totalSessions).toBe(2)
+    expect(orgKpis.totalTokens).toBe(1_800_000)
+    expect(orgKpis.tokensInput).toBe(1_500_000)
+    expect(orgKpis.tokensOutput).toBe(300_000)
+    expect(orgKpis.totalCostUsd).toBeCloseTo(1.50, 2)
+    expect(orgKpis.totalDurationMs).toBe(10_800_000) // 3 horas
+
+    // Economia comparativa:
+    // 1.5M input, 300k output
+    // Anthropic (Sonnet: $3 / 1M in, $15 / 1M out): 1.5 * 3 + 0.3 * 15 = 4.5 + 4.5 = $9.00
+    // OpenAI (GPT-4o: $2.5 / 1M in, $10 / 1M out): 1.5 * 2.5 + 0.3 * 10 = 3.75 + 3.0 = $6.75
+    // Blended market: (9.00 + 6.75) / 2 = $7.875
+    // Custo real: $1.50
+    // Economia: 7.875 - 1.50 = $6.375 (80.95%)
+    expect(orgKpis.referenceCostAnthropic).toBe(9.0)
+    expect(orgKpis.referenceCostOpenAI).toBe(6.75)
+    expect(orgKpis.referenceMarketCost).toBe(7.875)
+    expect(orgKpis.savingsUsd).toBe(6.375)
+    expect(orgKpis.savingsPercentage).toBe(81.0)
   })
 
   test("admin password reset replaces the hash and forces a change on next sign-in", async () => {

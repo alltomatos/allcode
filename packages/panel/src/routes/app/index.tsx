@@ -1,14 +1,16 @@
 import { A, createAsync } from "@solidjs/router"
 import { For, Show } from "solid-js"
 import { Card, EmptyState, PageHeader, StatGrid } from "~/components/ui"
+import { OverviewKpis } from "~/components/overview-kpis"
 import { useI18n } from "~/i18n"
-import { getCurrentOrg, getStats, listAudit } from "~/lib/actions"
+import { getCurrentOrg, getOrgKPIs, getStats, listAudit } from "~/lib/actions"
 import { getTrialDaysRemaining } from "~/lib/store"
 import { actionKey, formatDate } from "~/lib/labels"
 
 export default function OverviewPage() {
   const i18n = useI18n()
   const stats = createAsync(() => getStats())
+  const kpis = createAsync(() => getOrgKPIs())
   const events = createAsync(() => listAudit())
   const org = createAsync(() => getCurrentOrg())
 
@@ -50,6 +52,14 @@ export default function OverviewPage() {
           </A>
         </div>
       </Show>
+
+      <OverviewKpis kpis={kpis()} />
+
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+          {i18n.t("overview.access.title")}
+        </h2>
+      </div>
 
       <Show when={stats()}>
         {(current) => (

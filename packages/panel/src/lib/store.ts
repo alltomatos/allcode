@@ -1,5 +1,6 @@
 import { hashPassword } from "./crypto"
 import { bindings, env } from "./env"
+import { computeComparativeSavings, type ReferenceRatesConfig } from "./kpi-pricing"
 
 export type Role = "owner" | "admin" | "member"
 export type Status = "invited" | "active" | "suspended" | "deleted"
@@ -19,6 +20,7 @@ export type PanelUser = {
   canUseAgentUI: boolean
   canUseRoutines: boolean
   canChangePassword: boolean
+  auditExempt?: boolean
   /** undefined = inherit from the access groups. */
   canOpenSettings?: boolean
   defaultProvider?: string
@@ -117,8 +119,33 @@ export type ModelUsageSummary = ModelUsageEntry & {
 export type UserKPIs = {
   totalSessions: number
   totalTokens: number
+  tokensInput: number
+  tokensOutput: number
+  tokensReasoning: number
   totalCostUsd: number
   totalDurationMs: number
+  referenceCostAnthropic: number
+  referenceCostOpenAI: number
+  referenceMarketCost: number
+  savingsUsd: number
+  savingsPercentage: number
+}
+
+export type OrgKPIs = UserKPIs
+
+export const EMPTY_USER_KPIS: UserKPIs = {
+  totalSessions: 0,
+  totalTokens: 0,
+  tokensInput: 0,
+  tokensOutput: 0,
+  tokensReasoning: 0,
+  totalCostUsd: 0,
+  totalDurationMs: 0,
+  referenceCostAnthropic: 0,
+  referenceCostOpenAI: 0,
+  referenceMarketCost: 0,
+  savingsUsd: 0,
+  savingsPercentage: 0,
 }
 
 export type SessionListOptions = {
@@ -307,6 +334,7 @@ export type UserPatch = Partial<
     | "canUseAgentUI"
     | "canUseRoutines"
     | "canChangePassword"
+    | "auditExempt"
     | "canOpenSettings"
     | "defaultProvider"
     | "defaultModel"
@@ -414,6 +442,7 @@ export type Store = {
       canUseAgentUI?: boolean
       canUseRoutines?: boolean
       canChangePassword?: boolean
+      auditExempt?: boolean
       canOpenSettings?: boolean
       defaultProvider?: string
       defaultModel?: string
@@ -491,8 +520,8 @@ export type Store = {
     listByUser(userID: string, limit?: number): Promise<SessionAudit[]>
     listByOrg(orgID: string, options?: SessionListOptions): Promise<SessionAudit[]>
     findBySessionID(sessionID: string): Promise<SessionAudit | undefined>
-    getUserKPIs(userID: string): Promise<UserKPIs>
-    getOrgKPIs(orgID: string): Promise<UserKPIs>
+    getUserKPIs(userID: string, config?: Partial<ReferenceRatesConfig>): Promise<UserKPIs>
+    getOrgKPIs(orgID: string, config?: Partial<ReferenceRatesConfig>): Promise<OrgKPIs>
     getUserModelUsage(userID: string, options?: { days?: number }): Promise<ModelUsageSummary[]>
   }
   credentials: {
@@ -600,6 +629,7 @@ function memoryStore(): Store {
           canUseAgentUI: true,
           canUseRoutines: true,
           canChangePassword: true,
+          auditExempt: false,
           canOpenSettings: true,
           accessOverrides: "{}",
           createdAt: new Date().toISOString(),
@@ -820,6 +850,7 @@ function memoryStore(): Store {
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
+          auditExempt: input.auditExempt ?? false,
           canOpenSettings: input.canOpenSettings ?? true,
           defaultProvider: input.defaultProvider,
           defaultModel: input.defaultModel,
@@ -1043,22 +1074,62 @@ function memoryStore(): Store {
       async findBySessionID(sessionID) {
         return sessionRecords.find((record) => record.sessionID === sessionID)
       },
-      async getUserKPIs(userID) {
+      async getUserKPIs(userID, config) {
         const userSessions = sessionRecords.filter((record) => record.userID === userID)
+        const totalSessions = userSessions.length
+        const totalTokens = userSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0)
+        const tokensInput = userSessions.reduce((acc, curr) => acc + (curr.tokensInput || 0), 0)
+        const tokensOutput = userSessions.reduce((acc, curr) => acc + (curr.tokensOutput || 0), 0)
+        const tokensReasoning = userSessions.reduce((acc, curr) => acc + (curr.tokensReasoning || 0), 0)
+        const totalCostUsd = userSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0)
+        const totalDurationMs = userSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0)
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
         return {
-          totalSessions: userSessions.length,
-          totalTokens: userSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
-          totalCostUsd: userSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
-          totalDurationMs: userSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
-      async getOrgKPIs(orgID) {
+      async getOrgKPIs(orgID, config) {
         const orgSessions = sessionRecords.filter((record) => record.orgID === orgID)
+        const totalSessions = orgSessions.length
+        const totalTokens = orgSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0)
+        const tokensInput = orgSessions.reduce((acc, curr) => acc + (curr.tokensInput || 0), 0)
+        const tokensOutput = orgSessions.reduce((acc, curr) => acc + (curr.tokensOutput || 0), 0)
+        const tokensReasoning = orgSessions.reduce((acc, curr) => acc + (curr.tokensReasoning || 0), 0)
+        const totalCostUsd = orgSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0)
+        const totalDurationMs = orgSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0)
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
         return {
-          totalSessions: orgSessions.length,
-          totalTokens: orgSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
-          totalCostUsd: orgSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
-          totalDurationMs: orgSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
       async getUserModelUsage(userID, options = {}) {
@@ -1156,6 +1227,7 @@ type UserRow = {
   can_use_agentui?: number
   can_use_routines?: number
   can_change_password?: number
+  audit_exempt?: number
   can_open_settings?: number | null
   default_provider?: string | null
   default_model?: string | null
@@ -1311,6 +1383,7 @@ function toUser(row: UserRow): PanelUser {
     canUseAgentUI: row.can_use_agentui !== 0,
     canUseRoutines: row.can_use_routines !== 0,
     canChangePassword: row.can_change_password !== 0,
+    auditExempt: row.audit_exempt === 1,
     canOpenSettings:
       row.can_open_settings === null || row.can_open_settings === undefined
         ? undefined
@@ -1914,6 +1987,7 @@ export function d1Store(db: D1Database): Store {
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
+          auditExempt: input.auditExempt ?? false,
           canOpenSettings: input.canOpenSettings ?? true,
           defaultProvider: input.defaultProvider,
           defaultModel: input.defaultModel,
@@ -1922,8 +1996,8 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, is_reseller, reseller_id, can_use_agentui, can_use_routines, can_change_password, can_open_settings, default_provider, default_model, access_overrides, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, is_reseller, reseller_id, can_use_agentui, can_use_routines, can_change_password, audit_exempt, can_open_settings, default_provider, default_model, access_overrides, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             user.id,
@@ -1940,6 +2014,7 @@ export function d1Store(db: D1Database): Store {
             user.canUseAgentUI ? 1 : 0,
             user.canUseRoutines ? 1 : 0,
             user.canChangePassword ? 1 : 0,
+            user.auditExempt ? 1 : 0,
             user.canOpenSettings === undefined ? null : user.canOpenSettings ? 1 : 0,
             user.defaultProvider ?? null,
             user.defaultModel ?? null,
@@ -1955,7 +2030,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, can_open_settings = ?, default_provider = ?, default_model = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ? WHERE id = ?`,
+            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, audit_exempt = ?, can_open_settings = ?, default_provider = ?, default_model = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -1968,6 +2043,7 @@ export function d1Store(db: D1Database): Store {
             next.canUseAgentUI ? 1 : 0,
             next.canUseRoutines ? 1 : 0,
             next.canChangePassword ? 1 : 0,
+            next.auditExempt ? 1 : 0,
             next.canOpenSettings === undefined ? null : next.canOpenSettings ? 1 : 0,
             next.defaultProvider ?? null,
             next.defaultModel ?? null,
@@ -2357,42 +2433,110 @@ export function d1Store(db: D1Database): Store {
           .first<SessionAuditRow>()
         return row ? toSessionAudit(row) : undefined
       },
-      async getUserKPIs(userID) {
+      async getUserKPIs(userID, config) {
         const row = await db
           .prepare(
             `SELECT
                COUNT(*) AS total_sessions,
                SUM(tokens_total) AS total_tokens,
+               SUM(tokens_input) AS total_tokens_input,
+               SUM(tokens_output) AS total_tokens_output,
+               SUM(tokens_reasoning) AS total_tokens_reasoning,
                SUM(cost_usd) AS total_cost_usd,
                SUM(duration_ms) AS total_duration_ms
              FROM session_audit WHERE user_id = ?`,
           )
           .bind(userID)
-          .first<{ total_sessions: number; total_tokens: number; total_cost_usd: number; total_duration_ms: number }>()
+          .first<{
+            total_sessions: number
+            total_tokens: number
+            total_tokens_input: number
+            total_tokens_output: number
+            total_tokens_reasoning: number
+            total_cost_usd: number
+            total_duration_ms: number
+          }>()
+
+        const totalSessions = Number(row?.total_sessions ?? 0)
+        const totalTokens = Number(row?.total_tokens ?? 0)
+        const tokensInput = Number(row?.total_tokens_input ?? 0)
+        const tokensOutput = Number(row?.total_tokens_output ?? 0)
+        const tokensReasoning = Number(row?.total_tokens_reasoning ?? 0)
+        const totalCostUsd = Number(row?.total_cost_usd ?? 0)
+        const totalDurationMs = Number(row?.total_duration_ms ?? 0)
+
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
+
         return {
-          totalSessions: Number(row?.total_sessions ?? 0),
-          totalTokens: Number(row?.total_tokens ?? 0),
-          totalCostUsd: Number(row?.total_cost_usd ?? 0),
-          totalDurationMs: Number(row?.total_duration_ms ?? 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
-      async getOrgKPIs(orgID) {
+      async getOrgKPIs(orgID, config) {
         const row = await db
           .prepare(
             `SELECT
                COUNT(*) AS total_sessions,
                SUM(tokens_total) AS total_tokens,
+               SUM(tokens_input) AS total_tokens_input,
+               SUM(tokens_output) AS total_tokens_output,
+               SUM(tokens_reasoning) AS total_tokens_reasoning,
                SUM(cost_usd) AS total_cost_usd,
                SUM(duration_ms) AS total_duration_ms
              FROM session_audit WHERE org_id = ?`,
           )
           .bind(orgID)
-          .first<{ total_sessions: number; total_tokens: number; total_cost_usd: number; total_duration_ms: number }>()
+          .first<{
+            total_sessions: number
+            total_tokens: number
+            total_tokens_input: number
+            total_tokens_output: number
+            total_tokens_reasoning: number
+            total_cost_usd: number
+            total_duration_ms: number
+          }>()
+
+        const totalSessions = Number(row?.total_sessions ?? 0)
+        const totalTokens = Number(row?.total_tokens ?? 0)
+        const tokensInput = Number(row?.total_tokens_input ?? 0)
+        const tokensOutput = Number(row?.total_tokens_output ?? 0)
+        const tokensReasoning = Number(row?.total_tokens_reasoning ?? 0)
+        const totalCostUsd = Number(row?.total_cost_usd ?? 0)
+        const totalDurationMs = Number(row?.total_duration_ms ?? 0)
+
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
+
         return {
-          totalSessions: Number(row?.total_sessions ?? 0),
-          totalTokens: Number(row?.total_tokens ?? 0),
-          totalCostUsd: Number(row?.total_cost_usd ?? 0),
-          totalDurationMs: Number(row?.total_duration_ms ?? 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
       async getUserModelUsage(userID, options = {}) {

@@ -11,8 +11,9 @@ import {
   validProviderID,
 } from "./providers"
 import { usePanelSession } from "./session"
-import { store, isTrialExpired, DEFAULT_ORG_ID, type PanelUser, type ProviderDefinition, type ProviderProtocol, type Role } from "./store"
+import { store, isTrialExpired, DEFAULT_ORG_ID, EMPTY_USER_KPIS, type PanelUser, type ProviderDefinition, type ProviderProtocol, type Role } from "./store"
 import { resolveUserAccess } from "./user-access"
+import type { ReferenceRatesConfig } from "./kpi-pricing"
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const CREATABLE_ROLES: Role[] = ["admin", "member"]
@@ -73,6 +74,7 @@ function publicUser(user: PanelUser) {
     canUseAgentUI: user.canUseAgentUI,
     canUseRoutines: user.canUseRoutines,
     canChangePassword: user.canChangePassword,
+    auditExempt: Boolean(user.auditExempt),
     canOpenSettings: user.canOpenSettings,
     defaultProvider: user.defaultProvider,
     defaultModel: user.defaultModel,
@@ -132,7 +134,7 @@ export const getUserKPIs = query(async (id: string) => {
   const actor = await requireUser()
   const db = store()
   const user = await db.users.findByID(id)
-  if (!user || user.orgID !== actor.orgID) return { totalSessions: 0, totalTokens: 0, totalCostUsd: 0, totalDurationMs: 0 }
+  if (!user || user.orgID !== actor.orgID) return EMPTY_USER_KPIS
   return db.sessions.getUserKPIs(id)
 }, "panel.user.kpis")
 
@@ -146,11 +148,11 @@ export const getOrgSessions = query(
   "panel.org.sessions",
 )
 
-export const getOrgKPIs = query(async () => {
+export const getOrgKPIs = query(async (config?: Partial<ReferenceRatesConfig>) => {
   "use server"
   const actor = await requireUser()
   const db = store()
-  return db.sessions.getOrgKPIs(actor.orgID)
+  return db.sessions.getOrgKPIs(actor.orgID, config)
 }, "panel.org.kpis")
 
 export const getUserModelUsage = query(async (id: string, days?: number) => {
@@ -282,6 +284,7 @@ export const createUser = action(async (form: FormData) => {
   const canUseAgentUI = form.get("canUseAgentUI") === "on" || form.get("canUseAgentUI") === "true"
   const canUseRoutines = form.get("canUseRoutines") === "on" || form.get("canUseRoutines") === "true"
   const canChangePassword = form.get("canChangePassword") === "on" || form.get("canChangePassword") === "true"
+  const auditExempt = actor.role === "owner" && (form.get("auditExempt") === "on" || form.get("auditExempt") === "true")
   const canOpenSettings = settingsFlag(form, "canOpenSettings")
   const defaultProvider = String(form.get("defaultProvider") ?? "").trim() || undefined
   const defaultModel = String(form.get("defaultModel") ?? "").trim() || undefined
@@ -311,6 +314,7 @@ export const createUser = action(async (form: FormData) => {
     canUseAgentUI,
     canUseRoutines,
     canChangePassword,
+    auditExempt,
     canOpenSettings,
     defaultProvider,
     defaultModel,
@@ -338,6 +342,7 @@ export const updateUserAccess = action(async (
     defaultProvider?: string
     defaultModel?: string
     groupIds: string[]
+    auditExempt?: boolean
   },
 ) => {
   "use server"
@@ -348,10 +353,18 @@ export const updateUserAccess = action(async (
   if (!target || target.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
   if (target.role === "owner" && actor.role !== "owner") return { error: "users.new.error.forbidden" as const }
 
+  const exemptChanged =
+    typeof input.auditExempt === "boolean" && input.auditExempt !== Boolean(target.auditExempt)
+  if (exemptChanged && actor.role !== "owner") {
+    return { error: "users.new.error.forbidden" as const }
+  }
+  const nextAuditExempt = typeof input.auditExempt === "boolean" ? input.auditExempt : target.auditExempt
+
   await db.users.update(id, {
     accessOverrides: JSON.stringify(input.access),
     canOpenSettings: input.canOpenSettings,
     canChangePassword: input.canChangePassword,
+    auditExempt: nextAuditExempt,
     defaultProvider: input.defaultProvider?.trim() || undefined,
     defaultModel: input.defaultModel?.trim() || undefined,
     canUseAgentUI: input.access.agentui ?? target.canUseAgentUI,
@@ -367,6 +380,17 @@ export const updateUserAccess = action(async (
     targetType: "user",
     targetID: id,
   })
+  if (exemptChanged) {
+    await db.audit.log({
+      orgID: actor.orgID,
+      actorID: actor.id,
+      actorEmail: actor.email,
+      action: "user.audit_exemption_updated",
+      result: "allow",
+      targetType: "user",
+      targetID: id,
+    })
+  }
   return { error: undefined }
 }, "panel.user.access")
 
