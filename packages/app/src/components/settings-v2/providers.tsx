@@ -169,6 +169,10 @@ const ProviderAccountList: Component<{
           overallPercentage: Number(res.data.overallPercentage) || 0,
           healthStatus: (res.data as any).healthStatus,
           cooldownUntil: (res.data as any).cooldownUntil,
+          disabled: (res.data as any).disabled,
+          banned: (res.data as any).banned,
+          banReason: (res.data as any).banReason,
+          bannedAt: (res.data as any).bannedAt,
           providerID: props.integrationID,
           credentialID: account.id,
           buckets: (res.data.buckets || []).map((b) => ({
@@ -358,7 +362,15 @@ const ProviderAccountList: Component<{
                   <span class="settings-v2-provider-account-label font-mono text-12-regular text-v2-text-text-base truncate max-w-[240px]">
                     {account.label}
                   </span>
-                  <Show when={account.disabled}>
+                  <Show when={quotaData()?.banned}>
+                    <span
+                      class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium leading-none bg-v2-background-bg-layer-02 border border-v2-state-fg-danger/40 text-v2-state-fg-danger cursor-help"
+                      title={quotaData()?.banReason ?? language.t("settings.providers.health.bannedTooltip")}
+                    >
+                      {language.t("settings.providers.health.banned")}
+                    </span>
+                  </Show>
+                  <Show when={account.disabled && !quotaData()?.banned}>
                     <Tag variant="neutral">{language.t("settings.providers.health.disabled")}</Tag>
                   </Show>
                   <Show

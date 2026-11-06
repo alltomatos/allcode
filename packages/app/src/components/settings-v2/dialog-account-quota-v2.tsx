@@ -21,6 +21,10 @@ export interface AccountQuotaModalData {
   providerID?: string
   credentialID?: string
   buckets?: QuotaBucket[]
+  disabled?: boolean
+  banned?: boolean
+  banReason?: string
+  bannedAt?: string
 }
 
 function formatReset(resetTime: string | null): string {
@@ -31,6 +35,17 @@ function formatReset(resetTime: string | null): string {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })
   } catch {
     return resetTime
+  }
+}
+
+function formatDateTime(value: string | null): string {
+  if (!value) return "-"
+  try {
+    const d = new Date(value)
+    if (isNaN(d.getTime())) return value
+    return d.toLocaleString()
+  } catch {
+    return value
   }
 }
 
@@ -51,6 +66,11 @@ export const DialogAccountQuotaV2: Component<{
               fallback={<Tag variant="neutral">{language.t("settings.providers.quota.tier.free")}</Tag>}
             >
               <Tag variant="accent">{language.t("settings.providers.quota.tier.pro")}</Tag>
+            </Show>
+            <Show when={props.data.banned}>
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium leading-none bg-v2-background-bg-layer-02 border border-v2-state-fg-danger/40 text-v2-state-fg-danger">
+                {language.t("settings.providers.health.banned")}
+              </span>
             </Show>
           </div>
         </DialogTitle>
@@ -110,6 +130,24 @@ export const DialogAccountQuotaV2: Component<{
             </div>
           </div>
         </div>
+
+        <Show when={props.data.banned}>
+          <div class="flex flex-col gap-1 rounded-lg border border-v2-state-fg-danger/40 bg-v2-background-bg-raised p-3 shrink-0">
+            <span class="text-12-medium text-v2-state-fg-danger">
+              {language.t("settings.providers.quota.banReason", { reason: props.data.banReason ?? "-" })}
+            </span>
+            <Show when={props.data.bannedAt}>
+              <span class="text-11-regular text-v2-text-text-faint">
+                {language.t("settings.providers.quota.banDetectedAt", {
+                  time: formatDateTime(props.data.bannedAt ?? null),
+                })}
+              </span>
+            </Show>
+            <span class="text-11-regular text-v2-text-text-muted">
+              {language.t("settings.providers.quota.banHint")}
+            </span>
+          </div>
+        </Show>
 
         <div class="flex flex-col gap-1.5 min-h-0">
           <span class="text-11-medium text-v2-text-text-faint uppercase tracking-wider shrink-0">

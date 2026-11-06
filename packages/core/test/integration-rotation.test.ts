@@ -148,3 +148,15 @@ describe("IntegrationRotation", () => {
     expect(IntegrationRotation.pick(id, [disabledConn])).toBeUndefined()
   })
 })
+
+describe("IntegrationRotation ban classification", () => {
+  test("benches ToS-banned accounts for a full day", () => {
+    const check = IntegrationRotation.isBenchableFailure({
+      status: 403,
+      message:
+        "This service has been disabled in this account for violation of Terms of Service. Please submit an appeal to continue using this product.",
+    })
+    expect(check.bench).toBe(true)
+    expect(check.durationMs).toBe(24 * 60 * 60_000)
+  })
+})

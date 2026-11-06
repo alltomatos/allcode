@@ -1978,4 +1978,9 @@ export const dict = {
   "sidebar.account.title": "계정",
   "sidebar.account.manage": "계정 관리",
   "sidebar.account.signOut": "로그아웃",
+  "settings.providers.health.banned": "Banned", // TODO: translate (auto-filled from en)
+  "settings.providers.health.bannedTooltip": "Account banned by the provider. Investigate the reason before re-enabling.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banReason": "Ban reason: {{reason}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banDetectedAt": "Detected at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banHint": "The account was disabled automatically. Check the account email for the provider's appeal instructions.", // TODO: translate (auto-filled from en)
 }

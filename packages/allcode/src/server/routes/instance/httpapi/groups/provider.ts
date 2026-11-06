@@ -45,6 +45,10 @@ export const UserQuotaDetailsSchema = Schema.Struct({
   overallPercentage: Schema.Number,
   healthStatus: Schema.optional(Schema.Literals(["healthy", "cooldown", "exhausted", "disabled"])),
   cooldownUntil: Schema.optional(Schema.NullOr(Schema.Number)),
+  disabled: Schema.optional(Schema.Boolean),
+  banned: Schema.optional(Schema.Boolean),
+  banReason: Schema.optional(Schema.String),
+  bannedAt: Schema.optional(Schema.String),
 })
 
 export const ProviderApi = HttpApi.make("provider")

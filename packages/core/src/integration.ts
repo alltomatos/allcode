@@ -465,7 +465,21 @@ export const locationLayer = Layer.effect(
         }),
         update: Effect.fn("Integration.connection.update")(function* (credentialID, updates) {
           const credential = yield* credentials.get(credentialID)
-          yield* credentials.update(credentialID, updates)
+          // Re-enabling a banned account is an explicit "try again" from the
+          // user, so drop the ban marker that drives the UI badge.
+          const clearBan = updates.disabled === false && credential?.value.metadata?.ban !== undefined
+          const value = clearBan && credential
+            ? {
+                ...credential.value,
+                metadata: Object.fromEntries(
+                  Object.entries(credential.value.metadata ?? {}).filter(([key]) => key !== "ban"),
+                ),
+              }
+            : undefined
+          yield* credentials.update(credentialID, {
+            ...updates,
+            ...(value ? { value } : {}),
+          })
           if (credential) {
             yield* events.publish(Event.ConnectionUpdated, { integrationID: credential.integrationID })
           }

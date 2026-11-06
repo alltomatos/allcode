@@ -1962,4 +1962,9 @@ export const dict = {
   "sidebar.account.title": "Account", // TODO: translate (auto-filled from en)
   "sidebar.account.manage": "Manage account", // TODO: translate (auto-filled from en)
   "sidebar.account.signOut": "Sign out", // TODO: translate (auto-filled from en)
+  "settings.providers.health.banned": "Banned", // TODO: translate (auto-filled from en)
+  "settings.providers.health.bannedTooltip": "Account banned by the provider. Investigate the reason before re-enabling.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banReason": "Ban reason: {{reason}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banDetectedAt": "Detected at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banHint": "The account was disabled automatically. Check the account email for the provider's appeal instructions.", // TODO: translate (auto-filled from en)
 }

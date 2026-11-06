@@ -592,6 +592,53 @@ function benchConnectionOnFailure(connectionId: string, status: number, bodyText
   if (check.bench) IntegrationRotation.markUnavailable(toConnection(connectionId), check.durationMs)
 }
 
+const ACCOUNT_BAN_PATTERN = /disabled in this account|violation of terms of service|submit an appeal/i
+
+/** Whether an upstream response is Google disabling the whole account (ToS ban), not a transient quota/auth issue. */
+export function isAccountBannedResponse(status: number, bodyText: string): boolean {
+  return (status === 403 || status === 400) && ACCOUNT_BAN_PATTERN.test(bodyText)
+}
+
+function banReasonFromBody(bodyText: string): string {
+  try {
+    const message = JSON.parse(bodyText)?.error?.message
+    if (typeof message === "string" && message.trim()) return message.trim()
+  } catch {}
+  return bodyText.trim().slice(0, 500)
+}
+
+/**
+ * A banned Google account is not transient: disable the credential so rotation
+ * stops selecting it, and persist the provider's reason + detection time in
+ * metadata so the UI can surface a badge and we can investigate the ban.
+ */
+async function disableBannedAccount(connectionId: string, status: number, bodyText: string, model: string) {
+  const reason = banReasonFromBody(bodyText)
+  IntegrationRotation.markUnavailable(toConnection(connectionId), 24 * 60 * 60_000)
+  try {
+    const db = await getDb(CoreDatabase.path())
+    const row = db.prepare("SELECT value FROM credential WHERE id = ?").get(connectionId) as
+      | { value: string }
+      | undefined
+    if (!row) return
+    const parsed = JSON.parse(row.value)
+    parsed.metadata = {
+      ...(parsed.metadata ?? {}),
+      ban: { reason, detectedAt: new Date().toISOString(), status, model },
+    }
+    db.prepare("UPDATE credential SET value = ?, disabled = 1, time_updated = ? WHERE id = ?").run(
+      JSON.stringify(parsed),
+      Date.now(),
+      connectionId,
+    )
+    console.warn(
+      `[antigravity] account banned (${status}); auto-disabled credential ${parsed.metadata?.email ?? connectionId}: ${reason}`,
+    )
+  } catch (error) {
+    console.warn(`[antigravity] failed to auto-disable banned credential ${connectionId}: ${String(error)}`)
+  }
+}
+
 export interface QuotaBucketInfo {
   modelId: string
   remainingFraction: number
@@ -606,6 +653,32 @@ export interface UserQuotaDetails {
   overallPercentage: number
   healthStatus?: "healthy" | "cooldown" | "exhausted" | "disabled"
   cooldownUntil?: number | null
+  disabled?: boolean
+  banned?: boolean
+  banReason?: string
+  bannedAt?: string
+}
+
+async function readBanInfo(
+  credentialID: string,
+): Promise<Pick<UserQuotaDetails, "disabled" | "banned" | "banReason" | "bannedAt">> {
+  try {
+    const db = await getDb(CoreDatabase.path())
+    const row = db.prepare("SELECT value, disabled FROM credential WHERE id = ?").get(credentialID) as
+      | { value: string; disabled?: number | boolean }
+      | undefined
+    if (!row) return {}
+    const parsed = JSON.parse(row.value)
+    const ban = parsed.metadata?.ban as { reason?: unknown; detectedAt?: unknown } | undefined
+    return {
+      disabled: row.disabled === 1 || row.disabled === true,
+      banned: typeof ban?.reason === "string",
+      banReason: typeof ban?.reason === "string" ? ban.reason : undefined,
+      bannedAt: typeof ban?.detectedAt === "string" ? ban.detectedAt : undefined,
+    }
+  } catch {
+    return {}
+  }
 }
 
 export async function fetchUserQuotaDetails(
@@ -804,6 +877,7 @@ export async function fetchUserQuotaDetails(
 
     const overallPct = Math.round(avgFraction * 100)
     const cooldownUntil = IntegrationRotation.getCooldownUntilByKey(credentialID)
+    const ban = parsed.metadata?.ban as { reason?: unknown; detectedAt?: unknown } | undefined
     let healthStatus: "healthy" | "cooldown" | "exhausted" | "disabled" = "healthy"
     if (isDisabled) {
       healthStatus = "disabled"
@@ -820,6 +894,10 @@ export async function fetchUserQuotaDetails(
       overallPercentage: overallPct,
       healthStatus,
       cooldownUntil: cooldownUntil ?? null,
+      disabled: isDisabled,
+      banned: typeof ban?.reason === "string",
+      banReason: typeof ban?.reason === "string" ? ban.reason : undefined,
+      bannedAt: typeof ban?.detectedAt === "string" ? ban.detectedAt : undefined,
     }
   } catch {
     const cooldownUntil = IntegrationRotation.getCooldownUntilByKey(credentialID)
@@ -829,6 +907,7 @@ export async function fetchUserQuotaDetails(
       overallPercentage: 100,
       healthStatus: cooldownUntil && cooldownUntil > Date.now() ? "cooldown" : "healthy",
       cooldownUntil: cooldownUntil ?? null,
+      ...(await readBanInfo(credentialID)),
     }
   }
 }
@@ -993,14 +1072,29 @@ export function createAntigravityFetch(profile: "ide" | "cli", getOptions?: () =
       }
     }
 
-    if (!upstream || !upstream.ok) {
-      if (usedConnectionId && upstream) {
-        const bodyText = await upstream
-          .clone()
-          .text()
-          .catch(() => "")
+    // Walk past banned accounts instead of failing the turn: disable each one
+    // so it leaves the rotation, then retry on the next healthy connection.
+    let bannedAttempts = 0
+    while (upstream && !upstream.ok && usedConnectionId && bannedAttempts < 10) {
+      const bodyText = await upstream
+        .clone()
+        .text()
+        .catch(() => "")
+      if (!isAccountBannedResponse(upstream.status, bodyText)) {
         benchConnectionOnFailure(usedConnectionId, upstream.status, bodyText)
+        break
       }
+      bannedAttempts++
+      await disableBannedAccount(usedConnectionId, upstream.status, bodyText, model)
+      const nextLive = await getLiveToken(integrationID, profile)
+      if (!nextLive.token || nextLive.connectionId === usedConnectionId) break
+      token = nextLive.token
+      projectID = nextLive.projectID || projectID
+      usedConnectionId = nextLive.connectionId
+      upstream = await executeWithModelFallback(token, projectID)
+    }
+
+    if (!upstream || !upstream.ok) {
       return upstream ?? new Response("Antigravity API Unavailable", { status: 502 })
     }
 
