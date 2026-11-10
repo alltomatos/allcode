@@ -168,6 +168,14 @@ export function AgentUIFormPage() {
   )
   const ready = createMemo(() => !isEdit || existing.state === "ready")
 
+  // Sem diretório explícito no canal, usa o catálogo global (o mesmo das
+  // Configurações > Provedores). Passar o diretório do projeto aberto fazia
+  // o seletor consultar um child store incompleto e esconder providers
+  // conectados no dev.
+  const modelDirectory = createMemo(
+    () => existing()?.channels.find((channel) => channel.directory)?.directory,
+  )
+
   const [form, setForm] = createStore<AgentUIFormState>(emptyForm())
   const [everSaved, setEverSaved] = createSignal(isEdit)
   let initialized = false
@@ -216,7 +224,10 @@ export function AgentUIFormPage() {
       mediaDirs: ((agent as any).mediaDirs ?? []).join("\n"),
       mcpServers: agent.mcpServers ?? [],
       routinesEnabled: agent.routinesEnabled === true,
-      agendaEnabled: (agent as any).agendaEnabled ?? true,
+      // O backend trata ausente/false como desabilitado (ver AgentsSchema).
+      // Usar `?? true` aqui fazia o toggle aparecer liberado mesmo quando o
+      // agente persistido não tinha a permissão, escondendo o bloqueio real.
+      agendaEnabled: (agent as any).agendaEnabled === true,
       memoryEnabled: (agent as any).memoryEnabled ?? true,
       filesystemEnabled: (agent as any).filesystemEnabled === true,
       terminalEnabled: (agent as any).terminalEnabled === true,
@@ -742,7 +753,7 @@ export function AgentUIFormPage() {
                           <ModelPickerV2
                             value={form.model}
                             onChange={(value) => setForm("model", value)}
-                            directory={directory()}
+                            directory={modelDirectory()}
                             requireAudio={filterAudioOnly()}
                           />
                         </div>

@@ -2419,7 +2419,9 @@ export type ServerScheduleListOutput = ReadonlyArray<{
         readonly message: string
         readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
         readonly targetSessionId?: string
+        readonly targetChat?: string
         readonly agentId?: string
+        readonly reminderId?: string
       }
   readonly workspace?: string
   readonly enabled?: boolean
@@ -2475,7 +2477,9 @@ export type ServerScheduleCreateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -2522,7 +2526,9 @@ export type ServerScheduleCreateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -2569,7 +2575,9 @@ export type ServerScheduleCreateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -2616,7 +2624,9 @@ export type ServerScheduleCreateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -2663,7 +2673,9 @@ export type ServerScheduleCreateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -2710,7 +2722,9 @@ export type ServerScheduleCreateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -2760,7 +2774,9 @@ export type ServerScheduleCreateOutput = {
         readonly message: string
         readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
         readonly targetSessionId?: string
+        readonly targetChat?: string
         readonly agentId?: string
+        readonly reminderId?: string
       }
   readonly workspace?: string
   readonly enabled?: boolean
@@ -2820,7 +2836,9 @@ export type ServerScheduleRunOutput = {
         readonly message: string
         readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
         readonly targetSessionId?: string
+        readonly targetChat?: string
         readonly agentId?: string
+        readonly reminderId?: string
       }
   readonly workspace?: string
   readonly enabled?: boolean
@@ -2869,7 +2887,9 @@ export type ServerScheduleTestInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
   }["action"]
@@ -2908,7 +2928,9 @@ export type ServerScheduleTestInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
   }["workspace"]
@@ -2967,7 +2989,9 @@ export type ServerScheduleUpdateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -3014,7 +3038,9 @@ export type ServerScheduleUpdateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -3061,7 +3087,9 @@ export type ServerScheduleUpdateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -3108,7 +3136,9 @@ export type ServerScheduleUpdateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -3155,7 +3185,9 @@ export type ServerScheduleUpdateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -3202,7 +3234,9 @@ export type ServerScheduleUpdateInput = {
           readonly message: string
           readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
           readonly targetSessionId?: string
+          readonly targetChat?: string
           readonly agentId?: string
+          readonly reminderId?: string
         }
     readonly workspace?: string
     readonly enabled?: boolean
@@ -3252,7 +3286,9 @@ export type ServerScheduleUpdateOutput = {
         readonly message: string
         readonly channels?: ReadonlyArray<"desktop" | "agentui" | "telegram" | "whatsapp">
         readonly targetSessionId?: string
+        readonly targetChat?: string
         readonly agentId?: string
+        readonly reminderId?: string
       }
   readonly workspace?: string
   readonly enabled?: boolean

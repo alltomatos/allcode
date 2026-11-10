@@ -472,8 +472,13 @@ const main = Effect.gen(function* () {
       // Idem porta: reusa a senha persistida em vez de sortear uma nova a
       // cada start, senão um pareamento QR anterior fica com credencial
       // inválida mesmo que a porta bata.
-      const password = getPersistedSidecarPassword() ?? randomUUID()
-      setPersistedSidecarPassword(password)
+      // No electron-vite local (não empacotado) o renderer é servido pelo
+      // Vite e não recebe o `auth_token` do sidecar; exigir senha fazia
+      // /provider, /session e /agent retornarem 401 e o app ficar sem
+      // provedores/modelos. Produção e builds empacotados seguem autenticados.
+      const localDev = !app.isPackaged && CHANNEL === "dev"
+      const password = localDev ? "" : (getPersistedSidecarPassword() ?? randomUUID())
+      if (password) setPersistedSidecarPassword(password)
 
       const vacuumed = yield* Effect.promise(() => runPendingVacuum())
       if (vacuumed) logger.log("ran pending vacuum before spawning sidecar")

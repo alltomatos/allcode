@@ -47,7 +47,11 @@ export function useProviders(directory: Accessor<string | undefined>) {
       ready: projectStore.provider_ready,
       providers: projectStore.provider,
     }
-    if (value) {
+    // Só fixa no catálogo do projeto quando ele já está pronto. Enquanto o
+    // child store não carregou (startup/auth race), usa o catálogo global em
+    // vez de devolver uma lista vazia — era o que deixava o chat sem
+    // provedores/modelos enquanto o AgentUI (global) continuava funcionando.
+    if (value && projectStore?.provider_ready) {
       return selectProviderCatalog({
         explicit: true,
         directory: value,

@@ -1,23 +1,47 @@
 export * as ScheduleReminderCaller from "./reminder-caller"
 
-import { Effect, Layer } from "effect"
+import { Cause, Effect, Exit, Layer } from "effect"
 import { makeGlobalNode } from "@allcode/core/effect/app-node"
 import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { Schedule } from "@allcode/core/schedule"
 import { AgentUI } from "@/agentui"
-import { MCP } from "@/mcp"
+import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
+import { WhatsAppNative } from "@/whatsapp-native"
+import { agentForSession, chatForSession } from "@/whatsapp-native/bindings"
 import { buildExternalAdapter } from "@/whatsapp/adapter"
 import { createConnector } from "waconector"
 
+/** Payload dos botões interativos; os ids casam com reminder-actions.ts. */
+export function reminderButtons(reminderId: string) {
+  return [
+    { id: `reminder:done:${reminderId}`, text: "Concluir" },
+    { id: `reminder:snooze:${reminderId}:10`, text: "Adiar 10 min" },
+    { id: `reminder:cancel:${reminderId}`, text: "Cancelar" },
+  ]
+}
+
+interface DeliveryResult {
+  readonly ok: boolean
+  readonly error?: string
+}
+
+function errorText(error: unknown): string {
+  return error instanceof Error ? error.message : String(error)
+}
+
 /**
- * Wires the Schedule engine's reminder action to real delivery channels
- * (Desktop notifications, WhatsApp via Izapia/waconector, and MCP izapia).
+ * Entrega de lembretes: desktop e WhatsApp.
+ *
+ * WhatsApp nativo (zapo) usa sempre a conexão do próprio agente AgentUI —
+ * mensagens interativas quando há `reminderId`, com fallback para texto.
+ * Não há dependência de MCP: a ferramenta nativa cobre o envio. Canais
+ * `external` continuam usando o adapter/waconector do próprio canal.
  */
 export const layer = Layer.effect(
   ScheduleRunner.ReminderCaller,
   Effect.gen(function* () {
     const agentUI = yield* AgentUI.Service
-    const mcp = yield* MCP.Service
+    const whatsappNative = yield* WhatsAppNative.Service
 
     return ScheduleRunner.ReminderCaller.of({
       notifyReminder: (action: Schedule.ReminderAction, workspace: string | undefined) =>
@@ -31,86 +55,104 @@ export const layer = Layer.effect(
           if (channels.includes("whatsapp")) {
             const formattedMessage = `🔔 *Lembrete: ${action.title}*\n\n${action.message}`
 
-            // 1. Tentar despachar usando os canais WhatsApp configurados nos agentes AgentUI
-            const agents = yield* agentUI.list().pipe(Effect.orElseSucceed(() => []))
-            for (const agent of agents) {
-              const waChannel = agent.channels?.find((c) => c.type === "whatsapp")
-              if (!waChannel) continue
+            const sendNative = (agentId: string, to: string): Effect.Effect<DeliveryResult> =>
+              Effect.gen(function* () {
+                const errors: string[] = []
 
-              // Se houver destinatários permitidos ou configurados
-              const targets = waChannel.allowedSenders && waChannel.allowedSenders.length > 0
-                ? waChannel.allowedSenders
-                : []
-
-              const sid = waChannel.sessionIds?.[0]
-              // Canais nativos são servidos por WhatsAppNative (sem waconector):
-              // não há adapter externo para eles, então pulamos em vez de falhar.
-              const adapter = buildExternalAdapter(waChannel, sid)
-              if (!adapter) continue
-              const connector = createConnector(adapter)
-
-              for (const target of targets) {
-                const res = yield* Effect.tryPromise(() =>
-                  connector.messages.sendText({ to: target, text: formattedMessage }),
-                ).pipe(
-                  Effect.tap(() =>
-                    Effect.logInfo(`[Reminder] WhatsApp enviado com sucesso via AgentUI (${agent.name ?? agent.id}) para ${target}`),
-                  ),
-                  Effect.tapError((err: unknown) =>
-                    Effect.logWarning(`[Reminder] Falha ao enviar WhatsApp via AgentUI para ${target}: ${String(err)}`),
-                  ),
-                  Effect.option,
-                )
-                if (res._tag === "Some") {
-                  whatsappSuccess = true
+                if (action.reminderId) {
+                  const buttons = yield* whatsappNative
+                    .sendButtons({
+                      agentId,
+                      to,
+                      title: "Lembrete",
+                      body: formattedMessage,
+                      footer: "Use os botões para concluir, adiar ou cancelar.",
+                      buttons: reminderButtons(action.reminderId),
+                    })
+                    .pipe(Effect.exit)
+                  if (Exit.isSuccess(buttons)) return { ok: true }
+                  errors.push(`botões: ${errorText(Cause.squash(buttons.cause))}`)
                 }
+
+                const text = yield* whatsappNative
+                  .sendText({ agentId, to, text: formattedMessage })
+                  .pipe(Effect.exit)
+                if (Exit.isSuccess(text)) return { ok: true }
+                errors.push(`texto: ${errorText(Cause.squash(text.cause))}`)
+
+                return { ok: false, error: errors.join("; ") }
+              }).pipe(
+                Effect.tap((result) =>
+                  result.ok
+                    ? Effect.logInfo(`[Reminder] WhatsApp nativo enviado (${agentId}) para ${to}`)
+                    : Effect.logWarning(
+                        `[Reminder] Falha no WhatsApp nativo (${agentId}) para ${to}: ${result.error ?? "erro desconhecido"}`,
+                      ),
+                ),
+                Effect.catchCause((cause) =>
+                  Effect.succeed({ ok: false, error: errorText(Cause.squash(cause)) }),
+                ),
+              )
+
+            // Destino principal: a conversa que originou o lembrete.
+            const targetSessionId = action.targetSessionId
+            const sessionAgent = action.agentId ?? (targetSessionId ? agentForSession(targetSessionId) : undefined)
+            const sessionChat = action.targetChat ?? (targetSessionId ? chatForSession(targetSessionId) : undefined)
+
+            const targets: Array<{ agentId: string; to: string }> = []
+            if (sessionAgent && sessionChat) targets.push({ agentId: sessionAgent, to: sessionChat })
+
+            // Lembretes criados fora de uma conversa (aba Agenda): usa os
+            // remetentes autorizados dos agentes com canal nativo.
+            if (targets.length === 0) {
+              const agents = yield* agentUI.list().pipe(Effect.catchCause(() => Effect.succeed([])))
+              for (const agent of agents) {
+                const waChannel = agent.channels?.find((c) => c.type === "whatsapp")
+                if (!waChannel || !ConfigAgentUIV1.isNativeWhatsAppChannel(waChannel)) continue
+                for (const to of waChannel.allowedSenders ?? []) targets.push({ agentId: agent.id, to })
               }
             }
 
-            // 2. Se não conseguiu via AgentUI, tentar usar a conexão MCP izapia se disponível
+            if (targets.length === 0) {
+              whatsappError = "Lembrete sem conversa de destino conhecida para entrega no WhatsApp."
+            }
+
+            for (const target of targets) {
+              const result = yield* sendNative(target.agentId, target.to)
+              if (result.ok) {
+                whatsappSuccess = true
+                break
+              }
+              whatsappError = result.error ?? whatsappError
+            }
+
+            // Canais externos (izapia/waha) continuam suportados pelo próprio
+            // adapter do canal — sem passar por MCP.
             if (!whatsappSuccess) {
-              const statuses: Record<string, { status: string }> = yield* mcp
-                .status()
-                .pipe(Effect.orElseSucceed(() => ({} as Record<string, { status: string }>)))
+              const agents = yield* agentUI.list().pipe(Effect.catchCause(() => Effect.succeed([])))
+              for (const agent of agents) {
+                const waChannel = agent.channels?.find((c) => c.type === "whatsapp")
+                if (!waChannel || ConfigAgentUIV1.isNativeWhatsAppChannel(waChannel)) continue
 
-              if (statuses["izapia"]?.status === "connected") {
-                const catalog = yield* mcp
-                  .serverCatalog("izapia")
-                  .pipe(Effect.orElseSucceed(() => ({ tools: [], prompts: [], resources: [] })))
+                const adapter = buildExternalAdapter(waChannel, waChannel.sessionIds?.[0])
+                if (!adapter) continue
 
-                const hasSendText = catalog.tools.some((t) => t.name === "izapia_send_text")
-                if (hasSendText) {
-                  // Descobrir sessões disponíveis no MCP izapia
-                  const listSessionsRaw = yield* mcp.callTool("izapia", "izapia_list_sessions", {}).pipe(
-                    Effect.orElseSucceed(() => undefined),
-                  )
-                  let sid = "alltomatobr"
-                  if (listSessionsRaw && !listSessionsRaw.isError && Array.isArray((listSessionsRaw as any).content)) {
-                    const text = (listSessionsRaw as any).content.map((c: any) => c.text).join("")
-                    try {
-                      const parsed = JSON.parse(text)
-                      const firstSession = Array.isArray(parsed) ? parsed[0]?.name || parsed[0]?.id : undefined
-                      if (firstSession) sid = firstSession
-                    } catch {
-                      // mantém default
-                    }
-                  }
-
-                  // Buscar contatos ou enviar para o número padrão 8598490991
-                  const mcpSend = yield* mcp.callTool("izapia", "izapia_send_text", {
-                    session: sid,
-                    to: "8598490991",
-                    text: formattedMessage,
-                  }).pipe(
-                    Effect.orElseSucceed(() => ({ isError: true } as any)),
-                  )
-
-                  if (mcpSend && !mcpSend.isError) {
+                const connector = createConnector(adapter)
+                for (const target of waChannel.allowedSenders ?? []) {
+                  const exit = yield* Effect.tryPromise(() =>
+                    connector.messages.sendText({ to: target, text: formattedMessage }),
+                  ).pipe(Effect.exit)
+                  if (Exit.isSuccess(exit)) {
                     whatsappSuccess = true
-                    yield* Effect.logInfo(`[Reminder] WhatsApp enviado com sucesso via MCP izapia para 8598490991`)
-                  } else {
-                    whatsappError = "Falha no envio pelo MCP izapia"
+                    yield* Effect.logInfo(
+                      `[Reminder] WhatsApp enviado via canal externo (${agent.name ?? agent.id}) para ${target}`,
+                    )
+                    continue
                   }
+                  whatsappError = errorText(Cause.squash(exit.cause))
+                  yield* Effect.logWarning(
+                    `[Reminder] Falha no canal externo (${agent.name ?? agent.id}) para ${target}: ${whatsappError}`,
+                  )
                 }
               }
             }
@@ -129,12 +171,13 @@ export const layer = Layer.effect(
 
           return { success: true }
         }).pipe(
-          Effect.catch((err: unknown) =>
-            Effect.succeed({
+          Effect.catchCause((cause) => {
+            const err = Cause.squash(cause)
+            return Effect.succeed({
               success: false,
               error: err instanceof Error ? err.message : String(err),
-            }),
-          ),
+            })
+          }),
         ),
     })
   }),
@@ -143,6 +186,5 @@ export const layer = Layer.effect(
 export const node = makeGlobalNode({
   service: ScheduleRunner.ReminderCaller,
   layer,
-  deps: [AgentUI.node, MCP.node],
+  deps: [AgentUI.node, WhatsAppNative.node],
 })
-

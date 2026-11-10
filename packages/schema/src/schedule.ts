@@ -87,7 +87,12 @@ export const ReminderAction = Schema.Struct({
   message: Schema.String,
   channels: optional(Schema.Array(Schema.Literals(["desktop", "agentui", "telegram", "whatsapp"]))),
   targetSessionId: optional(Schema.String),
+  // Conversa WhatsApp que originou o lembrete. Persistido para a entrega
+  // continuar correta mesmo após restart, quando os bindings em memória somem.
+  targetChat: optional(Schema.String),
   agentId: optional(Schema.String),
+  // Preenchido após o create; usado nos botões interativos (concluir/adiar/cancelar).
+  reminderId: optional(Schema.String),
 }).annotate({ identifier: "Schedule.ReminderAction" })
 
 export const Action = Schema.Union([ShellAction, McpToolAction, SkillAction, AgentUIAction, ReminderAction])

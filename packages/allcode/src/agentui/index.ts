@@ -567,22 +567,52 @@ const layer = Layer.effect(
       const personality = knowledge ? `${agent.personality}\n\n${knowledge}` : agent.personality
       const system = hardenSystemPrompt(agent, personality)
 
-      const localPaths = (input.attachments ?? [])
+      // O mesmo agente pode rodar em modelos com capacidades diferentes. Anexo
+      // multimodal em modelo sem suporte derruba a chamada inteira, então cada
+      // anexo é filtrado pela capability do modelo resolvido.
+      const modelInfo = model
+        ? yield* provider.getModel(model.providerID, model.modelID).pipe(
+            // O catálogo do Provider é InstanceState: sem InstanceRef ele
+            // falha como defeito (não como erro), o que antes abortava o
+            // dispatch inteiro de um canal sem sequer gravar auditoria.
+            Effect.provideService(InstanceRef, ctx),
+            Effect.catchCause(() => Effect.succeed(undefined)),
+          )
+        : undefined
+      const supportsAttachment = (mime: string) => {
+        const input = modelInfo?.capabilities.input
+        if (!input) return true
+        if (mime.startsWith("image/")) return input.image
+        if (mime.startsWith("audio/")) return input.audio
+        if (mime.startsWith("video/")) return input.video
+        if (mime === "application/pdf") return input.pdf
+        return true
+      }
+      const attachments = (input.attachments ?? []).filter((att) => supportsAttachment(att.mime))
+      const droppedAttachments = (input.attachments ?? []).filter((att) => !supportsAttachment(att.mime))
+
+      const localPaths = attachments
         .map((a) => (a as any).localPath)
         .filter((p): p is string => Boolean(p))
 
       let textMessage = input.message || ""
-      if (!textMessage && input.attachments?.length) {
+      if (!textMessage && attachments.length) {
         textMessage = "(mídia em anexo)"
       }
       if (localPaths.length > 0) {
         const pathsSummary = `\n[Arquivos salvos localmente: ${localPaths.join(", ")}]`
         textMessage = textMessage ? `${textMessage}\n${pathsSummary}` : pathsSummary
       }
+      if (droppedAttachments.length > 0) {
+        const summary = droppedAttachments
+          .map((att) => `${att.filename ?? "arquivo"} (${att.mime})`)
+          .join(", ")
+        textMessage += `\n[Anexo(s) não enviados ao modelo porque ele não suporta este tipo de conteúdo: ${summary}]`
+      }
 
       const promptParts: SessionPrompt.PromptInput["parts"] = [
         { type: "text", text: textMessage },
-        ...(input.attachments ?? []).map((att) => ({
+        ...attachments.map((att) => ({
           type: "file" as const,
           mime: att.mime,
           filename: att.filename,

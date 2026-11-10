@@ -8,10 +8,12 @@ import { ScheduleAgentUICaller } from "@/schedule/agentui-caller"
 import { ScheduleMcpCaller } from "@/schedule/mcp-caller"
 import { ScheduleReminderCaller } from "@/schedule/reminder-caller"
 import { ScheduleSkillCaller } from "@/schedule/skill-caller"
+import { setReminderScheduler } from "@/whatsapp-native/reminder-actions"
 
 const layer = Layer.effectDiscard(
   Effect.gen(function* () {
     const schedules = yield* Schedule.Service
+    setReminderScheduler(schedules)
     const mcpCaller = yield* ScheduleRunner.McpCaller
     const skillCaller = yield* ScheduleRunner.SkillCaller
     const agentUICaller = yield* ScheduleRunner.AgentUICaller

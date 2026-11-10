@@ -11,6 +11,7 @@ import { MCP } from "../../src/mcp"
 import { Wildcard } from "@allcode/core/util/wildcard"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { Storage } from "@/storage/storage"
+import { REMINDER_PERMISSION } from "../../src/tool/reminder"
 import { testEffect } from "../lib/effect"
 
 // AgentUI.Service now pulls in Session/SessionPrompt/InstanceStore (for the
@@ -316,6 +317,15 @@ it.instance("sessionPermission() allows reminder tool when agendaEnabled is true
     expect(reminderRule?.action).toBe("allow")
     const routineRule = ruleset.findLast((r) => Wildcard.match("routine", r.permission))
     expect(routineRule?.action).toBe("deny")
+  }),
+)
+
+it.instance("reminder tool uses the permission that agendaEnabled grants", () =>
+  Effect.gen(function* () {
+    const svc = yield* AgentUI.Service
+    const ruleset = svc.sessionPermission([], false, true, false)
+    const rule = ruleset.findLast((r) => Wildcard.match(REMINDER_PERMISSION, r.permission))
+    expect(rule?.action).toBe("allow")
   }),
 )
 

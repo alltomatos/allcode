@@ -1,8 +1,22 @@
-import { Context, Effect, Fiber, Schedule, Duration } from "effect"
+import path from "node:path"
+import { Context, Effect, Fiber, Option, Schedule, Duration } from "effect"
+import { Global } from "@allcode/core/global"
 import { debug } from "@/util/debug"
 import { WaClient } from "zapo-js"
 import type { WaConnectionEvent, WaIncomingMessageEvent } from "zapo-js"
+import { Provider } from "@/provider/provider"
+import { InstanceStore } from "@/project/instance-store"
+import { InstanceRef } from "@/effect/instance-ref"
 import { getWhatsAppNativeStore } from "./store"
+import { runReminderAction } from "./reminder-actions"
+import {
+  describeMedia,
+  failedMedia,
+  processMedia,
+  type MediaProcessors,
+  type PromptAttachment,
+} from "./inbound-media"
+import { transcribeAudio } from "./transcribe"
 import {
   WhatsAppNativeState,
   WhatsAppNativeStatus,
@@ -15,10 +29,91 @@ import { ConfigAgentUIV1 } from "@allcode/core/v1/config/agentui"
 import type { ChannelAgentUI } from "./bindings"
 
 const DEBOUNCE_MS = 2500
+const MAX_INBOUND_BYTES = 20 * 1024 * 1024
 
 interface PendingBatch {
   texts: string[]
+  attachments: PromptAttachment[]
   fiber: Fiber.Fiber<void, never>
+}
+
+interface InboundText {
+  readonly text: string
+  /** true when the message is a tap on a button/list/carousel we sent. */
+  readonly interactive: boolean
+  /** id cru do botão/linha tocado, quando houver. */
+  readonly id?: string
+}
+
+function joinText(caption: string, media: string): string {
+  return [caption.trim(), media.trim()].filter(Boolean).join("\n\n")
+}
+
+/**
+ * Extrai o que o agente precisa ver de uma mensagem recebida. Respostas de
+ * botões e listas não vêm em `conversation`/`extendedTextMessage`: chegam em
+ * campos próprios do proto. Sem isso o tap era descartado como "texto vazio"
+ * e o agente nunca sabia qual opção o usuário escolheu.
+ *
+ * Quando o cliente manda o texto exibido e o id são diferentes, preservamos os
+ * dois — o agente usa o texto para a conversa e o id para identificar a ação.
+ */
+function inboundText(message: WaIncomingMessageEvent["message"]): InboundText {
+  if (!message) return { text: "", interactive: false }
+
+  const withId = (display: string | null | undefined, id: string | null | undefined, kind: string) => {
+    const value = display?.trim()
+    if (id) {
+      return { text: value && value !== id ? `${value}\n[${kind}: ${id}]` : id, interactive: true, id }
+    }
+    return value ? { text: value, interactive: true } : undefined
+  }
+
+  const button = withId(
+    message.buttonsResponseMessage?.selectedDisplayText,
+    message.buttonsResponseMessage?.selectedButtonId,
+    "button_id",
+  )
+  if (button) return button
+
+  const list = withId(
+    message.listResponseMessage?.title,
+    message.listResponseMessage?.singleSelectReply?.selectedRowId,
+    "list_id",
+  )
+  if (list) return list
+
+  const template = withId(
+    message.templateButtonReplyMessage?.selectedDisplayText,
+    message.templateButtonReplyMessage?.selectedId,
+    "button_id",
+  )
+  if (template) return template
+
+  const response = message.interactiveResponseMessage
+  if (response) {
+    const params = response.nativeFlowResponseMessage?.paramsJson
+    let id: string | undefined
+    if (params) {
+      try {
+        const parsed = JSON.parse(params) as Record<string, unknown>
+        const candidate = parsed.id ?? parsed.selectedId ?? parsed.row_id ?? parsed.rowId
+        if (typeof candidate === "string" && candidate) id = candidate
+      } catch {
+        // paramsJson não é JSON — cai no texto do body
+      }
+    }
+    const result = withId(response.body?.text, id, "button_id")
+    if (result) return result
+  }
+
+  const text =
+    message.conversation ||
+    message.extendedTextMessage?.text ||
+    message.imageMessage?.caption ||
+    message.videoMessage?.caption ||
+    ""
+  return { text, interactive: false }
 }
 
 export interface AgentNativeSession {
@@ -433,16 +528,12 @@ export class WhatsAppNativeManager {
         }
       }
 
-      // Extrai texto da mensagem
-      const text: string =
-        msgEvent.message?.conversation ||
-        msgEvent.message?.extendedTextMessage?.text ||
-        msgEvent.message?.imageMessage?.caption ||
-        msgEvent.message?.videoMessage?.caption ||
-        ""
+      const inbound = inboundText(msgEvent.message)
+      const media = describeMedia(msgEvent.message)
+      const text = inbound.text
 
-      if (!text.trim()) {
-        debug("[WhatsApp Inbound Ignored] Text is empty")
+      if (!text.trim() && !media) {
+        debug("[WhatsApp Inbound Ignored] Text and media are empty")
         return
       }
 
@@ -453,7 +544,9 @@ export class WhatsAppNativeManager {
         const contextInfo =
           msgEvent.message?.extendedTextMessage?.contextInfo ||
           msgEvent.message?.imageMessage?.contextInfo ||
-          msgEvent.message?.videoMessage?.contextInfo
+          msgEvent.message?.videoMessage?.contextInfo ||
+          msgEvent.message?.documentMessage?.contextInfo ||
+          msgEvent.message?.audioMessage?.contextInfo
 
         const creds = client.getCredentials()
         // O WhatsApp endereça grupos por LID (@lid) e DMs por PN (@s.whatsapp.net).
@@ -482,19 +575,100 @@ export class WhatsAppNativeManager {
           `[WhatsApp Mention/Quote Check] botIds=${JSON.stringify(botIds)} mentions=${JSON.stringify(mentions)} quoted=${contextInfo?.participant} isMentioned=${isMentioned} isQuotingBot=${isQuotingBot} mentionOnly=${channel.mentionOnly} replyToQuoteOrMentionOnly=${nativeOpts?.replyToQuoteOrMentionOnly}`,
         )
 
-        // Se mentionOnly clássico estiver ligado
-        if (channel.mentionOnly && !isMentioned) {
-          debug("[WhatsApp Inbound Ignored] mentionOnly is true but bot was not mentioned")
-          return
-        }
-
-        // Se a opção "Responder somente se mencionado OU se for resposta a mensagem do bot" estiver ativa
-        if (nativeOpts?.replyToQuoteOrMentionOnly) {
-          if (!isMentioned && !isQuotingBot) {
-            debug("[WhatsApp Inbound Ignored] replyToQuoteOrMentionOnly is true but not mentioned and not quoting bot")
+        // Responder a um botão/lista que o próprio bot enviou já é uma
+        // interação explícita: não exige @menção nem quote. Os filtros de
+        // grupo/remetente acima continuam valendo.
+        if (inbound.interactive) {
+          debug("[WhatsApp Inbound] interactive reply accepted without mention/quote")
+        } else {
+          // Se mentionOnly clássico estiver ligado
+          if (channel.mentionOnly && !isMentioned) {
+            debug("[WhatsApp Inbound Ignored] mentionOnly is true but bot was not mentioned")
             return
           }
+
+          // Se a opção "Responder somente se mencionado OU se for resposta a mensagem do bot" estiver ativa
+          if (nativeOpts?.replyToQuoteOrMentionOnly) {
+            if (!isMentioned && !isQuotingBot) {
+              debug("[WhatsApp Inbound Ignored] replyToQuoteOrMentionOnly is true but not mentioned and not quoting bot")
+              return
+            }
+          }
         }
+      }
+
+      // Ação direta em botão de lembrete não precisa passar pelo modelo: o id
+      // carrega o verbo e o schedule alvo (ver reminder-caller.ts).
+      if (inbound.id?.startsWith("reminder:")) {
+        yield* self.handleReminderAction({ client, chatJid, id: inbound.id })
+        return
+      }
+
+      let promptText = text
+      let attachments: PromptAttachment[] = []
+
+      if (media) {
+        // O download e a extração são isolados: qualquer falha vira contexto
+        // textual para o agente e a fila continua com as próximas mensagens.
+        const downloaded = yield* Effect.tryPromise({
+          try: () =>
+            client.message.downloadBytes(msgEvent, {
+              maxBytes: MAX_INBOUND_BYTES,
+              timeoutMs: 60_000,
+            }),
+          catch: (error) => (error instanceof Error ? error : new Error(String(error))),
+        }).pipe(Effect.option)
+
+        if (downloaded._tag === "None") {
+          yield* Effect.logWarning(
+            `[WhatsApp Media] falha no download de ${media.filename} (${media.mime}) para ${chatJid}`,
+          )
+          const processed = failedMedia(media, "falha no download do arquivo")
+          promptText = joinText(promptText, processed.text)
+        } else {
+          const provider = Option.getOrUndefined(yield* Effect.serviceOption(Provider.Service))
+          // Provider/Catálogo são InstanceState: sem o InstanceRef do projeto
+          // do AgentUI o `provider.list()` volta vazio (ou falha como defeito).
+          const transcriptionContext = yield* Effect.gen(function* () {
+            const instances = Option.getOrUndefined(yield* Effect.serviceOption(InstanceStore.Service))
+            if (!instances) return undefined
+            const targetDirectory =
+              channel.directory && path.isAbsolute(channel.directory)
+                ? channel.directory
+                : path.join(Global.Path.data, "projects", "agentui")
+            return yield* instances
+              .load({ directory: targetDirectory })
+              .pipe(Effect.catchCause(() => Effect.succeed(undefined)))
+          })
+          const processors: MediaProcessors = {
+            transcribe: (input) => {
+              const effect = provider
+                ? transcribeAudio(provider, input)
+                : Effect.fail(new Error("provider indisponível para transcrição de áudio"))
+              return transcriptionContext ? effect.pipe(Effect.provideService(InstanceRef, transcriptionContext)) : effect
+            },
+          }
+          const processed = yield* processMedia({
+            descriptor: media,
+            bytes: downloaded.value,
+            processors,
+          }).pipe(
+            // Nenhum anexo pode prender a fila de inbound indefinidamente
+            // (ex.: provider de transcrição sem contexto/instância).
+            Effect.timeoutOrElse({
+              duration: Duration.seconds(120),
+              orElse: () =>
+                Effect.succeed(failedMedia(media, "tempo esgotado no processamento do anexo")),
+            }),
+          )
+          promptText = joinText(promptText, processed.text)
+          attachments = [...processed.attachments]
+        }
+      }
+
+      if (!promptText.trim() && attachments.length === 0) {
+        debug("[WhatsApp Inbound Ignored] Nothing to dispatch after media processing")
+        return
       }
 
       // Enfileira mensagem no lote debounced para este chat/agente
@@ -503,7 +677,8 @@ export class WhatsAppNativeManager {
         channel,
         client,
         chatJid,
-        text,
+        text: promptText,
+        attachments,
         agentUI,
         appContext,
       })
@@ -512,12 +687,33 @@ export class WhatsAppNativeManager {
     )
   }
 
+  private handleReminderAction(input: {
+    client: WaClient
+    chatJid: string
+    id: string
+  }): Effect.Effect<void, never, never> {
+    return Effect.gen(function* () {
+      const reply = yield* runReminderAction(input.id)
+      yield* Effect.tryPromise({
+        try: () => input.client.message.send(input.chatJid, reply),
+        catch: (error) => error,
+      }).pipe(
+        Effect.tapError((error) =>
+          Effect.logWarning(`[WhatsApp Reminder Action] falha ao responder ${input.chatJid}: ${String(error)}`),
+        ),
+        Effect.catch(() => Effect.void),
+      )
+      debug(`[WhatsApp Reminder Action] id=${input.id} reply="${reply}"`)
+    }).pipe(Effect.catch(() => Effect.void))
+  }
+
   private enqueueInbound(input: {
     agentId: string
     channel: ConfigAgentUIV1.WhatsAppChannelBinding
     client: WaClient
     chatJid: string
     text: string
+    attachments?: readonly PromptAttachment[]
     agentUI: ChannelAgentUI
     appContext: Context.Context<never>
   }): Effect.Effect<void, never, never> {
@@ -529,6 +725,7 @@ export class WhatsAppNativeManager {
         Effect.runFork(Fiber.interrupt(existing.fiber))
       }
       const texts = existing ? [...existing.texts, input.text] : [input.text]
+      const attachments = [...(existing?.attachments ?? []), ...(input.attachments ?? [])]
 
       const task = Effect.sleep(Duration.millis(DEBOUNCE_MS)).pipe(
         Effect.andThen(() =>
@@ -549,7 +746,7 @@ export class WhatsAppNativeManager {
       )
 
       const fiber = Effect.runFork(Effect.provideContext(input.appContext)(task))
-      self.pendingBatches.set(key, { texts, fiber })
+      self.pendingBatches.set(key, { texts, attachments, fiber })
     })
   }
 
@@ -565,7 +762,7 @@ export class WhatsAppNativeManager {
     return Effect.gen(function* () {
       const batch = self.pendingBatches.get(input.key)
       self.pendingBatches.delete(input.key)
-      if (!batch || batch.texts.length === 0) return
+      if (!batch || (batch.texts.length === 0 && batch.attachments.length === 0)) return
 
       const aggregatedText = batch.texts.join("\n")
       debug(`[WhatsApp Inbound Dispatching Batch to AgentUI] agentId=${input.agentId} count=${batch.texts.length} text="${aggregatedText}"`)
@@ -577,6 +774,7 @@ export class WhatsAppNativeManager {
           directory: input.channel.directory || "default",
           chatKey: input.chatJid,
           message: aggregatedText,
+          attachments: batch.attachments.length > 0 ? batch.attachments : undefined,
           channel: "whatsapp",
         })
         .pipe(

@@ -1,6 +1,32 @@
 {
   "releases": [
     {
+      "tag": "v1.27.7",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Agenda e lembretes destravados no AgentUI",
+              "description": "A agenda agora fica realmente disponível quando o toggle de Agenda está ligado: a ferramenta de lembretes usa a mesma permissão concedida pelo toggle e o editor de agentes passa a exibir o estado salvo, sem mostrar liberado quando a permissão não estava persistida."
+            },
+            {
+              "title": "Lembretes com botões interativos no WhatsApp",
+              "description": "Os lembretes chegam como mensagens interativas com os botões Concluir, Adiar 10 min e Cancelar. A ação é processada na hora, sem passar pelo modelo, e a conversa de destino fica salva no próprio lembrete para continuar funcionando após reiniciar o app."
+            },
+            {
+              "title": "WhatsApp nativo entende áudio, documentos e imagens",
+              "description": "Mensagens de voz chegam transcritas ao agente. PDF, planilhas XLSX/XLS, CSV, TXT e documentos do Office têm o conteúdo extraído; imagens são enviadas para modelos multimodais e vídeos são informados com metadados. Se um anexo falhar, o agente é avisado e a conversa segue normalmente."
+            },
+            {
+              "title": "Contas banidas de provedor são desativadas automaticamente",
+              "description": "Quando o provedor responde com banimento de conta, a credencial é desativada na hora, marcada com badge e motivo nas configurações, e a rotação passa para a próxima conta saudável no mesmo turno. A conta banida fica afastada por 24 horas antes de poder voltar."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.6",
       "highlights": [
         {
