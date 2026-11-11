@@ -170,4 +170,16 @@ describe("contrato C3 (default)", () => {
 
     expect(v1Default).toBe(catalogDefault)
   })
+
+  test("default ignora modelos deprecated", () => {
+    const item = provider("opencode")
+    const models = [
+      { ...model("opencode", "deprecated-newest", { enabled: true, released: 1_800_000_000_000 }), status: "deprecated" as const },
+      model("opencode", "active-older", { enabled: true, released: 1_600_000_000_000 }),
+    ]
+
+    const info = Provider.fromCatalog(item, models)
+
+    expect(Provider.defaultModelIDs({ [item.id]: info })[item.id as string]).toBe("active-older")
+  })
 })

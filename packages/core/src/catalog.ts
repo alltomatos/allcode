@@ -226,6 +226,9 @@ const layer = Layer.effect(
           return Option.getOrUndefined(
             pipe(
               yield* result.model.available(),
+              // Deprecated não pode ser o default: models.dev mantém o modelo
+              // habilitado e ele poderia ser o mais recente por data.
+              Array.filter((item) => item.status !== "deprecated"),
               Array.sortWith((item) => item.time.released, Order.flip(Order.Number)),
               Array.head,
             ),

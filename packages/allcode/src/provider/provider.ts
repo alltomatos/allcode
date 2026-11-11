@@ -1291,12 +1291,14 @@ export function toPublicInfo(provider: Info): Info {
   )
 }
 
-export function defaultModelIDs<T extends { models: Record<string, { id: string; release_date?: string }> }>(
-  providers: Record<string, T>,
-) {
+export function defaultModelIDs<
+  T extends { models: Record<string, { id: string; release_date?: string; status?: string }> },
+>(providers: Record<string, T>) {
   return Object.fromEntries(
     Object.entries(providers).flatMap(([providerID, item]) => {
-      const models = Object.values(item.models)
+      // Deprecated nunca é default: o catálogo pode mantê-lo habilitado e o
+      // modelo mais recente por data poderia ser justamente um deles.
+      const models = Object.values(item.models).filter((model) => model.status !== "deprecated")
       if (models.length === 0) return []
       // The catalog decides the default (newest released, see
       // packages/core/src/catalog.ts). The projection only carries
