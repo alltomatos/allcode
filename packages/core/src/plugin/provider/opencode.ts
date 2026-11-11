@@ -192,6 +192,24 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
         }
       }
 
+      // D004 — OPENCODE_DISABLE_FREE_MODELS. Paridade com o upstream: esconde
+      // os modelos gratuitos de `opencode`/`opencode-*`. Lida a cada execução
+      // do transform (não no import) para refletir mudança sem reiniciar o
+      // processo. Um modelo é gratuito quando nenhuma faixa de custo cobra
+      // entrada — o mesmo critério do auto-disable de pagos.
+      if (disableFreeModels()) {
+        for (const record of catalog.provider.list()) {
+          const providerID = record.provider.id
+          if (providerID !== ProviderV2.ID.opencode && !providerID.startsWith("opencode-")) continue
+          for (const model of record.models.values()) {
+            if (model.cost.some((cost) => cost.input > 0)) continue
+            catalog.model.update(providerID, model.id, (draft) => {
+              draft.enabled = false
+            })
+          }
+        }
+      }
+
       const item = catalog.provider.get(ProviderV2.ID.opencode)
       if (!item) return
       const hasKey = Boolean(process.env.OPENCODE_API_KEY || connected || item.provider.request.body.apiKey)
@@ -216,6 +234,11 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
     yield* refresh().pipe(Effect.forkScoped)
   }),
 })
+
+function disableFreeModels() {
+  const value = process.env.OPENCODE_DISABLE_FREE_MODELS?.trim().toLowerCase()
+  return value === "1" || value === "true"
+}
 
 function fetchProviders(http: HttpClient.HttpClient, value: CredentialValue) {
   const metadata = value.metadata

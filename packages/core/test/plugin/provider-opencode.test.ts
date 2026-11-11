@@ -337,6 +337,38 @@ describe("OpencodePlugin", () => {
     ),
   )
 
+  it.effect("OPENCODE_DISABLE_FREE_MODELS desabilita gratuitos", () =>
+    withEnv({ OPENCODE_DISABLE_FREE_MODELS: "1", OPENCODE_API_KEY: undefined }, () =>
+      Effect.gen(function* () {
+        const catalog = yield* Catalog.Service
+        yield* catalog.transform((catalog) => {
+          const provider = ProviderV2.Info.make({
+            ...ProviderV2.Info.empty(ProviderV2.ID.opencode),
+            api: { type: "aisdk", package: "test-provider" },
+          })
+          catalog.provider.update(provider.id, () => {})
+          for (const [id, input] of [
+            ["free-model", 0],
+            ["paid-model", 1],
+          ] as const) {
+            catalog.model.update(provider.id, ModelV2.ID.make(id), (draft) => {
+              draft.cost = cost(input)
+            })
+          }
+        })
+        yield* addPlugin()
+        const free = yield* eventually(
+          catalog.model.get(ProviderV2.ID.opencode, ModelV2.ID.make("free-model")).pipe(Effect.map((m) => m?.enabled ?? true)),
+          (enabled) => !enabled,
+        )
+        expect(free).toBe(false)
+        expect(required(yield* catalog.model.get(ProviderV2.ID.opencode, ModelV2.ID.make("paid-model"))).enabled).toBe(
+          false,
+        )
+      }),
+    ),
+  )
+
   it.effect("treats output-only cost as free without credentials", () =>
     withEnv({ OPENCODE_API_KEY: undefined }, () =>
       Effect.gen(function* () {
