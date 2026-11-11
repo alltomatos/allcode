@@ -1291,11 +1291,25 @@ export function toPublicInfo(provider: Info): Info {
   )
 }
 
-export function defaultModelIDs<T extends { models: Record<string, { id: string }> }>(providers: Record<string, T>) {
+export function defaultModelIDs<T extends { models: Record<string, { id: string; release_date?: string }> }>(
+  providers: Record<string, T>,
+) {
   return Object.fromEntries(
     Object.entries(providers).flatMap(([providerID, item]) => {
-      const first = sort(Object.values(item.models))[0]
-      return first ? [[providerID, first.id]] : []
+      const models = Object.values(item.models)
+      if (models.length === 0) return []
+      // The catalog decides the default (newest released, see
+      // packages/core/src/catalog.ts). The projection only carries
+      // `release_date`, so mirror that rule here instead of re-ranking by the
+      // legacy `sort()` heuristic.
+      const newest = models.reduce<{ model: (typeof models)[number]; at: number } | undefined>((best, model) => {
+        const at = Date.parse(model.release_date ?? "")
+        if (!Number.isFinite(at)) return best
+        if (!best || at > best.at) return { model, at }
+        return best
+      }, undefined)
+      const picked = newest?.model ?? sort(models)[0]
+      return picked ? [[providerID, picked.id]] : []
     }),
   )
 }

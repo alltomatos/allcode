@@ -155,11 +155,7 @@ describe("contrato C4 (headers de gateway)", () => {
 })
 
 describe("contrato C3 (default)", () => {
-  // Divergência conhecida: o v1 escolhe o default por `sort()` (lista de
-  // prioridade + preferência por "latest"), enquanto o catálogo v2 expõe o
-  // modelo habilitado mais recente por `time.released`. A F1 (#31) alinha o
-  // v1 ao catálogo; até lá este teste permanece falhando de propósito.
-  test.failing("default do v1 coincide com o default mais recente do catálogo", () => {
+  test("default do provider é o modelo habilitado mais recente", () => {
     const item = provider("opencode")
     const models = [
       model("opencode", "older-model", { enabled: true, released: 1_600_000_000_000 }),

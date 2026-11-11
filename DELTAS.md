@@ -46,4 +46,4 @@ discordar do critério, converte-se em delta normal com linha aqui.
 
 | ID | Delta | Consumidor | Teste | Impacto observável | Reversível por | Fase |
 | --- | --- | --- | --- | --- | --- | --- |
-| _(nenhum — F1 é projeção neutra)_ | | | | | | |
+| D006 | Default do provider passa a ser o modelo habilitado mais recente (`release_date`), alinhado ao catálogo v2 em vez do `sort()` legado | Chat, AgentUI, Rotinas, TUI | `default do provider é o modelo habilitado mais recente` | O modelo padrão de cada provider pode mudar para o mais recente | commit | F1.5 |
