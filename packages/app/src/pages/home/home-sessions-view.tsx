@@ -1,4 +1,4 @@
-import type { Session } from "@allcode/sdk/v2/client"
+﻿import type { Session } from "@allcode/sdk/v2/client"
 import { type Accessor, createMemo, For, Show, Suspense } from "solid-js"
 import { Spinner } from "@allcode/ui/spinner"
 import { ScrollView } from "@allcode/ui/scroll-view"
@@ -67,6 +67,7 @@ export type HomeSessionsViewProps = {
   titleOpacity: (id: HomeSessionGroup["id"]) => number
   isOpenTab: (record: HomeSessionRecord) => boolean
   onCreateSession: () => void
+  creatingSession: Accessor<boolean>
   onOpenSession: (session: Session, options?: OpenSessionOptions) => void
   onArchiveSession: (session: Session) => Promise<void>
   onSetHoverTarget: (element: HTMLElement) => void
@@ -244,6 +245,8 @@ export function HomeSessionsView(props: HomeSessionsViewProps) {
                 size="normal"
                 icon="edit"
                 class="shrink-0 h-9 px-3 [font-weight:530]"
+                disabled={props.creatingSession()}
+                data-pending={props.creatingSession()}
                 onClick={props.onCreateSession}
               >
                 {props.language.t("command.session.new")}
@@ -868,4 +871,5 @@ function HomeSessionSkeleton(props: { label: string }) {
     </div>
   )
 }
+
 

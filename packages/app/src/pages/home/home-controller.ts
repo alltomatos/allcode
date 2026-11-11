@@ -1,10 +1,10 @@
-import { useGlobal } from "@/context/global"
+﻿import { useGlobal } from "@/context/global"
 import { type HomeProjectSelection, useLayout } from "@/context/layout"
 import { ServerConnection, useServer } from "@/context/server"
 import { useServerSync } from "@/context/server-sync"
 import { useTabs } from "@/context/tabs"
 import { toggleHomeProjectSelection } from "@/pages/layout/helpers"
-import { createEffect, createMemo } from "solid-js"
+import { createEffect, createMemo, createSignal } from "solid-js"
 
 export function createHomeController() {
   const sync = useServerSync()
@@ -46,11 +46,18 @@ export function createHomeController() {
     layout.home.setSelection(next)
   }
 
+  // Guarda contra clique repetido: o botão fica ocupado até a navegação para o
+  // rascunho ser disparada. `tabs.newDraft` também é idempotente por projeto.
+  const [creating, setCreating] = createSignal<string | undefined>()
   function openProjectNewSession(conn: ServerConnection.Any, directory: string) {
+    if (creating()) return
+    setCreating(directory)
     const ctx = global.ensureServerCtx(conn)
     ctx.projects.open(directory)
     ctx.projects.touch(directory)
-    void tabs.newDraft({ server: ServerConnection.key(conn), directory })
+    void Promise.resolve(tabs.newDraft({ server: ServerConnection.key(conn), directory })).finally(() =>
+      setCreating(undefined),
+    )
   }
 
   return {
@@ -73,6 +80,7 @@ export function createHomeController() {
       homedir,
       selected: selectedProject,
       newSession: newSessionProject,
+      creating,
       forServer: (conn: ServerConnection.Any) => global.ensureServerCtx(conn).projects.list(),
       select: (conn: ServerConnection.Any, directory: string) => {
         const key = ServerConnection.key(conn)
@@ -119,3 +127,4 @@ export function createHomeController() {
 }
 
 export type HomeController = ReturnType<typeof createHomeController>
+

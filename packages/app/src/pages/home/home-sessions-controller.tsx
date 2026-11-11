@@ -1,4 +1,4 @@
-import type { Session } from "@allcode/sdk/v2/client"
+﻿import type { Session } from "@allcode/sdk/v2/client"
 import { preloadMarkdown } from "@allcode/session-ui/markdown-cache"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { useQuery } from "@tanstack/solid-query"
@@ -254,6 +254,7 @@ export function createHomeSessionsController(home: HomeController) {
       showProjectName: () => !home.project.selected(),
       server: () => home.selection.value().server,
       canCreate: () => !!home.project.newSession(),
+      creating: () => !!home.project.creating(),
       create: home.project.openNewSession,
       open: (session: Session, options?: OpenSessionOptions) => {
         const directoryKey = pathKey(session.directory)
@@ -398,4 +399,5 @@ export function HomeSessionStatusController(props: {
     open: () => props.isOpenTab(props.record),
   })
 }
+
 
