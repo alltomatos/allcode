@@ -1549,6 +1549,9 @@ export function fromModelsDevProvider(provider: ModelsDev.Provider): Info {
 export function fromCatalog(provider: ProviderV2.Info, models: ModelV2.Info[]): Info {
   const entries: Record<string, Model> = {}
   for (const model of models) {
+    // The catalog disables models that must not be offered: deprecated ones,
+    // paid models without credentials, and config `disabled: true`.
+    if (!model.enabled) continue
     entries[model.id] = {
       id: model.id,
       providerID: provider.id,
