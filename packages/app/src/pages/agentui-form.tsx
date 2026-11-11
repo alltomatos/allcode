@@ -1,4 +1,4 @@
-import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js"
+﻿import { createEffect, createMemo, createResource, createSignal, For, Show } from "solid-js"
 import { useNavigate, useParams } from "@solidjs/router"
 import { createStore } from "solid-js/store"
 import { ScrollView } from "@allcode/ui/scroll-view"
@@ -22,6 +22,7 @@ import { showToast } from "@/utils/toast"
 import { formatServerError } from "@/utils/server-errors"
 import { GlobalLoading } from "@/components/global-loading"
 import { ModelPickerV2 } from "@/components/model-picker-v2"
+import { useProviders } from "@/hooks/use-providers"
 import { DialogAgentUISandbox } from "@/components/settings-v2/dialog-agentui-sandbox"
 import { DialogAgentUIDiagnose } from "@/components/settings-v2/dialog-agentui-diagnose"
 import { DialogIzapiaGroupParticipants } from "@/components/settings-v2/dialog-izapia-group-participants"
@@ -175,6 +176,18 @@ export function AgentUIFormPage() {
   const modelDirectory = createMemo(
     () => existing()?.channels.find((channel) => channel.directory)?.directory,
   )
+
+  const providers = useProviders(modelDirectory)
+  // D001: o modelo persistido pode não existir mais no escopo atual. Avisar aqui
+  // evita que o usuário descubra só quando o agente responder pelo padrão.
+  const modelUnavailable = createMemo(() => {
+    const value = form.model
+    if (!value || value.startsWith("combo:")) return false
+    const separator = value.indexOf("/")
+    if (separator < 0) return false
+    const provider = providers.all().get(value.slice(0, separator))
+    return !provider || !provider.models[value.slice(separator + 1)]
+  })
 
   const [form, setForm] = createStore<AgentUIFormState>(emptyForm())
   const [everSaved, setEverSaved] = createSignal(isEdit)
@@ -756,6 +769,11 @@ export function AgentUIFormPage() {
                             directory={modelDirectory()}
                             requireAudio={filterAudioOnly()}
                           />
+                          <Show when={modelUnavailable()}>
+                            <p class="text-11-regular text-v2-text-text-base">
+                              {language.t("settings.agentui.model.unavailable")}
+                            </p>
+                          </Show>
                         </div>
 
                         <div class="flex flex-col gap-1.5">
@@ -1569,4 +1587,5 @@ export function AgentUIFormPage() {
     </div>
   )
 }
+
 

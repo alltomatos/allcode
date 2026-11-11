@@ -1,4 +1,4 @@
-import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
+﻿import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
 
 export const dict = {
   ...DESKTOP_NATIVE_ENGLISH,
@@ -1084,6 +1084,7 @@ export const dict = {
   "settings.agentui.field.name": "Name",
   "settings.agentui.field.personality": "Personality",
   "settings.agentui.field.model": "Model",
+  "settings.agentui.model.unavailable": "Configured model is unavailable — the default will be used at runtime.",
   "settings.agentui.field.filterAudio": "Listen to audio (only models with voice/audio support)",
   "settings.agentui.field.telegram": "Reply on Telegram",
   "settings.agentui.field.telegramToken.placeholder": "Bot token (optional — leave empty to share the global bot)",
@@ -2009,3 +2010,4 @@ export const dict = {
   "sidebar.account.manage": "Manage account",
   "sidebar.account.signOut": "Sign out",
 }
+

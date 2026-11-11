@@ -1,4 +1,4 @@
-export const dict = {
+﻿export const dict = {
   "desktop.menu.app": "AllCode",
   "desktop.menu.file": "Arquivo",
   "desktop.menu.edit": "Editar",
@@ -986,6 +986,7 @@ export const dict = {
   "settings.agentui.field.name": "Nome",
   "settings.agentui.field.personality": "Personalidade",
   "settings.agentui.field.model": "Modelo",
+  "settings.agentui.model.unavailable": "Modelo configurado indisponível — o padrão será usado em tempo de execução.",
   "settings.agentui.field.filterAudio": "Ouvir áudio (apenas modelos com suporte a voz/áudio)",
   "settings.agentui.field.telegram": "Responder no Telegram",
   "settings.agentui.field.telegramToken.placeholder": "Token do bot (opcional — deixe vazio para usar o bot global)",
@@ -2044,3 +2045,4 @@ export const dict = {
   "sidebar.account.manage": "Gerenciar conta",
   "sidebar.account.signOut": "Terminar sessão",
 }
+

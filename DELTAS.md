@@ -47,3 +47,4 @@ discordar do critério, converte-se em delta normal com linha aqui.
 | ID | Delta | Consumidor | Teste | Impacto observável | Reversível por | Fase |
 | --- | --- | --- | --- | --- | --- | --- |
 | D006 | Default do provider passa a ser o modelo habilitado mais recente (`release_date`), alinhado ao catálogo v2 em vez do `sort()` legado | Chat, AgentUI, Rotinas, TUI | `default do provider é o modelo habilitado mais recente` | O modelo padrão de cada provider pode mudar para o mais recente | commit | F1.5 |
+| D001 | Fallback explícito ao modelo padrão quando o modelo configurado está indisponível, com audit `model_fallback`, warning no `diagnose` e aviso na UI | AgentUI, Rotinas com `agentId` | `modelo indisponível cai no padrão e registra origem e destino` | O agente continua respondendo pelo padrão; auditoria e aviso expõem a troca | commit | F1.5 |
