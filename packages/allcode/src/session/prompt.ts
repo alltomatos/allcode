@@ -652,7 +652,14 @@ const layer = Layer.effect(
       let providerID = targetProviderID
       let modelID = targetModelID
       if ((providerID as string) === "combo") {
-        const resolved = yield* combo.resolve(modelID).pipe(Effect.orDie)
+        // D002: um combo não pode resolver para um membro que este Provider não
+        // conhece (provider sem credencial no escopo atual).
+        const known = yield* provider.list()
+        const resolved = yield* combo
+          .resolve(modelID, (selection) =>
+            Boolean(known[selection.providerID as ProviderV2.ID]?.models[selection.modelID as ModelV2.ID]),
+          )
+          .pipe(Effect.orDie)
         providerID = ProviderV2.ID.make(resolved.providerID)
         modelID = ModelV2.ID.make(resolved.modelID)
       }

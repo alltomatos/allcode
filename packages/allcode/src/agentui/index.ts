@@ -453,9 +453,23 @@ const layer = Layer.effect(
         : []),
     ]
 
+    // D002: predicado único de disponibilidade para os combos. Sai do estado
+    // v1 do Provider (provider ausente = sem credencial no escopo atual), que é
+    // o sinal que este serviço enxerga sem montar a camada de localização.
+    const isSelectable = Effect.fnUntraced(function* () {
+      const providers = yield* provider.list()
+      return (selection: { providerID: string; modelID: string }) => {
+        const item = providers[selection.providerID as ProviderV2.ID]
+        return Boolean(item?.models[selection.modelID as ModelV2.ID])
+      }
+    })
+
     const resolveModel = Effect.fn("AgentUI.resolveModel")(function* (spec: string) {
+      const selectable = yield* isSelectable()
       if (spec.startsWith("combo:")) {
-        return yield* combos.resolve(spec.slice("combo:".length)).pipe(Effect.orElseSucceed(() => undefined))
+        return yield* combos
+          .resolve(spec.slice("combo:".length), selectable)
+          .pipe(Effect.orElseSucceed(() => undefined))
       }
       // Split on the FIRST "/" only — some providers (Omniroute) encode
       // their own namespace into the model id itself (e.g.
@@ -470,7 +484,7 @@ const layer = Layer.effect(
       const modelID = spec.slice(separator + 1)
       if (!providerID || !modelID) return undefined
       if (providerID === "combo") {
-        return yield* combos.resolve(modelID).pipe(Effect.orElseSucceed(() => undefined))
+        return yield* combos.resolve(modelID, selectable).pipe(Effect.orElseSucceed(() => undefined))
       }
       return { providerID, modelID }
     })

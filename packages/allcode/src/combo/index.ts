@@ -73,7 +73,10 @@ export interface Interface {
   // and rate limit. Callers report success/failure back via `report` so the
   // next resolve() call can skip a model that just failed (failover) and
   // keep the rate-limit window accurate.
-  readonly resolve: (id: string) => Effect.Effect<ResolvedModel, ComboNotFoundError | ComboExhaustedError>
+  readonly resolve: (
+    id: string,
+    isSelectable?: (selection: { providerID: string; modelID: string }) => boolean,
+  ) => Effect.Effect<ResolvedModel, ComboNotFoundError | ComboExhaustedError>
   readonly report: (input: { id: string; model: string; ok: boolean; tokens?: number }) => Effect.Effect<void>
   readonly generateDraft: (input: {
     description: string
