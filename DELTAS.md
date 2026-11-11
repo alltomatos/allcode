@@ -34,8 +34,11 @@ discordar do critério, converte-se em delta normal com linha aqui.
 ## Regras
 
 - `ID` é estável (`D001`, `D002`, …): nunca renumerado nem reaproveitado.
-- Delta sem teste nomeado na coluna `Teste` reprova o build — um teste meta lê este
-  arquivo e falha se algum `ID` não tiver teste correspondente.
+- A coluna `Teste` traz o nome exato do teste **entre crases**; o meta-teste
+  (`packages/allcode/test/meta/deltas.test.ts`) procura esse literal nos arquivos
+  `packages/**/*.{test,spec}.{ts,tsx}`.
+- Delta sem teste nomeado, ou com nome que não existe em nenhum arquivo de teste,
+  reprova o build.
 - Cada delta é revertível isoladamente, em commit próprio.
 - Remover um delta exige justificativa no PR ou um ADR.
 
