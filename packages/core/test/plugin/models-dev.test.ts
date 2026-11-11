@@ -124,6 +124,56 @@ describe("ModelsDevPlugin", () => {
     }),
   )
 
+  it.effect("modelo deprecated não fica habilitado", () =>
+    Effect.gen(function* () {
+      const integrations = yield* Integration.Service
+      const catalog = yield* Catalog.Service
+      const models = ModelsDev.Service.of({
+        get: () =>
+          Effect.succeed({
+            acme: {
+              id: "acme",
+              name: "Acme",
+              env: [],
+              npm: "@ai-sdk/openai-compatible",
+              api: "https://api.acme.test/v1",
+              models: {
+                "legacy-model": {
+                  id: "legacy-model",
+                  name: "Legacy",
+                  release_date: "2025-01-01",
+                  status: "deprecated",
+                  attachment: false,
+                  reasoning: false,
+                  temperature: true,
+                  tool_call: true,
+                  cost: { input: 1, output: 1 },
+                  limit: { context: 100_000, output: 8_000 },
+                },
+              },
+            },
+          } satisfies Record<string, ModelsDev.Provider>),
+        refresh: () => Effect.void,
+      })
+
+      yield* ModelsDevPlugin.effect(
+        host({
+          catalog: catalogHost(catalog),
+          integration: integrationHost(integrations),
+        }),
+      ).pipe(Effect.provideService(ModelsDev.Service, models))
+
+      const providerID = ProviderV2.ID.make("acme")
+      const model = yield* catalog.model.get(providerID, ModelV2.ID.make("legacy-model"))
+
+      // D008: alinha com o v1, que esconde deprecated na UI.
+      expect(model?.status).toBe("deprecated")
+      expect(model?.enabled).toBe(false)
+      const available = yield* catalog.model.available()
+      expect(available.some((item) => item.id === "legacy-model")).toBe(false)
+    }),
+  )
+
   it.effect("registers key methods for providers with environment variables", () =>
     Effect.acquireUseRelease(
       Effect.sync(() => {
