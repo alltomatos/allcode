@@ -1,4 +1,4 @@
-import { LayerNode } from "@allcode/core/effect/layer-node"
+﻿import { LayerNode } from "@allcode/core/effect/layer-node"
 import { Catalog } from "@allcode/core/catalog"
 import { Integration } from "@allcode/core/integration"
 import { IntegrationRotation } from "@allcode/core/integration/rotation"
@@ -16,6 +16,7 @@ import { SessionRevert } from "./revert"
 import { Session } from "./session"
 import { Agent } from "../agent/agent"
 import { Provider } from "@/provider/provider"
+import { selectableFrom } from "@/provider/availability"
 
 import { type Tool as AITool, tool, jsonSchema } from "ai"
 import type { JSONSchema7 } from "@ai-sdk/provider"
@@ -654,11 +655,8 @@ const layer = Layer.effect(
       if ((providerID as string) === "combo") {
         // D002: um combo não pode resolver para um membro que este Provider não
         // conhece (provider sem credencial no escopo atual).
-        const known = yield* provider.list()
         const resolved = yield* combo
-          .resolve(modelID, (selection) =>
-            Boolean(known[selection.providerID as ProviderV2.ID]?.models[selection.modelID as ModelV2.ID]),
-          )
+          .resolve(modelID, selectableFrom(yield* provider.list()))
           .pipe(Effect.orDie)
         providerID = ProviderV2.ID.make(resolved.providerID)
         modelID = ModelV2.ID.make(resolved.modelID)
@@ -1720,4 +1718,5 @@ export const node = LayerNode.make({
 })
 
 export * as SessionPrompt from "./prompt"
+
 

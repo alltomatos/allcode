@@ -15,6 +15,7 @@ import { InstanceStore } from "@/project/instance-store"
 import { InstanceRef } from "@/effect/instance-ref"
 import { SessionID } from "@/session/schema"
 import { Provider } from "@/provider/provider"
+import { selectableFrom } from "@/provider/availability"
 import { Storage } from "@/storage/storage"
 import { Context, Effect, Layer, Schema, Cause, Exit } from "effect"
 import { jsonSchema, streamText, tool } from "ai"
@@ -453,19 +454,9 @@ const layer = Layer.effect(
         : []),
     ]
 
-    // D002: predicado único de disponibilidade para os combos. Sai do estado
-    // v1 do Provider (provider ausente = sem credencial no escopo atual), que é
-    // o sinal que este serviço enxerga sem montar a camada de localização.
-    const isSelectable = Effect.fnUntraced(function* () {
-      const providers = yield* provider.list()
-      return (selection: { providerID: string; modelID: string }) => {
-        const item = providers[selection.providerID as ProviderV2.ID]
-        return Boolean(item?.models[selection.modelID as ModelV2.ID])
-      }
-    })
-
+    // D002: predicado único de disponibilidade para os combos.
     const resolveModel = Effect.fn("AgentUI.resolveModel")(function* (spec: string) {
-      const selectable = yield* isSelectable()
+      const selectable = selectableFrom(yield* provider.list())
       if (spec.startsWith("combo:")) {
         return yield* combos
           .resolve(spec.slice("combo:".length), selectable)
