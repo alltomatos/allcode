@@ -1,18 +1,25 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
-## Módulo: Providers — dois sistemas paralelos (v1 `packages/opencode` vs v2 `packages/core`)
+## Módulo: Providers — catálogo v2 como fonte única, v1 como projeção
 
-**Responsabilidade**: resolver qual SDK/adapter fala com o provider de LLM de fato durante o chat.
+**Responsabilidade**: decidir quais providers/modelos existem, quais estão disponíveis e qual par `providerID/modelID` chat, AgentUI e rotinas usam.
 
 **Invariantes**:
-- O app desktop hoje roda o runtime **v1** (`packages/opencode/src/provider/provider.ts`, resolução via `npm`/`resolveSDK`, sem Effect). O runtime **v2** (`packages/core/src/session/runner/*`, catálogo Effect-based) ainda é incompleto (`SessionRunnerModel.fromCatalogModel` só suporta `@ai-sdk/openai`/`@ai-sdk/anthropic`/`@ai-sdk/openai-compatible`) e não está no caminho real de uma mensagem de chat enviada pelo app.
-- Um plugin v2 em `packages/core/src/plugin/provider/*.ts` (ex: `google-antigravity.ts`) registra OAuth + card no catálogo v2, mas isso sozinho **não conecta a chamada real** — para provider com protocolo proprietário (não é REST puro compatível com `@ai-sdk/*`), o fetch customizado precisa ser injetado no bridge v1↔v2: `Provider.syncCatalogModel` em `packages/opencode/src/provider/provider.ts`. `fromCatalog()` sempre zera `info.options = {}`; só o merge de credencial OAuth dentro de `syncCatalogModel` (bloco `if (credential?.type === "oauth")`) sobrevive até o `resolveSDK` que o chat realmente usa.
-- Existe também um `custom()` loader mais antigo em `provider.ts` (mapa por `providerID`, ex. as entradas `google-antigravity`/`google-antigravity-cli`) que parece o lugar óbvio para colocar overrides de `fetch`/`apiKey` — mas ele só roda se `database[providerID]` (catálogo estático de `models.dev` + config) já existir. Provider registrado só via plugin v2 (sem entrada em `models.dev`/config) faz esse loader ser pulado silenciosamente; qualquer `fetch`/opção colocada ali fica morta. Ver caso real: `antigravity-adapter.ts` (interceptor do protocolo Code Assist) só passou a ser usado depois de mover a injeção para `syncCatalogModel`.
-- Para depurar "provider conectado mas chat falha" sem log nenhum aparecendo: a mensagem NÃO viaja por request HTTP visível por chamada — o app abre uma conexão SSE única (`event`, endpoint tipo `/global/event` ou `/session/.../event`) na inicialização; `prompt_async` só dispara (204, fire-and-forget) e o resultado real (incluindo `session.error`) chega como evento nessa stream. No DevTools do Electron, abra Network → Preserve log → recarregue a janela → filtre por `event` → aba **EventStream** → filtre por `error` dentro dela.
+- O catálogo **v2** (`packages/core/src/catalog.ts`, alimentado por `packages/core/src/plugin/*`) é a **única fonte de verdade** de existência, `enabled`, custo, default e disponibilidade. Toda regra vive lá; nunca no bridge.
+- O `Provider.Service` **v1** (`packages/allcode/src/provider/provider.ts`) é **projeção pura** do catálogo. `fromCatalog` só pode derivar transporte: `api.npm`, `api.url`, `api.id`. Proibido decidir disponibilidade, gratuidade, default ou filtragem no bridge.
+- O runtime de chat ainda executa pela trilha v1 (`resolveSDK`/`getLanguage`). Migrar para o runner v2 é um corte separado, controlado por **capacidade anunciada** pelo servidor e reversível por flag. `detectServerProtocol` classifica este servidor como v1 por responder `/global/health`.
+- `fromCatalog` **preserva** `provider.request.headers` em `options.headers` (necessário para headers de gateway, ex. `x-opencode-org-id`). Credencial OAuth e `fetch` de protocolos proprietários continuam injetados em `syncCatalogModel`, porque o catálogo não conhece o wire protocol.
+- Disponibilidade de provider vem de conexão/credencial no escopo de localização. A heurística **licença ≈ conexão** para `opencode-go` (ADR 0009) fica num único ponto do core e não deve ser duplicada.
+- AgentUI e rotinas resolvem modelo por string persistida (`agent.model`, `schedule.action.model`). Fallback para o default ocorre apenas em AgentUI e em rotina com `agentId`; rotina de skill sem `agentId` falha antes de qualquer efeito colateral. A configuração persistida nunca é reescrita automaticamente.
 
 **O que NÃO fazer**:
-- Não assumir que editar `packages/core/src/plugin/provider/*.ts` resolve um bug de chat — primeiro confirmar se o app está no runtime v1 ou v2 (checar de onde vem `provider.getLanguage`/`SessionRunnerModel`).
-- Não confiar em "o provider aparece no seletor do app" como prova de que o adapter de inferência está correto — o catálogo (nome, modelos, card OAuth) e a chamada de chat de fato são bridges completamente separados.
+- Não adicionar lógica de disponibilidade, free ou default em `packages/allcode/src/provider/provider.ts` — precisar de campo novo ali é sinal de catálogo incompleto.
+- Não assumir que editar `packages/core/src/plugin/provider/*.ts` resolve bug de chat: confirme antes qual runtime está ativo.
+- Não colocar override de `fetch`/`apiKey` no loader `custom()` antigo de `provider.ts`: ele só roda se `database[providerID]` já existir (models.dev/config) e é pulado em silêncio para providers registrados só por plugin v2. Caso real: `antigravity-adapter.ts`.
+- Não confiar em "aparece no seletor" como prova de que o adapter de inferência funciona — catálogo e chamada real são caminhos separados.
+- Não reescrever `agent.model`/`action.model` para "corrigir" modelo indisponível; sinalize e faça fallback em runtime.
+
+**Depuração de "provider conectado mas chat falha"**: a mensagem não viaja por request HTTP visível por chamada — o app abre uma conexão SSE única na inicialização, `prompt_async` apenas dispara (204, fire-and-forget) e o resultado real (incluindo `session.error`) chega como evento nessa stream. No DevTools do Electron: Network → Preserve log → recarregue → filtre `event` → aba **EventStream** → filtre `error`.
 
 ## Iniciativa: Tech Debt — divisão de arquivos grandes (`packages/app/src`)
 

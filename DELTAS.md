@@ -1,0 +1,46 @@
+# DELTAS — mudanças intencionais de comportamento
+
+Registro de toda diferença intencional de comportamento em relação ao baseline anterior
+a uma mudança no catálogo ou na resolução de modelos. Governa a convergência descrita
+no ADR 0008.
+
+## Eixos de comparação
+
+- **Contrato estrito (C1–C5)** compara v1 e v2 **na mesma build**. Divergência ali é
+  falha de build, nunca delta.
+- **DELTAS** compara a build atual com o **baseline pré-mudança**.
+
+## Quando registrar
+
+Registre uma linha quando a mudança alterar qualquer um destes pontos: qual
+provider/modelo existe ou é selecionável (C1), flags e custo por modelo (C2), default
+(C3), providers conectados (C4), modelo resolvido de uma especificação (C5), resultado
+de execução ou dado persistido.
+
+## Apresentação (presentation-only) — exceção
+
+Mudança classificada como apresentação **não** ganha linha aqui, mas continua exigindo
+teste e checklist no PR. É apresentação se, e somente se, **todas** as condições
+valerem:
+
+1. nenhum item C1–C5 muda;
+2. nenhuma execução muda de resultado (mesmo sucesso/falha, mesmo efeito colateral);
+3. nenhum dado persistido muda (configuração, histórico, registros de auditoria).
+
+Se qualquer condição falhar, é delta normal. O que decide a categoria é o efeito
+observado, não a intenção declarada. A classificação é reversível: se a revisão
+discordar do critério, converte-se em delta normal com linha aqui.
+
+## Regras
+
+- `ID` é estável (`D001`, `D002`, …): nunca renumerado nem reaproveitado.
+- Delta sem teste nomeado na coluna `Teste` reprova o build — um teste meta lê este
+  arquivo e falha se algum `ID` não tiver teste correspondente.
+- Cada delta é revertível isoladamente, em commit próprio.
+- Remover um delta exige justificativa no PR ou um ADR.
+
+## Deltas
+
+| ID | Delta | Consumidor | Teste | Impacto observável | Reversível por | Fase |
+| --- | --- | --- | --- | --- | --- | --- |
+| _(nenhum — F1 é projeção neutra)_ | | | | | | |
