@@ -6,6 +6,7 @@ import { useParams } from "@solidjs/router"
 import { Iterable } from "effect"
 import { createMemo, type Accessor } from "solid-js"
 import { selectProviderCatalog } from "./provider-catalog"
+import { cacheKey, readProviderCache } from "@/context/global-sync/provider-cache"
 
 export const popularProviders = [
   "omnrt",
@@ -51,19 +52,24 @@ export function useProviders(directory: Accessor<string | undefined>) {
     // child store não carregou (startup/auth race), usa o catálogo global em
     // vez de devolver uma lista vazia — era o que deixava o chat sem
     // provedores/modelos enquanto o AgentUI (global) continuava funcionando.
-    if (value && projectStore?.provider_ready) {
-      return selectProviderCatalog({
-        explicit: true,
-        directory: value,
-        catalog: projectCatalog,
-      })
-    }
-    return selectProviderCatalog({
-      explicit: false,
-      directory: value,
-      catalog: projectCatalog,
-      global: serverSync().data.provider,
-    })
+    const result =
+      value && projectStore?.provider_ready
+        ? selectProviderCatalog({
+            explicit: true,
+            directory: value,
+            catalog: projectCatalog,
+          })
+        : selectProviderCatalog({
+            explicit: false,
+            directory: value,
+            catalog: projectCatalog,
+            global: serverSync().data.provider,
+          })
+    // Enquanto os plugins bootam, o servidor responde vazio. Usar o último
+    // snapshot de provedores conectados evita tela vazia no primeiro paint; o
+    // refresh em background substitui assim que o catálogo real chega.
+    if (result.all.size > 0) return result
+    return readProviderCache(cacheKey(value ?? null)) ?? result
   })
 
   // Filtering by policy is the expensive part (it rebuilds the Map). Cache it

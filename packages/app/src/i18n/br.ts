@@ -211,6 +211,8 @@
   "dialog.provider.vercel.note": "Acesso unificado a modelos de IA com roteamento inteligente",
   "dialog.provider.omniroute.note": "Use sua própria URL de gateway e chave, todos os modelos são importados automaticamente",
   "dialog.model.select.title": "Selecionar modelo",
+  "provider.loading.title": "Carregando provedores e modelos...",
+  "provider.loading.detail": "{count} disponíveis",
   "dialog.model.search.placeholder": "Buscar modelos",
   "dialog.model.empty": "Nenhum resultado de modelo",
   "dialog.model.manage": "Gerenciar modelos",
@@ -2045,4 +2047,5 @@
   "sidebar.account.manage": "Gerenciar conta",
   "sidebar.account.signOut": "Terminar sessão",
 }
+
 

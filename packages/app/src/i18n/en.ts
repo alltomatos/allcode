@@ -124,6 +124,8 @@ export const dict = {
   "dialog.model.select.title": "Select model",
   "dialog.model.selectProvider.title": "Select provider",
   "dialog.model.provider.label": "Provider",
+  "provider.loading.title": "Loading providers and models...",
+  "provider.loading.detail": "{count} available",
   "dialog.model.search.placeholder": "Search models",
   "dialog.model.empty": "No model results",
   "dialog.model.manage": "Manage models",
@@ -2010,4 +2012,5 @@ export const dict = {
   "sidebar.account.manage": "Manage account",
   "sidebar.account.signOut": "Sign out",
 }
+
 
