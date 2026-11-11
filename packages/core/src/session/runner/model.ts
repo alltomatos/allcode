@@ -10,6 +10,7 @@ import { Context, Effect, Layer, Schema } from "effect"
 import { produce } from "immer"
 import { Config } from "../../config"
 import { Catalog } from "../../catalog"
+import { ComboSelect } from "../../combo/select"
 import { Credential } from "../../credential"
 import { Integration } from "../../integration"
 import { IntegrationRotation } from "../../integration/rotation"
@@ -206,16 +207,19 @@ export const locationLayer = Layer.effect(
         if (!comboInfo || !comboInfo.models || comboInfo.models.length === 0) return undefined
         const sorted = [...comboInfo.models].sort((a: any, b: any) => (a.priority ?? 0) - (b.priority ?? 0))
         const skip = comboInfo.failover?.enabled ? lastFailed.get(comboID) : undefined
-        for (const entry of sorted) {
-          if (entry.model === skip) continue
-          const [pID, ...mID] = (entry.model as string).split("/")
-          if (pID && mID.length > 0) return { providerID: ProviderV2.ID.make(pID), modelID: ModelV2.ID.make(mID.join("/")) }
-        }
-        const [firstPID, ...firstMID] = (sorted[0].model as string).split("/")
-        if (firstPID && firstMID.length > 0) {
-          return { providerID: ProviderV2.ID.make(firstPID), modelID: ModelV2.ID.make(firstMID.join("/")) }
-        }
-        return undefined
+        // Filtro de disponibilidade: só considera membros que o catálogo expõe
+        // agora. Com o catálogo ainda vazio (cold start), não bloqueia.
+        const available = new Set(
+          (yield* catalog.model.available()).map((model) => `${model.providerID}/${model.id}`),
+        )
+        const picked = ComboSelect.pickComboModel({
+          ordered: sorted,
+          skip,
+          isSelectable:
+            available.size === 0 ? undefined : (selection) => available.has(`${selection.providerID}/${selection.modelID}`),
+        })
+        if (!picked) return undefined
+        return { providerID: ProviderV2.ID.make(picked.providerID), modelID: ModelV2.ID.make(picked.modelID) }
       })
 
     return Service.of({

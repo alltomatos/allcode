@@ -3,6 +3,7 @@ export * as Combo from "./index"
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
 import { ConfigComboV1 } from "@allcode/core/v1/config/combo"
+import { ComboSelect } from "@allcode/core/combo/select"
 import { Config } from "@/config/config"
 import { Provider } from "../provider/provider"
 import { type LanguageModelV3 } from "@ai-sdk/provider"
@@ -196,7 +197,10 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service> = La
       return [...sorted.slice(cursor % sorted.length), ...sorted.slice(0, cursor % sorted.length)]
     }
 
-    const resolve = Effect.fn("Combo.resolve")(function* (id: string) {
+    const resolve = Effect.fn("Combo.resolve")(function* (
+      id: string,
+      isSelectable?: (selection: { providerID: string; modelID: string }) => boolean,
+    ) {
       const combo = yield* get(id)
       if (!withinRateLimit(combo)) return yield* new ComboExhaustedError({ id })
 
@@ -204,18 +208,11 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service> = La
       if (models.length === 0) return yield* new ComboExhaustedError({ id })
 
       const skip = combo.failover.enabled ? lastFailed.get(id) : undefined
-      for (const entry of models) {
-        if (entry.model === skip) continue
-        const parsed = parseModel(entry.model)
-        if (parsed) return parsed
-      }
-      if (skip) {
-        const parsed = parseModel(skip)
-        if (parsed) return parsed
-      }
-      const first = parseModel(models[0].model)
-      if (first) return first
-      return yield* new ComboExhaustedError({ id })
+      // Mesma seleção do resolvedor v2 (ComboSelect): ordem, failover e filtro
+      // de disponibilidade num único lugar para as duas trilhas não divergirem.
+      const picked = ComboSelect.pickComboModel({ ordered: models, skip, isSelectable })
+      if (!picked) return yield* new ComboExhaustedError({ id })
+      return picked as ResolvedModel
     })
 
     const report = Effect.fn("Combo.report")(function* (input: { id: string; model: string; ok: boolean; tokens?: number }) {
