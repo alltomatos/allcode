@@ -1,4 +1,4 @@
-import { describe, expect } from "bun:test"
+﻿import { describe, expect } from "bun:test"
 import { Effect } from "effect"
 import { HttpClient, HttpClientResponse } from "effect/unstable/http"
 import { Catalog } from "@allcode/core/catalog"
@@ -309,6 +309,34 @@ describe("OpencodePlugin", () => {
     ),
   )
 
+  it.effect("desabilita todos os modelos do opencode-go sem conexão", () =>
+    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+      Effect.gen(function* () {
+        const catalog = yield* Catalog.Service
+        yield* catalog.transform((catalog) => {
+          const provider = ProviderV2.Info.make({
+            ...ProviderV2.Info.empty(ProviderV2.ID.make("opencode-go")),
+            api: { type: "aisdk", package: "test-provider" },
+          })
+          catalog.provider.update(provider.id, () => {})
+          for (const [id, input] of [
+            ["deepseek-v4-pro", 1],
+            ["beam-free", 0],
+          ] as const) {
+            catalog.model.update(provider.id, ModelV2.ID.make(id), (draft) => {
+              draft.cost = cost(input)
+            })
+          }
+        })
+        yield* addPlugin()
+        const go = ProviderV2.ID.make("opencode-go")
+        // D003: gratuito sem credencial também é selecionável e não executável.
+        expect(required(yield* catalog.model.get(go, ModelV2.ID.make("deepseek-v4-pro"))).enabled).toBe(false)
+        expect(required(yield* catalog.model.get(go, ModelV2.ID.make("beam-free"))).enabled).toBe(false)
+      }),
+    ),
+  )
+
   it.effect("treats output-only cost as free without credentials", () =>
     withEnv({ OPENCODE_API_KEY: undefined }, () =>
       Effect.gen(function* () {
@@ -481,3 +509,5 @@ describe("OpencodePlugin", () => {
     }),
   )
 })
+
+

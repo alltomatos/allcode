@@ -90,6 +90,7 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
     const http = yield* HttpClient.HttpClient
     const loading = Semaphore.makeUnsafe(1)
     let connected = false
+    let goConnected = false
     let providers: typeof ConfigV1.Info.Type.provider | undefined
 
     const load = Effect.fn("OpencodePlugin.load")(function* () {
@@ -98,6 +99,12 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
         ? yield* ctx.integration.connection.resolve(connection).pipe(Effect.catch(() => Effect.succeed(undefined)))
         : undefined
       connected = connection !== undefined
+      // "licença ≈ conexão" (ADR 0009): o Go não tem verificação de assinatura,
+      // então usamos a existência de conexão/credencial no escopo atual. A env
+      // `OPENCODE_API_KEY` conta porque o models.dev a mapeia para este provider.
+      goConnected =
+        Boolean(process.env.OPENCODE_API_KEY) ||
+        (yield* ctx.integration.connection.active(Integration.ID.make("opencode-go"))) !== undefined
       providers = credential
         ? yield* fetchProviders(http, credential).pipe(
             Effect.catch((cause) =>
@@ -167,6 +174,20 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
             model.status = config.status ?? "active"
             model.enabled = config.status !== "deprecated"
             if (config.limit !== undefined) model.limit = { ...config.limit }
+          })
+        }
+      }
+
+      // D003 — "pago sem conexão". Sem conexão/credencial para `opencode-go`,
+      // TODOS os modelos do provider ficam indisponíveis, inclusive os `-free`:
+      // um modelo gratuito sem credencial é selecionável e não executável.
+      // O provider continua visível como card de conexão. Heurística deliberada
+      // (licença ≈ conexão, ADR 0009) — não há checagem de assinatura.
+      const go = catalog.provider.get(ProviderV2.ID.make("opencode-go"))
+      if (go && !goConnected) {
+        for (const model of go.models.values()) {
+          catalog.model.update(go.provider.id, model.id, (draft) => {
+            draft.enabled = false
           })
         }
       }
