@@ -3,6 +3,7 @@ import { ProviderAuth } from "@/provider/auth"
 import { Config } from "@/config/config"
 import { ModelsDev } from "@allcode/core/models-dev"
 import { Provider } from "@/provider/provider"
+import { ProviderView } from "@/provider/view"
 import { Auth } from "@/auth"
 import { fetchUserQuotaDetails } from "@/provider/antigravity-adapter"
 import { IntegrationRotation } from "@allcode/core/integration/rotation"
@@ -132,88 +133,27 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       const credentials = yield* authStore.all().pipe(Effect.orDie)
       const catalogData = yield* catalogProviders
       const catalogList = catalogData.providers
-      const availableCatalogIds = new Set(catalogData.available)
-      const providers = Object.assign(
-        mapValues(filtered, (item) => Provider.fromModelsDevProvider(item)),
-        connected,
-        Object.fromEntries(catalogList.filter((item) => !(item.id in connected)).map((item) => [item.id, item])),
-      )
 
       const storedCredentials = yield* credentialSvc.all().pipe(Effect.orDie)
       const activeIntegrationIDs = new Set(storedCredentials.map((c) => c.integrationID as string))
 
-      for (const catalogItem of catalogList) {
-        const managed =
-          activeIntegrationIDs.has(catalogItem.id) ||
-          catalogItem.id === "opencode" ||
-          catalogItem.id.startsWith("opencode-")
-        if (!managed) continue
-        const existing = providers[catalogItem.id]
-        if (!existing) {
-          providers[catalogItem.id] = catalogItem
-          continue
-        }
-        // The OpenCode Console catalog is authoritative for its own free
-        // models and can add ids that models.dev has not picked up yet (or
-        // still marks as deprecated). Merge those into the legacy view so
-        // they stay selectable; paid models keep following the live key.
-        const models = { ...existing.models }
-        for (const [id, model] of Object.entries(catalogItem.models)) {
-          if (model.status === "deprecated") continue
-          if (model.cost.input !== 0) continue
-          models[id] = model
-        }
-        providers[catalogItem.id] = { ...existing, models }
-      }
-
       const comboSvc = yield* Combo.Service.pipe(Effect.orElseSucceed(() => undefined))
       const combos = comboSvc ? yield* comboSvc.list().pipe(Effect.orElseSucceed(() => [])) : []
-      if (combos.length > 0) {
-        providers["combo"] = {
-          id: ProviderV2.ID.make("combo"),
-          name: "Combos",
-          models: Object.fromEntries(
-            combos.map((c) => [
-              c.id,
-              {
-                id: c.id,
-                name: c.name,
-                providerID: "combo",
-                capabilities: {
-                  tools: true,
-                  temperature: true,
-                  vision: true,
-                  reasoning: true,
-                  input: { text: true },
-                  output: { text: true },
-                },
-              } as any,
-            ]),
-          ),
-          source: "custom",
-          env: [],
-          options: {},
-        }
-      }
 
-      const connectedIDs = Object.keys(providers).filter((id) => {
-        if (id === "combo") return combos.length > 0
-        if (activeIntegrationIDs.has(id)) return true
-        if (credentials[id] && (credentials[id] as any).type !== "oauth") return true
-        if (credentials[id] && (credentials[id] as any).type === "oauth" && (credentials[id] as any).access) return true
-        if (id in connected) {
-          const item = (connected as any)[id]
-          if (item?.key && item.key !== "opencode-oauth-dummy-key") return true
-          if (item?.options?.apiKey || item?.options?.accessToken) return true
-        }
-        if (availableCatalogIds.has(id as ProviderV2.ID)) return true
-        return false
+      const view = ProviderView.projectProviderView({
+        base: mapValues(filtered, (item) => Provider.fromModelsDevProvider(item)),
+        connected,
+        catalog: catalogList,
+        availableCatalogIDs: catalogData.available,
+        activeIntegrationIDs,
+        credentials,
+        combos,
       })
 
       return {
-        all: Object.values(providers).map(Provider.toPublicInfo),
-        default: Provider.defaultModelIDs(providers),
-        connected: connectedIDs.map((id) => ProviderV2.ID.make(id)),
+        all: Object.values(view.providers).map(Provider.toPublicInfo),
+        default: Provider.defaultModelIDs(view.providers),
+        connected: view.connectedIDs.map((id) => ProviderV2.ID.make(id)),
       }
     })
 
