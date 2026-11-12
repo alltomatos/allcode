@@ -1,4 +1,4 @@
-# Consumidores da trilha v1 de providers
+﻿# Consumidores da trilha v1 de providers
 
 Inventário exigido pela #38 antes de qualquer remoção (ADR 0008). Classificação:
 **migra** (pode passar a consumir v2), **preserva** (não depende do catálogo) e
@@ -33,9 +33,9 @@ Inventário exigido pela #38 antes de qualquer remoção (ADR 0008). Classifica�
 | App — bootstrap v1 | `packages/app/src/context/global-sync/bootstrap.ts:236-239` | **migra** — branch v1 a remover após o corte |
 | App — normalizer v1 | `packages/app/src/context/global-sync/utils.ts:58-73` | **migra** — só usado no branch v1 |
 | App — seleção de modelo | `packages/app/src/context/models.tsx`, `hooks/use-providers.ts` | **migra** — consome o shape normalizado |
-| TUI — seletor de modelo | `packages/tui/src/context/sync.tsx:458` (`/config/providers`) | **migra** — precisa passar a ler o endpoint v2 |
+| TUI — seletor de modelo | `packages/tui/src/component/dialog-model.tsx` (usa `/provider` filtrado por `connected`) | **migrado** (commit 6b0e4bc7e) |
 | TUI — conexão de provider | `packages/tui/src/component/dialog-provider.tsx:118` (`/provider`) | **migra** |
-| CLI `run` — footer | `packages/allcode/src/cli/cmd/run/footer.command.tsx:959-980` | **migra** — consome `providers` v1 |
+| CLI `run` — footer | `packages/allcode/src/cli/cmd/run/runtime.boot.ts` (usa `/provider` com fallback) | **migrado** (commit e73477351) |
 | SDK legado `packages/sdk/js` | gerado de `HttpApi` v1 | **verificar** — regenerar antes do corte |
 | App mobile (`D:\dev\opencode_mobile`, repo externo) | consome `/provider` e `/config/providers` | **verificar** — não está neste repositório |
 | Painel (`packages/panel`) | `default_provider`/`default_model` como texto | **preserva** — não lê catálogo |
@@ -60,3 +60,4 @@ Inventário exigido pela #38 antes de qualquer remoção (ADR 0008). Classifica�
 
 Nada aqui autoriza remoção: a #39 continua bloqueada por um ciclo de paridade em
 produção com `OPENCODE_PROVIDER_PARITY=1`.
+
