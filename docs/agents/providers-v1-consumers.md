@@ -11,7 +11,7 @@ Inventário exigido pela #38 antes de qualquer remoção (ADR 0008). Classifica�
 | `Provider.Service` (estado, hidratação, resolução de SDK) | `packages/allcode/src/provider/provider.ts` | **exclusivo** — é a trilha em si |
 | `fromModelsDevProvider` | `provider.ts:1513-1538` | **exclusivo** — base estática da lista v1 |
 | `defaultModelIDs` | `provider.ts:1294-1311` | **migra** — já espelha o catálogo (D006) |
-| Loaders `custom()` | `provider.ts` (mapa por `providerID`) | **exclusivo** — injeção de `fetch`/`apiKey` por provider |
+| Loaders `custom()` | `provider.ts` (mapa por `providerID`) | **exclusivo** — injeção de `fetch`/`apiKey` por provider; ver #40 |
 | Loader `opencode` (apaga pagos sem chave) | `provider.ts:302-324` | **exclusivo** — equivalente ao auto-disable do core, mas no v1 |
 | `syncCatalogModel` | `provider.ts:2129-2180` | **exclusivo** — bridge de credencial/wire protocol |
 | `fromCatalog` (projeção) | `provider.ts:1549-1608` | **migra** — passa a ser o único ponto de leitura do catálogo |
@@ -42,7 +42,7 @@ Inventário exigido pela #38 antes de qualquer remoção (ADR 0008). Classifica�
 
 ## Dependências exclusivas que bloqueiam a remoção
 
-1. **Injeção de `fetch` por provider** (`syncCatalogModel`) para protocolos proprietários
+1. **Injeção de `fetch` por provider** (`syncCatalogModel`) para protocolos proprietários — rastreado na **#40** (caminho v2 de chat já executa; hoje está dormente só porque o app usa v1)
    (AGY, Kiro). O catálogo não conhece o wire protocol; remover o bridge sem mover
    essa injeção para o runner v2 quebra esses providers.
 2. **Loader `custom()`** — usado por providers que não passam pelo catálogo v2.
@@ -60,4 +60,5 @@ Inventário exigido pela #38 antes de qualquer remoção (ADR 0008). Classifica�
 
 Nada aqui autoriza remoção: a #39 continua bloqueada por um ciclo de paridade em
 produção com `OPENCODE_PROVIDER_PARITY=1`.
+
 
