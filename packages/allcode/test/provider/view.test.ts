@@ -72,7 +72,7 @@ describe("projectProviderView", () => {
     expect(Object.keys(view.providers["opencode"]!.models).sort()).toEqual(["known", "new-free"])
   })
 
-  test("modelo pago do catálogo não entra na mescla", () => {
+  test("modelo pago do catálogo entra quando o catálogo o habilita", () => {
     const view = projectProviderView(
       base({
         base: { opencode: info("opencode", [model("opencode", "known", 0)]) },
@@ -81,7 +81,9 @@ describe("projectProviderView", () => {
       }),
     )
 
-    expect(Object.keys(view.providers["opencode"]!.models)).toEqual(["known"])
+    // O catálogo só projeta pagos quando há credencial (inclusive vinda da
+    // integração, que o loader v1 não enxerga). A projeção não redecide isso.
+    expect(Object.keys(view.providers["opencode"]!.models).sort()).toEqual(["known", "paid"])
   })
 
   test("combo vira provider quando existem combos", () => {

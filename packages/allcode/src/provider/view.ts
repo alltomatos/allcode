@@ -37,13 +37,14 @@ export function projectProviderView(input: {
       providers[catalogItem.id] = catalogItem
       continue
     }
-    // O catálogo do Console é autoritativo para os modelos gratuitos e pode
-    // adicionar ids que o models.dev ainda não pegou (ou marca como
-    // deprecated). Só gratuitos e habilitados entram; pagos seguem a chave.
+    // O catálogo é autoritativo sobre o que pode ser ofertado: `enabled` já
+    // embute "pago sem credencial". Antes filtrávamos por `cost.input !== 0`
+    // aqui, o que escondia modelos pagos legítimos quando a credencial vinha da
+    // integração (o loader v1 só enxerga auth.json/config/env) — era a
+    // divergência 12 vs 87 do `opencode`.
     const models = { ...existing.models }
     for (const [id, model] of Object.entries(catalogItem.models)) {
       if (model.status === "deprecated") continue
-      if (model.cost.input !== 0) continue
       models[id] = model
     }
     providers[catalogItem.id] = { ...existing, models }
