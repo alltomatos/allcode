@@ -1,6 +1,20 @@
 {
   "releases": [
     {
+      "tag": "v1.27.9",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Capacidades dos modelos refletem o que o gateway realmente suporta",
+              "description": "Provedores configurados à mão (como dontstop) agora leem as modalidades de entrada de cada modelo direto do endpoint do gateway, em vez de depender só do que estava escrito na configuração. Modelos que aceitam imagem, áudio ou PDF voltam a exibir essas capacidades no catálogo, sem alterar os que são só texto."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.8",
       "highlights": [
         {
