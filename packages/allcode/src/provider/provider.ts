@@ -35,6 +35,7 @@ import { ModelStatus } from "./model-status"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { ProviderError } from "./error"
 import { ensureRelay, DEFAULT_PORT as AGENTROUTER_DEFAULT_PORT } from "./agentrouter/manager"
+import { ProviderRemoteModalities } from "./remote-modalities"
 import * as OpencodeCompat from "@/session/llm/opencode-compat"
 
 const OPENAI_HEADER_TIMEOUT_DEFAULT = 300_000
@@ -1933,6 +1934,51 @@ const layer = Layer.effect(
           if (provider.name) partial.name = provider.name
           if (provider.options) partial.options = provider.options
           mergeProvider(providerID, partial)
+        }
+
+        // Endpoints that publish an OpenAI-compatible `GET /models` are the
+        // authoritative source for per-model input modalities. A config-defined
+        // provider only declares what someone typed by hand, so most of its
+        // models stayed text-only in the catalog even when the gateway already
+        // reported image/audio/pdf. Collect the sources here and merge further
+        // below, once the final provider list (and its credentials) is known.
+        const modalitySources: Record<string, { baseURL: string; apiKey?: string; headers: Record<string, string> }> = {}
+        for (const [id, provider] of Object.entries(providers)) {
+          // models.dev-backed providers already ship modalities; the gap is
+          // specific to gateways configured by hand, which bypass that catalog.
+          if (modelsDev[id]) continue
+          // `source` is later overwritten to "api"/"env" when the key comes from
+          // auth.json or the environment, so identify config providers by their
+          // presence in the config instead.
+          if (!cfg.provider?.[id]) continue
+          if (!Object.values(provider.models).some((model) => model.api.npm.includes("@ai-sdk/openai-compatible"))) continue
+          const baseURL = provider.options?.baseURL ?? Object.values(provider.models)[0]?.api.url
+          if (!baseURL || typeof baseURL !== "string") continue
+          const apiKey = provider.key ?? (typeof provider.options?.apiKey === "string" ? provider.options.apiKey : undefined)
+          const headers: Record<string, string> = {}
+          const configured = provider.options?.headers
+          if (isRecord(configured)) {
+            for (const [name, value] of Object.entries(configured)) {
+              if (typeof value === "string") headers[name] = value
+            }
+          }
+          modalitySources[id] = { baseURL, apiKey, headers }
+        }
+
+        if (Object.keys(modalitySources).length > 0) {
+          const discovered = yield* Effect.promise(() =>
+            Promise.all(
+              Object.entries(modalitySources).map(async ([id, source]) => {
+                const models = await ProviderRemoteModalities.fetchRemoteModalities(source)
+                return [id, models] as const
+              }),
+            ),
+          )
+          for (const [id, remote] of discovered) {
+            const provider = providers[ProviderV2.ID.make(id)]
+            if (!provider || remote.size === 0) continue
+            ProviderRemoteModalities.applyRemoteModalities({ models: provider.models, remote })
+          }
         }
 
         const gitlab = ProviderV2.ID.make("gitlab")
