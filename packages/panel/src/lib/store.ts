@@ -25,6 +25,8 @@ export type PanelUser = {
   canOpenSettings?: boolean
   defaultProvider?: string
   defaultModel?: string
+  /** Individual token quota. undefined = no sub-limit (uses only the company pool). */
+  tokenQuota?: number
   accessOverrides: string
   appVersion?: string
   appVersionAt?: string
@@ -54,6 +56,7 @@ export type ProviderDefinition = {
   orgID: string
   providerID: string
   displayName: string
+  scope: "company" | "global"
   kind: ProviderKind
   protocol: ProviderProtocol
   npm?: string
@@ -178,6 +181,12 @@ export type Organization = {
   planType: "trial" | "paid"
   trialEndsAt?: string
   planID?: string
+  /** Shared token pool for every user in the company. undefined = unlimited. */
+  tokenQuota?: number
+  /** Default per-user quota for users without an individual override. */
+  userTokenQuota?: number
+  /** Day of the month (UTC) that starts the billing cycle. */
+  tokenQuotaCycleDay?: number
   createdAt: string
 }
 
@@ -338,6 +347,7 @@ export type UserPatch = Partial<
     | "canOpenSettings"
     | "defaultProvider"
     | "defaultModel"
+    | "tokenQuota"
     | "accessOverrides"
   >
 >
@@ -364,6 +374,9 @@ export type OrgPatch = Partial<
     | "planType"
     | "trialEndsAt"
     | "planID"
+    | "tokenQuota"
+    | "userTokenQuota"
+    | "tokenQuotaCycleDay"
   >
 >
 
@@ -397,6 +410,9 @@ export type Store = {
       trialDays?: number
       trialEndsAt?: string
       planID?: string
+      tokenQuota?: number
+      userTokenQuota?: number
+      tokenQuotaCycleDay?: number
     }): Promise<Organization>
     update(id: string, patch: OrgPatch): Promise<Organization>
     stats(): Promise<TenantStats>
@@ -446,6 +462,7 @@ export type Store = {
       canOpenSettings?: boolean
       defaultProvider?: string
       defaultModel?: string
+      tokenQuota?: number
       accessOverrides?: Record<string, boolean>
     }): Promise<PanelUser>
     update(id: string, patch: UserPatch): Promise<PanelUser | undefined>
@@ -478,12 +495,14 @@ export type Store = {
   }
   providers: {
     list(orgID?: string): Promise<ProviderDefinition[]>
+    listGlobal(): Promise<ProviderDefinition[]>
     findByID(id: string): Promise<ProviderDefinition | undefined>
     findByProviderID(orgID: string, providerID: string): Promise<ProviderDefinition | undefined>
     create(input: {
       orgID: string
       providerID: string
       displayName: string
+      scope?: "company" | "global"
       kind?: ProviderKind
       protocol?: ProviderProtocol
       npm?: string
@@ -524,6 +543,18 @@ export type Store = {
     getOrgKPIs(orgID: string, config?: Partial<ReferenceRatesConfig>): Promise<OrgKPIs>
     getUserModelUsage(userID: string, options?: { days?: number }): Promise<ModelUsageSummary[]>
   }
+  quota: {
+    record(input: {
+      sessionID: string
+      orgID: string
+      userID: string
+      tokens: number
+      cycleStart: string
+    }): Promise<void>
+    getUserUsage(userID: string, cycleStart: string): Promise<number>
+    getOrgUsage(orgID: string, cycleStart: string): Promise<number>
+    getUsageByUser(orgID: string, cycleStart: string): Promise<Record<string, number>>
+  }
   credentials: {
     listByUser(userID: string): Promise<UserProviderCredential[]>
     findByUserAndProvider(userID: string, providerID: string): Promise<UserProviderCredential | undefined>
@@ -561,6 +592,9 @@ function defaultOrg(): Organization {
     trialEndsAt: undefined,
     resellerID: undefined,
     planID: undefined,
+    tokenQuota: undefined,
+    userTokenQuota: undefined,
+    tokenQuotaCycleDay: 1,
     createdAt: new Date().toISOString(),
   }
 }
@@ -598,6 +632,10 @@ function memoryStore(): Store {
   const providers = new Map<string, ProviderDefinition>()
   const providerGrants = new Map<string, ProviderGrant[]>()
   const sessionRecords: SessionAudit[] = []
+  const tokenUsage = new Map<
+    string,
+    { orgID: string; userID: string; tokens: number; cycleStart: string; updatedAt: string }
+  >()
   const credentials = new Map<string, UserProviderCredential>()
   const plans = new Map<string, Plan>()
   const initialOrg = defaultOrg()
@@ -676,6 +714,9 @@ function memoryStore(): Store {
           planType,
           trialEndsAt,
           planID: input.planID,
+          tokenQuota: input.tokenQuota,
+          userTokenQuota: input.userTokenQuota,
+          tokenQuotaCycleDay: input.tokenQuotaCycleDay ?? 1,
           createdAt: new Date().toISOString(),
         }
         orgs.set(newOrg.id, newOrg)
@@ -854,6 +895,7 @@ function memoryStore(): Store {
           canOpenSettings: input.canOpenSettings ?? true,
           defaultProvider: input.defaultProvider,
           defaultModel: input.defaultModel,
+          tokenQuota: input.tokenQuota,
           accessOverrides: JSON.stringify(input.accessOverrides ?? {}),
           createdAt: new Date().toISOString(),
         }
@@ -940,17 +982,29 @@ function memoryStore(): Store {
     },
     providers: {
       async list(orgID) {
+        const visible = [...providers.values()].filter(
+          (provider) => !orgID || provider.orgID === orgID || provider.scope === "global",
+        )
+        const byProviderID = new Map<string, ProviderDefinition>()
+        for (const provider of visible) {
+          const current = byProviderID.get(provider.providerID)
+          if (!current || provider.scope === "company") byProviderID.set(provider.providerID, provider)
+        }
+        return [...byProviderID.values()].sort((left, right) =>
+          left.displayName.localeCompare(right.displayName),
+        )
+      },
+      async listGlobal() {
         return [...providers.values()]
-          .filter((provider) => !orgID || provider.orgID === orgID)
+          .filter((provider) => provider.scope === "global")
           .sort((left, right) => left.displayName.localeCompare(right.displayName))
       },
       async findByID(id) {
         return providers.get(id)
       },
       async findByProviderID(orgID, providerID) {
-        return [...providers.values()].find(
-          (provider) => provider.orgID === orgID && provider.providerID === providerID,
-        )
+        const all = [...providers.values()].filter((provider) => provider.providerID === providerID)
+        return all.find((provider) => provider.orgID === orgID) ?? all.find((provider) => provider.scope === "global")
       },
       async create(input) {
         const now = new Date().toISOString()
@@ -959,6 +1013,7 @@ function memoryStore(): Store {
           orgID: input.orgID,
           providerID: input.providerID,
           displayName: input.displayName,
+          scope: input.scope ?? "company",
           kind: input.kind ?? "builtin",
           protocol: input.protocol ?? "openai",
           npm: input.npm,
@@ -1164,6 +1219,40 @@ function memoryStore(): Store {
         return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
       },
     },
+    quota: {
+      async record(input) {
+        const existing = tokenUsage.get(input.sessionID)
+        tokenUsage.set(input.sessionID, {
+          orgID: input.orgID,
+          userID: input.userID,
+          tokens: Math.max(0, Math.trunc(input.tokens)),
+          cycleStart: existing?.cycleStart ?? input.cycleStart,
+          updatedAt: new Date().toISOString(),
+        })
+      },
+      async getUserUsage(userID, cycleStart) {
+        let total = 0
+        for (const entry of tokenUsage.values()) {
+          if (entry.userID === userID && entry.cycleStart === cycleStart) total += entry.tokens
+        }
+        return total
+      },
+      async getOrgUsage(orgID, cycleStart) {
+        let total = 0
+        for (const entry of tokenUsage.values()) {
+          if (entry.orgID === orgID && entry.cycleStart === cycleStart) total += entry.tokens
+        }
+        return total
+      },
+      async getUsageByUser(orgID, cycleStart) {
+        const usage: Record<string, number> = {}
+        for (const entry of tokenUsage.values()) {
+          if (entry.orgID !== orgID || entry.cycleStart !== cycleStart) continue
+          usage[entry.userID] = (usage[entry.userID] ?? 0) + entry.tokens
+        }
+        return usage
+      },
+    },
     credentials: {
       async listByUser(userID) {
         return [...credentials.values()]
@@ -1231,6 +1320,7 @@ type UserRow = {
   can_open_settings?: number | null
   default_provider?: string | null
   default_model?: string | null
+  token_quota?: number | null
   access_overrides?: string | null
   app_version?: string | null
   app_version_at?: string | null
@@ -1259,6 +1349,9 @@ type OrgRow = {
   plan_type?: string | null
   trial_ends_at?: string | null
   plan_id?: string | null
+  token_quota?: number | null
+  user_token_quota?: number | null
+  token_quota_cycle_day?: number | null
   created_at: string
 }
 
@@ -1305,6 +1398,7 @@ type ProviderRow = {
   org_id: string
   provider_id: string
   display_name: string
+  scope?: string | null
   kind: string
   protocol: string | null
   npm: string | null
@@ -1390,6 +1484,7 @@ function toUser(row: UserRow): PanelUser {
         : row.can_open_settings !== 0,
     defaultProvider: row.default_provider ?? undefined,
     defaultModel: row.default_model ?? undefined,
+    tokenQuota: row.token_quota ?? undefined,
     accessOverrides: row.access_overrides ?? "{}",
     appVersion: row.app_version ?? undefined,
     appVersionAt: row.app_version_at ?? undefined,
@@ -1475,6 +1570,9 @@ function toOrg(row: OrgRow): Organization {
     planType: row.plan_type === "paid" ? "paid" : "trial",
     trialEndsAt: row.trial_ends_at ?? undefined,
     planID: row.plan_id ?? undefined,
+    tokenQuota: row.token_quota ?? undefined,
+    userTokenQuota: row.user_token_quota ?? undefined,
+    tokenQuotaCycleDay: row.token_quota_cycle_day ?? 1,
     createdAt: row.created_at,
   }
 }
@@ -1517,6 +1615,7 @@ function toProvider(row: ProviderRow): ProviderDefinition {
     orgID: row.org_id,
     providerID: row.provider_id,
     displayName: row.display_name,
+    scope: row.scope === "global" ? "global" : "company",
     kind: row.kind === "custom" ? "custom" : row.kind === "proxy" ? "proxy" : "builtin",
     protocol: (row.protocol === "anthropic" ? "anthropic" : "openai") as ProviderProtocol,
     npm: row.npm ?? undefined,
@@ -1671,12 +1770,15 @@ export function d1Store(db: D1Database): Store {
           planType,
           trialEndsAt,
           planID: input.planID,
+          tokenQuota: input.tokenQuota,
+          userTokenQuota: input.userTokenQuota,
+          tokenQuotaCycleDay: input.tokenQuotaCycleDay ?? 1,
           createdAt: new Date().toISOString(),
         }
         await db
           .prepare(
-            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, logo_url, welcome_message, brand_color, sso_mode, offline_grace_hours, session_max_age_hours, reseller_id, plan_type, trial_ends_at, plan_id, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, logo_url, welcome_message, brand_color, sso_mode, offline_grace_hours, session_max_age_hours, reseller_id, plan_type, trial_ends_at, plan_id, token_quota, user_token_quota, token_quota_cycle_day, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             newOrg.id,
@@ -1695,6 +1797,9 @@ export function d1Store(db: D1Database): Store {
             newOrg.planType,
             newOrg.trialEndsAt ?? null,
             newOrg.planID ?? null,
+            newOrg.tokenQuota ?? null,
+            newOrg.userTokenQuota ?? null,
+            newOrg.tokenQuotaCycleDay,
             newOrg.createdAt,
           )
           .run()
@@ -1705,7 +1810,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ?, reseller_id = ?, plan_type = ?, trial_ends_at = ?, plan_id = ? WHERE id = ?`,
+            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ?, reseller_id = ?, plan_type = ?, trial_ends_at = ?, plan_id = ?, token_quota = ?, user_token_quota = ?, token_quota_cycle_day = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -1727,6 +1832,9 @@ export function d1Store(db: D1Database): Store {
             next.planType,
             next.trialEndsAt ?? null,
             next.planID ?? null,
+            next.tokenQuota ?? null,
+            next.userTokenQuota ?? null,
+            next.tokenQuotaCycleDay ?? 1,
             id,
           )
           .run()
@@ -1991,13 +2099,14 @@ export function d1Store(db: D1Database): Store {
           canOpenSettings: input.canOpenSettings ?? true,
           defaultProvider: input.defaultProvider,
           defaultModel: input.defaultModel,
+          tokenQuota: input.tokenQuota,
           accessOverrides: JSON.stringify(input.accessOverrides ?? {}),
           createdAt: new Date().toISOString(),
         }
         await db
           .prepare(
-            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, is_reseller, reseller_id, can_use_agentui, can_use_routines, can_change_password, audit_exempt, can_open_settings, default_provider, default_model, access_overrides, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, is_reseller, reseller_id, can_use_agentui, can_use_routines, can_change_password, audit_exempt, can_open_settings, default_provider, default_model, token_quota, access_overrides, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             user.id,
@@ -2018,6 +2127,7 @@ export function d1Store(db: D1Database): Store {
             user.canOpenSettings === undefined ? null : user.canOpenSettings ? 1 : 0,
             user.defaultProvider ?? null,
             user.defaultModel ?? null,
+            user.tokenQuota ?? null,
             user.accessOverrides,
             user.createdAt,
           )
@@ -2030,7 +2140,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, audit_exempt = ?, can_open_settings = ?, default_provider = ?, default_model = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ? WHERE id = ?`,
+            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, audit_exempt = ?, can_open_settings = ?, default_provider = ?, default_model = ?, token_quota = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -2047,6 +2157,7 @@ export function d1Store(db: D1Database): Store {
             next.canOpenSettings === undefined ? null : next.canOpenSettings ? 1 : 0,
             next.defaultProvider ?? null,
             next.defaultModel ?? null,
+            next.tokenQuota ?? null,
             next.accessOverrides ?? "{}",
             next.appVersion ?? null,
             next.appVersionAt ?? null,
@@ -2193,9 +2304,26 @@ export function d1Store(db: D1Database): Store {
     providers: {
       async list(orgID) {
         const query = orgID
-          ? db.prepare("SELECT * FROM provider_definition WHERE org_id = ? ORDER BY display_name ASC").bind(orgID)
+          ? db
+              .prepare(
+                "SELECT * FROM provider_definition WHERE org_id = ? OR scope = 'global' ORDER BY display_name ASC",
+              )
+              .bind(orgID)
           : db.prepare("SELECT * FROM provider_definition ORDER BY display_name ASC")
         const rows = await query.all<ProviderRow>()
+        const byProviderID = new Map<string, ProviderDefinition>()
+        for (const provider of rows.results.map(toProvider)) {
+          const current = byProviderID.get(provider.providerID)
+          if (!current || provider.scope === "company") byProviderID.set(provider.providerID, provider)
+        }
+        return [...byProviderID.values()].sort((left, right) =>
+          left.displayName.localeCompare(right.displayName),
+        )
+      },
+      async listGlobal() {
+        const rows = await db
+          .prepare("SELECT * FROM provider_definition WHERE scope = 'global' ORDER BY display_name ASC")
+          .all<ProviderRow>()
         return rows.results.map(toProvider)
       },
       async findByID(id) {
@@ -2204,8 +2332,10 @@ export function d1Store(db: D1Database): Store {
       },
       async findByProviderID(orgID, providerID) {
         const row = await db
-          .prepare("SELECT * FROM provider_definition WHERE org_id = ? AND provider_id = ?")
-          .bind(orgID, providerID)
+          .prepare(
+            "SELECT * FROM provider_definition WHERE provider_id = ? AND (org_id = ? OR scope = 'global') ORDER BY CASE WHEN scope = 'global' THEN 1 ELSE 0 END LIMIT 1",
+          )
+          .bind(providerID, orgID)
           .first<ProviderRow>()
         return row ? toProvider(row) : undefined
       },
@@ -2216,6 +2346,7 @@ export function d1Store(db: D1Database): Store {
           orgID: input.orgID,
           providerID: input.providerID,
           displayName: input.displayName,
+          scope: input.scope ?? "company",
           kind: input.kind ?? "builtin",
           protocol: input.protocol ?? "openai",
           npm: input.npm,
@@ -2231,14 +2362,15 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, kind, protocol, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, scope, kind, protocol, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             provider.id,
             provider.orgID,
             provider.providerID,
             provider.displayName,
+            provider.scope,
             provider.kind,
             provider.protocol,
             provider.npm ?? null,
@@ -2284,12 +2416,16 @@ export function d1Store(db: D1Database): Store {
         return next
       },
       async remove(id) {
-        const row = await db.prepare("SELECT org_id, provider_id FROM provider_definition WHERE id = ?").bind(id).first<{
-          org_id: string
-          provider_id: string
-        }>()
+        const row = await db
+          .prepare("SELECT org_id, provider_id, scope FROM provider_definition WHERE id = ?")
+          .bind(id)
+          .first<{ org_id: string; provider_id: string; scope: string }>()
         await db.prepare("DELETE FROM provider_definition WHERE id = ?").bind(id).run()
         if (!row) return
+        if (row.scope === "global") {
+          await db.prepare("DELETE FROM provider_grant WHERE provider_id = ?").bind(row.provider_id).run()
+          return
+        }
         await db
           .prepare(
             `DELETE FROM provider_grant WHERE provider_id = ? AND (
@@ -2572,6 +2708,57 @@ export function d1Store(db: D1Database): Store {
           }
         }
         return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
+      },
+    },
+    quota: {
+      async record(input) {
+        const now = new Date().toISOString()
+        await db
+          .prepare(
+            `INSERT INTO token_usage_ledger (session_id, org_id, user_id, tokens, cycle_start, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?)
+             ON CONFLICT(session_id) DO UPDATE SET
+               tokens = excluded.tokens,
+               updated_at = excluded.updated_at`,
+          )
+          .bind(
+            input.sessionID,
+            input.orgID,
+            input.userID,
+            Math.max(0, Math.trunc(input.tokens)),
+            input.cycleStart,
+            now,
+          )
+          .run()
+      },
+      async getUserUsage(userID, cycleStart) {
+        const row = await db
+          .prepare(
+            "SELECT COALESCE(SUM(tokens), 0) AS total FROM token_usage_ledger WHERE user_id = ? AND cycle_start = ?",
+          )
+          .bind(userID, cycleStart)
+          .first<{ total: number }>()
+        return Number(row?.total ?? 0)
+      },
+      async getOrgUsage(orgID, cycleStart) {
+        const row = await db
+          .prepare(
+            "SELECT COALESCE(SUM(tokens), 0) AS total FROM token_usage_ledger WHERE org_id = ? AND cycle_start = ?",
+          )
+          .bind(orgID, cycleStart)
+          .first<{ total: number }>()
+        return Number(row?.total ?? 0)
+      },
+      async getUsageByUser(orgID, cycleStart) {
+        const rows = await db
+          .prepare(
+            "SELECT user_id, COALESCE(SUM(tokens), 0) AS total FROM token_usage_ledger WHERE org_id = ? AND cycle_start = ? GROUP BY user_id",
+          )
+          .bind(orgID, cycleStart)
+          .all<{ user_id: string; total: number }>()
+        const usage: Record<string, number> = {}
+        for (const row of rows.results) usage[row.user_id] = Number(row.total ?? 0)
+        return usage
       },
     },
     credentials: {

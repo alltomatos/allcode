@@ -99,6 +99,7 @@ export const ReminderTool = Tool.define(
                   enabled: r.enabled,
                   lastStatus: r.lastStatus,
                   lastRunAt: r.lastRunAt ? new Date(r.lastRunAt).toISOString() : undefined,
+                  metadata: r.metadata,
                 }
               })
 

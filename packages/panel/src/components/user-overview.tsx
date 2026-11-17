@@ -1,14 +1,18 @@
 import { For, Show } from "solid-js"
 import { Badge, Card, EmptyState, StatGrid } from "~/components/ui"
 import { SessionAuditCard, formatDuration, formatTokens, modelLabel, providerLabel } from "~/components/session-audit"
+import { UserQuotaCard } from "~/components/user-quota"
 import { useI18n } from "~/i18n"
 import type { UserDetail } from "~/lib/actions"
 import { actionKey, formatDate, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
+import type { QuotaContext } from "~/lib/quota-service"
 import type { AuditEvent, ModelUsageSummary, SessionAudit, UserKPIs } from "~/lib/store"
 
 export function UserOverview(props: {
   user: UserDetail
   kpis: UserKPIs | undefined
+  quota: QuotaContext | undefined
+  canManageQuota: boolean
   sessions: SessionAudit[] | undefined
   modelUsage: ModelUsageSummary[] | undefined
   history: AuditEvent[] | undefined
@@ -34,6 +38,8 @@ export function UserOverview(props: {
           />
         )}
       </Show>
+
+      <UserQuotaCard userID={props.user.id} quota={props.quota} canManage={props.canManageQuota} />
 
       <div class="grid gap-6 lg:grid-cols-3">
         <Card class="lg:col-span-2">

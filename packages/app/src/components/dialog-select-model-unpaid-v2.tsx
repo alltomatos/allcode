@@ -9,6 +9,7 @@ import { createMemo, onCleanup, onMount, type Component, For, Show } from "solid
 import { useLocal } from "@/context/local"
 import { useProviders } from "@/hooks/use-providers"
 import { decode64 } from "@/utils/base64"
+import { isFreeModel } from "@/utils/model-free"
 import { useLanguage } from "@/context/language"
 import { ModelTooltip } from "./model-tooltip"
 import { OMNIROUTE_PROVIDER_ID } from "./dialog-connect-omniroute"
@@ -31,7 +32,7 @@ export const DialogSelectModelUnpaidV2: Component<{ model?: ModelState }> = (pro
     return c ? `${c.provider.id}:${c.id}` : undefined
   })
   const isFree = (item: ReturnType<ModelState["list"]>[number]) =>
-    item.provider.id === "opencode" && (!item.cost || item.cost.input === 0)
+    isFreeModel(item.provider.id, item.cost)
   const freeModels = createMemo(() => model.list().filter(isFree))
 
   // Omniroute is a fork-specific custom provider, not something the server's

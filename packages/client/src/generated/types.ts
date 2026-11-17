@@ -45,6 +45,18 @@ export type ConflictError = {
 export const isConflictError = (value: unknown): value is ConflictError =>
   typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "ConflictError"
 
+export type QuotaExceededError = {
+  readonly _tag: "QuotaExceededError"
+  readonly code: "QUOTA_EXCEEDED"
+  readonly scope: "user" | "company"
+  readonly message: string
+  readonly limit: number
+  readonly used: number
+  readonly remaining: number
+}
+export const isQuotaExceededError = (value: unknown): value is QuotaExceededError =>
+  typeof value === "object" && value !== null && "_tag" in value && value["_tag"] === "QuotaExceededError"
+
 export type ServiceUnavailableError = {
   readonly _tag: "ServiceUnavailableError"
   readonly message: string
@@ -109,7 +121,11 @@ export type ProjectCopyError = {
 export const isProjectCopyError = (value: unknown): value is ProjectCopyError =>
   typeof value === "object" && value !== null && "name" in value && value["name"] === "ProjectCopyError"
 
-export type HealthGetOutput = { readonly healthy: true; readonly version?: string | undefined }
+export type HealthGetOutput = {
+  readonly healthy: true
+  readonly version?: string | undefined
+  readonly providerParity?: boolean | undefined
+}
 
 export type ServerSystemUpdateInput = { readonly confirm: { readonly confirm: boolean }["confirm"] }
 

@@ -90,8 +90,12 @@ services:
       -c checkpoint_completion_target=0.9
       -c random_page_cost=1.1
       -c effective_io_concurrency=200
+      -c ssl=on
+      -c ssl_cert_file=/etc/postgresql/certs/server.crt
+      -c ssl_key_file=/etc/postgresql/certs/server.key
     volumes:
       - pg_data:/var/lib/postgresql/data
+      - /opt/allcode-data/postgres/certs:/etc/postgresql/certs:ro
       - /opt/allcode-data/postgres/01-init-audit-schema.sql:/docker-entrypoint-initdb.d/01-init-audit-schema.sql:ro
     networks:
       - data-tier

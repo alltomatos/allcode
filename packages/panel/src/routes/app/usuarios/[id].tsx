@@ -14,6 +14,7 @@ import {
   getUser,
   getUserKPIs,
   getUserModelUsage,
+  getUserQuota,
   getUserSessions,
   listAudit,
   listGroups,
@@ -40,6 +41,7 @@ export default function UserDetailPage() {
   const actor = createAsync(() => requireMe())
   const user = createAsync(() => getUser(params.id!))
   const kpis = createAsync(() => getUserKPIs(params.id!))
+  const quota = createAsync(() => getUserQuota(params.id!))
   const sessions = createAsync(() => getUserSessions(params.id!))
   const history = createAsync(() => listAudit(params.id!))
   const groups = createAsync(() => listGroups())
@@ -341,6 +343,8 @@ export default function UserDetailPage() {
                 <UserOverview
                   user={current()}
                   kpis={kpis()}
+                  quota={quota() ?? undefined}
+                  canManageQuota={canManage()}
                   sessions={sessions()}
                   modelUsage={modelUsage()}
                   history={history()}

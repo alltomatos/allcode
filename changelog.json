@@ -1,6 +1,28 @@
 {
   "releases": [
     {
+      "tag": "v1.27.8",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Respostas longas não são mais cortadas em 60 segundos",
+              "description": "Ao falar com gateways compatíveis com OpenAI, respostas que passavam de um minuto eram interrompidas no meio do stream e o app mostrava apenas 'upstream stream failed'. O limite fixo de 60 segundos foi removido do cliente e o stream agora só é encerrado quando o provedor fica tempo demais sem enviar dados."
+            },
+            {
+              "title": "Retry entende interrupção no meio do stream",
+              "description": "Erros de stream interrompido enviados pelo gateway passam a ser classificados como transitórios, com código e sinal de retry, em vez de virarem um erro desconhecido sem possibilidade de nova tentativa."
+            },
+            {
+              "title": "Nova tentativa segura quando já existe resposta parcial",
+              "description": "Quando o stream cai depois de já ter produzido texto, raciocínio ou chamada de ferramenta, o app não reinicia a geração automaticamente, evitando texto duplicado e ferramentas executadas duas vezes. A falha aparece como erro retentável e a nova tentativa fica a um clique."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.7",
       "highlights": [
         {

@@ -2,9 +2,10 @@ import { A, createAsync, revalidate, useAction, useParams } from "@solidjs/route
 import { For, Show, createSignal } from "solid-js"
 import { Badge, Button, Card, EmptyState, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { getTenant, setTenantStatus, updateTenantLimits, extendTenantTrial, setTenantPlanType, listPlans, setTenantPlan } from "~/lib/actions"
+import { getTenant, setTenantStatus, updateTenantLimits, updateTenantTokenQuota, extendTenantTrial, setTenantPlanType, listPlans, setTenantPlan } from "~/lib/actions"
 import { getTrialDaysRemaining, getEffectiveOrgStatus, computePlanMonthlyCents } from "~/lib/store"
 import { formatDate, formatBRL, planErrorMessage, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
+import { formatTokenAmount } from "~/lib/quota"
 
 export default function TenantDetailPage() {
   const i18n = useI18n()
@@ -13,12 +14,14 @@ export default function TenantDetailPage() {
   const plans = createAsync(() => listPlans(false))
   const changeStatus = useAction(setTenantStatus)
   const changeLimits = useAction(updateTenantLimits)
+  const changeTokenQuota = useAction(updateTenantTokenQuota)
   const extendTrialAction = useAction(extendTenantTrial)
   const changePlanTypeAction = useAction(setTenantPlanType)
   const changePlanAction = useAction(setTenantPlan)
   const [error, setError] = createSignal<string | null>(null)
   const [success, setSuccess] = createSignal<string | null>(null)
   const [newLimit, setNewLimit] = createSignal("")
+  const [newTokenQuota, setNewTokenQuota] = createSignal("")
   const [extending, setExtending] = createSignal(false)
 
   async function onAssignPlan(planID: string) {
@@ -63,6 +66,24 @@ export default function TenantDetailPage() {
       revalidate("panel.admin.tenant")
       revalidate("panel.admin.tenants")
     }
+  }
+
+  async function onUpdateTokenQuota(e: SubmitEvent) {
+    e.preventDefault()
+    const org = data()?.org
+    if (!org) return
+    setError(null)
+    setSuccess(null)
+    const res = await changeTokenQuota(org.id, { quota: newTokenQuota() })
+    if (res?.error) {
+      setError(i18n.t(res.error))
+      return
+    }
+    setNewTokenQuota("")
+    setSuccess("Pool de tokens da empresa atualizado.")
+    revalidate("panel.admin.tenant")
+    revalidate("panel.admin.tenants")
+    revalidate("panel.quota.overview")
   }
 
   async function onExtendTrial(days: number) {
@@ -277,6 +298,20 @@ export default function TenantDetailPage() {
                         type="number"
                         value={newLimit() || String(current().org.maxUsers)}
                         onInput={(e) => setNewLimit(e.currentTarget.value)}
+                      />
+                      <Button type="submit" variant="secondary" size="sm" class="w-full">
+                        {i18n.t("common.save")}
+                      </Button>
+                    </form>
+
+                    <form onSubmit={onUpdateTokenQuota} class="border-t border-slate-100 pt-4 space-y-2">
+                      <Field
+                        label="Pool de tokens da empresa (superadmin)"
+                        name="tokenQuota"
+                        value={newTokenQuota() || (current().org.tokenQuota ? formatTokenAmount(current().org.tokenQuota) : "")}
+                        placeholder="50M"
+                        hint="Teto agregado do pool compartilhado. Ex.: 50M. Vazio = ilimitado."
+                        onInput={(e) => setNewTokenQuota(e.currentTarget.value)}
                       />
                       <Button type="submit" variant="secondary" size="sm" class="w-full">
                         {i18n.t("common.save")}

@@ -1,8 +1,11 @@
 import { Effect, Schema } from "effect"
+import { Schedule } from "@allcode/core/schedule"
 import * as Tool from "./tool"
 import DESCRIPTION from "./whatsapp.txt"
 import { WhatsAppNative } from "@/whatsapp-native"
 import { agentForSession, chatForSession } from "@/whatsapp-native/bindings"
+import { deliveryJid, isWhatsAppJid } from "@/whatsapp-native/contacts"
+import { meetingButtons, parseMeetingDate, type MeetingMetadata } from "@/whatsapp-native/meetings"
 
 const QuickReply = Schema.Struct({
   id: Schema.String.annotate({ description: "Identificador devolvido quando o botão é tocado." }),
@@ -46,6 +49,8 @@ const Actions = [
   "send_carousel",
   "read_messages",
   "list_chats",
+  "list_contacts",
+  "request_meeting",
   "list_groups",
   "group_info",
   "group_create",
@@ -125,7 +130,18 @@ export const Parameters = Schema.Struct({
     description: "Cartões do carrossel (experimental, até 10).",
   }),
   limit: Schema.optional(Schema.Number).annotate({
-    description: "Limite de itens em list_chats/read_messages/list_groups.",
+    description: "Limite de itens em list_chats/list_contacts/read_messages/list_groups.",
+  }),
+  query: Schema.optional(Schema.String).annotate({
+    description: "Em list_contacts: filtra a agenda por nome, usuário ou telefone.",
+  }),
+  contact: Schema.optional(Schema.String).annotate({
+    description:
+      "Em request_meeting: nome do contato salvo na agenda do WhatsApp ou o telefone completo (DDI/DDD). O número precisa estar salvo na agenda ou ser um telefone válido.",
+  }),
+  targetDate: Schema.optional(Schema.String).annotate({
+    description:
+      "Em request_meeting: data/hora da reunião em ISO-8601 ou 'YYYY-MM-DD HH:mm'. Ausente = horário a combinar.",
   }),
   beforeTimestampMs: Schema.optional(Schema.Number).annotate({
     description: "Em read_messages: retorna mensagens anteriores a este timestamp (ms).",
@@ -152,6 +168,7 @@ export const WhatsAppTool = Tool.define(
   "whatsapp",
   Effect.gen(function* () {
     const native = yield* WhatsAppNative.Service
+    const schedules = yield* Schedule.Service
 
     return {
       description: DESCRIPTION,
@@ -168,8 +185,12 @@ export const WhatsAppTool = Tool.define(
           const agentId = params.agentId || agentForSession(ctx.sessionID)
           // Em sessão de canal o destino é sempre a conversa atual; `to` só é
           // usado quando a sessão não está presa a um chat. Evita que o modelo
-          // invente um JID e mande a mensagem/mídia para o chat errado.
-          const target = chatForSession(ctx.sessionID) || params.to?.trim()
+          // invente um JID e mande a mensagem/mídia para o chat errado. O
+          // sandbox usa o chatKey "sandbox", que não é JID: nesse caso `to`
+          // continua valendo.
+          const sessionChat = chatForSession(ctx.sessionID)
+          const boundChat = isWhatsAppJid(sessionChat) ? sessionChat : undefined
+          const target = boundChat || params.to?.trim()
           const quote =
             params.quoteId && params.quoteId.trim()
               ? {
@@ -353,6 +374,141 @@ export const WhatsAppTool = Tool.define(
                   .listChats({ agentId, limit: params.limit })
                   .pipe(Effect.catch((err) => Effect.succeed({ error: err.message }))),
               )
+
+            case "list_contacts":
+              return done(
+                "Contatos salvos no WhatsApp",
+                yield* native
+                  .listContacts({ agentId, query: params.query ?? params.contact, limit: params.limit ?? 50 })
+                  .pipe(Effect.catch((err) => Effect.succeed({ error: err.message }))),
+              )
+
+            case "request_meeting": {
+              if (!params.contact || !params.text) return missing("contact/text")
+
+              const raw = params.contact.trim()
+              const digits = raw.replace(/\D/g, "")
+              const looksLikePhone = digits.length >= 10 && digits.length <= 15 && /^\+?[\d\s()\-]+$/.test(raw)
+
+              let to: string
+              let contactName: string | undefined
+
+              if (looksLikePhone) {
+                const matches = yield* native
+                  .listContacts({ agentId, query: digits, limit: 5 })
+                  .pipe(Effect.catch(() => Effect.succeed([])))
+                const exact = matches.find((match) => (match.phone ?? "").replace(/\D/g, "") === digits)
+                to = exact ? deliveryJid(exact) : `${digits}@s.whatsapp.net`
+                contactName = exact?.name
+              } else {
+                const matches = yield* native
+                  .listContacts({ agentId, query: raw, limit: 10 })
+                  .pipe(Effect.catch(() => Effect.succeed([])))
+                if (matches.length === 0) {
+                  return done(
+                    "Contato não encontrado",
+                    `Não encontrei "${raw}" na agenda do WhatsApp. Use list_contacts para ver os contatos salvos ou informe o número completo com DDI/DDD.`,
+                  )
+                }
+                if (matches.length > 1) {
+                  return done(
+                    "Vários contatos encontrados",
+                    `${JSON.stringify(matches.map((match) => ({ nome: match.name, telefone: match.phone })), null, 2)}\n\nInforme o telefone exato para eu enviar o convite.`,
+                  )
+                }
+                to = deliveryJid(matches[0])
+                contactName = matches[0].name
+              }
+
+              let targetTimestamp: number | undefined
+              if (params.targetDate) {
+                targetTimestamp = parseMeetingDate(params.targetDate)
+                if (!targetTimestamp) {
+                  return done(
+                    "Data inválida",
+                    `Não consegui interpretar "${params.targetDate}". Use ISO-8601 (ex.: 2026-11-12T15:00:00-03:00) ou 'YYYY-MM-DD HH:mm'.`,
+                  )
+                }
+                if (targetTimestamp <= Date.now()) {
+                  return done(
+                    "Data no passado",
+                    `A data informada (${new Date(targetTimestamp).toISOString()}) já passou. Informe uma data futura.`,
+                  )
+                }
+              }
+
+              const meetingTitle = params.title?.trim() || `Reunião com ${contactName ?? to}`
+              const meeting: MeetingMetadata = {
+                contactJid: to,
+                contactName,
+                title: meetingTitle,
+                status: "pending",
+                requesterChat: boundChat,
+                requesterAgentId: agentId,
+              }
+              const baseAction: Schedule.ReminderAction = {
+                kind: "reminder",
+                title: meetingTitle,
+                message: params.text,
+                channels: boundChat ? ["desktop", "whatsapp"] : ["desktop"],
+                targetSessionId: ctx.sessionID,
+                targetChat: boundChat,
+                agentId,
+              }
+              const created = yield* schedules
+                .create({
+                  name: `Reunião: ${meetingTitle}`,
+                  description: params.text,
+                  trigger: targetTimestamp ? { kind: "once", timestamp: targetTimestamp } : { kind: "manual" },
+                  action: baseAction,
+                  enabled: Boolean(targetTimestamp),
+                  metadata: { meeting },
+                })
+                .pipe(Effect.catch(() => Effect.succeed(undefined)))
+              if (!created) {
+                return done("Falha ao registrar reunião", "Não consegui registrar a reunião na agenda.")
+              }
+
+              yield* schedules
+                .update(created.id, {
+                  name: created.name,
+                  description: created.description,
+                  trigger: created.trigger,
+                  action: { ...baseAction, reminderId: created.id },
+                  workspace: created.workspace,
+                  enabled: created.enabled,
+                  metadata: created.metadata,
+                })
+                .pipe(Effect.catch(() => Effect.succeed(undefined)))
+
+              const sent = yield* native
+                .sendButtons({
+                  agentId,
+                  to,
+                  title: "Confirmação de reunião",
+                  body: params.text,
+                  footer: "Toque em um botão para responder.",
+                  buttons: meetingButtons(created.id),
+                })
+                .pipe(Effect.catch((err) => Effect.succeed({ error: err.message })))
+
+              if ("error" in sent) {
+                yield* schedules.remove(created.id).pipe(Effect.catchCause(() => Effect.void))
+                return done(
+                  "Falha ao enviar convite",
+                  `Não consegui enviar o convite para ${contactName ?? to}: ${sent.error}`,
+                )
+              }
+
+              return done("Convite de reunião enviado", {
+                contato: contactName ?? to,
+                para: to,
+                reuniao: meetingTitle,
+                quando: targetTimestamp ? new Date(targetTimestamp).toISOString() : "a combinar",
+                status: "aguardando confirmação",
+                registroAgenda: created.id,
+              })
+            }
 
             case "list_groups":
               return done(

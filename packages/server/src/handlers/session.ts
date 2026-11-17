@@ -1,5 +1,8 @@
 import { SessionV2 } from "@allcode/core/session"
+import { checkTenantQuota } from "@allcode/core/quota-gate"
+import { QuotaExceededError } from "@allcode/protocol/errors"
 import { DateTime, Effect, Stream } from "effect"
+import { HttpServerRequest } from "effect/unstable/http"
 import { HttpApiBuilder, HttpApiSchema } from "effect/unstable/httpapi"
 import { Api } from "../api"
 import { SessionsCursor } from "@allcode/protocol/groups/session"
@@ -139,6 +142,22 @@ export const SessionHandler = HttpApiBuilder.group(Api, "server.session", (handl
       .handle(
         "session.prompt",
         Effect.fn(function* (ctx) {
+          const request = yield* HttpServerRequest.HttpServerRequest
+          const decision = yield* checkTenantQuota({
+            panelUrl: request.headers["x-allcode-panel-url"],
+            userID: request.headers["x-allcode-user-id"],
+            orgID: request.headers["x-allcode-org-id"],
+          })
+          if (decision && !decision.allowed) {
+            return yield* new QuotaExceededError({
+              code: "QUOTA_EXCEEDED",
+              scope: decision.scope,
+              message: decision.message,
+              limit: decision.limit,
+              used: decision.used,
+              remaining: decision.remaining,
+            })
+          }
           return {
             data: yield* session
               .prompt({

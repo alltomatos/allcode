@@ -120,6 +120,16 @@ describe("contrato estrito C1-C2 (modelos e flags)", () => {
     expect(projectV1(info)).toEqual(expectFromCatalog("opencode-go", models))
   })
 
+  test("modelo gratuito desabilitado no catálogo não é propagado", () => {
+    const item = provider("opencode-go")
+    const info = Provider.fromCatalog(item, [
+      model("opencode-go", "beam-free", { enabled: false, input: 0 }),
+      model("opencode-go", "longcat-2.5-free", { enabled: true, input: 0 }),
+    ])
+
+    expect(Object.keys(info.models)).toEqual(["longcat-2.5-free"])
+  })
+
   test("custo, limite e capabilities são preservados", () => {
     const item = provider("opencode")
     const models = [model("opencode", "glm-5.3-flash-free", { enabled: true, input: 0, output: 0 })]

@@ -86,6 +86,13 @@ export default function NewUserPage() {
               <option value="admin">{i18n.t("users.role.admin")}</option>
             </Select>
 
+            <Field
+              label={i18n.t("quota.user.limit")}
+              name="tokenQuota"
+              placeholder={i18n.t("quota.user.placeholder")}
+              hint={i18n.t("quota.company.limitHint")}
+            />
+
             <div class="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-3">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">
                 {i18n.t("user.permissions.title")}

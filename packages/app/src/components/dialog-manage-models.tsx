@@ -10,6 +10,7 @@ import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
 import { Switch as SwitchV2 } from "@allcode/ui/v2/switch-v2"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { Tag } from "@allcode/ui/v2/badge-v2"
 import { useFilteredList } from "@allcode/ui/hooks"
 import { For, Show, type Component } from "solid-js"
 import { useLocal } from "@/context/local"
@@ -18,6 +19,7 @@ import { useLanguage } from "@/context/language"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { DialogConnectProvider } from "./dialog-connect-provider"
 import { decode64 } from "@/utils/base64"
+import { isFreeModel } from "@/utils/model-free"
 import { SettingsListV2 } from "./settings-v2/parts/list"
 import { SettingsRowV2 } from "./settings-v2/parts/row"
 import "./settings-v2/settings-v2.css"
@@ -100,7 +102,12 @@ export const DialogManageModels: Component = () => {
       >
         {(i) => (
           <div class="w-full flex items-center justify-between gap-x-3">
-            <span>{i.name}</span>
+            <span class="flex min-w-0 items-center gap-2">
+              <span class="truncate">{i.name}</span>
+              <Show when={isFreeModel(i.provider.id, i.cost)}>
+                <Tag>{language.t("model.tag.free")}</Tag>
+              </Show>
+            </span>
             <div onClick={(e) => e.stopPropagation()}>
               <Switch
                 checked={!!local.model.visible({ modelID: i.id, providerID: i.provider.id })}
@@ -262,7 +269,17 @@ export const DialogManageModelsV2: Component = () => {
                       <SettingsListV2>
                         <For each={group.items}>
                           {(item) => (
-                            <SettingsRowV2 title={item.name} description="">
+                            <SettingsRowV2
+                              title={
+                                <span class="flex min-w-0 items-center gap-2">
+                                  <span class="truncate">{item.name}</span>
+                                  <Show when={isFreeModel(item.provider.id, item.cost)}>
+                                    <Tag>{language.t("model.tag.free")}</Tag>
+                                  </Show>
+                                </span>
+                              }
+                              description=""
+                            >
                               <div>
                                 <SwitchV2
                                   checked={local.model.visible({ modelID: item.id, providerID: item.provider.id })}

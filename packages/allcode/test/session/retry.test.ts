@@ -4,10 +4,11 @@ import { SessionV1 } from "@allcode/core/v1/session"
 import type { NamedError } from "@allcode/core/util/error"
 import { APICallError } from "ai"
 import { setTimeout as sleep } from "node:timers/promises"
-import { Effect, Schedule, Schema } from "effect"
+import { Effect, Exit, Cause, Schedule, Schema } from "effect"
 import { CrossSpawnSpawner } from "@allcode/core/cross-spawn-spawner"
 import { SessionRetry } from "../../src/session/retry"
 import { MessageV2 } from "../../src/session/message-v2"
+import { LLMAISDK } from "../../src/session/llm/ai-sdk"
 import { ProviderError } from "../../src/provider/error"
 import { SessionID } from "../../src/session/schema"
 import { SessionStatus } from "../../src/session/status"
@@ -146,6 +147,28 @@ describe("session.retry.delay", () => {
       expect(attempts).toStrictEqual([1, 2, 3, 4, 5])
     }),
   )
+
+  it.instance("policy guard vetoes retries after partial output", () =>
+    Effect.gen(function* () {
+      const attempts: number[] = []
+      const error = apiError({ "retry-after-ms": "0" })
+      const step = yield* Schedule.toStepWithMetadata(
+        SessionRetry.policy({
+          provider: "test",
+          parse: Schema.decodeUnknownSync(SessionV1.APIError.Schema),
+          guard: () => false,
+          set: (info) =>
+            Effect.sync(() => {
+              attempts.push(info.attempt)
+            }),
+        }),
+      )
+
+      yield* Effect.ignore(step(error))
+
+      expect(attempts).toStrictEqual([])
+    }),
+  )
 })
 
 describe("session.retry.retryable", () => {
@@ -166,6 +189,35 @@ describe("session.retry.retryable", () => {
 
   test("does not retry unknown json messages", () => {
     const error = wrap(JSON.stringify({ error: { message: "no_kv_space" } }))
+    expect(SessionRetry.retryable(error, retryProvider)).toBeUndefined()
+  })
+
+  test("retries interrupted upstream streams", () => {
+    const error = MessageV2.fromError(
+      {
+        type: "error",
+        error: {
+          type: "api_error",
+          code: "upstream_stream_interrupted",
+          message: "upstream stream failed",
+          retryable: true,
+        },
+      },
+      { providerID },
+    )
+
+    expect(SessionV1.APIError.isInstance(error)).toBe(true)
+    if (!SessionV1.APIError.isInstance(error)) throw new Error("expected APIError")
+    expect(error.data.statusCode).toBeUndefined()
+    expect(SessionRetry.retryable(error, retryProvider)).toEqual({ message: "upstream stream failed" })
+  })
+
+  test("does not retry bare gateway envelopes without a transient signal", () => {
+    const error = MessageV2.fromError({ error: { message: "no_kv_space" } }, { providerID })
+
+    expect(SessionV1.APIError.isInstance(error)).toBe(true)
+    if (!SessionV1.APIError.isInstance(error)) throw new Error("expected APIError")
+    expect(error.data.isRetryable).toBe(false)
     expect(SessionRetry.retryable(error, retryProvider)).toBeUndefined()
   })
 
@@ -551,5 +603,27 @@ describe("free tier quota waits", () => {
     )
 
     expect(SessionRetry.retryWithinTurn(SessionRetry.delay(1, error))).toBe(false)
+  })
+})
+
+describe("session.llm.ai-sdk stream errors", () => {
+  test("normalizes bare stream error parts so they stay retryable", async () => {
+    const exit = await Effect.runPromiseExit(
+      LLMAISDK.toLLMEvents(LLMAISDK.adapterState(), {
+        type: "error",
+        error: {
+          type: "api_error",
+          code: "upstream_stream_interrupted",
+          message: "upstream stream failed",
+          retryable: true,
+        },
+      }),
+    )
+
+    expect(Exit.isFailure(exit)).toBe(true)
+    if (!Exit.isFailure(exit)) throw new Error("expected a failed effect")
+    const error = MessageV2.fromError(Cause.squash(exit.cause), { providerID })
+    expect(SessionV1.APIError.isInstance(error)).toBe(true)
+    expect(SessionRetry.retryable(error, retryProvider)).toEqual({ message: "upstream stream failed" })
   })
 })

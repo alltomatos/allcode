@@ -101,6 +101,19 @@ export class ForbiddenError extends Schema.TaggedErrorClass<ForbiddenError>()(
   { httpApiStatus: 403 },
 ) {}
 
+export class QuotaExceededError extends Schema.TaggedErrorClass<QuotaExceededError>()(
+  "QuotaExceededError",
+  {
+    code: Schema.Literal("QUOTA_EXCEEDED"),
+    scope: Schema.Literals(["user", "company"]),
+    message: Schema.String,
+    limit: Schema.Number,
+    used: Schema.Number,
+    remaining: Schema.Number,
+  },
+  { httpApiStatus: 429 },
+) {}
+
 export class PtyNotFoundError extends Schema.TaggedErrorClass<PtyNotFoundError>()(
   "PtyNotFoundError",
   {

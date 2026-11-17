@@ -2,13 +2,16 @@ import { A, createAsync } from "@solidjs/router"
 import { For, Show, createMemo, createSignal } from "solid-js"
 import { Badge, PageHeader, buttonClass } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { listUsers } from "~/lib/actions"
+import { getQuotaOverview, listUsers } from "~/lib/actions"
 import { formatDate, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
+import { formatTokenAmount } from "~/lib/quota"
 
 export default function UsersPage() {
   const i18n = useI18n()
   const [search, setSearch] = createSignal("")
   const users = createAsync(() => listUsers())
+  const quotas = createAsync(() => getQuotaOverview())
+  const quotaFor = (userID: string) => quotas()?.users.find((entry) => entry.userID === userID)
 
   const filtered = createMemo(() => {
     const term = search().trim().toLowerCase()
@@ -57,6 +60,8 @@ export default function UsersPage() {
                 <th class="px-4 py-3">{i18n.t("common.name")}</th>
                 <th class="hidden px-4 py-3 sm:table-cell">{i18n.t("common.role")}</th>
                 <th class="px-4 py-3">{i18n.t("common.status")}</th>
+                <th class="hidden px-4 py-3 lg:table-cell">{i18n.t("users.effectiveQuota")}</th>
+                <th class="hidden px-4 py-3 lg:table-cell">{i18n.t("users.usage")}</th>
                 <th class="hidden px-4 py-3 md:table-cell">{i18n.t("users.version")}</th>
                 <th class="hidden px-4 py-3 lg:table-cell">{i18n.t("common.lastLogin")}</th>
                 <th class="px-4 py-3" />
@@ -75,6 +80,21 @@ export default function UsersPage() {
                     </td>
                     <td class="px-4 py-3">
                       <Badge tone={statusTone(user.status)}>{i18n.t(statusKey(user.status))}</Badge>
+                    </td>
+                    <td class="hidden px-4 py-3 text-xs text-slate-600 lg:table-cell">
+                      {quotaFor(user.id)?.limit == null
+                        ? i18n.t("users.noQuota")
+                        : formatTokenAmount(quotaFor(user.id)!.limit)}
+                    </td>
+                    <td class="hidden px-4 py-3 lg:table-cell">
+                      <div class="text-xs font-medium text-slate-900">
+                        {formatTokenAmount(quotaFor(user.id)?.used ?? 0)}
+                      </div>
+                      <div class="text-[11px] text-slate-500">
+                        {quotaFor(user.id)?.limit == null
+                          ? i18n.t("quota.company.remaining") + ": " + formatTokenAmount(quotas()?.company.limit == null ? null : Math.max(0, (quotas()!.company.limit ?? 0) - quotas()!.company.used))
+                          : i18n.t("users.remaining") + ": " + formatTokenAmount(quotaFor(user.id)?.remaining ?? null)}
+                      </div>
                     </td>
                     <td class="hidden px-4 py-3 md:table-cell">
                       <Show when={user.appVersion} fallback={<span class="text-xs text-slate-400">—</span>}>

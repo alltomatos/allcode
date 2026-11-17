@@ -88,6 +88,9 @@ de execução idêntico e nenhum dado persistido alterado.
 - **Valor persistido ausente da lista:** seletor exibe entrada não selecionável
   “indisponível”.
 - **`opencode-go` sem conexão:** provider aparece apenas como tile “conectar”.
+- **`opencode-go` conectado:** o catálogo é intersectado com `GET /zen/go/v1/models`
+  (cache em memória de 5 min, fail-open). Modelos ausentes ou depreciados na API
+  ficam `enabled=false`; falha de rede mantém o último catálogo conhecido.
 - **`OPENCODE_DISABLE_FREE_MODELS=1`:** gratuitos saem do catálogo e os consumidores
   caem nos caminhos acima.
 

@@ -9,6 +9,7 @@ import { InstanceStore } from "@/project/instance-store"
 import { InstanceRef } from "@/effect/instance-ref"
 import { getWhatsAppNativeStore } from "./store"
 import { runReminderAction } from "./reminder-actions"
+import { runMeetingAction } from "./meetings"
 import {
   describeMedia,
   failedMedia,
@@ -604,6 +605,14 @@ export class WhatsAppNativeManager {
         return
       }
 
+      // Resposta de convite de reunião (confirmar/reagendar/recusar): o id
+      // carrega o schedule persistido, então a ação é direta e sobrevive a
+      // restart — não precisa passar pelo modelo.
+      if (inbound.id?.startsWith("meeting:")) {
+        yield* self.handleMeetingAction({ client, chatJid, id: inbound.id })
+        return
+      }
+
       let promptText = text
       let attachments: PromptAttachment[] = []
 
@@ -704,6 +713,39 @@ export class WhatsAppNativeManager {
         Effect.catch(() => Effect.void),
       )
       debug(`[WhatsApp Reminder Action] id=${input.id} reply="${reply}"`)
+    }).pipe(Effect.catch(() => Effect.void))
+  }
+
+  private handleMeetingAction(input: {
+    client: WaClient
+    chatJid: string
+    id: string
+  }): Effect.Effect<void, never, never> {
+    return Effect.gen(function* () {
+      const result = yield* runMeetingAction(input.id)
+
+      yield* Effect.tryPromise({
+        try: () => input.client.message.send(input.chatJid, result.reply),
+        catch: (error) => error,
+      }).pipe(
+        Effect.tapError((error) =>
+          Effect.logWarning(`[WhatsApp Meeting Action] falha ao responder ${input.chatJid}: ${String(error)}`),
+        ),
+        Effect.catch(() => Effect.void),
+      )
+
+      const requester = result.requester
+      if (requester && requester.to !== input.chatJid) {
+        yield* Effect.tryPromise({
+          try: () => input.client.message.send(requester.to, requester.text),
+          catch: (error) => error,
+        }).pipe(
+          Effect.tapError((error) =>
+            Effect.logWarning(`[WhatsApp Meeting Action] falha ao avisar ${requester.to}: ${String(error)}`),
+          ),
+          Effect.catch(() => Effect.void),
+        )
+      }
     }).pipe(Effect.catch(() => Effect.void))
   }
 

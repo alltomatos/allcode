@@ -11,6 +11,14 @@ export function setReminderScheduler(service: Schedule.Interface): void {
 }
 
 /**
+ * Scheduler registrado pelo bridge de restart. Usado por outras ações de
+ * WhatsApp (ex.: reuniões) que também rodam fora do grafo do Schedule.
+ */
+export function registeredScheduler(): Schedule.Interface | undefined {
+  return registered
+}
+
+/**
  * Ações disparadas pelos botões de lembrete no WhatsApp
  * (`reminder:done:<id>`, `reminder:snooze:<id>:<min>`, `reminder:cancel:<id>`).
  * Retorna sempre um texto de resposta — falhas viram mensagem para o usuário,

@@ -53,6 +53,8 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0011_resellers_and_trials.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0012_plans.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0013_user_audit_exempt.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0014_token_quotas.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0015_company_user_quota_and_global_providers.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -580,5 +582,90 @@ describe("D1 store", () => {
     // 7. Remover plano desvincula a empresa
     await store.plans.remove(perUser.id)
     expect((await store.org.get(org.id)).planID).toBeUndefined()
+  })
+
+  test("persists token quotas and aggregates ledger usage by user and company", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    const user = await store.users.create({
+      name: "Quota User",
+      email: "quota@test.dev",
+      role: "member",
+      passwordHash: await hashPassword("pass1234"),
+      mustChangePassword: false,
+      tokenQuota: 1_000_000,
+    })
+
+    await store.org.update(owner!.orgID, { tokenQuota: 50_000_000, tokenQuotaCycleDay: 10 })
+    const org = await store.org.get(owner!.orgID)
+    expect(org.tokenQuota).toBe(50_000_000)
+    expect(org.tokenQuotaCycleDay).toBe(10)
+    expect((await store.users.findByID(user.id))?.tokenQuota).toBe(1_000_000)
+
+    const cycle = "2026-03-10T00:00:00.000Z"
+    await store.quota.record({
+      sessionID: "ses_quota_1",
+      orgID: org.id,
+      userID: user.id,
+      tokens: 400_000,
+      cycleStart: cycle,
+    })
+    await store.quota.record({
+      sessionID: "ses_quota_1",
+      orgID: org.id,
+      userID: user.id,
+      tokens: 700_000,
+      cycleStart: cycle,
+    })
+    await store.quota.record({
+      sessionID: "ses_quota_2",
+      orgID: org.id,
+      userID: owner!.id,
+      tokens: 2_000_000,
+      cycleStart: cycle,
+    })
+
+    expect(await store.quota.getUserUsage(user.id, cycle)).toBe(700_000)
+    expect(await store.quota.getOrgUsage(org.id, cycle)).toBe(2_700_000)
+    expect(await store.quota.getUsageByUser(org.id, cycle)).toEqual({
+      [user.id]: 700_000,
+      [owner!.id]: 2_000_000,
+    })
+
+    // Remover a cota individual apenas limpa o sub-limite.
+    await store.users.update(user.id, { tokenQuota: undefined })
+    expect((await store.users.findByID(user.id))?.tokenQuota).toBeUndefined()
+  })
+
+  test("global providers are visible to every company and company shadows win", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    const other = await store.org.create({ name: "Other Company", slug: "other-company" })
+
+    const global = await store.providers.create({
+      orgID: owner!.orgID,
+      providerID: "shared-provider",
+      displayName: "Shared Provider",
+      scope: "global",
+      baseURL: "https://global.example/v1",
+    })
+    const local = await store.providers.create({
+      orgID: other.id,
+      providerID: "shared-provider",
+      displayName: "Local Shadow",
+      scope: "company",
+      baseURL: "https://local.example/v1",
+    })
+
+    const visible = await store.providers.list(other.id)
+    expect(visible.map((provider) => provider.id)).toContain(local.id)
+    expect(visible.map((provider) => provider.id)).not.toContain(global.id)
+    expect((await store.providers.findByProviderID(other.id, "shared-provider"))?.id).toBe(local.id)
+    expect((await store.providers.listGlobal()).map((provider) => provider.id)).toEqual([global.id])
+
+    const withoutShadow = await store.org.create({ name: "No Shadow", slug: "no-shadow" })
+    expect((await store.providers.list(withoutShadow.id)).map((provider) => provider.id)).toContain(global.id)
   })
 })

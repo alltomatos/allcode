@@ -1,5 +1,6 @@
 import { action, query, redirect } from "@solidjs/router"
-import { canManageOrganization, canManageUsers, canRemoveUsers, currentUser, requirePlatformAdmin, requireReseller, requireUser } from "./auth"
+import { auditDb } from "./audit-db"
+import { canAccessPortal, canManageOrganization, canManageUsers, canRemoveUsers, currentUser, requirePlatformAdmin, requireReseller, requireUser } from "./auth"
 import { generatePassword, hashPassword, verifyPassword } from "./crypto"
 import { parseOverrides, RESOURCES, isProviderAllowed, type AccessOverrides, type ProviderEffect } from "./access"
 import {
@@ -14,6 +15,9 @@ import { usePanelSession } from "./session"
 import { store, isTrialExpired, DEFAULT_ORG_ID, EMPTY_USER_KPIS, type PanelUser, type ProviderDefinition, type ProviderProtocol, type Role } from "./store"
 import { resolveUserAccess } from "./user-access"
 import type { ReferenceRatesConfig } from "./kpi-pricing"
+import { normalizeCycleDay, parseTokenAmount } from "./quota"
+import { fetchProviderModels } from "./provider-fetch"
+import { loadQuotaOverview, loadQuotaState } from "./quota-service"
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const CREATABLE_ROLES: Role[] = ["admin", "member"]
@@ -78,6 +82,7 @@ function publicUser(user: PanelUser) {
     canOpenSettings: user.canOpenSettings,
     defaultProvider: user.defaultProvider,
     defaultModel: user.defaultModel,
+    tokenQuota: user.tokenQuota,
     access: parseOverrides(user.accessOverrides),
     appVersion: user.appVersion,
     appVersionAt: user.appVersionAt,
@@ -142,6 +147,9 @@ export const getOrgSessions = query(
   async (options: { userID?: string; search?: string; limit?: number; offset?: number } = {}) => {
     "use server"
     const actor = await requireUser()
+    const pgSessions = await auditDb.sessions.listByOrg(actor.orgID, options)
+    if (pgSessions) return pgSessions
+
     const db = store()
     return db.sessions.listByOrg(actor.orgID, options)
   },
@@ -151,6 +159,9 @@ export const getOrgSessions = query(
 export const getOrgKPIs = query(async (config?: Partial<ReferenceRatesConfig>) => {
   "use server"
   const actor = await requireUser()
+  const pgKpis = await auditDb.sessions.getOrgKPIs(actor.orgID)
+  if (pgKpis) return pgKpis
+
   const db = store()
   return db.sessions.getOrgKPIs(actor.orgID, config)
 }, "panel.org.kpis")
@@ -158,6 +169,9 @@ export const getOrgKPIs = query(async (config?: Partial<ReferenceRatesConfig>) =
 export const getUserModelUsage = query(async (id: string, days?: number) => {
   "use server"
   const actor = await requireUser()
+  const pgUsage = await auditDb.sessions.getUserModelUsage(id, { days })
+  if (pgUsage) return pgUsage
+
   const db = store()
   const user = await db.users.findByID(id)
   if (!user || user.orgID !== actor.orgID) return []
@@ -216,8 +230,123 @@ export const getCurrentOrg = query(async () => {
     brandColor: org.brandColor,
     planType: org.planType,
     trialEndsAt: org.trialEndsAt,
+    tokenQuota: org.tokenQuota,
+    userTokenQuota: org.userTokenQuota,
+    tokenQuotaCycleDay: org.tokenQuotaCycleDay,
   }
 }, "panel.currentOrg")
+
+export const getOrgQuota = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  return loadQuotaState(actor.orgID)
+}, "panel.quota.org")
+
+export const getQuotaOverview = query(async () => {
+  "use server"
+  const actor = await requireUser()
+  return loadQuotaOverview(actor.orgID)
+}, "panel.quota.overview")
+
+export const getUserQuota = query(async (id: string) => {
+  "use server"
+  const actor = await requireUser()
+  const db = store()
+  const user = await db.users.findByID(id)
+  if (!user || user.orgID !== actor.orgID) return null
+  return loadQuotaState(actor.orgID, user.id)
+}, "panel.quota.user")
+
+export const updateOrgQuota = action(
+  async (input: { quota: string; cycleDay: number }) => {
+    "use server"
+    const actor = await requireUser()
+    if (!canManageUsers(actor)) return { error: "settings.ownerOnly" as const }
+
+    const raw = input.quota.trim()
+    const quota = raw ? parseTokenAmount(raw) : null
+    if (raw && quota === null) return { error: "quota.error.invalidAmount" as const }
+
+    const db = store()
+    const org = await db.org.get(actor.orgID)
+    if (quota !== null && org.tokenQuota !== undefined && quota > org.tokenQuota) {
+      return { error: "quota.error.globalExceedsCompany" as const, limit: org.tokenQuota }
+    }
+
+    const cycleDay = normalizeCycleDay(input.cycleDay)
+    await db.org.update(actor.orgID, { userTokenQuota: quota ?? undefined, tokenQuotaCycleDay: cycleDay })
+    await db.audit.log({
+      orgID: actor.orgID,
+      actorID: actor.id,
+      actorEmail: actor.email,
+      action: "quota.company_user_updated",
+      result: "allow",
+      targetType: "org",
+      targetID: actor.orgID,
+    })
+    return { error: undefined, quota }
+  },
+  "panel.quota.org.update",
+)
+
+export const updateTenantTokenQuota = action(
+  async (orgID: string, input: { quota: string }) => {
+    "use server"
+    const actor = await requirePlatformAdmin()
+    const raw = input.quota.trim()
+    const quota = raw ? parseTokenAmount(raw) : null
+    if (raw && quota === null) return { error: "quota.error.invalidAmount" as const }
+
+    const db = store()
+    const org = await db.org.get(orgID)
+    await db.org.update(org.id, { tokenQuota: quota ?? undefined })
+    await db.audit.log({
+      orgID: org.id,
+      actorID: actor.id,
+      actorEmail: actor.email,
+      action: "quota.company_pool_updated",
+      result: "allow",
+      targetType: "org",
+      targetID: org.id,
+    })
+    return { error: undefined, quota }
+  },
+  "panel.admin.tenant.token_quota",
+)
+
+export const updateUserQuota = action(
+  async (id: string, input: { quota: string }) => {
+    "use server"
+    const actor = await requireUser()
+    if (!canManageUsers(actor)) return { error: "users.new.error.forbidden" as const }
+
+    const db = store()
+    const target = await db.users.findByID(id)
+    if (!target || target.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+
+    const raw = input.quota.trim()
+    const quota = raw ? parseTokenAmount(raw) : null
+    if (raw && quota === null) return { error: "quota.error.invalidAmount" as const }
+
+    const org = await db.org.get(actor.orgID)
+    if (quota !== null && org.tokenQuota !== undefined && quota > org.tokenQuota) {
+      return { error: "quota.error.userExceedsCompany" as const, limit: org.tokenQuota }
+    }
+
+    await db.users.update(target.id, { tokenQuota: quota ?? undefined })
+    await db.audit.log({
+      orgID: actor.orgID,
+      actorID: actor.id,
+      actorEmail: actor.email,
+      action: quota === null ? "quota.user_removed" : "quota.user_updated",
+      result: "allow",
+      targetType: "user",
+      targetID: target.id,
+    })
+    return { error: undefined, quota }
+  },
+  "panel.quota.user.update",
+)
 
 export const login = action(async (form: FormData) => {
   "use server"
@@ -249,6 +378,19 @@ export const login = action(async (form: FormData) => {
       targetID: user.id,
     })
     return { error: "login.disabled" as const }
+  }
+
+  if (!canAccessPortal(user)) {
+    await db.audit.log({
+      orgID: user.orgID,
+      actorID: user.id,
+      actorEmail: user.email,
+      action: "auth.login_denied_not_admin",
+      result: "deny",
+      targetType: "user",
+      targetID: user.id,
+    })
+    return { error: "login.notAdmin" as const }
   }
 
   await db.users.update(user.id, {
@@ -288,6 +430,8 @@ export const createUser = action(async (form: FormData) => {
   const canOpenSettings = settingsFlag(form, "canOpenSettings")
   const defaultProvider = String(form.get("defaultProvider") ?? "").trim() || undefined
   const defaultModel = String(form.get("defaultModel") ?? "").trim() || undefined
+  const tokenQuotaRaw = String(form.get("tokenQuota") ?? "").trim()
+  const tokenQuota = tokenQuotaRaw ? parseTokenAmount(tokenQuotaRaw) : null
   const groupIDs = form.getAll("groupIds").map((value) => String(value))
   const access = accessFromForm(form)
 
@@ -295,9 +439,13 @@ export const createUser = action(async (form: FormData) => {
   if (!EMAIL.test(email)) return { error: "users.new.error.invalidEmail" as const }
   if (await store().users.findByEmail(email)) return { error: "users.new.error.emailTaken" as const }
   if (!CREATABLE_ROLES.includes(role)) return { error: "users.new.error.forbidden" as const }
+  if (tokenQuotaRaw && tokenQuota === null) return { error: "quota.error.invalidAmount" as const }
 
   const db = store()
   const org = await db.org.get(actor.orgID)
+  if (tokenQuota !== null && org.tokenQuota !== undefined && tokenQuota > org.tokenQuota) {
+    return { error: "quota.error.userExceedsCompany" as const, limit: org.tokenQuota }
+  }
   const seats = await db.users.count(actor.orgID)
   if (seats.total >= org.maxUsers) {
     return { error: "users.new.error.seatLimit" as const, limit: org.maxUsers, used: seats.total }
@@ -318,6 +466,7 @@ export const createUser = action(async (form: FormData) => {
     canOpenSettings,
     defaultProvider,
     defaultModel,
+    tokenQuota: tokenQuota ?? undefined,
     accessOverrides: access,
   })
   if (groupIDs.length > 0) await db.groups.setUserGroups(created.id, groupIDs)
@@ -738,11 +887,7 @@ export const testProviderConnection = action(
         }
       }
 
-      const response = await fetch(targetUrl, {
-        method: "GET",
-        headers,
-        signal: AbortSignal.timeout(10000),
-      })
+      const response = await fetchProviderModels(targetUrl, headers)
 
       if (!response.ok) {
         const text = await response.text().catch(() => "")
@@ -867,6 +1012,7 @@ export const updateProvider = action(async (id: string, input: ProviderInput) =>
   const db = store()
   const provider = await db.providers.findByID(id)
   if (!provider || provider.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  if (provider.scope === "global") return { error: "users.new.error.forbidden" as const }
 
   const displayName = input.displayName.trim()
   if (!displayName) return { error: "providers.error.nameRequired" as const }
@@ -906,6 +1052,7 @@ export const removeProvider = action(async (id: string) => {
   const db = store()
   const provider = await db.providers.findByID(id)
   if (!provider || provider.orgID !== actor.orgID) return { error: "users.new.error.forbidden" as const }
+  if (provider.scope === "global") return { error: "users.new.error.forbidden" as const }
   await db.providers.remove(id)
   await db.audit.log({
     orgID: actor.orgID,
@@ -918,6 +1065,124 @@ export const removeProvider = action(async (id: string) => {
   })
   return { error: undefined }
 }, "panel.provider.remove")
+
+export const listGlobalProviders = query(async () => {
+  "use server"
+  await requirePlatformAdmin()
+  const db = store()
+  return (await db.providers.listGlobal()).map(publicProvider)
+}, "panel.admin.providers")
+
+export const getGlobalProvider = query(async (id: string) => {
+  "use server"
+  await requirePlatformAdmin()
+  const db = store()
+  const provider = await db.providers.findByID(id)
+  if (!provider || provider.scope !== "global") return null
+  return publicProvider(provider)
+}, "panel.admin.provider")
+
+export const createGlobalProvider = action(async (input: ProviderInput) => {
+  "use server"
+  const actor = await requirePlatformAdmin()
+  const providerID = input.providerID.trim().toLowerCase()
+  const displayName = input.displayName.trim()
+  if (!validProviderID(providerID)) return { error: "providers.error.invalidId" as const }
+  if (!displayName) return { error: "providers.error.nameRequired" as const }
+
+  const db = store()
+  if (await db.providers.findByProviderID(actor.orgID, providerID)) {
+    return { error: "providers.error.duplicate" as const }
+  }
+
+  const baseURL = input.baseURL?.trim()
+  if (!baseURL || !isHttpUrl(baseURL)) return { error: "providers.error.invalidUrl" as const }
+  const protocol: ProviderProtocol = input.protocol === "anthropic" ? "anthropic" : "openai"
+  const npm = protocol === "anthropic" ? "@ai-sdk/anthropic" : "@ai-sdk/openai-compatible"
+
+  const created = await db.providers.create({
+    orgID: actor.orgID,
+    providerID,
+    displayName,
+    scope: "global",
+    kind: "custom",
+    protocol,
+    npm,
+    baseURL,
+    apiKey: undefined,
+    models: sanitizeModels(input.models),
+    headers: sanitizeHeaders(input.headers),
+    env: sanitizeEnv(input.env),
+    enabled: input.enabled ?? true,
+    createdBy: actor.id,
+  })
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "provider.global_created",
+    result: "allow",
+    targetType: "provider",
+    targetID: created.id,
+  })
+  return { error: undefined, id: created.id }
+}, "panel.admin.provider.create")
+
+export const updateGlobalProvider = action(async (id: string, input: ProviderInput) => {
+  "use server"
+  const actor = await requirePlatformAdmin()
+  const db = store()
+  const provider = await db.providers.findByID(id)
+  if (!provider || provider.scope !== "global") return { error: "users.new.error.forbidden" as const }
+
+  const displayName = input.displayName.trim()
+  if (!displayName) return { error: "providers.error.nameRequired" as const }
+  const baseURL = (input.baseURL ?? provider.baseURL ?? "").trim()
+  if (!isHttpUrl(baseURL)) return { error: "providers.error.invalidUrl" as const }
+  const protocol: ProviderProtocol = input.protocol ?? provider.protocol ?? "openai"
+  const npm = protocol === "anthropic" ? "@ai-sdk/anthropic" : "@ai-sdk/openai-compatible"
+
+  await db.providers.update(id, {
+    displayName,
+    protocol,
+    npm,
+    baseURL,
+    apiKey: undefined,
+    models: sanitizeModels(input.models),
+    headers: sanitizeHeaders(input.headers),
+    env: sanitizeEnv(input.env),
+    enabled: input.enabled ?? provider.enabled,
+  })
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "provider.global_updated",
+    result: "allow",
+    targetType: "provider",
+    targetID: id,
+  })
+  return { error: undefined }
+}, "panel.admin.provider.update")
+
+export const removeGlobalProvider = action(async (id: string) => {
+  "use server"
+  const actor = await requirePlatformAdmin()
+  const db = store()
+  const provider = await db.providers.findByID(id)
+  if (!provider || provider.scope !== "global") return { error: "users.new.error.forbidden" as const }
+  await db.providers.remove(id)
+  await db.audit.log({
+    orgID: actor.orgID,
+    actorID: actor.id,
+    actorEmail: actor.email,
+    action: "provider.global_removed",
+    result: "allow",
+    targetType: "provider",
+    targetID: id,
+  })
+  return { error: undefined }
+}, "panel.admin.provider.remove")
 
 export const setProviderGrants = action(
   async (

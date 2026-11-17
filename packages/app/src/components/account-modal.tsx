@@ -1,5 +1,6 @@
 import { For, Show, createMemo, createSignal, onCleanup, onMount } from "solid-js"
 import { useLanguage } from "@/context/language"
+import { usePlatform } from "@/context/platform"
 import { useTenantAuth } from "@/context/tenant-auth"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { showToast } from "@/utils/toast"
@@ -12,6 +13,7 @@ type View = "menu" | "password"
 
 export function AccountModal(props: { onClose: () => void }) {
   const language = useLanguage()
+  const platform = usePlatform()
   const tenantAuth = useTenantAuth()
 
   const [view, setView] = createSignal<View>("menu")
@@ -25,6 +27,10 @@ export function AccountModal(props: { onClose: () => void }) {
   const user = () => tenantAuth.store.user
   const tenant = () => tenantAuth.store.tenant
   const initials = () => (user()?.name || user()?.email || "?").slice(0, 2).toUpperCase()
+  const isAdmin = () => {
+    const current = user()
+    return current?.role === "owner" || current?.role === "admin" || current?.isPlatformAdmin === true
+  }
 
   const planLabel = createMemo(() => {
     const current = tenant()
@@ -267,6 +273,19 @@ export function AccountModal(props: { onClose: () => void }) {
                   </span>
                 </Show>
               </div>
+            </Show>
+            <Show when={isAdmin()}>
+              <button
+                type="button"
+                class="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-12-medium text-v2-text-text-base transition hover:bg-v2-background-bg-layer-01 cursor-pointer"
+                onClick={() => {
+                  props.onClose()
+                  platform.openExternal(`${DEFAULT_AUTH_URL}${user()?.isPlatformAdmin ? "/4dm1n" : "/app"}`)
+                }}
+              >
+                <IconV2 name="grid" size="small" class="size-4 text-v2-icon-icon-muted" />
+                <span class="flex-1">Painel Admin</span>
+              </button>
             </Show>
             <Show when={tenantAuth.canChangePassword()}>
               <button

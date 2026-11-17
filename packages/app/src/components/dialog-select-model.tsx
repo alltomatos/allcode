@@ -27,9 +27,7 @@ import { handleDocumentSearchKeydown } from "@/utils/search-keydown"
 import { createMenuDismissController } from "@/utils/menu-dismiss-controller"
 import { createEventListener } from "@solid-primitives/event-listener"
 import { matchesModelSearch } from "./dialog-select-model-search"
-
-const isFree = (provider: string, cost: { input: number } | undefined) =>
-  provider === "opencode" && (!cost || cost.input === 0)
+import { isFreeModel } from "@/utils/model-free"
 
 type ModelState = ReturnType<typeof useLocal>["model"]
 type ModelItem = ReturnType<ModelState["list"]>[number]
@@ -212,7 +210,7 @@ const ModelList: Component<{
           placement="right-start"
           gutter={12}
           openDelay={0}
-          value={<ModelTooltip model={item} latest={item.latest} free={isFree(item.provider.id, item.cost)} />}
+          value={<ModelTooltip model={item} latest={item.latest} free={isFreeModel(item.provider.id, item.cost)} />}
         >
           {node}
         </Tooltip>
@@ -227,7 +225,7 @@ const ModelList: Component<{
       {(i) => (
         <div class="w-full flex items-center gap-x-2 text-13-regular">
           <span class="truncate">{i.name}</span>
-          <Show when={isFree(i.provider.id, i.cost)}>
+          <Show when={isFreeModel(i.provider.id, i.cost)}>
             <Tag>{language.t("model.tag.free")}</Tag>
           </Show>
           <Show when={i.latest}>
@@ -598,7 +596,7 @@ function ModelSelectorPopoverV2View(props: {
                                 <ModelTooltip
                                   model={item}
                                   latest={item.latest}
-                                  free={isFree(item.provider.id, item.cost)}
+                                  free={isFreeModel(item.provider.id, item.cost)}
                                   v2
                                 />
                               }
@@ -616,7 +614,7 @@ function ModelSelectorPopoverV2View(props: {
                                 onSelect={() => selectModel(item)}
                               >
                                 <span class="min-w-0 truncate leading-5">{item.name}</span>
-                                <Show when={isFree(item.provider.id, item.cost)}>
+                                <Show when={isFreeModel(item.provider.id, item.cost)}>
                                   <TagV2 class="shrink-0">{language.t("model.tag.free")}</TagV2>
                                 </Show>
                                 <Show when={item.latest}>

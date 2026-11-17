@@ -1,8 +1,9 @@
 import { createSimpleContext } from "@allcode/ui/context"
 import { persisted, Persist } from "@/utils/persist"
 import { createStore } from "solid-js/store"
-import { createMemo, onMount, onCleanup } from "solid-js"
+import { createEffect, createMemo, onMount, onCleanup } from "solid-js"
 import { usePlatform } from "@/context/platform"
+import { setTenantRequestContext } from "@/context/tenant-request"
 
 const DEFAULT_AUTH_URL = "https://allcode.alltomatos.dev.br"
 
@@ -91,6 +92,7 @@ export interface UserSession {
   name: string
   email: string
   role: string
+  isPlatformAdmin?: boolean
   mustChangePassword?: boolean
   auditExempt?: boolean
   permissions?: UserPermissions
@@ -149,6 +151,18 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
 
     const platform = usePlatform()
     const appVersion = () => platform.version
+
+    // Headers de tenant anexados às chamadas do SDK para que o backend local
+    // consulte a cota de tokens no portal antes de cada turno.
+    createEffect(() => {
+      const user = store.user
+      const tenant = store.tenant
+      setTenantRequestContext(
+        store.isLoggedIn && user && tenant
+          ? { panelUrl: DEFAULT_AUTH_URL, userID: user.id, orgID: tenant.id }
+          : undefined,
+      )
+    })
 
     const isLoggedIn = createMemo(() => Boolean(store.isLoggedIn && store.user))
     const isFirstLogin = createMemo(() => !store.tenant && !store.lastEmail)
@@ -286,7 +300,7 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
           canOpenSettings?: boolean
           defaultModel?: ModelDefault
           providers?: ProviderPolicy
-          user?: { auditExempt?: boolean }
+          user?: { auditExempt?: boolean; isPlatformAdmin?: boolean }
         } | null
 
         if (!res.ok) {
@@ -320,6 +334,9 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
         if (typeof body.user?.auditExempt === "boolean") {
           setStore("user", "auditExempt", body.user.auditExempt)
         }
+        if (typeof body.user?.isPlatformAdmin === "boolean") {
+          setStore("user", "isPlatformAdmin", body.user.isPlatformAdmin)
+        }
       } catch {
         // Modo offline / falha transitória de rede: respeita o token em cache
       }
@@ -329,7 +346,7 @@ export const { use: useTenantAuth, provider: TenantAuthProvider } = createSimple
     const recordSessionAudit = async (payload: SessionAuditPayload) => {
       const u = store.user
       const t = store.tenant
-      if (!u || !t || u.auditExempt) return
+      if (!u || !t) return
 
       try {
         await fetch(`${DEFAULT_AUTH_URL}/api/v1/sessions/audit`, {

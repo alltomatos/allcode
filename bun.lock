@@ -29,7 +29,7 @@
     },
     "packages/allcode": {
       "name": "allcode",
-      "version": "1.27.6",
+      "version": "1.27.8",
       "bin": {
         "allcode": "./bin/allcode",
         "opencode": "./bin/opencode",
@@ -171,7 +171,7 @@
     },
     "packages/app": {
       "name": "@allcode/app",
-      "version": "1.27.6",
+      "version": "1.27.8",
       "dependencies": {
         "@allcode/client": "file:vendor/opencode-ai-client-1.17.13-v2.tgz",
         "@allcode/core": "workspace:*",
@@ -530,7 +530,7 @@
     },
     "packages/desktop": {
       "name": "@allcode/desktop",
-      "version": "1.27.6",
+      "version": "1.27.8",
       "dependencies": {
         "@zip.js/zip.js": "2.7.62",
         "drizzle-orm": "catalog:",

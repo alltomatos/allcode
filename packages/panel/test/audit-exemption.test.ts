@@ -49,6 +49,8 @@ async function setupDatabase() {
   rawDb.exec(await Bun.file(new URL("../migrations/0011_resellers_and_trials.sql", import.meta.url)).text())
   rawDb.exec(await Bun.file(new URL("../migrations/0012_plans.sql", import.meta.url)).text())
   rawDb.exec(await Bun.file(new URL("../migrations/0013_user_audit_exempt.sql", import.meta.url)).text())
+  rawDb.exec(await Bun.file(new URL("../migrations/0014_token_quotas.sql", import.meta.url)).text())
+  rawDb.exec(await Bun.file(new URL("../migrations/0015_company_user_quota_and_global_providers.sql", import.meta.url)).text())
 
   const fakeD1 = d1From(rawDb)
   const storeInstance = d1Store(fakeD1)
