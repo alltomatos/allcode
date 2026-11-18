@@ -57,7 +57,7 @@ export const dict = {
   "login.required": "Complete correo y contraseña.",
   "login.demo": "Acceso de demostración",
   "login.recoverHelp": "Ingrese su correo corporativo. Si la cuenta existe, le enviaremos instrucciones de restablecimiento.",
-  "login.recoverDisabled": "El restablecimiento de contraseña se habilitará junto con el proveedor de identidad.",
+  "login.recoverDisabled": "El restablecimiento por correo aún no está disponible. Contacta al administrador de la plataforma para restablecer tu contraseña.",
 
   "notfound.title": "Página no encontrada",
   "notfound.description": "La dirección a la que intenta acceder no existe o ha sido movida.",
@@ -226,7 +226,12 @@ export const dict = {
 
   "event.auth.login": "Inicio de sesión",
   "event.auth.login_failed": "Intento de inicio de sesión fallido",
+  "event.auth.login_failed_unknown_account": "Inicio de sesión fallido: cuenta inexistente",
+  "event.auth.login_failed_bad_password": "Inicio de sesión fallido: contraseña incorrecta",
+  "event.auth.login_failed_hash": "Inicio de sesión fallido: hash de contraseña incompatible",
+  "event.auth.login_failed_disabled": "Inicio de sesión fallido: cuenta desactivada",
   "event.auth.logout": "Cierre de sesión",
+  "event.user.password_reset_breakglass": "Restablecimiento de contraseña del administrador general (break-glass)",
   "event.user.created": "Usuario creado",
   "event.user.role_changed": "Rol cambiado",
   "event.user.suspended": "Usuario suspendido",

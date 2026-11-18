@@ -1,6 +1,6 @@
 import type { APIEvent } from "@solidjs/start"
 import { store, isTrialExpired, getTrialDaysRemaining } from "~/lib/store"
-import { verifyPassword } from "~/lib/crypto"
+import { verifyCredentials } from "~/lib/password-change"
 import { loadQuotaState } from "~/lib/quota-service"
 import { resolveUserAccess } from "~/lib/user-access"
 
@@ -38,8 +38,8 @@ export async function POST(event: APIEvent) {
     const db = store()
     await db.ensureSeed()
 
-    const user = await db.users.findByEmail(email)
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    const user = await verifyCredentials(db, email, password)
+    if (!user) {
       await db.audit.log({
         actorEmail: email,
         action: "auth.login_failed_desktop",

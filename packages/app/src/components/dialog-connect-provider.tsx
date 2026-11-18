@@ -36,6 +36,7 @@ import { useServerSync } from "@/context/server-sync"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
+import { useConnectableProviders } from "@/hooks/use-connectable-providers"
 import { useProviderPolicy } from "@/context/tenant-provider-policy"
 import { createIntegrationFetchApi } from "@/utils/integration-fetch"
 import { CustomProviderForm } from "./dialog-custom-provider"
@@ -171,6 +172,7 @@ function ProviderPicker(props: {
   if (settings.general.newLayoutDesigns())
     return <ProviderPickerV2 directory={props.directory} onSelect={props.onSelect} onPrepare={props.onPrepare} />
   const providers = useProviders(() => props.directory?.())
+  const connectable = useConnectableProviders(() => props.directory?.())
   const providerPolicy = useProviderPolicy()
   const language = useLanguage()
   const popularGroup = () => language.t("dialog.provider.group.popular")
@@ -193,7 +195,7 @@ function ProviderPicker(props: {
       key={(x) => x?.id}
       items={() => {
         language.locale()
-        const connected = providers.all()
+        const connected = connectable()
         const optional = (id: string) => providerPolicy.allows(id)
         return [
           ...(providerPolicy.canCreateCustom() ? [{ id: CUSTOM_ID, name: customLabel() }] : []),
@@ -258,6 +260,7 @@ function ProviderPickerV2(props: {
   onPrepare?: () => void
 }) {
   const providers = useProviders(() => props.directory?.())
+  const connectable = useConnectableProviders(() => props.directory?.())
   const providerPolicy = useProviderPolicy()
   const language = useLanguage()
   const [store, setStore] = createStore({
@@ -280,7 +283,7 @@ function ProviderPickerV2(props: {
   const all = createMemo(() => {
     language.locale()
     const query = store.filter.trim().toLowerCase()
-    const connected = providers.all()
+    const connected = connectable()
     const values = [
       ...(providerPolicy.canCreateCustom() ? [custom()] : []),
       ...(connected.has(OMNIROUTE_PROVIDER_ID) || !providerPolicy.allows(OMNIROUTE_PROVIDER_ID)
@@ -449,6 +452,7 @@ function ProviderConnection(props: {
   const settings = useSettings()
   const newLayout = settings.general.newLayoutDesigns
   const providers = useProviders(() => props.directory?.())
+  const connectable = useConnectableProviders(() => props.directory?.())
   const directory = () => props.directory?.() ?? decode64(params.dir)
   const location = () => {
     const value = directory()
@@ -467,7 +471,7 @@ function ProviderConnection(props: {
   })
 
   const provider = createMemo(() => {
-    const item = providers.all().get(props.provider) ?? serverSync().data.provider.all.get(props.provider)
+    const item = connectable().get(props.provider) ?? providers.all().get(props.provider) ?? serverSync().data.provider.all.get(props.provider)
     if (item) return item
     if (props.provider === "google-antigravity") {
       return { id: "google-antigravity", name: "AGY" }

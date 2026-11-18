@@ -57,7 +57,7 @@ export const dict = {
   "login.required": "Enter email and password.",
   "login.demo": "Demo access",
   "login.recoverHelp": "Enter your work email. If an account exists, we will send reset instructions.",
-  "login.recoverDisabled": "Password reset will be enabled alongside the identity provider integration.",
+  "login.recoverDisabled": "Email password reset is not available yet. Contact the platform administrator to reset your password.",
 
   "notfound.title": "Page not found",
   "notfound.description": "The page you are looking for does not exist or has been moved.",
@@ -226,7 +226,12 @@ export const dict = {
 
   "event.auth.login": "Sign-in",
   "event.auth.login_failed": "Failed sign-in attempt",
+  "event.auth.login_failed_unknown_account": "Sign-in failed: unknown account",
+  "event.auth.login_failed_bad_password": "Sign-in failed: wrong password",
+  "event.auth.login_failed_hash": "Sign-in failed: unsupported password hash",
+  "event.auth.login_failed_disabled": "Sign-in failed: disabled account",
   "event.auth.logout": "Sign-out",
+  "event.user.password_reset_breakglass": "General administrator password reset (break-glass)",
   "event.user.created": "User created",
   "event.user.role_changed": "Role changed",
   "event.user.suspended": "User suspended",

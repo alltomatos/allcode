@@ -32,6 +32,7 @@ export type PanelUser = {
   appVersionAt?: string
   createdAt: string
   lastLoginAt?: string
+  updatedAt?: string
 }
 
 export type AccessGroup = {
@@ -336,6 +337,7 @@ export type UserPatch = Partial<
     | "passwordHash"
     | "mustChangePassword"
     | "lastLoginAt"
+    | "updatedAt"
     | "appVersion"
     | "appVersionAt"
     | "isReseller"
@@ -906,7 +908,7 @@ function memoryStore(): Store {
         const user = find(id)
         if (!user) return
         const previousEmail = user.email
-        Object.assign(user, patch)
+        Object.assign(user, patch, { updatedAt: patch.updatedAt ?? new Date().toISOString() })
         if (patch.email && patch.email !== previousEmail) {
           users.delete(previousEmail)
           users.set(patch.email.toLowerCase(), user)
@@ -1326,6 +1328,7 @@ type UserRow = {
   app_version_at?: string | null
   created_at: string
   last_login_at: string | null
+  updated_at?: string | null
 }
 
 type OrgRow = {
@@ -1490,6 +1493,7 @@ function toUser(row: UserRow): PanelUser {
     appVersionAt: row.app_version_at ?? undefined,
     createdAt: row.created_at,
     lastLoginAt: row.last_login_at ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
   }
 }
 
@@ -2137,10 +2141,10 @@ export function d1Store(db: D1Database): Store {
       async update(id, patch) {
         const current = await userFindByID(id)
         if (!current) return
-        const next = { ...current, ...patch }
-        await db
+        const next = { ...current, ...patch, updatedAt: patch.updatedAt ?? new Date().toISOString() }
+        const result = await db
           .prepare(
-            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, audit_exempt = ?, can_open_settings = ?, default_provider = ?, default_model = ?, token_quota = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ? WHERE id = ?`,
+            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, audit_exempt = ?, can_open_settings = ?, default_provider = ?, default_model = ?, token_quota = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ?, updated_at = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -2163,9 +2167,13 @@ export function d1Store(db: D1Database): Store {
             next.appVersionAt ?? null,
             next.isReseller ? 1 : 0,
             next.resellerID ?? null,
+            next.updatedAt,
             id,
           )
           .run()
+        if (result.meta?.changes !== 1) {
+          throw new Error(`Falha ao persistir alterações do usuário no D1 (changes=${result.meta?.changes ?? "indisponível"}).`)
+        }
         return next
       },
       async count(orgID) {
@@ -2846,7 +2854,15 @@ const d1Stores = new WeakMap<D1Database, Store>()
 
 export function store(): Store {
   const db = bindings().DB
-  if (!db) return (memory ??= memoryStore())
+  if (!db) {
+    // No Worker, __env__ sempre existe: sem o binding D1 é uma configuração quebrada.
+    // O fallback em memória semeia com PANEL_ADMIN_PASSWORD e o tornaria uma credencial
+    // de autenticação, além de descartar escritas privilegiadas. Falha fechada.
+    if ((globalThis as { __env__?: unknown }).__env__) {
+      throw new Error("Binding D1 'DB' indisponível no Worker; recusando fallback em memória.")
+    }
+    return (memory ??= memoryStore())
+  }
   const cached = d1Stores.get(db)
   if (cached) return cached
   const created = d1Store(db)

@@ -50,6 +50,13 @@ export const dict = {
   "command.language.set": "Use language: {{language}}",
 
   "command.session.new": "New session",
+  "session.view.header.project": "Project",
+  "session.view.header.usage": "Session token usage",
+  "session.view.header.input": "Input",
+  "session.view.header.output": "Output",
+  "session.view.header.tps": "Tokens/s",
+  "session.view.header.total": "Total",
+  "session.view.header.noUsage": "No usage yet",
   "command.file.open": "Open file",
   "command.tab.close": "Close tab",
   "command.tab.reopenClosed": "Reopen closed tab",

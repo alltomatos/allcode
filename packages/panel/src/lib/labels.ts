@@ -30,7 +30,12 @@ export function roleTone(role: Role) {
 export function actionKey(action: string): Key | undefined {
   if (action === "auth.login") return "event.auth.login"
   if (action === "auth.login_failed") return "event.auth.login_failed"
+  if (action === "auth.login_failed_unknown_account") return "event.auth.login_failed_unknown_account"
+  if (action === "auth.login_failed_bad_password") return "event.auth.login_failed_bad_password"
+  if (action === "auth.login_failed_hash") return "event.auth.login_failed_hash"
+  if (action === "auth.login_failed_disabled") return "event.auth.login_failed_disabled"
   if (action === "auth.logout") return "event.auth.logout"
+  if (action === "user.password_reset_breakglass") return "event.user.password_reset_breakglass"
   if (action === "user.created") return "event.user.created"
   if (action === "user.role_changed") return "event.user.role_changed"
   if (action === "user.suspended") return "event.user.suspended"

@@ -6,6 +6,8 @@ import { Icon } from "@allcode/ui/icon"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
 import { Tag } from "@allcode/ui/v2/badge-v2"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { Spinner } from "@allcode/ui/spinner"
+import { showToast } from "@/utils/toast"
 import { GlobalLoading } from "@/components/global-loading"
 import { useLanguage } from "@/context/language"
 import { useServerSDK } from "@/context/server-sdk"
@@ -51,16 +53,32 @@ export const DashboardPage: Component = () => {
   const activeRoutines = createMemo(() => routines.schedules().filter((s) => s.enabled))
   const failedRoutines = createMemo(() => routines.schedules().filter((s) => s.lastStatus === "error"))
 
+  // O sinal é ligado de forma síncrona no primeiro clique e só volta no
+  // `finally`, depois de tratar eventual erro — nem duplo clique nem atalho
+  // repetido conseguem abrir duas sessões ou deixar o botão travado.
+  const [creatingSession, setCreatingSession] = createSignal(false)
   const startNewSession = async () => {
-    const project = home.project.selected() ?? home.project.list()[0]
-    if (!project) {
-      navigate("/new-session")
-      return
+    if (creatingSession()) return
+    setCreatingSession(true)
+    try {
+      const project = home.project.selected() ?? home.project.list()[0]
+      if (!project) {
+        navigate("/new-session")
+        return
+      }
+      server.projects.open(project.worktree)
+      server.projects.touch(project.worktree)
+      const tab = await tabs.newDraft({ server: server.key, directory: project.worktree })
+      tabs.select(tab)
+    } catch (error) {
+      showToast({
+        variant: "error",
+        title: language.t("common.requestFailed"),
+        description: error instanceof Error ? error.message : String(error),
+      })
+    } finally {
+      setCreatingSession(false)
     }
-    server.projects.open(project.worktree)
-    server.projects.touch(project.worktree)
-    const tab = await tabs.newDraft({ server: server.key, directory: project.worktree })
-    tabs.select(tab)
   }
 
   return (
@@ -91,8 +109,16 @@ export const DashboardPage: Component = () => {
                 <Icon name="bubble-5" size="small" class="mr-1.5" />
                 Ver Todas as Sessões
               </ButtonV2>
-              <ButtonV2 variant="contrast" size="normal" onClick={startNewSession}>
-                <IconV2 name="plus" size="small" class="mr-1.5" />
+              <ButtonV2
+                variant={creatingSession() ? "loading" : "contrast"}
+                size="normal"
+                disabled={creatingSession()}
+                data-pending={creatingSession()}
+                onClick={startNewSession}
+              >
+                <Show when={creatingSession()} fallback={<IconV2 name="plus" size="small" class="mr-1.5" />}>
+                  <Spinner class="size-3.5" />
+                </Show>
                 Nova Sessão
               </ButtonV2>
             </div>

@@ -1,7 +1,7 @@
 import { action, query, redirect } from "@solidjs/router"
 import { auditDb } from "./audit-db"
 import { canAccessPortal, canManageOrganization, canManageUsers, canRemoveUsers, currentUser, requirePlatformAdmin, requireReseller, requireUser } from "./auth"
-import { generatePassword, hashPassword, verifyPassword } from "./crypto"
+import { generatePassword, hashPassword, passwordHashIsSupported, verifyPassword } from "./crypto"
 import { parseOverrides, RESOURCES, isProviderAllowed, type AccessOverrides, type ProviderEffect } from "./access"
 import {
   CUSTOM_PROVIDER_NPM,
@@ -359,20 +359,45 @@ export const login = action(async (form: FormData) => {
   if (!email || !password) return { error: "login.required" as const }
 
   const user = await db.users.findByEmail(email)
-  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+  if (!user) {
     await db.audit.log({
       actorEmail: email,
-      action: "auth.login_failed",
+      action: "auth.login_failed_unknown_account",
       result: "deny",
       targetType: "user",
     })
     return { error: "login.invalid" as const }
   }
-  if (user.status === "suspended" || user.status === "deleted") {
+  if (!passwordHashIsSupported(user.passwordHash)) {
     await db.audit.log({
+      orgID: user.orgID,
       actorID: user.id,
       actorEmail: user.email,
-      action: "auth.login_failed",
+      action: "auth.login_failed_hash",
+      result: "deny",
+      targetType: "user",
+      targetID: user.id,
+    })
+    return { error: "login.invalid" as const }
+  }
+  if (!(await verifyPassword(password, user.passwordHash))) {
+    await db.audit.log({
+      orgID: user.orgID,
+      actorID: user.id,
+      actorEmail: user.email,
+      action: "auth.login_failed_bad_password",
+      result: "deny",
+      targetType: "user",
+      targetID: user.id,
+    })
+    return { error: "login.invalid" as const }
+  }
+  if (user.status === "suspended" || user.status === "deleted") {
+    await db.audit.log({
+      orgID: user.orgID,
+      actorID: user.id,
+      actorEmail: user.email,
+      action: "auth.login_failed_disabled",
       result: "deny",
       targetType: "user",
       targetID: user.id,

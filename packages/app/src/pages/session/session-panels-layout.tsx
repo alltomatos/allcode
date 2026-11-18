@@ -7,7 +7,7 @@ import { SESSION_PANEL_WIDTH_MIN } from "@/pages/session/session-panel-width"
 import { TerminalPanel } from "@/pages/session/terminal-panel"
 import { TerminalPanelV2 } from "@/pages/session/terminal-panel-v2"
 import { SessionRouteFrame, SessionPanelFrame } from "@/pages/session-components"
-import { SessionHeader } from "@/components/session"
+import { SessionHeader, SessionViewHeader } from "@/components/session"
 import type { createPanelGeometry } from "./session-panel-geometry"
 import type { createVcsReview } from "./session-vcs-review"
 import type { createReviewDiffScroll } from "./session-review-diff-scroll"
@@ -86,12 +86,18 @@ export function SessionPanelsLayout(props: {
             <Show when={props.sessionPanelKey()} keyed>
               {(_) => (
                 <SessionPanelFrame newLayout raised={props.hasSessionID}>
+                  <Show when={props.hasSessionID}>
+                    <SessionViewHeader />
+                  </Show>
                   <ErrorBoundary fallback={props.sessionErrorFallback}>{props.sessionPanelContent()}</ErrorBoundary>
                 </SessionPanelFrame>
               )}
             </Show>
           ) : (
             <SessionPanelFrame newLayout={false} raised={props.hasSessionID}>
+              <Show when={props.hasSessionID}>
+                <SessionViewHeader />
+              </Show>
               {props.sessionPanelContent()}
             </SessionPanelFrame>
           )}

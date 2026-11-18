@@ -1,9 +1,11 @@
 ﻿import { useGlobal } from "@/context/global"
 import { type HomeProjectSelection, useLayout } from "@/context/layout"
+import { useLanguage } from "@/context/language"
 import { ServerConnection, useServer } from "@/context/server"
 import { useServerSync } from "@/context/server-sync"
 import { useTabs } from "@/context/tabs"
 import { toggleHomeProjectSelection } from "@/pages/layout/helpers"
+import { showToast } from "@/utils/toast"
 import { createEffect, createMemo, createSignal } from "solid-js"
 
 export function createHomeController() {
@@ -12,6 +14,7 @@ export function createHomeController() {
   const server = useServer()
   const global = useGlobal()
   const tabs = useTabs()
+  const language = useLanguage()
   const selection = layout.home.selection
   const focusedServer = createMemo(
     () => global.servers.list().find((conn) => ServerConnection.key(conn) === selection().server) ?? server.current,
@@ -46,8 +49,10 @@ export function createHomeController() {
     layout.home.setSelection(next)
   }
 
-  // Guarda contra clique repetido: o botão fica ocupado até a navegação para o
-  // rascunho ser disparada. `tabs.newDraft` também é idempotente por projeto.
+  // Guarda contra clique repetido: o sinal é ligado de forma síncrona, antes
+  // de qualquer await, então o botão fica desabilitado já no primeiro clique.
+  // `tabs.newDraft` também deduplica chamadas concorrentes por projeto, o que
+  // cobre os atalhos de teclado que não passam por este controller.
   const [creating, setCreating] = createSignal<string | undefined>()
   function openProjectNewSession(conn: ServerConnection.Any, directory: string) {
     if (creating()) return
@@ -55,9 +60,17 @@ export function createHomeController() {
     const ctx = global.ensureServerCtx(conn)
     ctx.projects.open(directory)
     ctx.projects.touch(directory)
-    void Promise.resolve(tabs.newDraft({ server: ServerConnection.key(conn), directory })).finally(() =>
-      setCreating(undefined),
-    )
+    void Promise.resolve(tabs.newDraft({ server: ServerConnection.key(conn), directory }))
+      .catch((error: unknown) => {
+        // Trata o erro antes de reabilitar: sem um `catch` a rejeição de
+        // `newDraft` viraria unhandled rejection e o botão voltaria sem aviso.
+        showToast({
+          variant: "error",
+          title: language.t("common.requestFailed"),
+          description: error instanceof Error ? error.message : String(error),
+        })
+      })
+      .finally(() => setCreating(undefined))
   }
 
   return {

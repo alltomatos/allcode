@@ -414,6 +414,14 @@ describe("provider HttpApi", () => {
     "keeps provider.models hook input mutations out of provider state",
     Effect.gen(function* () {
       const directory = (yield* TestInstance).directory
+      // `GET /provider` só devolve providers conectados; conecta `google` para
+      // que o provider mutado pelo plugin realmente entre no payload.
+      yield* setEnvScoped(
+        "OPENCODE_AUTH_CONTENT",
+        JSON.stringify({
+          google: { type: "oauth", refresh: "dummy", access: "dummy", expires: 9999999999999 },
+        }),
+      )
 
       const headers = { "x-opencode-directory": directory }
       const providerResponse = yield* request("/provider", { headers })
@@ -433,11 +441,28 @@ describe("provider HttpApi", () => {
   )
 
   it.instance(
-    "keeps catalog-only AGY providers in GET /provider for a directory",
+    "keeps catalog-only AGY providers in GET /provider once connected",
     Effect.gen(function* () {
       const directory = (yield* TestInstance).directory
-      const response = yield* request("/provider", { headers: { "x-opencode-directory": directory } })
+      const headers = { "x-opencode-directory": directory }
 
+      // AGY e AGY CLI são providers só de catálogo. Sem credencial eles não
+      // são "conectados" e por isso não entram no payload.
+      const before = yield* (yield* request("/provider", { headers })).json
+      expect(providerByID(before, "all", "google-antigravity")).toBeUndefined()
+      expect(providerByID(before, "all", "google-antigravity-cli")).toBeUndefined()
+
+      // Conectados, os dois voltam com os modelos do catálogo — a regressão
+      // que este caso guarda é o catálogo v2 sumir de `GET /provider`.
+      yield* setEnvScoped(
+        "OPENCODE_AUTH_CONTENT",
+        JSON.stringify({
+          "google-antigravity": { type: "api", key: "test-key" },
+          "google-antigravity-cli": { type: "api", key: "test-key" },
+        }),
+      )
+
+      const response = yield* request("/provider", { headers })
       expect(response.status).toBe(200)
       const body = yield* response.json
       const modelIDs = (id: string) => {
@@ -453,6 +478,58 @@ describe("provider HttpApi", () => {
     }),
     projectOptions,
     60000,
+  )
+
+  it.instance(
+    "returns only connected providers and their models",
+    Effect.gen(function* () {
+      const directory = (yield* TestInstance).directory
+      const response = yield* request("/provider", { headers: { "x-opencode-directory": directory } })
+
+      expect(response.status).toBe(200)
+      const body = yield* response.json
+      const all = providerList(body, "all")
+      const connected = isRecord(body) && Array.isArray(body.connected) ? body.connected : []
+
+      expect(all.length).toBeGreaterThan(0)
+      // `all` e `connected` descrevem o mesmo conjunto: nada fora de
+      // `connected` entra no payload (nem na projeção, nem no encode).
+      expect(all.length).toBe(connected.length)
+      for (const provider of all) {
+        expect(isRecord(provider) && connected.includes(provider.id)).toBe(true)
+      }
+
+      // Provider apenas de catálogo models.dev, sem credencial, não aparece.
+      expect(providerByID(body, "all", "google")).toBeUndefined()
+    }),
+    projectOptions,
+    30000,
+  )
+
+  it.instance(
+    "reflects a newly connected provider on the next request",
+    Effect.gen(function* () {
+      const directory = (yield* TestInstance).directory
+      const headers = { "x-opencode-directory": directory }
+
+      const before = yield* (yield* request("/provider", { headers })).json
+      expect(providerByID(before, "all", "google")).toBeUndefined()
+
+      const setResponse = yield* request("/auth/google", {
+        method: "PUT",
+        headers: { ...headers, "content-type": "application/json" },
+        body: JSON.stringify({ type: "api", key: "test-key" }),
+      })
+      expect(setResponse.status).toBe(200)
+
+      const after = yield* (yield* request("/provider", { headers })).json
+      const google = providerByID(after, "all", "google")
+      expect(google).toBeDefined()
+      expect(isRecord(google) && isRecord(google.models) && Object.keys(google.models).length > 0).toBe(true)
+      expect(isRecord(after) && Array.isArray(after.connected) && after.connected.includes("google")).toBe(true)
+    }),
+    projectOptions,
+    30000,
   )
 
   describe("OmniRoute (Native Provider Plugin) surfaced through the real server", () => {

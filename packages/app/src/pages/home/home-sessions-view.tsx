@@ -241,14 +241,17 @@ export function HomeSessionsView(props: HomeSessionsViewProps) {
             <Show when={props.canCreateSession()}>
               <ButtonV2
                 data-action="home-new-session"
-                variant="neutral"
+                variant={props.creatingSession() ? "loading" : "neutral"}
                 size="normal"
-                icon="edit"
+                icon={props.creatingSession() ? undefined : "edit"}
                 class="shrink-0 h-9 px-3 [font-weight:530]"
                 disabled={props.creatingSession()}
                 data-pending={props.creatingSession()}
                 onClick={props.onCreateSession}
               >
+                <Show when={props.creatingSession()}>
+                  <Spinner class="size-3.5" />
+                </Show>
                 {props.language.t("command.session.new")}
               </ButtonV2>
             </Show>
@@ -275,6 +278,7 @@ export function HomeSessionsView(props: HomeSessionsViewProps) {
             fallback={
               <HomeSessionsEmpty
                 onNewSession={props.canCreateSession() ? props.onCreateSession : undefined}
+                creatingSession={props.creatingSession}
                 language={props.language}
               />
             }
@@ -826,7 +830,11 @@ function HomeSessionProjectName(props: { name: string; search?: boolean }) {
   )
 }
 
-function HomeSessionsEmpty(props: { onNewSession?: () => void; language: ReturnType<typeof useLanguage> }) {
+function HomeSessionsEmpty(props: {
+  onNewSession?: () => void
+  creatingSession: Accessor<boolean>
+  language: ReturnType<typeof useLanguage>
+}) {
   return (
     <div class="flex min-h-full flex-col items-center gap-4 px-6 pt-[52px] text-center">
       <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-v2-background-bg-layer-02 text-v2-icon-icon-muted">
@@ -850,7 +858,18 @@ function HomeSessionsEmpty(props: { onNewSession?: () => void; language: ReturnT
       </p>
       <Show when={props.onNewSession}>
         {(onNewSession) => (
-          <ButtonV2 data-action="home-new-session" variant="neutral" size="normal" icon="edit" onClick={onNewSession()}>
+          <ButtonV2
+            data-action="home-new-session"
+            variant={props.creatingSession() ? "loading" : "neutral"}
+            size="normal"
+            icon={props.creatingSession() ? undefined : "edit"}
+            disabled={props.creatingSession()}
+            data-pending={props.creatingSession()}
+            onClick={onNewSession()}
+          >
+            <Show when={props.creatingSession()}>
+              <Spinner class="size-3.5" />
+            </Show>
             {props.language.t("command.session.new")}
           </ButtonV2>
         )}

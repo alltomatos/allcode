@@ -13,6 +13,7 @@ import { showToast } from "@/utils/toast"
 import { DialogAccountQuotaV2, type AccountQuotaModalData } from "./dialog-account-quota-v2"
 import type { IntegrationInfo } from "@allcode/client/promise"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
+import { useConnectableProviders } from "@/hooks/use-connectable-providers"
 import { createEffect, createMemo, createResource, createSignal, type Accessor, type Component, For, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useServerProtocol, useServerSDK } from "@/context/server-sdk"
@@ -493,6 +494,7 @@ export const SettingsProvidersV2: Component<{
   const protocol = useServerProtocol()
   const serverSync = useServerSync()
   const providers = useProviders(props.directory)
+  const connectable = useConnectableProviders(props.directory)
   const providerPolicy = useProviderPolicy()
   const providerConnect = useProviderConnectController({ onBack: props.onBack })
   const [view, setView] = createSignal<ProviderView>(loadProviderView())
@@ -560,7 +562,7 @@ export const SettingsProvidersV2: Component<{
 
   const popular = createMemo(() => {
     const connectedIDs = new Set(connected().map((p) => p.id))
-    const allProviders = providers.all()
+    const allProviders = connectable()
     const items = popularProviders
       .filter((id) => !connectedIDs.has(id))
       .map((id) => {
@@ -577,7 +579,7 @@ export const SettingsProvidersV2: Component<{
   const others = createMemo(() => {
     const q = query().trim().toLowerCase()
     const shownIDs = new Set([...connected().map((p) => p.id), ...popular().map((p) => p.id)])
-    return Array.from(providers.all().values())
+    return Array.from(connectable().values())
       .filter((p) => !shownIDs.has(p.id))
       .filter((p) => !q || `${p.id} ${p.name}`.toLowerCase().includes(q))
       .sort((a, b) => a.name.localeCompare(b.name))

@@ -5,7 +5,13 @@ const raw = JSON.parse(fs.readFileSync("d1-clean.json", "utf-8"))
 const rows = raw[0]?.results || []
 console.log(`Encontradas ${rows.length} sessoes no backup D1.`)
 
-const sql = postgres("postgres://allcode_user:MjVkikUQQdbWf64h6jSErLZaEbpbS5FLi6FbA+diQAI=@144.126.136.170:5432/allcode_audit", {
+const connectionString = process.env.AUDIT_PG_URL
+if (!connectionString) {
+  console.error("AUDIT_PG_URL não definido; exporte a string de conexão do PostgreSQL da VPS antes de executar.")
+  process.exit(1)
+}
+
+const sql = postgres(connectionString, {
   ssl: { rejectUnauthorized: false }
 })
 

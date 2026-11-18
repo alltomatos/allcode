@@ -1,6 +1,28 @@
 {
   "releases": [
     {
+      "tag": "v1.27.10",
+      "highlights": [
+        {
+          "source": "desktop",
+          "items": [
+            {
+              "title": "Provedores carregam mais rápido ao abrir uma sessão",
+              "description": "O catálogo de provedores passou a incluir apenas os provedores conectados e os modelos deles. O payload caiu de cerca de 9 MB para 2,3 MB, com menos da metade do custo de CPU por requisição, e o filtro agora acontece antes da projeção e da serialização."
+            },
+            {
+              "title": "Botão Nova sessão não cria abas duplicadas",
+              "description": "O primeiro clique desabilita o botão e mostra um indicador de carregamento; cliques repetidos e atalhos de teclado compartilham a mesma operação. Em caso de falha o erro é exibido e o botão volta ao normal, sem ficar travado permanentemente."
+            },
+            {
+              "title": "Cabeçalho da sessão mostra o projeto e o uso de tokens",
+              "description": "Cada aba exibe o título da sessão e a pasta do projeto, além dos tokens de entrada, de saída, tokens por segundo e total usado. Sessões novas ou sem uso registrado mostram um estado vazio explícito, sem números inválidos."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "tag": "v1.27.9",
       "highlights": [
         {

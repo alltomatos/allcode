@@ -1,6 +1,6 @@
 ﻿import { describe, expect, test } from "bun:test"
 import { ProviderV2 } from "@allcode/core/provider"
-import { projectProviderView } from "@/provider/view"
+import { connectionPredicate, projectProviderView } from "@/provider/view"
 import { ProviderTest } from "../fake/provider"
 import type { Provider } from "@/provider/provider"
 
@@ -116,6 +116,47 @@ describe("projectProviderView", () => {
     expect(view.connectedIDs).toContain("byCatalog")
     // OAuth sem access token não conta como conectado.
     expect(view.connectedIDs).not.toContain("byOauth")
+  })
+})
+
+// O critério de "conectado" é o único portão de `GET /provider`: o handler
+// filtra com ele antes de converter/projetar qualquer coisa. Estes casos
+// cobrem cada fonte que pode conectar um provider.
+describe("connectionPredicate", () => {
+  const predicate = (overrides: Partial<Parameters<typeof connectionPredicate>[0]> = {}) =>
+    connectionPredicate({
+      connected: {},
+      availableCatalogIDs: [],
+      activeIntegrationIDs: new Set<string>(),
+      credentials: {},
+      combos: [],
+      ...overrides,
+    })
+
+  test("credencial resolve por env/api/oauth/vivo", () => {
+    // Presença no estado vivo = loader materializou (env/auth/config/plugin).
+    expect(predicate({ connected: { live: { key: "sk-live" } as Provider.Info } })("live")).toBe(true)
+    expect(predicate({ credentials: { api: { type: "api" } } })("api")).toBe(true)
+    expect(predicate({ credentials: { oauth: { type: "oauth", access: "token" } } })("oauth")).toBe(true)
+    expect(predicate({ connected: { opt: { options: { apiKey: "sk-opt" } } as never } })("opt")).toBe(true)
+    expect(predicate({ connected: { opt: { options: { accessToken: "token" } } as never } })("opt")).toBe(true)
+  })
+
+  test("não conecta sem credencial real", () => {
+    // OAuth sem access (ainda não autenticado) não conecta.
+    expect(predicate({ credentials: { oauth: { type: "oauth" } } })("oauth")).toBe(false)
+    // Provider só do catálogo models.dev, sem nada, fica de fora.
+    expect(predicate()("anthropic")).toBe(false)
+  })
+
+  test("integração ativa e disponibilidade no catálogo contam", () => {
+    expect(predicate({ activeIntegrationIDs: new Set(["kiro"]) })("kiro")).toBe(true)
+    expect(predicate({ availableCatalogIDs: ["google-antigravity"] })("google-antigravity")).toBe(true)
+  })
+
+  test("combo só conecta quando existe combinação configurada", () => {
+    expect(predicate({ combos: [{ id: "fast" }] })("combo")).toBe(true)
+    expect(predicate()("combo")).toBe(false)
   })
 })
 

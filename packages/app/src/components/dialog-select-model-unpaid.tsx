@@ -7,7 +7,8 @@ import { Tag } from "@allcode/ui/tag"
 import { Tooltip } from "@allcode/ui/tooltip"
 import { type Component, Show } from "solid-js"
 import { useLocal } from "@/context/local"
-import { popularProviders, useProviders } from "@/hooks/use-providers"
+import { popularProviders } from "@/hooks/use-providers"
+import { connectablePopular, useConnectableProviders } from "@/hooks/use-connectable-providers"
 import { ModelTooltip } from "./model-tooltip"
 import { useLanguage } from "@/context/language"
 import { decode64 } from "@/utils/base64"
@@ -20,7 +21,7 @@ export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props
   const model = props.model ?? local.model
   const dialog = useDialog()
   const directory = () => decode64(local.slug())
-  const providers = useProviders(directory)
+  const connectable = useConnectableProviders(directory)
   const language = useLanguage()
 
   const openProviders = (provider?: string) => {
@@ -96,7 +97,7 @@ export const DialogSelectModelUnpaid: Component<{ model?: ModelState }> = (props
               <List
                 class="w-full px-3"
                 key={(p) => p.id}
-                items={providers.popular}
+                items={() => connectablePopular(connectable())}
                 activeIcon="plus-small"
                 sortBy={(a, b) => {
                   if (popularProviders.includes(a.id) && popularProviders.includes(b.id))

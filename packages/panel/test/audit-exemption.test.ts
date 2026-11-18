@@ -23,8 +23,8 @@ function d1From(db: Database) {
           return { results: statement.all(...(params as never[])) as T[], success: true, meta: {} }
         },
         async run() {
-          statement.run(...(params as never[]))
-          return { success: true, meta: {} }
+          const result = statement.run(...(params as never[]))
+          return { success: true, meta: { changes: result.changes } }
         },
       }
       return prepared
@@ -51,6 +51,7 @@ async function setupDatabase() {
   rawDb.exec(await Bun.file(new URL("../migrations/0013_user_audit_exempt.sql", import.meta.url)).text())
   rawDb.exec(await Bun.file(new URL("../migrations/0014_token_quotas.sql", import.meta.url)).text())
   rawDb.exec(await Bun.file(new URL("../migrations/0015_company_user_quota_and_global_providers.sql", import.meta.url)).text())
+  rawDb.exec(await Bun.file(new URL("../migrations/0016_password_updated_at.sql", import.meta.url)).text())
 
   const fakeD1 = d1From(rawDb)
   const storeInstance = d1Store(fakeD1)

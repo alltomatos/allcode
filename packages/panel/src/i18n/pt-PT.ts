@@ -57,7 +57,7 @@ export const dict = {
   "login.required": "Preencha o e-mail e a palavra-passe.",
   "login.demo": "Acesso de demonstração",
   "login.recoverHelp": "Introduza o seu e-mail profissional. Se a conta existir, enviaremos as instruções de reposição.",
-  "login.recoverDisabled": "A reposição será ativada juntamente com o fornecedor de identidade.",
+  "login.recoverDisabled": "A reposição por e-mail ainda não está disponível. Contacte o administrador da plataforma para repor a sua palavra-passe.",
 
   "notfound.title": "Página não encontrada",
   "notfound.description": "O endereço acedido não existe ou foi movido.",
@@ -226,7 +226,12 @@ export const dict = {
 
   "event.auth.login": "Sessão iniciada",
   "event.auth.login_failed": "Tentativa de início de sessão falhada",
+  "event.auth.login_failed_unknown_account": "Sessão falhou: conta inexistente",
+  "event.auth.login_failed_bad_password": "Sessão falhou: palavra-passe incorreta",
+  "event.auth.login_failed_hash": "Sessão falhou: hash da palavra-passe incompatível",
+  "event.auth.login_failed_disabled": "Sessão falhou: conta desativada",
   "event.auth.logout": "Sessão terminada",
+  "event.user.password_reset_breakglass": "Redefinição da palavra-passe do administrador geral (break-glass)",
   "event.user.created": "Utilizador criado",
   "event.user.role_changed": "Função alterada",
   "event.user.suspended": "Utilizador suspenso",

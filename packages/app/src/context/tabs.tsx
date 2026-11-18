@@ -13,7 +13,7 @@ import { createTabMemory } from "./tab-memory"
 import { nextTabAfterClose, pushClosedTab, removeClosedTabs, takeClosedTab, type ClosedTab } from "./closed-tabs"
 import { createDraftPromptSession, type PromptModel } from "./prompt-state"
 import { migrateTabs } from "./tab-migration"
-import { findDraftFor } from "./tabs-draft"
+import { createDraftCreationGuard, draftCreationKey, findDraftFor } from "./tabs-draft"
 
 export type SessionTab = {
   type: "session"
@@ -83,6 +83,10 @@ export const { use: useTabs, provider: TabsProvider } = createSimpleContext({
     const memory = createTabMemory(getOwner())
 
     const closing = new Set<string>()
+    // Um clique duplo (ou o mesmo atalho disparado duas vezes) chega aqui no
+    // mesmo tick, antes de `newDraft` resolver; devolver a mesma promise
+    // impede uma segunda aba/navegação e mantém uma única operação em voo.
+    const guardDraftCreation = createDraftCreationGuard<DraftTab>()
     let recentWrite = 0
     let recentValue: string | undefined
 
@@ -217,39 +221,44 @@ export const { use: useTabs, provider: TabsProvider } = createSimpleContext({
         if (!tab || tab.type !== "draft") throw new Error(`Draft not found: ${draftID}`)
         return tab
       },
-      async newDraft(draft: Omit<DraftTab, "type" | "draftID">, prompt?: string, model?: PromptModel) {
-        const existing = findDraftFor(store, draft.server, draft.directory)
-        if (existing) {
-          // Idempotente: foca o rascunho já aberto em vez de criar outro.
-          navigate(draftHref(existing.draftID))
-          return existing
-        }
+      newDraft(draft: Omit<DraftTab, "type" | "draftID">, prompt?: string, model?: PromptModel): Promise<DraftTab> {
+        // Proteção central contra repetição: vale para botões, command palette,
+        // menu desktop e atalhos (mod+shift+s / mod+t / mod+n), que convergem
+        // todos para `tabs.newDraft`.
+        return guardDraftCreation(draftCreationKey(draft.server, draft.directory), async () => {
+          const existing = findDraftFor(store, draft.server, draft.directory)
+          if (existing) {
+            // Idempotente: foca o rascunho já aberto em vez de criar outro.
+            navigate(draftHref(existing.draftID))
+            return existing
+          }
 
-        const draftID = uuid()
-        const tab = { type: "draft" as const, draftID, ...draft }
-        memory.ensure(tabKey(tab), "prompt", () => createDraftPromptSession(draftID, { prompt, model }))
-        // A aba entra no store imediatamente e a navegação acontece no mesmo
-        // tick: a página abre com o próprio loading em vez de esperar a
-        // transition do destino (lazy route + dados) resolver.
-        setStore(
-          produce((tabs) => {
-            tabs.push(tab)
-          }),
-        )
-        try {
-          navigate(draftHref(draftID))
-        } catch (error) {
-          // Não deixa aba órfã se a navegação falhar: o usuário vê o erro e
-          // pode tentar de novo, sem uma sessão fantasma no tab bar.
+          const draftID = uuid()
+          const tab: DraftTab = { type: "draft", draftID, ...draft }
+          memory.ensure(tabKey(tab), "prompt", () => createDraftPromptSession(draftID, { prompt, model }))
+          // A aba entra no store imediatamente e a navegação acontece no mesmo
+          // tick: a página abre com o próprio loading em vez de esperar a
+          // transition do destino (lazy route + dados) resolver.
           setStore(
             produce((tabs) => {
-              const index = tabs.findIndex((item) => item.type === "draft" && item.draftID === draftID)
-              if (index !== -1) tabs.splice(index, 1)
+              tabs.push(tab)
             }),
           )
-          throw error
-        }
-        return tab
+          try {
+            navigate(draftHref(draftID))
+          } catch (error) {
+            // Não deixa aba órfã se a navegação falhar: o usuário vê o erro e
+            // pode tentar de novo, sem uma sessão fantasma no tab bar.
+            setStore(
+              produce((tabs) => {
+                const index = tabs.findIndex((item) => item.type === "draft" && item.draftID === draftID)
+                if (index !== -1) tabs.splice(index, 1)
+              }),
+            )
+            throw error
+          }
+          return tab
+        })
       },
       updateDraft(draftID: string, draft: Partial<Omit<DraftTab, "type" | "draftID">>) {
         void startTransition(() => {

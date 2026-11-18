@@ -135,6 +135,16 @@ export const dict = {
   "command.language.cycle": "Llenguatge de cicle",
   "command.language.set": "Utilitza l'idioma: {{language}}",
   "command.session.new": "Nova sessió",
+  "provider.loading.title": "Loading providers and models...", // TODO: translate (auto-filled from en)
+  "provider.loading.detail": "{count} available", // TODO: translate (auto-filled from en)
+  "settings.agentui.model.unavailable": "Configured model is unavailable - the default will be used at runtime.", // TODO: translate (auto-filled from en)
+  "session.view.header.project": "Project", // TODO: translate (auto-filled from en)
+  "session.view.header.usage": "Session token usage", // TODO: translate (auto-filled from en)
+  "session.view.header.input": "Input", // TODO: translate (auto-filled from en)
+  "session.view.header.output": "Output", // TODO: translate (auto-filled from en)
+  "session.view.header.tps": "Tokens/s", // TODO: translate (auto-filled from en)
+  "session.view.header.total": "Total", // TODO: translate (auto-filled from en)
+  "session.view.header.noUsage": "No usage yet", // TODO: translate (auto-filled from en)
   "command.file.open": "Obre el fitxer",
   "command.tab.close": "Tanca la pestanya",
   "command.tab.reopenClosed": "Torneu a obrir la pestanya tancada",

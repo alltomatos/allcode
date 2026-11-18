@@ -154,6 +154,16 @@ export const dict = {
   "command.language.set": "使用语言：{{language}}",
 
   "command.session.new": "新建会话",
+  "provider.loading.title": "Loading providers and models...", // TODO: translate (auto-filled from en)
+  "provider.loading.detail": "{count} available", // TODO: translate (auto-filled from en)
+  "settings.agentui.model.unavailable": "Configured model is unavailable - the default will be used at runtime.", // TODO: translate (auto-filled from en)
+  "session.view.header.project": "Project", // TODO: translate (auto-filled from en)
+  "session.view.header.usage": "Session token usage", // TODO: translate (auto-filled from en)
+  "session.view.header.input": "Input", // TODO: translate (auto-filled from en)
+  "session.view.header.output": "Output", // TODO: translate (auto-filled from en)
+  "session.view.header.tps": "Tokens/s", // TODO: translate (auto-filled from en)
+  "session.view.header.total": "Total", // TODO: translate (auto-filled from en)
+  "session.view.header.noUsage": "No usage yet", // TODO: translate (auto-filled from en)
 
   "command.file.open": "打开文件",
 
