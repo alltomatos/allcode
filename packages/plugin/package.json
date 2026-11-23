@@ -21,7 +21,7 @@
     "dist"
   ],
   "dependencies": {
-    "@ai-sdk/provider": "3.0.8",
+    "@ai-sdk/provider": "4.0.39",
     "@allcode/sdk": "workspace:*",
     "effect": "catalog:",
     "zod": "catalog:"
