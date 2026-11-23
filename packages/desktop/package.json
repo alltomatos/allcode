@@ -36,7 +36,7 @@
     "drizzle-orm": "catalog:"
   },
   "devDependencies": {
-    "@actions/artifact": "4.0.0",
+    "@actions/artifact": "6.3.1",
     "@lydell/node-pty": "catalog:",
     "@allcode/app": "workspace:*",
     "@allcode/ui": "workspace:*",
@@ -49,15 +49,15 @@
     "@types/bun": "catalog:",
     "@types/node": "catalog:",
     "@typescript/native-preview": "catalog:",
-    "@valibot/to-json-schema": "1.6.0",
-    "electron": "42.3.3",
-    "electron-builder": "26.15.2",
-    "electron-vite": "^5",
+    "@valibot/to-json-schema": "1.8.0",
+    "electron": "45.4.1",
+    "electron-builder": "26.18.0",
+    "electron-vite": "^6",
     "solid-js": "catalog:",
-    "sury": "11.0.0-alpha.4",
+    "sury": "11.1.0",
     "typescript": "~5.6.2",
     "vite": "catalog:",
-    "zod-openapi": "5.4.6"
+    "zod-openapi": "6.0.2"
   },
   "optionalDependencies": {
     "@lydell/node-pty-darwin-arm64": "1.2.0-beta.12",
