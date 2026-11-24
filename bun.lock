@@ -141,7 +141,7 @@
         "xdg-basedir": "5.1.0",
         "xlsx": "0.18.5",
         "yargs": "18.0.0",
-        "zapo-js": "1.10.0",
+        "zapo-js": "1.12.0",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -5827,7 +5827,7 @@
 
     "youch-core": ["youch-core@0.3.3", "", { "dependencies": { "@poppinss/exception": "^1.2.2", "error-stack-parser-es": "^1.0.5" } }, "sha512-ho7XuGjLaJ2hWHoK8yFnsUGy2Y5uDpqSTq1FkHLK4/oqKtyUU1AFbOOxY4IpC9f0fTLjwYbslUz0Po5BpD1wrA=="],
 
-    "zapo-js": ["zapo-js@1.10.0", "", { "peerDependencies": { "argo-codec": "^0.2.1", "pino": "^9.0.0", "pino-pretty": "^13.0.0", "ws": "^8.20.1" }, "optionalPeers": ["argo-codec", "pino", "pino-pretty", "ws"] }, "sha512-FV9xuzeV7KOffcqDfm3u/I8gyU5EA90wtaOyFUMUdI7/lrjt/a7WFmpHoDBHBoUFcEIkK6udhs+VHKrObPoGqQ=="],
+    "zapo-js": ["zapo-js@1.12.0", "", { "peerDependencies": { "pino": "^9.0.0", "pino-pretty": "^13.0.0", "ws": "^8.20.1" }, "optionalPeers": ["pino", "pino-pretty", "ws"] }, "sha512-hlbrdvolu0KRxVTN6PmG1Oy5k9FPxenbEiy7FVccRmx2+7ycyIqtVoXV9B7iNYlXKulNx9xlV+0fZ3t7HP+GIg=="],
 
     "zip-stream": ["zip-stream@6.0.1", "", { "dependencies": { "archiver-utils": "^5.0.0", "compress-commons": "^6.0.2", "readable-stream": "^4.0.0" } }, "sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA=="],
 
