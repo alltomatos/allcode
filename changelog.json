@@ -17,6 +17,10 @@
             {
               "title": "Cabeçalho da sessão mostra o projeto e o uso de tokens",
               "description": "Cada aba exibe o título da sessão e a pasta do projeto, além dos tokens de entrada, de saída, tokens por segundo e total usado. Sessões novas ou sem uso registrado mostram um estado vazio explícito, sem números inválidos."
+            },
+            {
+              "title": "Pareamento por QR do WhatsApp nativo (zapo) volta a funcionar",
+              "description": "A biblioteca zapo-js foi atualizada de 1.10.0 para 1.12.0, corrigindo a falha 'cliente desatualizado' que impedia o WhatsApp Web de aceitar a conexão e gerar o QR de pareamento no AgentUI. O cliente nativo volta a conectar diretamente com a Meta sem gateway externo."
             }
           ]
         }
