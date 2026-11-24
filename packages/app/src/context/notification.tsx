@@ -479,20 +479,26 @@ function createServerNotificationState(input: {
     messagesCount: number
     modelUsage: SessionModelUsage[]
   }) => {
-    let summary = input.fallbackSummary
-    try {
-      const result = await serverSDK().client.memory.sessionSummary({
-        sessionID: input.sessionID,
-        directory: input.workspace,
-      })
-      const generated = result.data?.summary?.trim()
-      if (generated) summary = generated
-    } catch {
-      // Motor de memória indisponível: mantém o resumo de fallback
+    const exempt = Boolean(tenantAuth.store.user?.auditExempt)
+    let summary = exempt ? "Resumo oculto (isenção de auditoria)" : input.fallbackSummary
+    if (!exempt) {
+      try {
+        const result = await serverSDK().client.memory.sessionSummary({
+          sessionID: input.sessionID,
+          directory: input.workspace,
+        })
+        const generated = result.data?.summary?.trim()
+        if (generated) summary = generated
+      } catch {
+        // Motor de memória indisponível: mantém o resumo de fallback
+      }
     }
 
-    if (lastAuditSummary.get(input.sessionID) === summary) return
-    lastAuditSummary.set(input.sessionID, summary)
+    // O portal precisa receber cada atualização de tokens, mesmo quando o
+    // resumo executivo não mudou, para manter a cota e o consumo em dia.
+    const signature = `${summary}:${input.tokensTotal}`
+    if (lastAuditSummary.get(input.sessionID) === signature) return
+    lastAuditSummary.set(input.sessionID, signature)
 
     void tenantAuth.recordSessionAudit({
       sessionID: input.sessionID,

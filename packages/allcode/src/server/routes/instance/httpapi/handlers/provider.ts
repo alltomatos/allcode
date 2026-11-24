@@ -3,13 +3,13 @@ import { ProviderAuth } from "@/provider/auth"
 import { Config } from "@/config/config"
 import { ModelsDev } from "@allcode/core/models-dev"
 import { Provider } from "@/provider/provider"
+import { ProviderView } from "@/provider/view"
 import { Auth } from "@/auth"
 import { fetchUserQuotaDetails } from "@/provider/antigravity-adapter"
 import { IntegrationRotation } from "@allcode/core/integration/rotation"
 import { Combo } from "@/combo"
 import { Credential } from "@allcode/core/credential"
 
-import { mapValues } from "remeda"
 import { Effect, Layer, Schema } from "effect"
 import { HttpServerRequest, HttpServerResponse } from "effect/unstable/http"
 import { HttpApiBuilder } from "effect/unstable/httpapi"
@@ -21,6 +21,7 @@ import { Location } from "@allcode/core/location"
 import { LocationServiceMap, locationServiceMapLayer } from "@allcode/core/location-services"
 import { AbsolutePath } from "@allcode/core/schema"
 import { ProviderV2 } from "@allcode/core/provider"
+import { ModelV2 } from "@allcode/core/model"
 
 function mapProviderAuthError<A, R>(self: Effect.Effect<A, ProviderAuth.Error, R>) {
   return self.pipe(
@@ -97,6 +98,12 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
     // plugin. See the forkScoped warm-up above, which pays this cost in
     // the background before the user can reach this endpoint instead of
     // blocking on it here.
+    type CatalogSnapshot = {
+      providers: ProviderV2.Info[]
+      models: ModelV2.Info[]
+      available: ProviderV2.ID[]
+    }
+
     const catalogProviders = withLocation(
       Effect.gen(function* () {
         const internal = yield* PluginInternal.Service
@@ -110,110 +117,87 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
         // request forever.
         yield* internal.ready.pipe(Effect.timeout("20 seconds"), Effect.catch(() => Effect.void))
         const catalog = yield* Catalog.Service
-        const all = yield* catalog.provider.all()
-        const models = yield* catalog.model.all()
         return {
-          providers: all.map((item) => Provider.fromCatalog(item, models.filter((model) => model.providerID === item.id))),
+          providers: yield* catalog.provider.all(),
+          models: yield* catalog.model.all(),
           available: (yield* catalog.provider.available()).map((item) => item.id),
         }
       }),
-    ).pipe(Effect.catch(() => Effect.succeed({ providers: [] as Provider.Info[], available: [] as ProviderV2.ID[] })))
+    ).pipe(Effect.catch(() => Effect.succeed({ providers: [], models: [], available: [] } as CatalogSnapshot)))
 
     const list = Effect.fn("ProviderHttpApi.list")(function* () {
       const config = yield* cfg.get()
       const all = yield* ModelsDev.Service.use((s) => s.get())
-      const disabled = new Set(config.disabled_providers ?? [])
-      const enabled = config.enabled_providers ? new Set(config.enabled_providers) : undefined
-      const filtered: Record<string, (typeof all)[string]> = {}
-      for (const [key, value] of Object.entries(all)) {
-        if ((enabled ? enabled.has(key) : true) && !disabled.has(key)) filtered[key] = value
-      }
-      const connected = yield* provider.list()
+      const live = yield* provider.list()
       const credentials = yield* authStore.all().pipe(Effect.orDie)
       const catalogData = yield* catalogProviders
-      const catalogList = catalogData.providers
-      const availableCatalogIds = new Set(catalogData.available)
-      const providers = Object.assign(
-        mapValues(filtered, (item) => Provider.fromModelsDevProvider(item)),
-        connected,
-        Object.fromEntries(catalogList.filter((item) => !(item.id in connected)).map((item) => [item.id, item])),
-      )
 
       const storedCredentials = yield* credentialSvc.all().pipe(Effect.orDie)
       const activeIntegrationIDs = new Set(storedCredentials.map((c) => c.integrationID as string))
 
-      for (const catalogItem of catalogList) {
-        const managed =
-          activeIntegrationIDs.has(catalogItem.id) ||
-          catalogItem.id === "opencode" ||
-          catalogItem.id.startsWith("opencode-")
-        if (!managed) continue
-        const existing = providers[catalogItem.id]
-        if (!existing) {
-          providers[catalogItem.id] = catalogItem
-          continue
-        }
-        // The OpenCode Console catalog is authoritative for its own free
-        // models and can add ids that models.dev has not picked up yet (or
-        // still marks as deprecated). Merge those into the legacy view so
-        // they stay selectable; paid models keep following the live key.
-        const models = { ...existing.models }
-        for (const [id, model] of Object.entries(catalogItem.models)) {
-          if (model.status === "deprecated") continue
-          if (model.cost.input !== 0) continue
-          models[id] = model
-        }
-        providers[catalogItem.id] = { ...existing, models }
-      }
-
       const comboSvc = yield* Combo.Service.pipe(Effect.orElseSucceed(() => undefined))
       const combos = comboSvc ? yield* comboSvc.list().pipe(Effect.orElseSucceed(() => [])) : []
-      if (combos.length > 0) {
-        providers["combo"] = {
-          id: ProviderV2.ID.make("combo"),
-          name: "Combos",
-          models: Object.fromEntries(
-            combos.map((c) => [
-              c.id,
-              {
-                id: c.id,
-                name: c.name,
-                providerID: "combo",
-                capabilities: {
-                  tools: true,
-                  temperature: true,
-                  vision: true,
-                  reasoning: true,
-                  input: { text: true },
-                  output: { text: true },
-                },
-              } as any,
-            ]),
-          ),
-          source: "custom",
-          env: [],
-          options: {},
-        }
+
+      // Decidir o que está conectado ANTES de qualquer conversão/projeção. O
+      // payload de `GET /provider` passa a conter apenas provedores conectados
+      // e os modelos deles: o endpoint antes devolvia o catálogo models.dev
+      // inteiro (~330 providers / ~12k modelos / ~9 MB) para o cliente
+      // descartar quase tudo, o que era a regressão de tempo e tamanho.
+      // O critério é único (`ProviderView.connectionPredicate`), compartilhado
+      // com a projeção para não existirem duas definições de "conectado".
+      const isConnected = ProviderView.connectionPredicate({
+        connected: live,
+        availableCatalogIDs: catalogData.available,
+        activeIntegrationIDs,
+        credentials,
+        combos,
+      })
+
+      // Defensivo: mantém a invariante do endpoint (`all` e `connected`
+      // descrevem exatamente o mesmo conjunto) mesmo se o critério passar a
+      // excluir algum provider que o loader v1 materializou.
+      const connected = Object.fromEntries(Object.entries(live).filter(([id]) => isConnected(id)))
+
+      const disabled = new Set(config.disabled_providers ?? [])
+      const enabled = config.enabled_providers ? new Set(config.enabled_providers) : undefined
+      const base: Record<string, Provider.Info> = {}
+      for (const [id, item] of Object.entries(all)) {
+        if (enabled && !enabled.has(id)) continue
+        if (disabled.has(id)) continue
+        if (!isConnected(id)) continue
+        base[id] = Provider.fromModelsDevProvider(item)
       }
 
-      const connectedIDs = Object.keys(providers).filter((id) => {
-        if (id === "combo") return combos.length > 0
-        if (activeIntegrationIDs.has(id)) return true
-        if (credentials[id] && (credentials[id] as any).type !== "oauth") return true
-        if (credentials[id] && (credentials[id] as any).type === "oauth" && (credentials[id] as any).access) return true
-        if (id in connected) {
-          const item = (connected as any)[id]
-          if (item?.key && item.key !== "opencode-oauth-dummy-key") return true
-          if (item?.options?.apiKey || item?.options?.accessToken) return true
-        }
-        if (availableCatalogIds.has(id as ProviderV2.ID)) return true
-        return false
+      // Agrupa os modelos do catálogo numa passada (antes era um `filter`
+      // O(n*m) por provider) e só projeta os providers conectados, para o
+      // `fromCatalog` não tocar em modelos que nunca seriam devolvidos.
+      const modelsByProvider = new Map<string, ModelV2.Info[]>()
+      for (const model of catalogData.models) {
+        if (!isConnected(model.providerID)) continue
+        const current = modelsByProvider.get(model.providerID)
+        if (current) current.push(model)
+        else modelsByProvider.set(model.providerID, [model])
+      }
+      const catalog: Provider.Info[] = []
+      for (const item of catalogData.providers) {
+        if (!isConnected(item.id)) continue
+        catalog.push(Provider.fromCatalog(item, modelsByProvider.get(item.id) ?? []))
+      }
+
+      const view = ProviderView.projectProviderView({
+        base,
+        connected,
+        catalog,
+        availableCatalogIDs: catalogData.available,
+        activeIntegrationIDs,
+        credentials,
+        combos,
       })
 
       return {
-        all: Object.values(providers).map(Provider.toPublicInfo),
-        default: Provider.defaultModelIDs(providers),
-        connected: connectedIDs.map((id) => ProviderV2.ID.make(id)),
+        all: Object.values(view.providers).map(Provider.toPublicInfo),
+        default: Provider.defaultModelIDs(view.providers),
+        connected: view.connectedIDs.map((id) => ProviderV2.ID.make(id)),
       }
     })
 

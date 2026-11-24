@@ -49,6 +49,9 @@ export default function ProvidersPage() {
                         <Badge tone="brand">
                           {provider.protocol === "anthropic" ? "Anthropic" : "OpenAI"}
                         </Badge>
+                        <Show when={provider.scope === "global"}>
+                          <Badge tone="warning">Global</Badge>
+                        </Show>
                         <Badge tone={provider.enabled ? "success" : "warning"}>
                           {i18n.t(provider.enabled ? "providers.status.enabled" : "providers.status.disabled")}
                         </Badge>
@@ -66,12 +69,14 @@ export default function ProvidersPage() {
                     <span class="text-xs text-slate-500">
                       {usageFor(provider.providerID)} {i18n.t("providers.users")}
                     </span>
-                    <A
-                      href={`/app/provedores/${provider.id}`}
-                      class="text-xs font-semibold text-indigo-600 hover:text-indigo-500"
-                    >
-                      {i18n.t("providers.form.editTitle")}
-                    </A>
+                    <Show when={provider.scope !== "global"}>
+                      <A
+                        href={`/app/provedores/${provider.id}`}
+                        class="text-xs font-semibold text-indigo-600 hover:text-indigo-500"
+                      >
+                        {i18n.t("providers.form.editTitle")}
+                      </A>
+                    </Show>
                   </div>
                 )
               }}

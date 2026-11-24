@@ -72,6 +72,9 @@ interface ProcessorContext extends Input {
   needsCompaction: boolean
   currentText: SessionV1.TextPart | undefined
   reasoningMap: Record<string, SessionV1.ReasoningPart>
+  // Tracks whether the current stream attempt persisted anything. Restarting
+  // after partial output would duplicate text and re-run tools.
+  attempt: { emitted: boolean }
 }
 
 type StreamEvent = LLMEvent
@@ -111,6 +114,7 @@ const layer = Layer.effect(
         needsCompaction: false,
         currentText: undefined,
         reasoningMap: {},
+        attempt: { emitted: false },
       }
       let aborted = false
 
@@ -279,6 +283,7 @@ const layer = Layer.effect(
         switch (value.type) {
           case "reasoning-start":
             if (value.id in ctx.reasoningMap) return
+            ctx.attempt.emitted = true
             ctx.reasoningMap[value.id] = {
               id: PartID.ascending(),
               messageID: ctx.assistantMessage.id,
@@ -332,6 +337,7 @@ const layer = Layer.effect(
             if (ctx.assistantMessage.summary) {
               throw new Error(`Tool call not allowed while generating summary: ${value.name}`)
             }
+            ctx.attempt.emitted = true
             yield* ensureToolCall(value)
             const input = isRecord(value.input) ? value.input : { value: value.input }
             yield* updateToolCall(value.id, (match) => ({
@@ -498,6 +504,7 @@ const layer = Layer.effect(
           }
 
           case "text-start":
+            ctx.attempt.emitted = true
             ctx.currentText = {
               id: PartID.ascending(),
               messageID: ctx.assistantMessage.id,
@@ -650,6 +657,7 @@ const layer = Layer.effect(
           yield* Effect.gen(function* () {
             ctx.currentText = undefined
             ctx.reasoningMap = {}
+            ctx.attempt = { emitted: false }
             yield* status.set(ctx.sessionID, { type: "busy" })
             const stream = llm.stream(streamInput)
 
@@ -675,6 +683,10 @@ const layer = Layer.effect(
               SessionRetry.policy({
                 provider: input.model.providerID,
                 parse,
+                // Only restart a turn that has not persisted anything yet. Once
+                // text, reasoning or a tool call was emitted, retrying would
+                // duplicate output and could re-execute tools.
+                guard: () => !ctx.attempt.emitted,
                 set: (info) => {
                   return status.set(ctx.sessionID, {
                     type: "retry",

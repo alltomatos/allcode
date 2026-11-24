@@ -1,4 +1,4 @@
-import { ImagePreview } from "@allcode/ui/image-preview"
+﻿import { ImagePreview } from "@allcode/ui/image-preview"
 import { useDialog } from "@allcode/ui/context/dialog"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { ButtonV2 } from "@allcode/ui/v2/button-v2"
@@ -20,6 +20,7 @@ import { selectionFromLines, type SelectedLineRange, useFile } from "@/context/f
 import { useComments } from "@/context/comments"
 import { useCommand } from "@/context/command"
 import { useLanguage } from "@/context/language"
+import { Spinner } from "@allcode/ui/spinner"
 import { useLayout } from "@/context/layout"
 import { useLocal } from "@/context/local"
 import { usePermission } from "@/context/permission"
@@ -674,6 +675,7 @@ function PromptInputV2ModelControl(props: {
 }) {
   const dialog = useDialog()
   const local = useLocal()
+  const language = useLanguage()
   const directory = () => decode64(local.slug())
   const shouldAnimate = createMemo<boolean>((previous) => previous ?? props.loading)
 
@@ -699,7 +701,18 @@ function PromptInputV2ModelControl(props: {
   )
 
   return (
-    <Show when={!props.loading}>
+    <Show
+      when={!props.loading}
+      fallback={
+        <div
+          data-component="prompt-model-loading"
+          class="flex h-7 min-w-0 items-center gap-1.5 px-2 text-12-regular text-v2-text-text-muted"
+        >
+          <Spinner class="size-3.5 shrink-0" />
+          <span class="truncate">{language.t("provider.loading.title")}</span>
+        </div>
+      }
+    >
       <div class="flex items-center gap-1">
         <Show when={props.paid}>
           <ModelProviderSelectorV2
@@ -808,4 +821,5 @@ function openComment(
   props.controls.session.tabs.setActive(tab)
   void Promise.resolve(files.load(item.path)).finally(() => queueFocus())
 }
+
 

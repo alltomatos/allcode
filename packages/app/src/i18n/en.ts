@@ -1,4 +1,4 @@
-import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
+﻿import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
 
 export const dict = {
   ...DESKTOP_NATIVE_ENGLISH,
@@ -50,6 +50,13 @@ export const dict = {
   "command.language.set": "Use language: {{language}}",
 
   "command.session.new": "New session",
+  "session.view.header.project": "Project",
+  "session.view.header.usage": "Session token usage",
+  "session.view.header.input": "Input",
+  "session.view.header.output": "Output",
+  "session.view.header.tps": "Tokens/s",
+  "session.view.header.total": "Total",
+  "session.view.header.noUsage": "No usage yet",
   "command.file.open": "Open file",
   "command.tab.close": "Close tab",
   "command.tab.reopenClosed": "Reopen closed tab",
@@ -124,6 +131,8 @@ export const dict = {
   "dialog.model.select.title": "Select model",
   "dialog.model.selectProvider.title": "Select provider",
   "dialog.model.provider.label": "Provider",
+  "provider.loading.title": "Loading providers and models...",
+  "provider.loading.detail": "{count} available",
   "dialog.model.search.placeholder": "Search models",
   "dialog.model.empty": "No model results",
   "dialog.model.manage": "Manage models",
@@ -1084,6 +1093,7 @@ export const dict = {
   "settings.agentui.field.name": "Name",
   "settings.agentui.field.personality": "Personality",
   "settings.agentui.field.model": "Model",
+  "settings.agentui.model.unavailable": "Configured model is unavailable — the default will be used at runtime.",
   "settings.agentui.field.filterAudio": "Listen to audio (only models with voice/audio support)",
   "settings.agentui.field.telegram": "Reply on Telegram",
   "settings.agentui.field.telegramToken.placeholder": "Bot token (optional — leave empty to share the global bot)",
@@ -1559,6 +1569,11 @@ export const dict = {
   "settings.providers.health.toggleDisabledSuccess": "Account status updated",
   "settings.providers.health.toggleTooltip": "Enable or disable account from routing",
   "settings.providers.health.liberaEm": "Resets in {{time}}",
+  "settings.providers.health.banned": "Banned",
+  "settings.providers.health.bannedTooltip": "Account banned by the provider. Investigate the reason before re-enabling.",
+  "settings.providers.quota.banReason": "Ban reason: {{reason}}",
+  "settings.providers.quota.banDetectedAt": "Detected at {{time}}",
+  "settings.providers.quota.banHint": "The account was disabled automatically. Check the account email for the provider's appeal instructions.",
   "settings.providers.view.list": "List view",
   "settings.providers.view.grid": "Grid view",
   "settings.providers.custom.description": "Add an OpenAI-compatible provider by base URL.",
@@ -2004,3 +2019,5 @@ export const dict = {
   "sidebar.account.manage": "Manage account",
   "sidebar.account.signOut": "Sign out",
 }
+
+

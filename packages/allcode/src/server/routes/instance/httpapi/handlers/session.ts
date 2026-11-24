@@ -1,4 +1,6 @@
 import { PermissionV1 } from "@allcode/core/v1/permission"
+import { checkTenantQuota } from "@allcode/core/quota-gate"
+import { QuotaExceededError } from "@allcode/protocol/errors"
 import { Agent } from "@/agent/agent"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { EventV2Bridge } from "@/event-v2-bridge"
@@ -60,6 +62,25 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
     const summary = yield* SessionSummary.Service
     const events = yield* EventV2Bridge.Service
     const scope = yield* Scope.Scope
+
+    const requireQuota = Effect.fn("SessionHttpApi.requireQuota")(function* () {
+      const request = yield* HttpServerRequest.HttpServerRequest
+      const decision = yield* checkTenantQuota({
+        panelUrl: request.headers["x-allcode-panel-url"],
+        userID: request.headers["x-allcode-user-id"],
+        orgID: request.headers["x-allcode-org-id"],
+      })
+      if (decision && !decision.allowed) {
+        return yield* new QuotaExceededError({
+          code: "QUOTA_EXCEEDED",
+          scope: decision.scope,
+          message: decision.message,
+          limit: decision.limit,
+          used: decision.used,
+          remaining: decision.remaining,
+        })
+      }
+    })
 
     const list = Effect.fn("SessionHttpApi.list")(function* (ctx: { query: typeof ListQuery.Type }) {
       const directory = ctx.query.directory ? yield* InstanceState.directory : undefined
@@ -296,6 +317,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       params: { sessionID: SessionID }
       payload: typeof PromptPayload.Type
     }) {
+      yield* requireQuota()
       yield* requireSession(ctx.params.sessionID)
       const message = yield* promptSvc
         .prompt({
@@ -312,6 +334,7 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
       params: { sessionID: SessionID }
       payload: typeof PromptPayload.Type
     }) {
+      yield* requireQuota()
       yield* requireSession(ctx.params.sessionID)
       yield* promptSvc.prompt({ ...ctx.payload, sessionID: ctx.params.sessionID }).pipe(
         Effect.catchCause((cause) =>

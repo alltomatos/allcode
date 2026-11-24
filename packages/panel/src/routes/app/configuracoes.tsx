@@ -1,12 +1,15 @@
 import { createAsync, revalidate, useAction } from "@solidjs/router"
-import { For, Show, createSignal } from "solid-js"
+import { For, Show, createEffect, createSignal } from "solid-js"
 import { Button, Card, Field, PageHeader, Select } from "~/components/ui"
 import { useI18n } from "~/i18n"
-import { getSettings, listProviders, requireMe, updateSettings } from "~/lib/actions"
+import { getOrgQuota, getSettings, listProviders, requireMe, updateOrgQuota, updateSettings } from "~/lib/actions"
+import { formatDate } from "~/lib/labels"
+import { formatTokenAmount } from "~/lib/quota"
 
 export default function SettingsPage() {
   const i18n = useI18n()
   const actor = createAsync(() => requireMe())
+  const canManageQuota = () => actor()?.role === "owner" || actor()?.role === "admin"
   const settings = createAsync(() => getSettings())
   const providers = createAsync(() => listProviders())
   const update = useAction(updateSettings)
@@ -17,6 +20,42 @@ export default function SettingsPage() {
   const [logoUrl, setLogoUrl] = createSignal("")
   const [selectedProviderID, setSelectedProviderID] = createSignal<string | null>(null)
   const [selectedModelID, setSelectedModelID] = createSignal<string | null>(null)
+
+  const quotaState = createAsync(() => getOrgQuota())
+  const saveQuota = useAction(updateOrgQuota)
+  const [quotaInput, setQuotaInput] = createSignal("")
+  const [cycleDay, setCycleDay] = createSignal(1)
+  const [quotaError, setQuotaError] = createSignal<string | null>(null)
+  const [quotaSaved, setQuotaSaved] = createSignal(false)
+  const [quotaPending, setQuotaPending] = createSignal(false)
+  const [quotaInitialized, setQuotaInitialized] = createSignal(false)
+
+  createEffect(() => {
+    if (quotaInitialized()) return
+    const current = settings()
+    if (!current) return
+    setQuotaInput(current.userTokenQuota ? formatTokenAmount(current.userTokenQuota) : "")
+    setCycleDay(current.tokenQuotaCycleDay ?? 1)
+    setQuotaInitialized(true)
+  })
+
+  async function submitQuota(event: SubmitEvent) {
+    event.preventDefault()
+    setQuotaPending(true)
+    setQuotaError(null)
+    setQuotaSaved(false)
+    const result = await saveQuota({ quota: quotaInput(), cycleDay: cycleDay() })
+    setQuotaPending(false)
+    if (result?.error) {
+      setQuotaError(i18n.t(result.error))
+      return
+    }
+    setQuotaSaved(true)
+    revalidate("panel.quota.org")
+    revalidate("panel.quota.overview")
+    revalidate("panel.settings")
+    revalidate("panel.audit")
+  }
 
   const activeProvider = () =>
     (providers() ?? []).find(
@@ -76,8 +115,9 @@ export default function SettingsPage() {
             setLogoUrl(current().logoUrl!)
           }
           return (
-            <Card class="max-w-3xl">
-              <Show when={actor()?.role !== "owner"}>
+            <>
+              <Card class="max-w-3xl">
+                <Show when={actor()?.role !== "owner"}>
                 <div class="mb-4 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800 ring-1 ring-amber-200">
                   {i18n.t("settings.ownerOnly")}
                 </div>
@@ -308,6 +348,104 @@ export default function SettingsPage() {
                 </Show>
               </form>
             </Card>
+
+            <Card class="mt-6 max-w-3xl">
+              <div class="flex items-start justify-between gap-4 border-b border-slate-100 pb-3">
+                <div>
+                  <h3 class="text-sm font-semibold text-slate-900">{i18n.t("quota.company.title")}</h3>
+                  <p class="mt-0.5 text-xs text-slate-500">{i18n.t("quota.company.subtitle")}</p>
+                </div>
+                <span class="rounded bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                  {i18n.t("quota.company.poolBySuperadmin")}
+                </span>
+              </div>
+
+              <Show when={quotaState()}>
+                {(quota) => (
+                  <div class="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+                    <div class="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                      <div class="text-[11px] uppercase tracking-wide text-slate-500">
+                        {i18n.t("quota.company.used")}
+                      </div>
+                      <div class="mt-1 font-semibold text-slate-900">
+                        {formatTokenAmount(quota().company.used)}
+                        <span class="text-xs font-normal text-slate-400">
+                          {" / "}
+                          {quota().company.limit === null
+                            ? i18n.t("quota.company.unlimited")
+                            : formatTokenAmount(quota().company.limit)}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                      <div class="text-[11px] uppercase tracking-wide text-slate-500">
+                        {i18n.t("quota.company.remaining")}
+                      </div>
+                      <div class="mt-1 font-semibold text-slate-900">
+                        {quota().company.remaining === null
+                          ? i18n.t("quota.company.unlimited")
+                          : formatTokenAmount(quota().company.remaining)}
+                      </div>
+                    </div>
+                    <div class="rounded-xl bg-slate-50 p-3 ring-1 ring-slate-200">
+                      <div class="text-[11px] uppercase tracking-wide text-slate-500">
+                        {i18n.t("quota.cycle")}
+                      </div>
+                      <div class="mt-1 text-xs font-medium text-slate-700">
+                        {formatDate(quota().cycleStart, i18n.locale())} → {formatDate(quota().cycleEnd, i18n.locale())}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Show>
+
+              <Show when={quotaState()?.blocked}>
+                <div class="mt-4 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700 ring-1 ring-rose-200">
+                  {i18n.t("quota.company.blocked")}
+                </div>
+              </Show>
+
+              <form onSubmit={submitQuota} class="mt-4 space-y-4">
+                <div class="grid gap-4 sm:grid-cols-2">
+                  <Field
+                    label={i18n.t("quota.company.globalLimit")}
+                    name="userTokenQuota"
+                    value={quotaInput()}
+                    placeholder="5M"
+                    hint={i18n.t("quota.company.globalHint")}
+                    disabled={!canManageQuota()}
+                    onInput={(event) => setQuotaInput(event.currentTarget.value)}
+                  />
+                  <Field
+                    label={i18n.t("quota.company.cycleDay")}
+                    name="cycleDay"
+                    type="number"
+                    value={String(cycleDay())}
+                    hint={i18n.t("quota.company.cycleHint")}
+                    disabled={!canManageQuota()}
+                    onInput={(event) => setCycleDay(Number(event.currentTarget.value))}
+                  />
+                </div>
+
+                <Show when={quotaError()}>
+                  <div class="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700 ring-1 ring-rose-200">
+                    {quotaError()}
+                  </div>
+                </Show>
+                <Show when={quotaSaved()}>
+                  <div class="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-700 ring-1 ring-emerald-200">
+                    {i18n.t("quota.company.globalSaved")}
+                  </div>
+                </Show>
+
+                <Show when={canManageQuota()}>
+                  <Button type="submit" disabled={quotaPending()}>
+                    {quotaPending() ? i18n.t("common.loading") : i18n.t("common.save")}
+                  </Button>
+                </Show>
+              </form>
+              </Card>
+            </>
           )
         }}
       </Show>

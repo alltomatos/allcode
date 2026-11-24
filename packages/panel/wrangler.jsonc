@@ -10,6 +10,12 @@
   "observability": {
     "enabled": true
   },
+  "hyperdrive": [
+    {
+      "binding": "AUDIT_DB",
+      "id": "c3a547bc28a540dd8f0637740af1dce4"
+    }
+  ],
   "d1_databases": [
     {
       "binding": "DB",

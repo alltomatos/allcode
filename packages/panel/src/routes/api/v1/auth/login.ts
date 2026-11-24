@@ -1,6 +1,7 @@
 import type { APIEvent } from "@solidjs/start"
 import { store, isTrialExpired, getTrialDaysRemaining } from "~/lib/store"
-import { verifyPassword } from "~/lib/crypto"
+import { verifyCredentials } from "~/lib/password-change"
+import { loadQuotaState } from "~/lib/quota-service"
 import { resolveUserAccess } from "~/lib/user-access"
 
 export async function POST(event: APIEvent) {
@@ -37,8 +38,8 @@ export async function POST(event: APIEvent) {
     const db = store()
     await db.ensureSeed()
 
-    const user = await db.users.findByEmail(email)
-    if (!user || !(await verifyPassword(password, user.passwordHash))) {
+    const user = await verifyCredentials(db, email, password)
+    if (!user) {
       await db.audit.log({
         actorEmail: email,
         action: "auth.login_failed_desktop",
@@ -96,6 +97,7 @@ export async function POST(event: APIEvent) {
     // Retorna payload completo para o AllCode Desktop
     const resolved = await resolveUserAccess(user)
     const plan = tenant.planID ? await db.plans.findByID(tenant.planID) : undefined
+    const quota = await loadQuotaState(tenant.id, user.id)
     return new Response(
       JSON.stringify({
         ok: true,
@@ -104,7 +106,9 @@ export async function POST(event: APIEvent) {
           name: user.name,
           email: user.email,
           role: user.role,
+          isPlatformAdmin: user.isPlatformAdmin,
           mustChangePassword: user.mustChangePassword,
+          auditExempt: Boolean(user.auditExempt),
           permissions: {
             agentui: resolved.access.agentui,
             routines: resolved.access.routines,
@@ -116,6 +120,7 @@ export async function POST(event: APIEvent) {
           defaultModel: resolved.defaultModel,
           providers: resolved.providers,
         },
+        quota,
         tenant: {
           id: tenant.id,
           name: tenant.name,

@@ -1,5 +1,6 @@
 import type { APIEvent } from "@solidjs/start"
 import { store, isTrialExpired, getTrialDaysRemaining } from "~/lib/store"
+import { loadQuotaState } from "~/lib/quota-service"
 import { resolveUserAccess } from "~/lib/user-access"
 
 async function resolveStatus(userId?: string, email?: string, appVersion?: string) {
@@ -97,6 +98,7 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
 
   const resolved = await resolveUserAccess(user)
   const plan = tenant.planID ? await db.plans.findByID(tenant.planID) : undefined
+  const quota = await loadQuotaState(tenant.id, user.id)
   const permissions = {
     agentui: resolved.access.agentui,
     routines: resolved.access.routines,
@@ -120,12 +122,15 @@ async function resolveStatus(userId?: string, email?: string, appVersion?: strin
       defaultModel: resolved.defaultModel,
       providers: resolved.providers,
       appVersion: version ?? user.appVersion,
+      quota,
       user: {
         id: user.id,
         name: user.name,
         email: user.email,
         role: user.role,
+        isPlatformAdmin: user.isPlatformAdmin,
         mustChangePassword: user.mustChangePassword,
+        auditExempt: Boolean(user.auditExempt),
         permissions,
         access: resolved.access,
         settings: resolved.settings,

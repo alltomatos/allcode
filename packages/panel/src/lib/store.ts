@@ -1,5 +1,6 @@
 import { hashPassword } from "./crypto"
 import { bindings, env } from "./env"
+import { computeComparativeSavings, type ReferenceRatesConfig } from "./kpi-pricing"
 
 export type Role = "owner" | "admin" | "member"
 export type Status = "invited" | "active" | "suspended" | "deleted"
@@ -19,15 +20,19 @@ export type PanelUser = {
   canUseAgentUI: boolean
   canUseRoutines: boolean
   canChangePassword: boolean
+  auditExempt?: boolean
   /** undefined = inherit from the access groups. */
   canOpenSettings?: boolean
   defaultProvider?: string
   defaultModel?: string
+  /** Individual token quota. undefined = no sub-limit (uses only the company pool). */
+  tokenQuota?: number
   accessOverrides: string
   appVersion?: string
   appVersionAt?: string
   createdAt: string
   lastLoginAt?: string
+  updatedAt?: string
 }
 
 export type AccessGroup = {
@@ -52,6 +57,7 @@ export type ProviderDefinition = {
   orgID: string
   providerID: string
   displayName: string
+  scope: "company" | "global"
   kind: ProviderKind
   protocol: ProviderProtocol
   npm?: string
@@ -117,8 +123,33 @@ export type ModelUsageSummary = ModelUsageEntry & {
 export type UserKPIs = {
   totalSessions: number
   totalTokens: number
+  tokensInput: number
+  tokensOutput: number
+  tokensReasoning: number
   totalCostUsd: number
   totalDurationMs: number
+  referenceCostAnthropic: number
+  referenceCostOpenAI: number
+  referenceMarketCost: number
+  savingsUsd: number
+  savingsPercentage: number
+}
+
+export type OrgKPIs = UserKPIs
+
+export const EMPTY_USER_KPIS: UserKPIs = {
+  totalSessions: 0,
+  totalTokens: 0,
+  tokensInput: 0,
+  tokensOutput: 0,
+  tokensReasoning: 0,
+  totalCostUsd: 0,
+  totalDurationMs: 0,
+  referenceCostAnthropic: 0,
+  referenceCostOpenAI: 0,
+  referenceMarketCost: 0,
+  savingsUsd: 0,
+  savingsPercentage: 0,
 }
 
 export type SessionListOptions = {
@@ -151,6 +182,12 @@ export type Organization = {
   planType: "trial" | "paid"
   trialEndsAt?: string
   planID?: string
+  /** Shared token pool for every user in the company. undefined = unlimited. */
+  tokenQuota?: number
+  /** Default per-user quota for users without an individual override. */
+  userTokenQuota?: number
+  /** Day of the month (UTC) that starts the billing cycle. */
+  tokenQuotaCycleDay?: number
   createdAt: string
 }
 
@@ -300,6 +337,7 @@ export type UserPatch = Partial<
     | "passwordHash"
     | "mustChangePassword"
     | "lastLoginAt"
+    | "updatedAt"
     | "appVersion"
     | "appVersionAt"
     | "isReseller"
@@ -307,9 +345,11 @@ export type UserPatch = Partial<
     | "canUseAgentUI"
     | "canUseRoutines"
     | "canChangePassword"
+    | "auditExempt"
     | "canOpenSettings"
     | "defaultProvider"
     | "defaultModel"
+    | "tokenQuota"
     | "accessOverrides"
   >
 >
@@ -336,6 +376,9 @@ export type OrgPatch = Partial<
     | "planType"
     | "trialEndsAt"
     | "planID"
+    | "tokenQuota"
+    | "userTokenQuota"
+    | "tokenQuotaCycleDay"
   >
 >
 
@@ -369,6 +412,9 @@ export type Store = {
       trialDays?: number
       trialEndsAt?: string
       planID?: string
+      tokenQuota?: number
+      userTokenQuota?: number
+      tokenQuotaCycleDay?: number
     }): Promise<Organization>
     update(id: string, patch: OrgPatch): Promise<Organization>
     stats(): Promise<TenantStats>
@@ -414,9 +460,11 @@ export type Store = {
       canUseAgentUI?: boolean
       canUseRoutines?: boolean
       canChangePassword?: boolean
+      auditExempt?: boolean
       canOpenSettings?: boolean
       defaultProvider?: string
       defaultModel?: string
+      tokenQuota?: number
       accessOverrides?: Record<string, boolean>
     }): Promise<PanelUser>
     update(id: string, patch: UserPatch): Promise<PanelUser | undefined>
@@ -449,12 +497,14 @@ export type Store = {
   }
   providers: {
     list(orgID?: string): Promise<ProviderDefinition[]>
+    listGlobal(): Promise<ProviderDefinition[]>
     findByID(id: string): Promise<ProviderDefinition | undefined>
     findByProviderID(orgID: string, providerID: string): Promise<ProviderDefinition | undefined>
     create(input: {
       orgID: string
       providerID: string
       displayName: string
+      scope?: "company" | "global"
       kind?: ProviderKind
       protocol?: ProviderProtocol
       npm?: string
@@ -491,9 +541,21 @@ export type Store = {
     listByUser(userID: string, limit?: number): Promise<SessionAudit[]>
     listByOrg(orgID: string, options?: SessionListOptions): Promise<SessionAudit[]>
     findBySessionID(sessionID: string): Promise<SessionAudit | undefined>
-    getUserKPIs(userID: string): Promise<UserKPIs>
-    getOrgKPIs(orgID: string): Promise<UserKPIs>
+    getUserKPIs(userID: string, config?: Partial<ReferenceRatesConfig>): Promise<UserKPIs>
+    getOrgKPIs(orgID: string, config?: Partial<ReferenceRatesConfig>): Promise<OrgKPIs>
     getUserModelUsage(userID: string, options?: { days?: number }): Promise<ModelUsageSummary[]>
+  }
+  quota: {
+    record(input: {
+      sessionID: string
+      orgID: string
+      userID: string
+      tokens: number
+      cycleStart: string
+    }): Promise<void>
+    getUserUsage(userID: string, cycleStart: string): Promise<number>
+    getOrgUsage(orgID: string, cycleStart: string): Promise<number>
+    getUsageByUser(orgID: string, cycleStart: string): Promise<Record<string, number>>
   }
   credentials: {
     listByUser(userID: string): Promise<UserProviderCredential[]>
@@ -532,6 +594,9 @@ function defaultOrg(): Organization {
     trialEndsAt: undefined,
     resellerID: undefined,
     planID: undefined,
+    tokenQuota: undefined,
+    userTokenQuota: undefined,
+    tokenQuotaCycleDay: 1,
     createdAt: new Date().toISOString(),
   }
 }
@@ -569,6 +634,10 @@ function memoryStore(): Store {
   const providers = new Map<string, ProviderDefinition>()
   const providerGrants = new Map<string, ProviderGrant[]>()
   const sessionRecords: SessionAudit[] = []
+  const tokenUsage = new Map<
+    string,
+    { orgID: string; userID: string; tokens: number; cycleStart: string; updatedAt: string }
+  >()
   const credentials = new Map<string, UserProviderCredential>()
   const plans = new Map<string, Plan>()
   const initialOrg = defaultOrg()
@@ -600,6 +669,7 @@ function memoryStore(): Store {
           canUseAgentUI: true,
           canUseRoutines: true,
           canChangePassword: true,
+          auditExempt: false,
           canOpenSettings: true,
           accessOverrides: "{}",
           createdAt: new Date().toISOString(),
@@ -646,6 +716,9 @@ function memoryStore(): Store {
           planType,
           trialEndsAt,
           planID: input.planID,
+          tokenQuota: input.tokenQuota,
+          userTokenQuota: input.userTokenQuota,
+          tokenQuotaCycleDay: input.tokenQuotaCycleDay ?? 1,
           createdAt: new Date().toISOString(),
         }
         orgs.set(newOrg.id, newOrg)
@@ -820,9 +893,11 @@ function memoryStore(): Store {
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
+          auditExempt: input.auditExempt ?? false,
           canOpenSettings: input.canOpenSettings ?? true,
           defaultProvider: input.defaultProvider,
           defaultModel: input.defaultModel,
+          tokenQuota: input.tokenQuota,
           accessOverrides: JSON.stringify(input.accessOverrides ?? {}),
           createdAt: new Date().toISOString(),
         }
@@ -833,7 +908,7 @@ function memoryStore(): Store {
         const user = find(id)
         if (!user) return
         const previousEmail = user.email
-        Object.assign(user, patch)
+        Object.assign(user, patch, { updatedAt: patch.updatedAt ?? new Date().toISOString() })
         if (patch.email && patch.email !== previousEmail) {
           users.delete(previousEmail)
           users.set(patch.email.toLowerCase(), user)
@@ -909,17 +984,29 @@ function memoryStore(): Store {
     },
     providers: {
       async list(orgID) {
+        const visible = [...providers.values()].filter(
+          (provider) => !orgID || provider.orgID === orgID || provider.scope === "global",
+        )
+        const byProviderID = new Map<string, ProviderDefinition>()
+        for (const provider of visible) {
+          const current = byProviderID.get(provider.providerID)
+          if (!current || provider.scope === "company") byProviderID.set(provider.providerID, provider)
+        }
+        return [...byProviderID.values()].sort((left, right) =>
+          left.displayName.localeCompare(right.displayName),
+        )
+      },
+      async listGlobal() {
         return [...providers.values()]
-          .filter((provider) => !orgID || provider.orgID === orgID)
+          .filter((provider) => provider.scope === "global")
           .sort((left, right) => left.displayName.localeCompare(right.displayName))
       },
       async findByID(id) {
         return providers.get(id)
       },
       async findByProviderID(orgID, providerID) {
-        return [...providers.values()].find(
-          (provider) => provider.orgID === orgID && provider.providerID === providerID,
-        )
+        const all = [...providers.values()].filter((provider) => provider.providerID === providerID)
+        return all.find((provider) => provider.orgID === orgID) ?? all.find((provider) => provider.scope === "global")
       },
       async create(input) {
         const now = new Date().toISOString()
@@ -928,6 +1015,7 @@ function memoryStore(): Store {
           orgID: input.orgID,
           providerID: input.providerID,
           displayName: input.displayName,
+          scope: input.scope ?? "company",
           kind: input.kind ?? "builtin",
           protocol: input.protocol ?? "openai",
           npm: input.npm,
@@ -1043,22 +1131,62 @@ function memoryStore(): Store {
       async findBySessionID(sessionID) {
         return sessionRecords.find((record) => record.sessionID === sessionID)
       },
-      async getUserKPIs(userID) {
+      async getUserKPIs(userID, config) {
         const userSessions = sessionRecords.filter((record) => record.userID === userID)
+        const totalSessions = userSessions.length
+        const totalTokens = userSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0)
+        const tokensInput = userSessions.reduce((acc, curr) => acc + (curr.tokensInput || 0), 0)
+        const tokensOutput = userSessions.reduce((acc, curr) => acc + (curr.tokensOutput || 0), 0)
+        const tokensReasoning = userSessions.reduce((acc, curr) => acc + (curr.tokensReasoning || 0), 0)
+        const totalCostUsd = userSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0)
+        const totalDurationMs = userSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0)
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
         return {
-          totalSessions: userSessions.length,
-          totalTokens: userSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
-          totalCostUsd: userSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
-          totalDurationMs: userSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
-      async getOrgKPIs(orgID) {
+      async getOrgKPIs(orgID, config) {
         const orgSessions = sessionRecords.filter((record) => record.orgID === orgID)
+        const totalSessions = orgSessions.length
+        const totalTokens = orgSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0)
+        const tokensInput = orgSessions.reduce((acc, curr) => acc + (curr.tokensInput || 0), 0)
+        const tokensOutput = orgSessions.reduce((acc, curr) => acc + (curr.tokensOutput || 0), 0)
+        const tokensReasoning = orgSessions.reduce((acc, curr) => acc + (curr.tokensReasoning || 0), 0)
+        const totalCostUsd = orgSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0)
+        const totalDurationMs = orgSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0)
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
         return {
-          totalSessions: orgSessions.length,
-          totalTokens: orgSessions.reduce((acc, curr) => acc + (curr.tokensTotal || 0), 0),
-          totalCostUsd: orgSessions.reduce((acc, curr) => acc + (curr.costUsd || 0), 0),
-          totalDurationMs: orgSessions.reduce((acc, curr) => acc + (curr.durationMs || 0), 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
       async getUserModelUsage(userID, options = {}) {
@@ -1091,6 +1219,40 @@ function memoryStore(): Store {
           }
         }
         return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
+      },
+    },
+    quota: {
+      async record(input) {
+        const existing = tokenUsage.get(input.sessionID)
+        tokenUsage.set(input.sessionID, {
+          orgID: input.orgID,
+          userID: input.userID,
+          tokens: Math.max(0, Math.trunc(input.tokens)),
+          cycleStart: existing?.cycleStart ?? input.cycleStart,
+          updatedAt: new Date().toISOString(),
+        })
+      },
+      async getUserUsage(userID, cycleStart) {
+        let total = 0
+        for (const entry of tokenUsage.values()) {
+          if (entry.userID === userID && entry.cycleStart === cycleStart) total += entry.tokens
+        }
+        return total
+      },
+      async getOrgUsage(orgID, cycleStart) {
+        let total = 0
+        for (const entry of tokenUsage.values()) {
+          if (entry.orgID === orgID && entry.cycleStart === cycleStart) total += entry.tokens
+        }
+        return total
+      },
+      async getUsageByUser(orgID, cycleStart) {
+        const usage: Record<string, number> = {}
+        for (const entry of tokenUsage.values()) {
+          if (entry.orgID !== orgID || entry.cycleStart !== cycleStart) continue
+          usage[entry.userID] = (usage[entry.userID] ?? 0) + entry.tokens
+        }
+        return usage
       },
     },
     credentials: {
@@ -1156,14 +1318,17 @@ type UserRow = {
   can_use_agentui?: number
   can_use_routines?: number
   can_change_password?: number
+  audit_exempt?: number
   can_open_settings?: number | null
   default_provider?: string | null
   default_model?: string | null
+  token_quota?: number | null
   access_overrides?: string | null
   app_version?: string | null
   app_version_at?: string | null
   created_at: string
   last_login_at: string | null
+  updated_at?: string | null
 }
 
 type OrgRow = {
@@ -1187,6 +1352,9 @@ type OrgRow = {
   plan_type?: string | null
   trial_ends_at?: string | null
   plan_id?: string | null
+  token_quota?: number | null
+  user_token_quota?: number | null
+  token_quota_cycle_day?: number | null
   created_at: string
 }
 
@@ -1233,6 +1401,7 @@ type ProviderRow = {
   org_id: string
   provider_id: string
   display_name: string
+  scope?: string | null
   kind: string
   protocol: string | null
   npm: string | null
@@ -1311,17 +1480,20 @@ function toUser(row: UserRow): PanelUser {
     canUseAgentUI: row.can_use_agentui !== 0,
     canUseRoutines: row.can_use_routines !== 0,
     canChangePassword: row.can_change_password !== 0,
+    auditExempt: row.audit_exempt === 1,
     canOpenSettings:
       row.can_open_settings === null || row.can_open_settings === undefined
         ? undefined
         : row.can_open_settings !== 0,
     defaultProvider: row.default_provider ?? undefined,
     defaultModel: row.default_model ?? undefined,
+    tokenQuota: row.token_quota ?? undefined,
     accessOverrides: row.access_overrides ?? "{}",
     appVersion: row.app_version ?? undefined,
     appVersionAt: row.app_version_at ?? undefined,
     createdAt: row.created_at,
     lastLoginAt: row.last_login_at ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
   }
 }
 
@@ -1402,6 +1574,9 @@ function toOrg(row: OrgRow): Organization {
     planType: row.plan_type === "paid" ? "paid" : "trial",
     trialEndsAt: row.trial_ends_at ?? undefined,
     planID: row.plan_id ?? undefined,
+    tokenQuota: row.token_quota ?? undefined,
+    userTokenQuota: row.user_token_quota ?? undefined,
+    tokenQuotaCycleDay: row.token_quota_cycle_day ?? 1,
     createdAt: row.created_at,
   }
 }
@@ -1444,6 +1619,7 @@ function toProvider(row: ProviderRow): ProviderDefinition {
     orgID: row.org_id,
     providerID: row.provider_id,
     displayName: row.display_name,
+    scope: row.scope === "global" ? "global" : "company",
     kind: row.kind === "custom" ? "custom" : row.kind === "proxy" ? "proxy" : "builtin",
     protocol: (row.protocol === "anthropic" ? "anthropic" : "openai") as ProviderProtocol,
     npm: row.npm ?? undefined,
@@ -1598,12 +1774,15 @@ export function d1Store(db: D1Database): Store {
           planType,
           trialEndsAt,
           planID: input.planID,
+          tokenQuota: input.tokenQuota,
+          userTokenQuota: input.userTokenQuota,
+          tokenQuotaCycleDay: input.tokenQuotaCycleDay ?? 1,
           createdAt: new Date().toISOString(),
         }
         await db
           .prepare(
-            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, logo_url, welcome_message, brand_color, sso_mode, offline_grace_hours, session_max_age_hours, reseller_id, plan_type, trial_ends_at, plan_id, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO organization (id, name, slug, status, max_users, contact_email, logo_url, welcome_message, brand_color, sso_mode, offline_grace_hours, session_max_age_hours, reseller_id, plan_type, trial_ends_at, plan_id, token_quota, user_token_quota, token_quota_cycle_day, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             newOrg.id,
@@ -1622,6 +1801,9 @@ export function d1Store(db: D1Database): Store {
             newOrg.planType,
             newOrg.trialEndsAt ?? null,
             newOrg.planID ?? null,
+            newOrg.tokenQuota ?? null,
+            newOrg.userTokenQuota ?? null,
+            newOrg.tokenQuotaCycleDay,
             newOrg.createdAt,
           )
           .run()
@@ -1632,7 +1814,7 @@ export function d1Store(db: D1Database): Store {
         const next = { ...current, ...patch }
         await db
           .prepare(
-            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ?, reseller_id = ?, plan_type = ?, trial_ends_at = ?, plan_id = ? WHERE id = ?`,
+            `UPDATE organization SET name = ?, slug = ?, status = ?, max_users = ?, contact_email = ?, logo_url = ?, welcome_message = ?, brand_color = ?, sso_mode = ?, offline_grace_hours = ?, session_max_age_hours = ?, default_provider = ?, default_model = ?, provider_policy = ?, allow_local_providers = ?, reseller_id = ?, plan_type = ?, trial_ends_at = ?, plan_id = ?, token_quota = ?, user_token_quota = ?, token_quota_cycle_day = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -1654,6 +1836,9 @@ export function d1Store(db: D1Database): Store {
             next.planType,
             next.trialEndsAt ?? null,
             next.planID ?? null,
+            next.tokenQuota ?? null,
+            next.userTokenQuota ?? null,
+            next.tokenQuotaCycleDay ?? 1,
             id,
           )
           .run()
@@ -1914,16 +2099,18 @@ export function d1Store(db: D1Database): Store {
           canUseAgentUI: input.canUseAgentUI ?? true,
           canUseRoutines: input.canUseRoutines ?? true,
           canChangePassword: input.canChangePassword ?? true,
+          auditExempt: input.auditExempt ?? false,
           canOpenSettings: input.canOpenSettings ?? true,
           defaultProvider: input.defaultProvider,
           defaultModel: input.defaultModel,
+          tokenQuota: input.tokenQuota,
           accessOverrides: JSON.stringify(input.accessOverrides ?? {}),
           createdAt: new Date().toISOString(),
         }
         await db
           .prepare(
-            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, is_reseller, reseller_id, can_use_agentui, can_use_routines, can_change_password, can_open_settings, default_provider, default_model, access_overrides, created_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO panel_user (id, org_id, name, email, role, status, password_hash, must_change_password, is_platform_admin, is_reseller, reseller_id, can_use_agentui, can_use_routines, can_change_password, audit_exempt, can_open_settings, default_provider, default_model, token_quota, access_overrides, created_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             user.id,
@@ -1940,9 +2127,11 @@ export function d1Store(db: D1Database): Store {
             user.canUseAgentUI ? 1 : 0,
             user.canUseRoutines ? 1 : 0,
             user.canChangePassword ? 1 : 0,
+            user.auditExempt ? 1 : 0,
             user.canOpenSettings === undefined ? null : user.canOpenSettings ? 1 : 0,
             user.defaultProvider ?? null,
             user.defaultModel ?? null,
+            user.tokenQuota ?? null,
             user.accessOverrides,
             user.createdAt,
           )
@@ -1952,10 +2141,10 @@ export function d1Store(db: D1Database): Store {
       async update(id, patch) {
         const current = await userFindByID(id)
         if (!current) return
-        const next = { ...current, ...patch }
-        await db
+        const next = { ...current, ...patch, updatedAt: patch.updatedAt ?? new Date().toISOString() }
+        const result = await db
           .prepare(
-            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, can_open_settings = ?, default_provider = ?, default_model = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ? WHERE id = ?`,
+            `UPDATE panel_user SET name = ?, email = ?, role = ?, status = ?, password_hash = ?, must_change_password = ?, last_login_at = ?, can_use_agentui = ?, can_use_routines = ?, can_change_password = ?, audit_exempt = ?, can_open_settings = ?, default_provider = ?, default_model = ?, token_quota = ?, access_overrides = ?, app_version = ?, app_version_at = ?, is_reseller = ?, reseller_id = ?, updated_at = ? WHERE id = ?`,
           )
           .bind(
             next.name,
@@ -1968,17 +2157,23 @@ export function d1Store(db: D1Database): Store {
             next.canUseAgentUI ? 1 : 0,
             next.canUseRoutines ? 1 : 0,
             next.canChangePassword ? 1 : 0,
+            next.auditExempt ? 1 : 0,
             next.canOpenSettings === undefined ? null : next.canOpenSettings ? 1 : 0,
             next.defaultProvider ?? null,
             next.defaultModel ?? null,
+            next.tokenQuota ?? null,
             next.accessOverrides ?? "{}",
             next.appVersion ?? null,
             next.appVersionAt ?? null,
             next.isReseller ? 1 : 0,
             next.resellerID ?? null,
+            next.updatedAt,
             id,
           )
           .run()
+        if (result.meta?.changes !== 1) {
+          throw new Error(`Falha ao persistir alterações do usuário no D1 (changes=${result.meta?.changes ?? "indisponível"}).`)
+        }
         return next
       },
       async count(orgID) {
@@ -2117,9 +2312,26 @@ export function d1Store(db: D1Database): Store {
     providers: {
       async list(orgID) {
         const query = orgID
-          ? db.prepare("SELECT * FROM provider_definition WHERE org_id = ? ORDER BY display_name ASC").bind(orgID)
+          ? db
+              .prepare(
+                "SELECT * FROM provider_definition WHERE org_id = ? OR scope = 'global' ORDER BY display_name ASC",
+              )
+              .bind(orgID)
           : db.prepare("SELECT * FROM provider_definition ORDER BY display_name ASC")
         const rows = await query.all<ProviderRow>()
+        const byProviderID = new Map<string, ProviderDefinition>()
+        for (const provider of rows.results.map(toProvider)) {
+          const current = byProviderID.get(provider.providerID)
+          if (!current || provider.scope === "company") byProviderID.set(provider.providerID, provider)
+        }
+        return [...byProviderID.values()].sort((left, right) =>
+          left.displayName.localeCompare(right.displayName),
+        )
+      },
+      async listGlobal() {
+        const rows = await db
+          .prepare("SELECT * FROM provider_definition WHERE scope = 'global' ORDER BY display_name ASC")
+          .all<ProviderRow>()
         return rows.results.map(toProvider)
       },
       async findByID(id) {
@@ -2128,8 +2340,10 @@ export function d1Store(db: D1Database): Store {
       },
       async findByProviderID(orgID, providerID) {
         const row = await db
-          .prepare("SELECT * FROM provider_definition WHERE org_id = ? AND provider_id = ?")
-          .bind(orgID, providerID)
+          .prepare(
+            "SELECT * FROM provider_definition WHERE provider_id = ? AND (org_id = ? OR scope = 'global') ORDER BY CASE WHEN scope = 'global' THEN 1 ELSE 0 END LIMIT 1",
+          )
+          .bind(providerID, orgID)
           .first<ProviderRow>()
         return row ? toProvider(row) : undefined
       },
@@ -2140,6 +2354,7 @@ export function d1Store(db: D1Database): Store {
           orgID: input.orgID,
           providerID: input.providerID,
           displayName: input.displayName,
+          scope: input.scope ?? "company",
           kind: input.kind ?? "builtin",
           protocol: input.protocol ?? "openai",
           npm: input.npm,
@@ -2155,14 +2370,15 @@ export function d1Store(db: D1Database): Store {
         }
         await db
           .prepare(
-            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, kind, protocol, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO provider_definition (id, org_id, provider_id, display_name, scope, kind, protocol, npm, base_url, api_key, models_json, headers_json, env_json, enabled, created_by, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           )
           .bind(
             provider.id,
             provider.orgID,
             provider.providerID,
             provider.displayName,
+            provider.scope,
             provider.kind,
             provider.protocol,
             provider.npm ?? null,
@@ -2208,12 +2424,16 @@ export function d1Store(db: D1Database): Store {
         return next
       },
       async remove(id) {
-        const row = await db.prepare("SELECT org_id, provider_id FROM provider_definition WHERE id = ?").bind(id).first<{
-          org_id: string
-          provider_id: string
-        }>()
+        const row = await db
+          .prepare("SELECT org_id, provider_id, scope FROM provider_definition WHERE id = ?")
+          .bind(id)
+          .first<{ org_id: string; provider_id: string; scope: string }>()
         await db.prepare("DELETE FROM provider_definition WHERE id = ?").bind(id).run()
         if (!row) return
+        if (row.scope === "global") {
+          await db.prepare("DELETE FROM provider_grant WHERE provider_id = ?").bind(row.provider_id).run()
+          return
+        }
         await db
           .prepare(
             `DELETE FROM provider_grant WHERE provider_id = ? AND (
@@ -2357,42 +2577,110 @@ export function d1Store(db: D1Database): Store {
           .first<SessionAuditRow>()
         return row ? toSessionAudit(row) : undefined
       },
-      async getUserKPIs(userID) {
+      async getUserKPIs(userID, config) {
         const row = await db
           .prepare(
             `SELECT
                COUNT(*) AS total_sessions,
                SUM(tokens_total) AS total_tokens,
+               SUM(tokens_input) AS total_tokens_input,
+               SUM(tokens_output) AS total_tokens_output,
+               SUM(tokens_reasoning) AS total_tokens_reasoning,
                SUM(cost_usd) AS total_cost_usd,
                SUM(duration_ms) AS total_duration_ms
              FROM session_audit WHERE user_id = ?`,
           )
           .bind(userID)
-          .first<{ total_sessions: number; total_tokens: number; total_cost_usd: number; total_duration_ms: number }>()
+          .first<{
+            total_sessions: number
+            total_tokens: number
+            total_tokens_input: number
+            total_tokens_output: number
+            total_tokens_reasoning: number
+            total_cost_usd: number
+            total_duration_ms: number
+          }>()
+
+        const totalSessions = Number(row?.total_sessions ?? 0)
+        const totalTokens = Number(row?.total_tokens ?? 0)
+        const tokensInput = Number(row?.total_tokens_input ?? 0)
+        const tokensOutput = Number(row?.total_tokens_output ?? 0)
+        const tokensReasoning = Number(row?.total_tokens_reasoning ?? 0)
+        const totalCostUsd = Number(row?.total_cost_usd ?? 0)
+        const totalDurationMs = Number(row?.total_duration_ms ?? 0)
+
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
+
         return {
-          totalSessions: Number(row?.total_sessions ?? 0),
-          totalTokens: Number(row?.total_tokens ?? 0),
-          totalCostUsd: Number(row?.total_cost_usd ?? 0),
-          totalDurationMs: Number(row?.total_duration_ms ?? 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
-      async getOrgKPIs(orgID) {
+      async getOrgKPIs(orgID, config) {
         const row = await db
           .prepare(
             `SELECT
                COUNT(*) AS total_sessions,
                SUM(tokens_total) AS total_tokens,
+               SUM(tokens_input) AS total_tokens_input,
+               SUM(tokens_output) AS total_tokens_output,
+               SUM(tokens_reasoning) AS total_tokens_reasoning,
                SUM(cost_usd) AS total_cost_usd,
                SUM(duration_ms) AS total_duration_ms
              FROM session_audit WHERE org_id = ?`,
           )
           .bind(orgID)
-          .first<{ total_sessions: number; total_tokens: number; total_cost_usd: number; total_duration_ms: number }>()
+          .first<{
+            total_sessions: number
+            total_tokens: number
+            total_tokens_input: number
+            total_tokens_output: number
+            total_tokens_reasoning: number
+            total_cost_usd: number
+            total_duration_ms: number
+          }>()
+
+        const totalSessions = Number(row?.total_sessions ?? 0)
+        const totalTokens = Number(row?.total_tokens ?? 0)
+        const tokensInput = Number(row?.total_tokens_input ?? 0)
+        const tokensOutput = Number(row?.total_tokens_output ?? 0)
+        const tokensReasoning = Number(row?.total_tokens_reasoning ?? 0)
+        const totalCostUsd = Number(row?.total_cost_usd ?? 0)
+        const totalDurationMs = Number(row?.total_duration_ms ?? 0)
+
+        const savings = computeComparativeSavings(
+          { total: totalTokens, input: tokensInput, output: tokensOutput, reasoning: tokensReasoning },
+          totalCostUsd,
+          config,
+        )
+
         return {
-          totalSessions: Number(row?.total_sessions ?? 0),
-          totalTokens: Number(row?.total_tokens ?? 0),
-          totalCostUsd: Number(row?.total_cost_usd ?? 0),
-          totalDurationMs: Number(row?.total_duration_ms ?? 0),
+          totalSessions,
+          totalTokens,
+          tokensInput,
+          tokensOutput,
+          tokensReasoning,
+          totalCostUsd: Number(totalCostUsd.toFixed(4)),
+          totalDurationMs,
+          referenceCostAnthropic: savings.referenceCostAnthropic,
+          referenceCostOpenAI: savings.referenceCostOpenAI,
+          referenceMarketCost: savings.referenceMarketCost,
+          savingsUsd: savings.savingsUsd,
+          savingsPercentage: savings.savingsPercentage,
         }
       },
       async getUserModelUsage(userID, options = {}) {
@@ -2428,6 +2716,57 @@ export function d1Store(db: D1Database): Store {
           }
         }
         return [...summaryMap.values()].sort((a, b) => b.tokens - a.tokens)
+      },
+    },
+    quota: {
+      async record(input) {
+        const now = new Date().toISOString()
+        await db
+          .prepare(
+            `INSERT INTO token_usage_ledger (session_id, org_id, user_id, tokens, cycle_start, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?)
+             ON CONFLICT(session_id) DO UPDATE SET
+               tokens = excluded.tokens,
+               updated_at = excluded.updated_at`,
+          )
+          .bind(
+            input.sessionID,
+            input.orgID,
+            input.userID,
+            Math.max(0, Math.trunc(input.tokens)),
+            input.cycleStart,
+            now,
+          )
+          .run()
+      },
+      async getUserUsage(userID, cycleStart) {
+        const row = await db
+          .prepare(
+            "SELECT COALESCE(SUM(tokens), 0) AS total FROM token_usage_ledger WHERE user_id = ? AND cycle_start = ?",
+          )
+          .bind(userID, cycleStart)
+          .first<{ total: number }>()
+        return Number(row?.total ?? 0)
+      },
+      async getOrgUsage(orgID, cycleStart) {
+        const row = await db
+          .prepare(
+            "SELECT COALESCE(SUM(tokens), 0) AS total FROM token_usage_ledger WHERE org_id = ? AND cycle_start = ?",
+          )
+          .bind(orgID, cycleStart)
+          .first<{ total: number }>()
+        return Number(row?.total ?? 0)
+      },
+      async getUsageByUser(orgID, cycleStart) {
+        const rows = await db
+          .prepare(
+            "SELECT user_id, COALESCE(SUM(tokens), 0) AS total FROM token_usage_ledger WHERE org_id = ? AND cycle_start = ? GROUP BY user_id",
+          )
+          .bind(orgID, cycleStart)
+          .all<{ user_id: string; total: number }>()
+        const usage: Record<string, number> = {}
+        for (const row of rows.results) usage[row.user_id] = Number(row.total ?? 0)
+        return usage
       },
     },
     credentials: {
@@ -2515,7 +2854,15 @@ const d1Stores = new WeakMap<D1Database, Store>()
 
 export function store(): Store {
   const db = bindings().DB
-  if (!db) return (memory ??= memoryStore())
+  if (!db) {
+    // No Worker, __env__ sempre existe: sem o binding D1 é uma configuração quebrada.
+    // O fallback em memória semeia com PANEL_ADMIN_PASSWORD e o tornaria uma credencial
+    // de autenticação, além de descartar escritas privilegiadas. Falha fechada.
+    if ((globalThis as { __env__?: unknown }).__env__) {
+      throw new Error("Binding D1 'DB' indisponível no Worker; recusando fallback em memória.")
+    }
+    return (memory ??= memoryStore())
+  }
   const cached = d1Stores.get(db)
   if (cached) return cached
   const created = d1Store(db)

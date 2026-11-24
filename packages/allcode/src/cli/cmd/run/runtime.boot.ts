@@ -95,20 +95,22 @@ const layer = Layer.effect(
       directory: string,
       model: RunInput["model"],
     ) {
-      const connected = yield* Effect.promise(() =>
-        sdk.config
-          .providers({ directory })
-          .then((item) => item.data?.providers)
-          .catch(() => undefined),
+      // `/provider` já é a projeção do catálogo v2 (mesma lista que o app usa).
+      // Filtramos pelos conectados para manter o seletor do `run` como antes;
+      // só cai para `/config/providers` quando o merged ainda não chegou.
+      const merged = yield* Effect.promise(() =>
+        sdk.provider
+          .list()
+          .then((item) => {
+            const connected = new Set(item.data?.connected ?? [])
+            return (item.data?.all ?? []).filter((provider) => connected.has(provider.id))
+          })
+          .catch(() => []),
       )
-      const providers = yield* Effect.promise(() =>
-        connected
-          ? Promise.resolve(connected)
-          : sdk.provider
-              .list()
-              .then((item) => item.data?.all ?? [])
-              .catch(() => []),
-      )
+      const providers = yield* Effect.promise(async () => {
+        if (merged.length > 0) return merged
+        return (await sdk.config.providers({ directory }).catch(() => undefined))?.data?.providers ?? []
+      })
       const limits = Object.fromEntries(
         providers.flatMap((provider) =>
           Object.entries(provider.models ?? {}).flatMap(([modelID, info]) => {

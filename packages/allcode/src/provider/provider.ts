@@ -35,6 +35,7 @@ import { ModelStatus } from "./model-status"
 import { RuntimeFlags } from "@/effect/runtime-flags"
 import { ProviderError } from "./error"
 import { ensureRelay, DEFAULT_PORT as AGENTROUTER_DEFAULT_PORT } from "./agentrouter/manager"
+import { ProviderRemoteModalities } from "./remote-modalities"
 import * as OpencodeCompat from "@/session/llm/opencode-compat"
 
 const OPENAI_HEADER_TIMEOUT_DEFAULT = 300_000
@@ -1291,11 +1292,27 @@ export function toPublicInfo(provider: Info): Info {
   )
 }
 
-export function defaultModelIDs<T extends { models: Record<string, { id: string }> }>(providers: Record<string, T>) {
+export function defaultModelIDs<
+  T extends { models: Record<string, { id: string; release_date?: string; status?: string }> },
+>(providers: Record<string, T>) {
   return Object.fromEntries(
     Object.entries(providers).flatMap(([providerID, item]) => {
-      const first = sort(Object.values(item.models))[0]
-      return first ? [[providerID, first.id]] : []
+      // Deprecated nunca é default: o catálogo pode mantê-lo habilitado e o
+      // modelo mais recente por data poderia ser justamente um deles.
+      const models = Object.values(item.models).filter((model) => model.status !== "deprecated")
+      if (models.length === 0) return []
+      // The catalog decides the default (newest released, see
+      // packages/core/src/catalog.ts). The projection only carries
+      // `release_date`, so mirror that rule here instead of re-ranking by the
+      // legacy `sort()` heuristic.
+      const newest = models.reduce<{ model: (typeof models)[number]; at: number } | undefined>((best, model) => {
+        const at = Date.parse(model.release_date ?? "")
+        if (!Number.isFinite(at)) return best
+        if (!best || at > best.at) return { model, at }
+        return best
+      }, undefined)
+      const picked = newest?.model ?? sort(models)[0]
+      return picked ? [[providerID, picked.id]] : []
     }),
   )
 }
@@ -1549,6 +1566,9 @@ export function fromModelsDevProvider(provider: ModelsDev.Provider): Info {
 export function fromCatalog(provider: ProviderV2.Info, models: ModelV2.Info[]): Info {
   const entries: Record<string, Model> = {}
   for (const model of models) {
+    // The catalog disables models that must not be offered: deprecated ones,
+    // paid models without credentials, and config `disabled: true`.
+    if (!model.enabled) continue
     entries[model.id] = {
       id: model.id,
       providerID: provider.id,
@@ -1914,6 +1934,51 @@ const layer = Layer.effect(
           if (provider.name) partial.name = provider.name
           if (provider.options) partial.options = provider.options
           mergeProvider(providerID, partial)
+        }
+
+        // Endpoints that publish an OpenAI-compatible `GET /models` are the
+        // authoritative source for per-model input modalities. A config-defined
+        // provider only declares what someone typed by hand, so most of its
+        // models stayed text-only in the catalog even when the gateway already
+        // reported image/audio/pdf. Collect the sources here and merge further
+        // below, once the final provider list (and its credentials) is known.
+        const modalitySources: Record<string, { baseURL: string; apiKey?: string; headers: Record<string, string> }> = {}
+        for (const [id, provider] of Object.entries(providers)) {
+          // models.dev-backed providers already ship modalities; the gap is
+          // specific to gateways configured by hand, which bypass that catalog.
+          if (modelsDev[id]) continue
+          // `source` is later overwritten to "api"/"env" when the key comes from
+          // auth.json or the environment, so identify config providers by their
+          // presence in the config instead.
+          if (!cfg.provider?.[id]) continue
+          if (!Object.values(provider.models).some((model) => model.api.npm.includes("@ai-sdk/openai-compatible"))) continue
+          const baseURL = provider.options?.baseURL ?? Object.values(provider.models)[0]?.api.url
+          if (!baseURL || typeof baseURL !== "string") continue
+          const apiKey = provider.key ?? (typeof provider.options?.apiKey === "string" ? provider.options.apiKey : undefined)
+          const headers: Record<string, string> = {}
+          const configured = provider.options?.headers
+          if (isRecord(configured)) {
+            for (const [name, value] of Object.entries(configured)) {
+              if (typeof value === "string") headers[name] = value
+            }
+          }
+          modalitySources[id] = { baseURL, apiKey, headers }
+        }
+
+        if (Object.keys(modalitySources).length > 0) {
+          const discovered = yield* Effect.promise(() =>
+            Promise.all(
+              Object.entries(modalitySources).map(async ([id, source]) => {
+                const models = await ProviderRemoteModalities.fetchRemoteModalities(source)
+                return [id, models] as const
+              }),
+            ),
+          )
+          for (const [id, remote] of discovered) {
+            const provider = providers[ProviderV2.ID.make(id)]
+            if (!provider || remote.size === 0) continue
+            ProviderRemoteModalities.applyRemoteModalities({ models: provider.models, remote })
+          }
         }
 
         const gitlab = ProviderV2.ID.make("gitlab")

@@ -1,4 +1,4 @@
-import { describe, expect } from "bun:test"
+﻿import { describe, expect } from "bun:test"
 import { Effect } from "effect"
 import { HttpClient, HttpClientResponse } from "effect/unstable/http"
 import { Catalog } from "@allcode/core/catalog"
@@ -309,6 +309,132 @@ describe("OpencodePlugin", () => {
     ),
   )
 
+  it.effect("desabilita todos os modelos do opencode-go sem conexão", () =>
+    withEnv({ OPENCODE_API_KEY: undefined }, () =>
+      Effect.gen(function* () {
+        const catalog = yield* Catalog.Service
+        yield* catalog.transform((catalog) => {
+          const provider = ProviderV2.Info.make({
+            ...ProviderV2.Info.empty(ProviderV2.ID.make("opencode-go")),
+            api: { type: "aisdk", package: "test-provider" },
+          })
+          catalog.provider.update(provider.id, () => {})
+          for (const [id, input] of [
+            ["deepseek-v4-pro", 1],
+            ["beam-free", 0],
+          ] as const) {
+            catalog.model.update(provider.id, ModelV2.ID.make(id), (draft) => {
+              draft.cost = cost(input)
+            })
+          }
+        })
+        yield* addPlugin()
+        const go = ProviderV2.ID.make("opencode-go")
+        // D003: gratuito sem credencial também é selecionável e não executável.
+        expect(yield* eventually(catalog.model.get(go, ModelV2.ID.make("deepseek-v4-pro")).pipe(Effect.map((model) => model?.enabled ?? true)), (enabled) => !enabled)).toBe(false)
+        expect(yield* eventually(catalog.model.get(go, ModelV2.ID.make("beam-free")).pipe(Effect.map((model) => model?.enabled ?? true)), (enabled) => !enabled)).toBe(false)
+      }),
+    ),
+  )
+
+  it.effect("filtra modelos do opencode-go ausentes na API real", () =>
+    withEnv({ OPENCODE_API_KEY: "secret" }, () =>
+      Effect.gen(function* () {
+        const catalog = yield* Catalog.Service
+        const go = ProviderV2.ID.make("opencode-go")
+        yield* catalog.transform((catalog) => {
+          const provider = ProviderV2.Info.make({
+            ...ProviderV2.Info.empty(go),
+            api: { type: "aisdk", package: "test-provider" },
+          })
+          catalog.provider.update(provider.id, () => {})
+          for (const id of ["live", "gone"] as const) {
+            catalog.model.update(provider.id, ModelV2.ID.make(id), (draft) => {
+              draft.cost = cost(0)
+            })
+          }
+        })
+        let calls = 0
+        const http = HttpClient.make((request) => {
+          calls += 1
+          return Effect.succeed(
+            HttpClientResponse.fromWeb(request, Response.json({ data: [{ id: "live" }] })),
+          )
+        })
+        yield* addPlugin(http)
+        yield* eventually(Effect.sync(() => calls), (count) => count > 0)
+        const goneEnabled = yield* eventually(
+          catalog.model.get(go, ModelV2.ID.make("gone")).pipe(Effect.map((model) => model?.enabled ?? true)),
+          (enabled) => !enabled,
+        )
+        expect(goneEnabled).toBe(false)
+        expect(required(yield* catalog.model.get(go, ModelV2.ID.make("live"))).enabled).toBe(true)
+      }),
+    ),
+  )
+
+  it.effect("mantém o catálogo do opencode-go quando a API falha (fail-open)", () =>
+    withEnv({ OPENCODE_API_KEY: "secret" }, () =>
+      Effect.gen(function* () {
+        const catalog = yield* Catalog.Service
+        const go = ProviderV2.ID.make("opencode-go")
+        yield* catalog.transform((catalog) => {
+          const provider = ProviderV2.Info.make({
+            ...ProviderV2.Info.empty(go),
+            api: { type: "aisdk", package: "test-provider" },
+          })
+          catalog.provider.update(provider.id, () => {})
+          for (const id of ["live", "gone"] as const) {
+            catalog.model.update(provider.id, ModelV2.ID.make(id), (draft) => {
+              draft.cost = cost(0)
+            })
+          }
+        })
+        let calls = 0
+        const http = HttpClient.make((request) => {
+          calls += 1
+          return Effect.succeed(HttpClientResponse.fromWeb(request, new Response("", { status: 500 })))
+        })
+        yield* addPlugin(http)
+        yield* eventually(Effect.sync(() => calls), (count) => count > 0)
+        expect(required(yield* catalog.model.get(go, ModelV2.ID.make("gone"))).enabled).toBe(true)
+        expect(required(yield* catalog.model.get(go, ModelV2.ID.make("live"))).enabled).toBe(true)
+      }),
+    ),
+  )
+
+  it.effect("OPENCODE_DISABLE_FREE_MODELS desabilita gratuitos", () =>
+    withEnv({ OPENCODE_DISABLE_FREE_MODELS: "1", OPENCODE_API_KEY: undefined }, () =>
+      Effect.gen(function* () {
+        const catalog = yield* Catalog.Service
+        yield* catalog.transform((catalog) => {
+          const provider = ProviderV2.Info.make({
+            ...ProviderV2.Info.empty(ProviderV2.ID.opencode),
+            api: { type: "aisdk", package: "test-provider" },
+          })
+          catalog.provider.update(provider.id, () => {})
+          for (const [id, input] of [
+            ["free-model", 0],
+            ["paid-model", 1],
+          ] as const) {
+            catalog.model.update(provider.id, ModelV2.ID.make(id), (draft) => {
+              draft.cost = cost(input)
+            })
+          }
+        })
+        yield* addPlugin()
+        const free = yield* eventually(
+          catalog.model.get(ProviderV2.ID.opencode, ModelV2.ID.make("free-model")).pipe(Effect.map((m) => m?.enabled ?? true)),
+          (enabled) => !enabled,
+        )
+        expect(free).toBe(false)
+        expect(required(yield* catalog.model.get(ProviderV2.ID.opencode, ModelV2.ID.make("paid-model"))).enabled).toBe(
+          false,
+        )
+      }),
+    ),
+  )
+
   it.effect("treats output-only cost as free without credentials", () =>
     withEnv({ OPENCODE_API_KEY: undefined }, () =>
       Effect.gen(function* () {
@@ -481,3 +607,5 @@ describe("OpencodePlugin", () => {
     }),
   )
 })
+
+

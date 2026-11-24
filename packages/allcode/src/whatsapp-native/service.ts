@@ -32,6 +32,7 @@ import {
   type GroupSummary,
 } from "./groups"
 import { listThreads, readMessages, type StoredMessage, type StoredThread } from "./history"
+import { listSavedContacts, type SavedContact } from "./contacts"
 import {
   ctaUrlButton,
   listMessage,
@@ -137,6 +138,11 @@ export interface Interface {
     agentId: string
     limit?: number
   }) => Effect.Effect<StoredThread[], WhatsAppNativeOperationError>
+  readonly listContacts: (input: {
+    agentId: string
+    limit?: number
+    query?: string
+  }) => Effect.Effect<SavedContact[], WhatsAppNativeOperationError>
   readonly listGroups: (input: { agentId: string; onlyAdmin?: boolean }) => Effect.Effect<
     GroupSummary[],
     WhatsAppNativeOperationError
@@ -374,6 +380,17 @@ export const layer = Layer.effect(
     const listChats = (input: { agentId: string; limit?: number }) =>
       op(input.agentId, "Falha ao listar conversas", () => listThreads(input))
 
+    // Lê apenas o espelho local da agenda — funciona mesmo desconectado.
+    const listContacts = (input: { agentId: string; limit?: number; query?: string }) =>
+      Effect.tryPromise({
+        try: () => listSavedContacts(input),
+        catch: (err) =>
+          new WhatsAppNativeOperationError({
+            message: `Falha ao listar contatos da agenda: ${err instanceof Error ? err.message : String(err)}`,
+            agentId: input.agentId,
+          }),
+      })
+
     const listGroups = (input: { agentId: string; onlyAdmin?: boolean }) =>
       op(input.agentId, "Falha ao listar grupos", (client) => queryGroups(client, input))
 
@@ -509,6 +526,7 @@ export const layer = Layer.effect(
       sendCarousel,
       readMessages: readMessagesOp,
       listChats,
+      listContacts,
       listGroups,
       groupInfo,
       listGroupParticipants,

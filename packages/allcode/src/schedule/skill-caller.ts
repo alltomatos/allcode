@@ -1,6 +1,6 @@
-export * as ScheduleSkillCaller from "./skill-caller"
+﻿export * as ScheduleSkillCaller from "./skill-caller"
 
-import { Effect, Layer } from "effect"
+import { Effect, Exit, Layer } from "effect"
 import { makeGlobalNode } from "@allcode/core/effect/app-node"
 import { ScheduleRunner } from "@allcode/core/schedule/runner"
 import { PermissionV1 } from "@allcode/core/v1/permission"
@@ -14,6 +14,19 @@ import { ModelV2 } from "@allcode/core/model"
 import { SessionID } from "@/session/schema"
 
 import { Combo } from "@/combo"
+import { Provider } from "@/provider/provider"
+
+// D005: decisão pura para poder ser verificada sem montar o harness da rotina.
+// Abortar antes de criar sessão evita sessão órfã em automação com efeito
+// colateral; a configuração persistida não é alterada e a falha desaparece
+// sozinha quando o modelo volta a existir.
+export function skillModelGuard(input: {
+  model?: { providerID: string; modelID: string }
+  available: boolean
+}): { error: string } | undefined {
+  if (!input.model || input.available) return undefined
+  return { error: `modelo configurado indisponível: ${input.model.providerID}/${input.model.modelID}` }
+}
 
 const AUTONOMOUS_INSTRUCTION =
   "Você está executando uma rotina automática, sem usuário presente. Nunca faça perguntas nem aguarde input humano. Se faltar informação, credencial ou permissão, registre o bloqueio no relatório final e encerre a execução."
@@ -67,6 +80,7 @@ export const layer = Layer.effect(
     const sessions = yield* Session.Service
     const promptSvc = yield* SessionPrompt.Service
     const combos = yield* Combo.Service
+    const provider = yield* Provider.Service
 
     return ScheduleRunner.SkillCaller.of({
       runSkill: (action, workspace, existingSessionId) =>
@@ -113,6 +127,21 @@ export const layer = Layer.effect(
             if (action.workspaces && action.workspaces.length > 0) {
               effectivePrompt += `\n\nPastas / Repositórios de trabalho adicionais configurados:\n` +
                 action.workspaces.map((w, idx) => `- Pasta ${idx + 1}: ${w}`).join("\n")
+            }
+
+            // D005: rotina de skill com modelo próprio não pode criar sessão se
+            // o modelo não existe mais. Abortar aqui evita sessão órfã e qualquer
+            // efeito colateral; a config persistida permanece intacta e a falha
+            // some sozinha quando o modelo voltar.
+            if (modelParam) {
+              const probe = yield* provider
+                .getModel(modelParam.providerID, modelParam.modelID)
+                .pipe(Effect.exit)
+              const guard = skillModelGuard({
+                model: { providerID: modelParam.providerID, modelID: modelParam.modelID },
+                available: Exit.isSuccess(probe),
+              })
+              if (guard) return { success: false, error: guard.error, sessionId: existingSessionId }
             }
 
             // Check if existing session ID is provided and still valid
@@ -185,6 +214,7 @@ export const layer = Layer.effect(
 export const node = makeGlobalNode({
   service: ScheduleRunner.SkillCaller,
   layer,
-  deps: [InstanceStore.node, Session.node, SessionPrompt.node, Combo.node],
+  deps: [InstanceStore.node, Session.node, SessionPrompt.node, Combo.node, Provider.node],
 })
+
 

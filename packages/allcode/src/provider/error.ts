@@ -86,6 +86,10 @@ function json(input: unknown) {
   return undefined
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value)
+}
+
 export type ParsedStreamError =
   | {
       type: "context_overflow"
@@ -104,10 +108,17 @@ export function parseStreamError(input: unknown): ParsedStreamError | undefined 
   const body = typeof raw?.message === "string" ? (json(raw.message) ?? raw) : raw
   if (!body) return
 
-  const responseBody = JSON.stringify(body)
-  if (body.type !== "error") return
+  // Providers frame streamed failures either as {"type":"error","error":{...}}
+  // (OpenAI) or as a bare {"error":{...}} envelope emitted by gateways/proxies.
+  const error = isRecord(body.error) ? body.error : undefined
+  if (!error) return
+  if (body.type !== "error" && typeof error.message !== "string") return
 
-  switch (body?.error?.code) {
+  const responseBody = JSON.stringify(body)
+  const message = typeof error.message === "string" && error.message ? error.message : "Server error."
+  const retryable = typeof error.retryable === "boolean" ? error.retryable : undefined
+
+  switch (error.code) {
     case "context_length_exceeded":
       return {
         type: "context_overflow",
@@ -131,7 +142,7 @@ export function parseStreamError(input: unknown): ParsedStreamError | undefined 
     case "invalid_prompt":
       return {
         type: "api_error",
-        message: typeof body?.error?.message === "string" ? body?.error?.message : "Invalid prompt.",
+        message,
         isRetryable: false,
         responseBody,
       }
@@ -139,7 +150,17 @@ export function parseStreamError(input: unknown): ParsedStreamError | undefined 
     case "server_error":
       return {
         type: "api_error",
-        message: typeof body?.error?.message === "string" ? body?.error?.message : "Server error.",
+        message,
+        isRetryable: true,
+        responseBody,
+      }
+    // A stream that dies after the first token is safely retryable from the
+    // policy's point of view; the processor decides whether restarting the turn
+    // would duplicate output or tool side effects.
+    case "upstream_stream_interrupted":
+      return {
+        type: "api_error",
+        message,
         isRetryable: true,
         responseBody,
       }
@@ -147,8 +168,11 @@ export function parseStreamError(input: unknown): ParsedStreamError | undefined 
 
   return {
     type: "api_error",
-    message: typeof body?.error?.message === "string" ? body.error.message : "Server error.",
-    isRetryable: true,
+    message,
+    // Only a payload that explicitly marks itself as an error envelope is
+    // retryable by default. Bare gateway envelopes must opt in, otherwise
+    // business errors such as "no_kv_space" would be retried forever.
+    isRetryable: retryable ?? body.type === "error",
     responseBody,
   }
 }

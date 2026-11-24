@@ -27,8 +27,8 @@ function d1From(db: Database) {
           return { results: statement.all(...(params as never[])) as T[], success: true, meta: {} }
         },
         async run() {
-          statement.run(...(params as never[]))
-          return { success: true, meta: {} }
+          const result = statement.run(...(params as never[]))
+          return { success: true, meta: { changes: result.changes } }
         },
       }
       return prepared
@@ -52,6 +52,10 @@ async function setup() {
   db.exec(await Bun.file(new URL("../migrations/0010_provider_individual_credentials.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0011_resellers_and_trials.sql", import.meta.url)).text())
   db.exec(await Bun.file(new URL("../migrations/0012_plans.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0013_user_audit_exempt.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0014_token_quotas.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0015_company_user_quota_and_global_providers.sql", import.meta.url)).text())
+  db.exec(await Bun.file(new URL("../migrations/0016_password_updated_at.sql", import.meta.url)).text())
   return { raw: db, store: d1Store(d1From(db)) }
 }
 
@@ -162,8 +166,14 @@ describe("D1 store", () => {
     const kpis = await store.sessions.getUserKPIs(owner!.id)
     expect(kpis.totalSessions).toBe(1)
     expect(kpis.totalTokens).toBe(1500)
+    expect(kpis.tokensInput).toBe(1000)
+    expect(kpis.tokensOutput).toBe(500)
     expect(kpis.totalCostUsd).toBeCloseTo(0.0045, 4)
     expect(kpis.totalDurationMs).toBe(60000)
+    expect(kpis.referenceCostAnthropic).toBeGreaterThan(0)
+    expect(kpis.referenceCostOpenAI).toBeGreaterThan(0)
+    expect(kpis.referenceMarketCost).toBeGreaterThan(0)
+    expect(kpis.savingsUsd).toBeGreaterThanOrEqual(0)
   })
 
   test("upserts a session audit row by session_id as the summary evolves", async () => {
@@ -224,6 +234,84 @@ describe("D1 store", () => {
     expect(usage[0]?.providerID).toBe("openai")
     expect(usage[0]?.modelID).toBe("gpt-5")
     expect(usage[0]?.tokens).toBe(150)
+  })
+
+  test("computes consolidated organization KPIs and comparative savings across multiple users and sessions", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    expect(owner).toBeTruthy()
+
+    const userB = await store.users.create({
+      name: "Dev Alpha",
+      email: "alpha@test.dev",
+      role: "member",
+      passwordHash: await hashPassword("pass"),
+      mustChangePassword: false,
+    })
+
+    // Sessão do Owner: 1.000.000 input, 200.000 output, 2 horas (7.200.000ms), custo real $1.00
+    await store.sessions.create({
+      sessionID: "ses_owner_large",
+      userID: owner!.id,
+      orgID: owner!.orgID,
+      title: "Large refactor",
+      summary: "Refactored payment gateway",
+      workspace: "D:/dev/payment",
+      startedAt: new Date(Date.now() - 7200000).toISOString(),
+      endedAt: new Date().toISOString(),
+      tokensTotal: 1_200_000,
+      tokensInput: 1_000_000,
+      tokensOutput: 200_000,
+      tokensReasoning: 0,
+      costUsd: 1.00,
+      durationMs: 7_200_000,
+      messagesCount: 40,
+      modelUsage: [{ providerID: "custom", modelID: "local-coder", tokens: 1_200_000, costUsd: 1.00, calls: 20 }],
+    })
+
+    // Sessão do Dev Alpha: 500.000 input, 100.000 output, 1 hora (3.600.000ms), custo real $0.50
+    await store.sessions.create({
+      sessionID: "ses_alpha_feature",
+      userID: userB.id,
+      orgID: owner!.orgID,
+      title: "Feature login",
+      summary: "Created login flows",
+      workspace: "D:/dev/auth",
+      startedAt: new Date(Date.now() - 3600000).toISOString(),
+      endedAt: new Date().toISOString(),
+      tokensTotal: 600_000,
+      tokensInput: 500_000,
+      tokensOutput: 100_000,
+      tokensReasoning: 0,
+      costUsd: 0.50,
+      durationMs: 3_600_000,
+      messagesCount: 15,
+      modelUsage: [{ providerID: "custom", modelID: "local-coder", tokens: 600_000, costUsd: 0.50, calls: 10 }],
+    })
+
+    const orgKpis = await store.sessions.getOrgKPIs(owner!.orgID)
+
+    // Agregação global:
+    expect(orgKpis.totalSessions).toBe(2)
+    expect(orgKpis.totalTokens).toBe(1_800_000)
+    expect(orgKpis.tokensInput).toBe(1_500_000)
+    expect(orgKpis.tokensOutput).toBe(300_000)
+    expect(orgKpis.totalCostUsd).toBeCloseTo(1.50, 2)
+    expect(orgKpis.totalDurationMs).toBe(10_800_000) // 3 horas
+
+    // Economia comparativa:
+    // 1.5M input, 300k output
+    // Anthropic (Sonnet: $3 / 1M in, $15 / 1M out): 1.5 * 3 + 0.3 * 15 = 4.5 + 4.5 = $9.00
+    // OpenAI (GPT-4o: $2.5 / 1M in, $10 / 1M out): 1.5 * 2.5 + 0.3 * 10 = 3.75 + 3.0 = $6.75
+    // Blended market: (9.00 + 6.75) / 2 = $7.875
+    // Custo real: $1.50
+    // Economia: 7.875 - 1.50 = $6.375 (80.95%)
+    expect(orgKpis.referenceCostAnthropic).toBe(9.0)
+    expect(orgKpis.referenceCostOpenAI).toBe(6.75)
+    expect(orgKpis.referenceMarketCost).toBe(7.875)
+    expect(orgKpis.savingsUsd).toBe(6.375)
+    expect(orgKpis.savingsPercentage).toBe(81.0)
   })
 
   test("admin password reset replaces the hash and forces a change on next sign-in", async () => {
@@ -495,5 +583,90 @@ describe("D1 store", () => {
     // 7. Remover plano desvincula a empresa
     await store.plans.remove(perUser.id)
     expect((await store.org.get(org.id)).planID).toBeUndefined()
+  })
+
+  test("persists token quotas and aggregates ledger usage by user and company", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    const user = await store.users.create({
+      name: "Quota User",
+      email: "quota@test.dev",
+      role: "member",
+      passwordHash: await hashPassword("pass1234"),
+      mustChangePassword: false,
+      tokenQuota: 1_000_000,
+    })
+
+    await store.org.update(owner!.orgID, { tokenQuota: 50_000_000, tokenQuotaCycleDay: 10 })
+    const org = await store.org.get(owner!.orgID)
+    expect(org.tokenQuota).toBe(50_000_000)
+    expect(org.tokenQuotaCycleDay).toBe(10)
+    expect((await store.users.findByID(user.id))?.tokenQuota).toBe(1_000_000)
+
+    const cycle = "2026-03-10T00:00:00.000Z"
+    await store.quota.record({
+      sessionID: "ses_quota_1",
+      orgID: org.id,
+      userID: user.id,
+      tokens: 400_000,
+      cycleStart: cycle,
+    })
+    await store.quota.record({
+      sessionID: "ses_quota_1",
+      orgID: org.id,
+      userID: user.id,
+      tokens: 700_000,
+      cycleStart: cycle,
+    })
+    await store.quota.record({
+      sessionID: "ses_quota_2",
+      orgID: org.id,
+      userID: owner!.id,
+      tokens: 2_000_000,
+      cycleStart: cycle,
+    })
+
+    expect(await store.quota.getUserUsage(user.id, cycle)).toBe(700_000)
+    expect(await store.quota.getOrgUsage(org.id, cycle)).toBe(2_700_000)
+    expect(await store.quota.getUsageByUser(org.id, cycle)).toEqual({
+      [user.id]: 700_000,
+      [owner!.id]: 2_000_000,
+    })
+
+    // Remover a cota individual apenas limpa o sub-limite.
+    await store.users.update(user.id, { tokenQuota: undefined })
+    expect((await store.users.findByID(user.id))?.tokenQuota).toBeUndefined()
+  })
+
+  test("global providers are visible to every company and company shadows win", async () => {
+    const { store } = await setup()
+    await store.ensureSeed()
+    const owner = await store.users.findByEmail("owner@test.dev")
+    const other = await store.org.create({ name: "Other Company", slug: "other-company" })
+
+    const global = await store.providers.create({
+      orgID: owner!.orgID,
+      providerID: "shared-provider",
+      displayName: "Shared Provider",
+      scope: "global",
+      baseURL: "https://global.example/v1",
+    })
+    const local = await store.providers.create({
+      orgID: other.id,
+      providerID: "shared-provider",
+      displayName: "Local Shadow",
+      scope: "company",
+      baseURL: "https://local.example/v1",
+    })
+
+    const visible = await store.providers.list(other.id)
+    expect(visible.map((provider) => provider.id)).toContain(local.id)
+    expect(visible.map((provider) => provider.id)).not.toContain(global.id)
+    expect((await store.providers.findByProviderID(other.id, "shared-provider"))?.id).toBe(local.id)
+    expect((await store.providers.listGlobal()).map((provider) => provider.id)).toEqual([global.id])
+
+    const withoutShadow = await store.org.create({ name: "No Shadow", slug: "no-shadow" })
+    expect((await store.providers.list(withoutShadow.id)).map((provider) => provider.id)).toContain(global.id)
   })
 })

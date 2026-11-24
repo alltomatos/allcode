@@ -1,6 +1,6 @@
 {
   "name": "@allcode/panel",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -21,6 +21,8 @@
     "db:migrate:remote": "wrangler d1 migrations apply allcode-panel --remote --config wrangler.jsonc",
     "preview": "wrangler dev",
     "start": "vite start",
+    "admin:reset-password": "bun ./script/reset-admin-password.ts",
+    "admin:reseed": "bun ./script/reseed-admin-password.ts",
     "test": "bun test",
     "typecheck": "tsgo --noEmit"
   },
@@ -29,6 +31,7 @@
     "@solidjs/router": "catalog:",
     "@solidjs/start": "catalog:",
     "nitro": "3.0.1-alpha.1",
+    "postgres": "4.0.0",
     "solid-js": "catalog:",
     "vite": "catalog:"
   },

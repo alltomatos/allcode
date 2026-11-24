@@ -1,14 +1,18 @@
 import { For, Show } from "solid-js"
 import { Badge, Card, EmptyState, StatGrid } from "~/components/ui"
 import { SessionAuditCard, formatDuration, formatTokens, modelLabel, providerLabel } from "~/components/session-audit"
+import { UserQuotaCard } from "~/components/user-quota"
 import { useI18n } from "~/i18n"
 import type { UserDetail } from "~/lib/actions"
 import { actionKey, formatDate, roleKey, roleTone, statusKey, statusTone } from "~/lib/labels"
+import type { QuotaContext } from "~/lib/quota-service"
 import type { AuditEvent, ModelUsageSummary, SessionAudit, UserKPIs } from "~/lib/store"
 
 export function UserOverview(props: {
   user: UserDetail
   kpis: UserKPIs | undefined
+  quota: QuotaContext | undefined
+  canManageQuota: boolean
   sessions: SessionAudit[] | undefined
   modelUsage: ModelUsageSummary[] | undefined
   history: AuditEvent[] | undefined
@@ -35,11 +39,16 @@ export function UserOverview(props: {
         )}
       </Show>
 
+      <UserQuotaCard userID={props.user.id} quota={props.quota} canManage={props.canManageQuota} />
+
       <div class="grid gap-6 lg:grid-cols-3">
         <Card class="lg:col-span-2">
           <div class="flex items-center justify-between border-b border-slate-100 pb-3">
             <h2 class="text-sm font-semibold text-slate-900">{i18n.t("user.detail.profile")}</h2>
             <div class="flex items-center gap-2">
+              <Show when={props.user.auditExempt}>
+                <Badge tone="brand">{i18n.t("user.badge.auditExempt")}</Badge>
+              </Show>
               <Badge tone={roleTone(props.user.role)}>{i18n.t(roleKey(props.user.role))}</Badge>
               <Badge tone={statusTone(props.user.status)}>{i18n.t(statusKey(props.user.status))}</Badge>
             </div>

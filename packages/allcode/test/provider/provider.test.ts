@@ -2130,3 +2130,18 @@ test("fromCatalog keeps provider-level request headers", () => {
 
   expect(info.options.headers).toEqual({ "x-opencode-org-id": "wrk_test" })
 })
+
+test("fromCatalog skips models the catalog disabled", () => {
+  const provider = ProviderV2.Info.make({
+    id: ProviderV2.ID.make("opencode-go"),
+    name: "OpenCode Go",
+    api: { type: "aisdk", package: "@ai-sdk/openai-compatible", url: "https://opencode.ai/zen/go/v1" },
+    request: { headers: {}, body: {} },
+  })
+  const free = ModelV2.Info.empty(provider.id, ModelV2.ID.make("beam-free"))
+  const paid = { ...ModelV2.Info.empty(provider.id, ModelV2.ID.make("deepseek-v4-pro")), enabled: false }
+
+  const info = Provider.fromCatalog(provider, [free, paid])
+
+  expect(Object.keys(info.models)).toEqual(["beam-free"])
+})

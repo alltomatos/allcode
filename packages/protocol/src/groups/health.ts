@@ -1,4 +1,4 @@
-import { Schema } from "effect"
+﻿import { Schema } from "effect"
 import { HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
 
 export const HealthGroup = HttpApiGroup.make("server.health").add(
@@ -6,6 +6,9 @@ export const HealthGroup = HttpApiGroup.make("server.health").add(
     success: Schema.Struct({
       healthy: Schema.Literal(true),
       version: Schema.optional(Schema.String),
+      // Anuncia paridade de provider entre as trilhas v1 e v2. O cliente só
+      // prefere v2 quando este campo existe (corte por capacidade).
+      providerParity: Schema.optional(Schema.Boolean),
     }),
   }).annotateMerge(
     OpenApi.annotations({
@@ -15,3 +18,4 @@ export const HealthGroup = HttpApiGroup.make("server.health").add(
     }),
   ),
 )
+

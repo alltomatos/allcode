@@ -2,6 +2,14 @@ import { Effect, Schema } from "effect"
 import * as Tool from "./tool"
 import DESCRIPTION from "./reminder.txt"
 import { Schedule } from "@allcode/core/schedule"
+import { agentForSession, chatForSession } from "@/whatsapp-native/bindings"
+
+/**
+ * Permissão que libera esta tool. Precisa ser a mesma que
+ * `AgentUI.sessionPermission` concede para `agendaEnabled` — antes era
+ * "routine", então o toggle Agenda sozinho não destravava o lembrete.
+ */
+export const REMINDER_PERMISSION = "reminder"
 
 export const Parameters = Schema.Struct({
   action: Schema.Literals(["create", "list", "cancel", "get"]),
@@ -68,7 +76,7 @@ export const ReminderTool = Tool.define(
       execute: (params: Schema.Schema.Type<typeof Parameters>, ctx: Tool.Context) =>
         Effect.gen(function* () {
           yield* ctx.ask({
-            permission: "routine",
+            permission: REMINDER_PERMISSION,
             patterns: ["*"],
             always: ["*"],
             metadata: {},
@@ -91,6 +99,7 @@ export const ReminderTool = Tool.define(
                   enabled: r.enabled,
                   lastStatus: r.lastStatus,
                   lastRunAt: r.lastRunAt ? new Date(r.lastRunAt).toISOString() : undefined,
+                  metadata: r.metadata,
                 }
               })
 
@@ -172,7 +181,41 @@ export const ReminderTool = Tool.define(
               params.channels && params.channels.length > 0 ? [...params.channels] : ["desktop", "whatsapp"]
             const message = params.message ?? params.title
 
-            // 1. Alerta Antecipado (se solicitado)
+            // A conversa e o agente de origem são persistidos junto do lembrete
+            // para a entrega e os botões funcionarem mesmo após restart.
+            const baseAction: Schedule.ReminderAction = {
+              kind: "reminder",
+              title: params.title,
+              message,
+              channels,
+              targetSessionId: ctx.sessionID,
+              targetChat: chatForSession(ctx.sessionID),
+              agentId: agentForSession(ctx.sessionID),
+            }
+
+            // 1. Lembrete Principal
+            const mainSchedule = yield* schedules
+              .create({
+                name: params.title,
+                description: params.message ?? `Lembrete: ${params.title}`,
+                trigger: { kind: "once", timestamp: targetTimestamp },
+                action: baseAction,
+                enabled: true,
+              })
+              .pipe(Effect.orDie)
+            const mainAction: Schedule.ReminderAction = { ...baseAction, reminderId: mainSchedule.id }
+            yield* schedules
+              .update(mainSchedule.id, {
+                name: mainSchedule.name,
+                description: mainSchedule.description,
+                trigger: mainSchedule.trigger,
+                action: mainAction,
+                workspace: mainSchedule.workspace,
+                enabled: mainSchedule.enabled,
+              })
+              .pipe(Effect.orDie)
+
+            // 2. Alerta Antecipado (se solicitado)
             const beforeOffsetMs = getRemindBeforeOffsetMs(params.remindBefore)
             if (beforeOffsetMs > 0) {
               const earlyTimestamp = targetTimestamp - beforeOffsetMs
@@ -183,11 +226,9 @@ export const ReminderTool = Tool.define(
                     description: `Aviso antecipado de: ${params.title}`,
                     trigger: { kind: "once", timestamp: earlyTimestamp },
                     action: {
-                      kind: "reminder",
+                      ...mainAction,
                       title: `⚠️ Aviso Antecipado: ${params.title}`,
                       message: `Lembrete em breve (${params.remindBefore}): ${message}`,
-                      channels,
-                      targetSessionId: ctx.sessionID,
                     },
                     enabled: true,
                   })
@@ -200,22 +241,6 @@ export const ReminderTool = Tool.define(
               }
             }
 
-            // 2. Lembrete Principal
-            const mainSchedule = yield* schedules
-              .create({
-                name: params.title,
-                description: params.message ?? `Lembrete: ${params.title}`,
-                trigger: { kind: "once", timestamp: targetTimestamp },
-                action: {
-                  kind: "reminder",
-                  title: params.title,
-                  message,
-                  channels,
-                  targetSessionId: ctx.sessionID,
-                },
-                enabled: true,
-              })
-              .pipe(Effect.orDie)
             createdReminders.push({
               type: "main_reminder",
               id: mainSchedule.id,

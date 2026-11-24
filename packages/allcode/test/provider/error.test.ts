@@ -21,4 +21,33 @@ describe("provider stream errors", () => {
         responseBody: JSON.stringify({ type: "error", error: { message } }),
       })
   })
+
+  test("classifies interrupted upstream streams from bare gateway envelopes", () => {
+    const body = {
+      error: {
+        type: "api_error",
+        code: "upstream_stream_interrupted",
+        message: "upstream stream failed",
+        retryable: true,
+      },
+    }
+
+    expect(ProviderError.parseStreamError(body)).toEqual({
+      type: "api_error",
+      message: "upstream stream failed",
+      isRetryable: true,
+      responseBody: JSON.stringify(body),
+    })
+  })
+
+  test("does not opt unknown bare gateway envelopes into retries", () => {
+    const body = { error: { message: "no_kv_space" } }
+
+    expect(ProviderError.parseStreamError(body)).toEqual({
+      type: "api_error",
+      message: "no_kv_space",
+      isRetryable: false,
+      responseBody: JSON.stringify(body),
+    })
+  })
 })

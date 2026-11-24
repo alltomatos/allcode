@@ -1,4 +1,4 @@
-export * as Memory from "./index"
+﻿export * as Memory from "./index"
 
 import { LayerNode } from "@allcode/core/effect/layer-node"
 import { ConfigV1 } from "@allcode/core/v1/config/config"
@@ -10,6 +10,7 @@ import { Session } from "@/session/session"
 import type { SessionV1 } from "@allcode/core/v1/session"
 import { Combo } from "../combo"
 import { Provider } from "../provider/provider"
+import { selectableFrom } from "../provider/availability"
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
 import { createAntigravityFetch, getLiveToken } from "../provider/antigravity-adapter"
 import { Context, Duration, Effect, Layer, Schedule, Schema, Cause } from "effect"
@@ -326,8 +327,12 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
         let providerID: string
         let modelID: string
 
+        const selectable = selectableFrom(yield* provider.list())
+
         if (spec.startsWith("combo:")) {
-          const comboResolved = yield* combos.resolve(spec.slice("combo:".length)).pipe(Effect.orElseSucceed(() => undefined))
+          const comboResolved = yield* combos
+            .resolve(spec.slice("combo:".length), selectable)
+            .pipe(Effect.orElseSucceed(() => undefined))
           if (!comboResolved) return undefined
           providerID = comboResolved.providerID
           modelID = comboResolved.modelID
@@ -337,7 +342,7 @@ const layer: Layer.Layer<Service, never, Config.Service | Provider.Service | Ses
           providerID = spec.slice(0, separator)
           modelID = spec.slice(separator + 1)
           if (providerID === "combo") {
-            const comboResolved = yield* combos.resolve(modelID).pipe(Effect.orElseSucceed(() => undefined))
+            const comboResolved = yield* combos.resolve(modelID, selectable).pipe(Effect.orElseSucceed(() => undefined))
             if (!comboResolved) return undefined
             providerID = comboResolved.providerID
             modelID = comboResolved.modelID
@@ -730,4 +735,6 @@ export const node = LayerNode.make({
   deps: [Config.node, Provider.node, Session.node, Combo.node],
   lazy: true,
 })
+
+
 

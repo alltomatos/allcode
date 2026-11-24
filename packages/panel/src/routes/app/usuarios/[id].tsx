@@ -14,6 +14,7 @@ import {
   getUser,
   getUserKPIs,
   getUserModelUsage,
+  getUserQuota,
   getUserSessions,
   listAudit,
   listGroups,
@@ -40,6 +41,7 @@ export default function UserDetailPage() {
   const actor = createAsync(() => requireMe())
   const user = createAsync(() => getUser(params.id!))
   const kpis = createAsync(() => getUserKPIs(params.id!))
+  const quota = createAsync(() => getUserQuota(params.id!))
   const sessions = createAsync(() => getUserSessions(params.id!))
   const history = createAsync(() => listAudit(params.id!))
   const groups = createAsync(() => listGroups())
@@ -77,6 +79,7 @@ export default function UserDetailPage() {
   const [providerDraft, setProviderDraft] = createSignal("")
   const [modelDraft, setModelDraft] = createSignal("")
   const [changePassDraft, setChangePassDraft] = createSignal(true)
+  const [auditExemptDraft, setAuditExemptDraft] = createSignal(false)
   const [accessInitialized, setAccessInitialized] = createSignal(false)
   const [grantsDraft, setGrantsDraft] = createSignal<ProviderGrantDraft>({})
   const [grantsInitialized, setGrantsInitialized] = createSignal(false)
@@ -174,6 +177,7 @@ export default function UserDetailPage() {
       defaultProvider: providerDraft() || undefined,
       defaultModel: modelDraft() || undefined,
       groupIds: groupDraft(),
+      auditExempt: isOwner() ? auditExemptDraft() : undefined,
     })
     setSavingPermissions(false)
 
@@ -248,6 +252,7 @@ export default function UserDetailPage() {
             setProviderDraft(current().defaultProvider ?? "")
             setModelDraft(current().defaultModel ?? "")
             setChangePassDraft(current().canChangePassword)
+            setAuditExemptDraft(Boolean(current().auditExempt))
             setAccessInitialized(true)
           }
 
@@ -302,6 +307,7 @@ export default function UserDetailPage() {
                       providerDraft: providerDraft(),
                       modelDraft: modelDraft(),
                       changePassDraft: changePassDraft(),
+                      auditExemptDraft: auditExemptDraft(),
                       newPassword: newPassword(),
                       issuedPassword: issuedPassword(),
                       copiedPassword: copiedPassword(),
@@ -319,6 +325,7 @@ export default function UserDetailPage() {
                       setProviderDraft,
                       setModelDraft,
                       setChangePassDraft,
+                      setAuditExemptDraft,
                       setNewPassword,
                       setConfirmEmail,
                       onRole,
@@ -336,6 +343,8 @@ export default function UserDetailPage() {
                 <UserOverview
                   user={current()}
                   kpis={kpis()}
+                  quota={quota() ?? undefined}
+                  canManageQuota={canManage()}
                   sessions={sessions()}
                   modelUsage={modelUsage()}
                   history={history()}

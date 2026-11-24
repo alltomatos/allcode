@@ -1,5 +1,6 @@
 import { useFilteredList } from "@allcode/ui/hooks"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
+import { Tag } from "@allcode/ui/tag"
 import { Switch } from "@allcode/ui/switch"
 import { Icon } from "@allcode/ui/icon"
 import { IconButton } from "@allcode/ui/icon-button"
@@ -10,6 +11,7 @@ import { useModels } from "@/context/models"
 import { popularProviders } from "@/hooks/use-providers"
 import { SettingsList } from "./settings-list"
 import { SettingsServerPicker, SettingsServerScope } from "./settings-server-picker"
+import { isFreeModel } from "@/utils/model-free"
 
 type ModelItem = ReturnType<ReturnType<typeof useModels>["list"]>[number]
 
@@ -120,7 +122,12 @@ const SettingsModelsContent: Component = () => {
                         return (
                           <div class="flex flex-wrap items-center justify-between gap-4 py-3 border-b border-border-weak-base last:border-none">
                             <div class="min-w-0">
-                              <span class="text-14-regular text-text-strong truncate block">{item.name}</span>
+                              <span class="flex min-w-0 items-center gap-2">
+                                <span class="text-14-regular text-text-strong truncate block">{item.name}</span>
+                                <Show when={isFreeModel(item.provider.id, item.cost)}>
+                                  <Tag>{language.t("model.tag.free")}</Tag>
+                                </Show>
+                              </span>
                             </div>
                             <div class="flex-shrink-0">
                               <Switch

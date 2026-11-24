@@ -1,5 +1,10 @@
 import { describe, expect, test } from "bun:test"
-import { createIdleGuard, createSseTransform, unwrapAntigravitySse } from "../../src/provider/antigravity-adapter"
+import {
+  createIdleGuard,
+  createSseTransform,
+  isAccountBannedResponse,
+  unwrapAntigravitySse,
+} from "../../src/provider/antigravity-adapter"
 
 const chunk = (value: unknown) => `data: ${JSON.stringify(value)}\n\n`
 
@@ -101,5 +106,26 @@ describe("antigravity idle guard", () => {
     const reader = stalled.pipeThrough(createIdleGuard(20, () => {})).getReader()
 
     await expect(reader.read()).rejects.toThrow(/stalled/)
+  })
+})
+
+describe("antigravity account ban detection", () => {
+  test("recognizes the Google ToS ban body on 403/400", () => {
+    const body = JSON.stringify({
+      error: {
+        code: 403,
+        status: "PERMISSION_DENIED",
+        message:
+          "This service has been disabled in this account for violation of Terms of Service. Please submit an appeal to continue using this product.",
+      },
+    })
+    expect(isAccountBannedResponse(403, body)).toBe(true)
+    expect(isAccountBannedResponse(400, body)).toBe(true)
+  })
+
+  test("does not treat quota/auth failures as bans", () => {
+    expect(isAccountBannedResponse(429, "RESOURCE_EXHAUSTED")).toBe(false)
+    expect(isAccountBannedResponse(401, "UNAUTHENTICATED")).toBe(false)
+    expect(isAccountBannedResponse(403, "Permission denied for model")).toBe(false)
   })
 })

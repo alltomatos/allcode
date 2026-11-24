@@ -1,4 +1,4 @@
-export const dict = {
+﻿export const dict = {
   "desktop.menu.app": "AllCode",
   "desktop.menu.file": "Arquivo",
   "desktop.menu.edit": "Editar",
@@ -141,6 +141,13 @@ export const dict = {
   "command.language.cycle": "Alternar idioma",
   "command.language.set": "Usar idioma: {{language}}",
   "command.session.new": "Nova sessão",
+  "session.view.header.project": "Projeto",
+  "session.view.header.usage": "Uso de tokens da sessão",
+  "session.view.header.input": "Entrada",
+  "session.view.header.output": "Saída",
+  "session.view.header.tps": "Tokens/s",
+  "session.view.header.total": "Total",
+  "session.view.header.noUsage": "Sem uso registrado",
   "command.file.open": "Abrir arquivo",
   "command.tab.close": "Fechar aba",
   "command.tab.reopenClosed": "Reabrir aba fechada",
@@ -211,6 +218,8 @@ export const dict = {
   "dialog.provider.vercel.note": "Acesso unificado a modelos de IA com roteamento inteligente",
   "dialog.provider.omniroute.note": "Use sua própria URL de gateway e chave, todos os modelos são importados automaticamente",
   "dialog.model.select.title": "Selecionar modelo",
+  "provider.loading.title": "Carregando provedores e modelos...",
+  "provider.loading.detail": "{count} disponíveis",
   "dialog.model.search.placeholder": "Buscar modelos",
   "dialog.model.empty": "Nenhum resultado de modelo",
   "dialog.model.manage": "Gerenciar modelos",
@@ -986,6 +995,7 @@ export const dict = {
   "settings.agentui.field.name": "Nome",
   "settings.agentui.field.personality": "Personalidade",
   "settings.agentui.field.model": "Modelo",
+  "settings.agentui.model.unavailable": "Modelo configurado indisponível — o padrão será usado em tempo de execução.",
   "settings.agentui.field.filterAudio": "Ouvir áudio (apenas modelos com suporte a voz/áudio)",
   "settings.agentui.field.telegram": "Responder no Telegram",
   "settings.agentui.field.telegramToken.placeholder": "Token do bot (opcional — deixe vazio para usar o bot global)",
@@ -1472,6 +1482,11 @@ export const dict = {
   "settings.providers.health.toggleDisabledSuccess": "Status da conta atualizado",
   "settings.providers.health.toggleTooltip": "Ativar ou desativar conta da rotação",
   "settings.providers.health.liberaEm": "Libera em {{time}}",
+  "settings.providers.health.banned": "Banida",
+  "settings.providers.health.bannedTooltip": "Conta banida pelo provedor. Investigue o motivo antes de reativar.",
+  "settings.providers.quota.banReason": "Motivo do banimento: {{reason}}",
+  "settings.providers.quota.banDetectedAt": "Detectado em {{time}}",
+  "settings.providers.quota.banHint": "A conta foi desativada automaticamente. Verifique o e-mail da conta para as instruções de recurso do provedor.",
   "settings.providers.view.list": "Visualização em lista",
   "settings.providers.view.grid": "Visualização em grade",
   "settings.providers.tag.environment": "Ambiente",
@@ -2039,3 +2054,5 @@ export const dict = {
   "sidebar.account.manage": "Gerenciar conta",
   "sidebar.account.signOut": "Terminar sessão",
 }
+
+

@@ -1,4 +1,4 @@
-import type { HomeScrollController } from "./home-scroll-controller"
+﻿import type { HomeScrollController } from "./home-scroll-controller"
 import type { HomeSessionSearchController } from "./home-session-search-controller"
 import type { HomeSessionsController } from "./home-sessions-controller"
 import { HomeSessionsView } from "./home-sessions-view"
@@ -21,6 +21,7 @@ export function HomeSessions(props: {
       onSetViewMode={props.sessions.view.setMode}
       server={props.sessions.session.server}
       canCreateSession={props.sessions.session.canCreate}
+      creatingSession={props.sessions.session.creating}
       searchValue={props.search.query.value}
       searchPlaceholder={props.search.query.placeholder}
       searchOpen={props.search.query.open}
@@ -51,3 +52,4 @@ export function HomeSessions(props: {
     />
   )
 }
+

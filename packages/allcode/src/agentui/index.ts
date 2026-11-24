@@ -15,6 +15,7 @@ import { InstanceStore } from "@/project/instance-store"
 import { InstanceRef } from "@/effect/instance-ref"
 import { SessionID } from "@/session/schema"
 import { Provider } from "@/provider/provider"
+import { selectableFrom } from "@/provider/availability"
 import { Storage } from "@/storage/storage"
 import { Context, Effect, Layer, Schema, Cause, Exit } from "effect"
 import { jsonSchema, streamText, tool } from "ai"
@@ -72,8 +73,34 @@ export const AuditEntry = Schema.Struct({
   incoming: Schema.String,
   outgoing: Schema.String,
   blocked: Schema.Boolean,
+  // Optional so older persisted entries keep decoding. `model_fallback` marks a
+  // turn that ran on the default model because the configured one was
+  // unavailable; `detail` carries "origem -> destino".
+  tag: Schema.optional(Schema.Literals(["model_fallback"])),
+  detail: Schema.optional(Schema.String),
 })
 export type AuditEntry = Schema.Schema.Type<typeof AuditEntry>
+
+// Falhas de resolução que significam "este modelo configurado não pode rodar",
+// em contraste com erros transitórios do provider. Casamos pela mensagem porque
+// o SessionPrompt projeta ModelNotFoundError/ModelUnavailableError através do
+// bridge v1/v2.
+export function isUnavailableModelError(message: string) {
+  return /Model not found|Model unavailable|ModelUnavailable|provider not found|no longer supports/i.test(message)
+}
+
+// D001: decidir a troca para o modelo padrão é uma função pura para poder ser
+// testada sem o harness de LLM. O dispatch só executa o fallback quando há
+// modelo configurado e a falha é de indisponibilidade — erro transitório do
+// provider continua sendo erro.
+export function modelFallback(input: {
+  configured?: { providerID: string; modelID: string }
+  error?: string
+}): { from: string; to: string } | undefined {
+  if (!input.configured || !input.error) return undefined
+  if (!isUnavailableModelError(input.error)) return undefined
+  return { from: `${input.configured.providerID}/${input.configured.modelID}`, to: "default" }
+}
 
 // Same cheap/fast/reliable-at-tool-calling candidates Memory.Service tries
 // for its own one-shot structured extraction (see resolveModel there) —
@@ -427,9 +454,13 @@ const layer = Layer.effect(
         : []),
     ]
 
+    // D002: predicado único de disponibilidade para os combos.
     const resolveModel = Effect.fn("AgentUI.resolveModel")(function* (spec: string) {
+      const selectable = selectableFrom(yield* provider.list())
       if (spec.startsWith("combo:")) {
-        return yield* combos.resolve(spec.slice("combo:".length)).pipe(Effect.orElseSucceed(() => undefined))
+        return yield* combos
+          .resolve(spec.slice("combo:".length), selectable)
+          .pipe(Effect.orElseSucceed(() => undefined))
       }
       // Split on the FIRST "/" only — some providers (Omniroute) encode
       // their own namespace into the model id itself (e.g.
@@ -444,7 +475,7 @@ const layer = Layer.effect(
       const modelID = spec.slice(separator + 1)
       if (!providerID || !modelID) return undefined
       if (providerID === "combo") {
-        return yield* combos.resolve(modelID).pipe(Effect.orElseSucceed(() => undefined))
+        return yield* combos.resolve(modelID, selectable).pipe(Effect.orElseSucceed(() => undefined))
       }
       return { providerID, modelID }
     })
@@ -567,22 +598,52 @@ const layer = Layer.effect(
       const personality = knowledge ? `${agent.personality}\n\n${knowledge}` : agent.personality
       const system = hardenSystemPrompt(agent, personality)
 
-      const localPaths = (input.attachments ?? [])
+      // O mesmo agente pode rodar em modelos com capacidades diferentes. Anexo
+      // multimodal em modelo sem suporte derruba a chamada inteira, então cada
+      // anexo é filtrado pela capability do modelo resolvido.
+      const modelInfo = model
+        ? yield* provider.getModel(model.providerID, model.modelID).pipe(
+            // O catálogo do Provider é InstanceState: sem InstanceRef ele
+            // falha como defeito (não como erro), o que antes abortava o
+            // dispatch inteiro de um canal sem sequer gravar auditoria.
+            Effect.provideService(InstanceRef, ctx),
+            Effect.catchCause(() => Effect.succeed(undefined)),
+          )
+        : undefined
+      const supportsAttachment = (mime: string) => {
+        const input = modelInfo?.capabilities.input
+        if (!input) return true
+        if (mime.startsWith("image/")) return input.image
+        if (mime.startsWith("audio/")) return input.audio
+        if (mime.startsWith("video/")) return input.video
+        if (mime === "application/pdf") return input.pdf
+        return true
+      }
+      const attachments = (input.attachments ?? []).filter((att) => supportsAttachment(att.mime))
+      const droppedAttachments = (input.attachments ?? []).filter((att) => !supportsAttachment(att.mime))
+
+      const localPaths = attachments
         .map((a) => (a as any).localPath)
         .filter((p): p is string => Boolean(p))
 
       let textMessage = input.message || ""
-      if (!textMessage && input.attachments?.length) {
+      if (!textMessage && attachments.length) {
         textMessage = "(mídia em anexo)"
       }
       if (localPaths.length > 0) {
         const pathsSummary = `\n[Arquivos salvos localmente: ${localPaths.join(", ")}]`
         textMessage = textMessage ? `${textMessage}\n${pathsSummary}` : pathsSummary
       }
+      if (droppedAttachments.length > 0) {
+        const summary = droppedAttachments
+          .map((att) => `${att.filename ?? "arquivo"} (${att.mime})`)
+          .join(", ")
+        textMessage += `\n[Anexo(s) não enviados ao modelo porque ele não suporta este tipo de conteúdo: ${summary}]`
+      }
 
       const promptParts: SessionPrompt.PromptInput["parts"] = [
         { type: "text", text: textMessage },
-        ...(input.attachments ?? []).map((att) => ({
+        ...attachments.map((att) => ({
           type: "file" as const,
           mime: att.mime,
           filename: att.filename,
@@ -593,13 +654,21 @@ const layer = Layer.effect(
       // Em canal (WhatsApp/Telegram) não existe UI para reescolher modelo: se o
       // catálogo v2 ainda não sincronizou o modelo (cold start, primeira
       // mensagem logo após subir), a chamada falha com "Model not found" e o
-      // usuário fica sem resposta. Reexecutamos algumas vezes com backoff —
-      // o mesmo pedido força o syncFromCatalog do SessionPrompt a cada tentativa.
-      const runPrompt = (attempt: number): Effect.Effect<SessionV1.WithParts | undefined> =>
+      // usuário fica sem resposta. Reexecutamos algumas vezes com backoff — o
+      // mesmo pedido força o syncFromCatalog do SessionPrompt a cada tentativa.
+      //
+      // Quando o modelo configurado deixou de existir de fato (removido,
+      // provider desconectado, pago sem conexão), insistir não resolve: o
+      // dispatch cai no modelo padrão e registra a troca na auditoria (D001).
+      let lastError: string | undefined
+      const runPrompt = (
+        attempt: number,
+        override: typeof model | undefined = model,
+      ): Effect.Effect<SessionV1.WithParts | undefined> =>
         promptSvc
           .prompt({
             sessionID: SessionID.make(sessionID),
-            model: model ? { providerID: model.providerID, modelID: model.modelID } : undefined,
+            model: override ? { providerID: override.providerID, modelID: override.modelID } : undefined,
             system,
             parts: promptParts,
           })
@@ -608,12 +677,13 @@ const layer = Layer.effect(
             Effect.catchCause((cause) => {
               const err = Cause.squash(cause)
               const message = err instanceof Error ? err.message : String(err)
+              lastError = message
               const retryable = /Model not found/i.test(message)
               if (retryable && attempt > 0) {
                 debug(
                   `[AgentUI Prompt Retry] ${message} — tentando novamente (${attempt} restantes)`,
                 )
-                return Effect.sleep("3 seconds").pipe(Effect.andThen(runPrompt(attempt - 1)))
+                return Effect.sleep("3 seconds").pipe(Effect.andThen(runPrompt(attempt - 1, override)))
               }
               console.error(`[AgentUI Prompt Error] id=${input.id} chatKey=${input.chatKey}:`, message, cause)
               return Effect.logError("agentui channel prompt failed", {
@@ -624,7 +694,18 @@ const layer = Layer.effect(
             }),
           )
 
-      const promptResult = yield* runPrompt(4)
+      let promptResult = yield* runPrompt(4)
+      let fallback: { from: string; to: string } | undefined
+      const target = promptResult ? undefined : modelFallback({ configured: model, error: lastError })
+      if (target) {
+        debug(`[AgentUI Model Fallback] ${target.from} indisponível — usando padrão`)
+        lastError = undefined
+        const viaDefault = yield* runPrompt(0, undefined)
+        if (viaDefault) {
+          fallback = target
+          promptResult = viaDefault
+        }
+      }
 
       let reply = promptResult ? extractText(promptResult) : ""
       debug(`[AgentUI Prompt Result Direct Text] "${reply}" (parts count: ${promptResult?.parts?.length ?? 0})`)
@@ -645,7 +726,14 @@ const layer = Layer.effect(
       }
       if (!reply) reply = "(sem resposta)"
       debug(`[AgentUI Final Outgoing Reply] "${reply}"`)
-      yield* logAudit(input.id, { channel, chatKey: input.chatKey, incoming: input.message, outgoing: reply, blocked: false })
+      yield* logAudit(input.id, {
+        channel,
+        chatKey: input.chatKey,
+        incoming: input.message,
+        outgoing: reply,
+        blocked: false,
+        ...(fallback ? { tag: "model_fallback" as const, detail: `${fallback.from} -> ${fallback.to}` } : {}),
+      })
       return { reply, blocked: false }
     })
 
@@ -823,12 +911,25 @@ const layer = Layer.effect(
         } else {
           const err = Cause.squash(modelCheck.cause)
           const message = err instanceof Error ? err.message : String(err)
-          items.push({
-            name: "Modelo LLM",
-            status: "error",
-            message: `Falha no modelo "${resolved.providerID}/${resolved.modelID}": ${message}`,
-            details: "Verifique se o provider está conectado, se a quota/chaves estão válidas ou se a conta do provedor exige verificação/re-autenticação.",
-          })
+          if (isUnavailableModelError(message)) {
+            // D001: modelo configurado indisponível não derruba o agente em
+            // canal — o dispatch cai no padrão e registra `model_fallback`.
+            // Sinalizamos como warning (não erro) para refletir o runtime.
+            items.push({
+              name: "Modelo LLM",
+              status: "warning",
+              message: `Modelo configurado indisponível: "${resolved.providerID}/${resolved.modelID}". O padrão será aplicado em tempo de execução.`,
+              details:
+                "Corrija o modelo do agente para remover o aviso. A configuração persistida não é alterada automaticamente.",
+            })
+          } else {
+            items.push({
+              name: "Modelo LLM",
+              status: "error",
+              message: `Falha no modelo "${resolved.providerID}/${resolved.modelID}": ${message}`,
+              details: "Verifique se o provider está conectado, se a quota/chaves estão válidas ou se a conta do provedor exige verificação/re-autenticação.",
+            })
+          }
         }
       }
 

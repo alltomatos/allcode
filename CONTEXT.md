@@ -242,9 +242,46 @@ O disparo (`ctx.catalog.reload()`, parte de `Reload`) que reexecuta o `transform
 O **Native Provider Plugin** (id `omnrt`) que integra o AI Gateway OmniRoute — descobre modelos dinamicamente via `/v1/models` com **Catalog Reload** periódico, em vez do snapshot estático gravado uma vez no `opencode.json` pela UI anterior.
 
 **Combo**:
-Um pseudo-modelo do OmniRoute (`owned_by === "combo"`) — não é um modelo de provider real, é uma composição roteada pelo gateway, exposta ao catálogo como se fosse um modelo comum.
+Configuração nomeada que roteia uma requisição entre modelos reais por prioridade, rotação e failover, exposta a chat, AgentUI e rotinas como o pseudo-provider `combo` (`Combo.Service`).
+_Avoid_: combo sem qualificador quando o contexto for OmniRoute — lá, combo é um pseudo-modelo descoberto via `owned_by === "combo"`.
 
 ## Relationships (OmniRoute)
 
 - A **OmniRoute Provider** substitui a lógica de fetch único que hoje vive em `dialog-connect-omniroute.tsx` — a UI passa a só coletar credencial (baseURL + API key) e disparar `auth.set` + **Catalog Reload**, sem parsear/gravar modelos no cliente.
 - Um **Combo** é descoberto e registrado no **Catalog Draft** da mesma forma que um modelo real do OmniRoute — a diferenciação (`owned_by === "combo"`) só importa para decidir capacidades default (LCD) e nomeação, não para o mecanismo de registro em si.
+
+## Provider Catalog & Model Resolution
+
+**Projeção pura**:
+O `Provider.Service` v1 derivando 100% do catálogo v2, sem lógica própria de disponibilidade, gratuidade, default ou filtragem.
+_Avoid_: bridge, ponte (quando o contexto é o estado final desejado)
+
+**Contrato estrito (C1–C5)**:
+As cinco projeções que chat, AgentUI e rotinas consomem e que devem ser idênticas entre v1 e v2: conjunto de modelos, flags por modelo, default por provider e global, providers conectados e modelo resolvido de uma especificação.
+_Avoid_: paridade total, equivalência genérica
+
+**Delta**:
+Mudança de comportamento intencional em relação ao baseline pré-convergência, registrada em `DELTAS.md` com teste correspondente.
+_Avoid_: melhoria, ajuste
+
+**Apresentação (presentation-only)**:
+Mudança que altera apenas texto ou destaque visível, sem tocar C1–C5, resultado de execução ou dado persistido; dispensa linha em `DELTAS.md` mas exige teste.
+_Avoid_: mudança cosmética
+
+**Licença ≈ conexão**:
+Heurística deliberada de que um provider pago está licenciado quando existe conexão ou credencial válida no escopo de localização atual.
+_Avoid_: assinatura, entitlement (quando o contexto é o critério implementado)
+
+**Corte por capacidade**:
+Troca de trilha v1→v2 no cliente condicionada ao servidor anunciar paridade, reversível por flag sem release.
+_Avoid_: big-bang, flip
+
+**Modelo gratuito**:
+Modelo de provider `opencode` ou `opencode-*` com custo de entrada zero.
+_Avoid_: modelo free, modelo grátis
+
+## Relationships (Provider Catalog)
+
+- A **Projeção pura** nunca decide disponibilidade, gratuidade ou default — só mapeia transporte (`api.npm`, `api.url`, `api.id`).
+- O **Contrato estrito (C1–C5)** é o gate da fase de projeção neutra: divergência é falha, nunca **Delta**.
+- **Licença ≈ conexão** vive num único ponto do core, para que seletor, projeção e telas herdem a regra sem duplicação.

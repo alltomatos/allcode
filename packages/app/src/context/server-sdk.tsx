@@ -13,6 +13,7 @@ import { useGlobal } from "./global"
 import { ServerScope } from "@/utils/server-scope"
 import { detectServerProtocol, type ServerProtocol } from "@/utils/server-protocol"
 import { createCompatibleApi, type CompatibleApi } from "@/utils/server-compat"
+import { withTenantHeaders } from "./tenant-request"
 
 const isAbortError = (error: unknown) =>
   error !== null && typeof error === "object" && "name" in error && error.name === "AbortError"
@@ -188,16 +189,19 @@ function createServerSdkContextBase(server: ServerConnection.Any, scope: ServerS
   const platform = usePlatform()
   const abort = new AbortController()
 
-  const eventFetch = (() => {
-    if (!platform.fetch || !server) return
-    try {
-      const url = new URL(server.http.url)
-      const loopback = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "::1"
-      if (url.protocol === "http:" && !loopback) return platform.fetch
-    } catch {
-      return
-    }
-  })()
+  const eventFetch = withTenantHeaders(
+    (() => {
+      if (!server) return platform.fetch ?? globalThis.fetch
+      try {
+        const url = new URL(server.http.url)
+        const loopback = url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "::1"
+        if (url.protocol === "http:" && !loopback && platform.fetch) return platform.fetch
+      } catch {
+        return platform.fetch ?? globalThis.fetch
+      }
+      return globalThis.fetch
+    })(),
+  )
 
   const eventApi = createApiForServer({ server: server.http, fetch: eventFetch })
   const eventSdk = createSdkForServer({
@@ -311,7 +315,7 @@ function createServerSdkContextBase(server: ServerConnection.Any, scope: ServerS
             streamErrorLogged = true
             console.error("[global-sdk] event stream failed", {
               url: server.http.url,
-              fetch: eventFetch ? "platform" : "webview",
+              fetch: "tenant",
               error,
             })
           }
@@ -385,7 +389,7 @@ function createServerSdkContextBase(server: ServerConnection.Any, scope: ServerS
     createClient(opts: Omit<Parameters<typeof createSdkForServer>[0], "server" | "fetch">) {
       return createSdkForServer({
         server: server.http,
-        fetch: platform.fetch,
+        fetch: eventFetch,
         ...opts,
       })
     },

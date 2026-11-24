@@ -12,6 +12,7 @@ import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { MenuV2 } from "@allcode/ui/v2/menu-v2"
 import { TooltipV2 } from "@allcode/ui/v2/tooltip-v2"
+import { Spinner } from "@allcode/ui/spinner"
 import { getProjectAvatarVariant, type HomeProjectSelection, type LocalProject } from "@/context/layout"
 import { ServerConnection, serverName } from "@/context/server"
 import { useLanguage } from "@/context/language"
@@ -58,6 +59,7 @@ export type HomeProjectsViewProps = {
   defaultServerKey: Accessor<ServerConnection.Key | null | undefined>
   canRevealProject: (server: ServerConnection.Any) => boolean
   unseenCount: (server: ServerConnection.Any, project: LocalProject) => number
+  creatingSession: Accessor<boolean>
   onWheel: (event: WheelEvent) => void
   onChooseProject: (server: ServerConnection.Any) => void
   onFocusServer: (server: ServerConnection.Any) => void
@@ -629,7 +631,10 @@ function HomeProjectRow(
           />
           <MenuV2.Portal>
             <MenuV2.Content>
-              <MenuV2.Item onSelect={() => props.onOpenProjectNewSession(props.server, props.project.worktree)}>
+              <MenuV2.Item
+                disabled={props.creatingSession()}
+                onSelect={() => props.onOpenProjectNewSession(props.server, props.project.worktree)}
+              >
                 <IconV2 name="plus" size="small" />
                 {props.language.t("command.session.new")}
               </MenuV2.Item>
@@ -665,7 +670,8 @@ function HomeProjectRow(
           data-action="home-project-new-session"
           variant="ghost-muted"
           size="small"
-          icon={<IconV2 name="edit" />}
+          icon={props.creatingSession() ? <Spinner class="size-3.5" /> : <IconV2 name="edit" />}
+          disabled={props.creatingSession()}
           aria-label={props.language.t("command.session.new")}
           onClick={() => props.onOpenProjectNewSession(props.server, props.project.worktree)}
         />

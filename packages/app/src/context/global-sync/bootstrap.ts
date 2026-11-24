@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   Config,
   OpencodeClient,
   Path,
@@ -45,6 +45,7 @@ import { ScopedKey, type ServerScope } from "@/utils/server-scope"
 import { normalizeSessionInfo } from "@/utils/session"
 import type { ServerProtocol } from "@/utils/server-protocol"
 import type { ServerApi } from "@/utils/server"
+import { cacheKey, writeProviderCache } from "./provider-cache"
 
 type GlobalStore = {
   ready: boolean
@@ -233,17 +234,20 @@ export const loadProvidersQuery = (
     staleTime: 60_000,
     queryFn: () =>
       retry(async () => {
-        if ((await protocol) === "v1" && legacy) {
-          const result = await legacy.provider.list()
-          return normalizeProviderList(result.data!)
-        }
-        const location = directory ? { location: { directory } } : undefined
-        const [providers, models, defaultModel] = await Promise.all([
-          sdk.provider.list(location),
-          sdk.model.list(location),
-          sdk.model.default(location),
-        ])
-        return normalizeProviderList(providers.data, models.data, defaultModel.data)
+        const result =
+          (await protocol) === "v1" && legacy
+            ? normalizeProviderList((await legacy.provider.list()).data!)
+            : await (async () => {
+                const location = directory ? { location: { directory } } : undefined
+                const [providers, models, defaultModel] = await Promise.all([
+                  sdk.provider.list(location),
+                  sdk.model.list(location),
+                  sdk.model.default(location),
+                ])
+                return normalizeProviderList(providers.data, models.data, defaultModel.data)
+              })()
+        writeProviderCache(cacheKey(directory), result)
+        return result
       }),
   })
 
@@ -556,4 +560,8 @@ export async function bootstrapDirectory(input: {
     if (loading && slowErrs.length === 0) input.setStore("status", "complete")
   })()
 }
+
+
+
+
 

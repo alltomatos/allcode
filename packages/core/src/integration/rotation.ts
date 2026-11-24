@@ -132,6 +132,11 @@ export function isBenchableFailure(error: unknown): { bench: boolean; durationMs
   if (/quota[-_\s]?exceeded|insufficient[-_\s]?quota|credit balance/i.test(message)) {
     return { bench: true, durationMs: 15 * 60_000 }
   }
+  // Account-level ToS bans are not transient: keep the connection out of the
+  // pool for a full day so one banned account cannot starve the whole rotation.
+  if (/disabled in this account|violation of terms of service|submit an appeal/i.test(message)) {
+    return { bench: true, durationMs: 24 * 60 * 60_000 }
+  }
 
   return { bench: false, durationMs: 0 }
 }

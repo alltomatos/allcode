@@ -1,6 +1,9 @@
 import { redirect } from "@solidjs/router"
+import { canAccessPortal } from "./portal-access"
 import { usePanelSession } from "./session"
 import { store, type PanelUser } from "./store"
+
+export { canAccessPortal } from "./portal-access"
 
 export async function currentUser(): Promise<PanelUser | undefined> {
   const session = await usePanelSession()
@@ -9,7 +12,7 @@ export async function currentUser(): Promise<PanelUser | undefined> {
   const db = store()
   await db.ensureSeed()
   const user = await db.users.findByID(id)
-  if (!user || user.status === "suspended" || user.status === "deleted") {
+  if (!user || user.status === "suspended" || user.status === "deleted" || !canAccessPortal(user)) {
     await session.clear()
     return
   }

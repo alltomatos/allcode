@@ -1,4 +1,6 @@
 import type { APIEvent } from "@solidjs/start"
+import { auditDb } from "~/lib/audit-db"
+import { recordUsage } from "~/lib/quota-service"
 import { store, isTrialExpired, type ModelUsageEntry } from "~/lib/store"
 
 function normalizeModelUsage(value: unknown): ModelUsageEntry[] {
@@ -105,6 +107,21 @@ export async function POST(event: APIEvent) {
       await db.users.update(user.id, { appVersion: version, appVersionAt: new Date().toISOString() })
     }
 
+    const tokensTotal = Math.max(0, Number(body.tokensTotal ?? 0))
+
+    // Usuários isentos de auditoria não têm resumo armazenado, mas o consumo
+    // de tokens continua sendo debitado do pool compartilhado.
+    if (user.auditExempt) {
+      const quota = await recordUsage({ orgID, userID, sessionID, tokens: tokensTotal })
+      return new Response(JSON.stringify({ ok: true, exempt: true, session: null, quota }), {
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "access-control-allow-origin": "*",
+        },
+      })
+    }
+
     const sessionRecord = await db.sessions.create({
       sessionID,
       userID,
@@ -124,7 +141,31 @@ export async function POST(event: APIEvent) {
       modelUsage: normalizeModelUsage(body.modelUsage),
     })
 
-    return new Response(JSON.stringify({ ok: true, session: sessionRecord }), {
+    // Sincronização assíncrona com PostgreSQL dedicado / Hyperdrive se disponível (Dual-Write)
+    auditDb.sessions.create({
+      sessionID,
+      userID,
+      orgID,
+      title: body.title || summary.slice(0, 80),
+      summary,
+      workspace,
+      startedAt,
+      endedAt,
+      tokensTotal: Math.max(0, Number(body.tokensTotal ?? 0)),
+      tokensInput: Math.max(0, Number(body.tokensInput ?? 0)),
+      tokensOutput: Math.max(0, Number(body.tokensOutput ?? 0)),
+      tokensReasoning: Math.max(0, Number(body.tokensReasoning ?? 0)),
+      costUsd: Math.max(0, Number(body.costUsd ?? 0)),
+      durationMs: Math.max(0, Number(body.durationMs ?? 0)),
+      messagesCount: Math.max(0, Number(body.messagesCount ?? 0)),
+      modelUsage: normalizeModelUsage(body.modelUsage),
+    }).catch((err) => {
+      console.error("[auditDb] Dual-write to PostgreSQL failed:", err)
+    })
+
+    const quota = await recordUsage({ orgID, userID, sessionID, tokens: tokensTotal })
+
+    return new Response(JSON.stringify({ ok: true, session: sessionRecord, quota }), {
       status: 200,
       headers: {
         "content-type": "application/json",

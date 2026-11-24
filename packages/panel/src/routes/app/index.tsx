@@ -1,16 +1,20 @@
 import { A, createAsync } from "@solidjs/router"
 import { For, Show } from "solid-js"
 import { Card, EmptyState, PageHeader, StatGrid } from "~/components/ui"
+import { OverviewKpis } from "~/components/overview-kpis"
 import { useI18n } from "~/i18n"
-import { getCurrentOrg, getStats, listAudit } from "~/lib/actions"
+import { getCurrentOrg, getOrgKPIs, getOrgQuota, getStats, listAudit } from "~/lib/actions"
 import { getTrialDaysRemaining } from "~/lib/store"
 import { actionKey, formatDate } from "~/lib/labels"
+import { formatTokenAmount } from "~/lib/quota"
 
 export default function OverviewPage() {
   const i18n = useI18n()
   const stats = createAsync(() => getStats())
+  const kpis = createAsync(() => getOrgKPIs())
   const events = createAsync(() => listAudit())
   const org = createAsync(() => getCurrentOrg())
+  const quota = createAsync(() => getOrgQuota())
 
   return (
     <div>
@@ -50,6 +54,62 @@ export default function OverviewPage() {
           </A>
         </div>
       </Show>
+
+      <OverviewKpis kpis={kpis()} />
+
+      <Show when={quota()}>
+        {(state) => {
+          const percent = () =>
+            state().company.limit && state().company.limit! > 0
+              ? Math.min(100, Math.round((state().company.used / state().company.limit!) * 100))
+              : 0
+          return (
+            <Card class="mb-6">
+              <div class="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 class="text-sm font-semibold text-slate-900">{i18n.t("overview.quota.title")}</h2>
+                  <p class="mt-0.5 text-xs text-slate-500">
+                    {formatTokenAmount(state().company.used)} /{" "}
+                    {state().company.limit === null
+                      ? i18n.t("quota.company.unlimited")
+                      : formatTokenAmount(state().company.limit)}
+                  </p>
+                </div>
+                <div class="text-right text-xs text-slate-500">
+                  <div>
+                    {i18n.t("quota.company.remaining")}:{" "}
+                    <strong class="text-slate-900">
+                      {state().company.remaining === null
+                        ? i18n.t("quota.company.unlimited")
+                        : formatTokenAmount(state().company.remaining)}
+                    </strong>
+                  </div>
+                  <div class="mt-0.5">
+                    {formatDate(state().cycleStart, i18n.locale())} → {formatDate(state().cycleEnd, i18n.locale())}
+                  </div>
+                </div>
+              </div>
+              <div class="mt-3 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                <div
+                  class={state().blocked ? "h-full rounded-full bg-rose-500" : "h-full rounded-full bg-indigo-500"}
+                  style={{ width: `${percent()}%` }}
+                />
+              </div>
+              <Show when={state().blocked}>
+                <div class="mt-2 text-xs font-medium text-rose-600">
+                  {state().scope === "user" ? i18n.t("quota.user.blocked") : i18n.t("quota.company.blocked")}
+                </div>
+              </Show>
+            </Card>
+          )
+        }}
+      </Show>
+
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">
+          {i18n.t("overview.access.title")}
+        </h2>
+      </div>
 
       <Show when={stats()}>
         {(current) => (

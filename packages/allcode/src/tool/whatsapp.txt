@@ -1,21 +1,25 @@
 ﻿Ferramenta nativa para operar a conta de WhatsApp conectada do agente (protocolo Web, modo native).
 
-AÃ§Ãµes disponÃ­veis:
-- status: estado da conexÃ£o, nÃºmero conectado e Ãºltimo erro.
+Ações disponíveis:
+- status: estado da conexão, número conectado e último erro.
 - send_text: envia texto (com quote opcional via quoteId/quoteParticipant).
-- send_media: envia imagem, vÃ­deo, Ã¡udio, documento ou sticker a partir de caminho local ou URL (caption/mimetype/filename opcionais).
-- send_reaction: reage a uma mensagem (emoji vazio remove a reaÃ§Ã£o).
-- send_buttons: atÃ© 3 botÃµes de resposta rÃ¡pida (o toque devolve o id do botÃ£o).
-- send_link: um botÃ£o que abre uma URL.
-- send_list: lista de seleÃ§Ã£o Ãºnica com seÃ§Ãµes e linhas.
-- send_pix: cobranÃ§a PIX com botÃ£o de pagamento nativo (chave, tipo, recebedor e valor em centavos).
-- send_carousel: carrossel de cartoes. Cada card EXIGE uma imagem (URL http(s) ou caminho local) alem de texto e 1-3 botoes; 1 a 10 cards. Sem midia no card o WhatsApp nao renderiza o carrossel.
-- read_messages: Ãºltimas mensagens de uma conversa (histÃ³rico local).
-- list_chats: conversas conhecidas, com nÃ£o lidas.
+- send_media: envia imagem, vídeo, áudio, documento ou sticker a partir de caminho local ou URL (caption/mimetype/filename opcionais).
+- send_reaction: reage a uma mensagem (emoji vazio remove a reação).
+- send_buttons: até 3 botões de resposta rápida (o toque devolve o id do botão).
+- send_link: um botão que abre uma URL.
+- send_list: lista de seleção única com seções e linhas.
+- send_pix: cobrança PIX com botão de pagamento nativo (chave, tipo, recebedor e valor em centavos).
+- send_carousel: carrossel de cartões. Cada card EXIGE uma imagem (URL http(s) ou caminho local) além de texto e 1-3 botões; 1 a 10 cards. Sem mídia no card o WhatsApp não renderiza o carrossel.
+- read_messages: últimas mensagens de uma conversa (histórico local).
+- list_chats: conversas conhecidas, com não lidas.
+- list_contacts: contatos salvos na agenda do WhatsApp. Use `query` para filtrar por nome, usuário ou telefone. É o jeito de descobrir o número de alguém antes de agendar.
+- request_meeting: pede confirmação de uma reunião pelo WhatsApp. Informe `contact` (nome salvo na agenda ou telefone completo), `text` (proposta/assunto) e, se já houver horário, `targetDate` (ISO-8601 ou "YYYY-MM-DD HH:mm"). O contato recebe botões Confirmar / Reagendar / Não poderei; a resposta fica registrada na agenda e a conversa de origem é avisada.
 - list_groups: grupos da conta (use onlyAdmin para apenas os administrados).
-- group_info: dados completos do grupo, incluindo participantes e permissÃµes.
+- group_info: dados completos do grupo, incluindo participantes e permissões.
 - group_create: cria um grupo com participantes.
 - group_update_participants: adiciona, remove, promove ou rebaixa participantes.
 - group_invite: link de convite do grupo (revoke=true revoga o atual).
 
-Requer a permissÃ£o `whatsapp` e um canal WhatsApp em modo native conectado.
+Para request_meeting, se não houver horário definido ainda, omita `targetDate` — o convite é enviado como "a combinar" e o contato escolhe a melhor opção. Não invente números: use list_contacts quando só souber o nome.
+
+Requer a permissão `whatsapp` e um canal WhatsApp em modo native conectado.

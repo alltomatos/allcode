@@ -106,7 +106,10 @@ function applyModel(
   draft.time.released = released(model.release_date)
   draft.cost = input.cost ?? cost(model.cost)
   draft.status = model.status ?? "active"
-  draft.enabled = true
+  // Deprecated nunca fica habilitado: o models.dev mantém o modelo na lista e,
+  // sem isso, `model.available()` (e a API v2) o oferecia como selecionável
+  // enquanto a UI do v1 o escondia. Alinha as duas trilhas (D008).
+  draft.enabled = draft.status !== "deprecated"
   draft.limit = {
     context: model.limit.context,
     input: model.limit.input,

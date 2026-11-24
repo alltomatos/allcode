@@ -34,6 +34,7 @@ GitHub é a fonte persistente de rastreamento e governança; este arquivo é a b
 | [**[E21] Particionamento SQLite por Workspace e Rollout de PRAGMAs**](https://github.com/alltomatos/opencode/issues/279) | Particionamento estrutural em global.db e project.db, isolamento de concorrência e rollout seguro de WAL | in_progress | [#279](https://github.com/alltomatos/opencode/issues/279) |
 | [**[E22] Resiliência, Coordenação Multi-Instância e Anti-Inchaço no Daemon de Rotinas**](https://github.com/alltomatos/opencode/issues/286) | Eleição de líder por heartbeat no SQLite, concorrência segregada (semáforos Effect), 1 retry de cortesia e histórico de 7 dias | done | [#286](https://github.com/alltomatos/opencode/issues/286) |
 | [**[E23] WhatsApp Nativo no AgentUI (zapo)**](https://github.com/alltomatos/allcode/issues/2) | Conexão de conta WhatsApp por QR Code, sessão persistida e tools reais para o assistente sem gateway externo | todo | [#2](https://github.com/alltomatos/allcode/issues/2) |
+| [**[E24] Convergência do Catálogo de Modelos v2 e Remoção da Trilha Legada**](https://github.com/alltomatos/allcode/issues/28) | Catálogo v2 como fonte única, v1 como projeção pura, deltas isolados e corte por capacidade anunciada | todo | [#28](https://github.com/alltomatos/allcode/issues/28) |
 
 ---
 
@@ -79,6 +80,7 @@ GitHub é a fonte persistente de rastreamento e governança; este arquivo é a b
   - [**[E14] Sincronização com Upstream Anomalyco**](https://github.com/alltomatos/opencode/issues/200) (`done`)
   - [**[E15] Dashboard de KPIs & Estatísticas de Uso de Tokens (/stats)**](https://github.com/alltomatos/opencode/issues/212) (`done`)
   - [**[E18] Multi-Account OAuth e Resiliência de Provedores**](https://github.com/alltomatos/opencode/issues/248) (`in_progress`)
+  - [**[E24] Convergência do Catálogo de Modelos v2 e Remoção da Trilha Legada**](https://github.com/alltomatos/allcode/issues/28) (`todo`)
 - **Estado:** `in_progress`
 
 ### M6: Automation & High Performance

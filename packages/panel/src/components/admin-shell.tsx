@@ -52,6 +52,17 @@ export function AdminShell(props: ParentProps<{ user: PublicUser }>) {
               💰 Planos e Preços
             </A>
             <A
+              href="/4dm1n/provedores"
+              class={cx(
+                "rounded-lg px-3 py-2 text-sm font-medium transition",
+                location.pathname.startsWith("/4dm1n/provedores")
+                  ? "bg-slate-800 text-white shadow-xs"
+                  : "text-slate-300 hover:bg-slate-800/60 hover:text-white",
+              )}
+            >
+              🌐 Provedores Globais
+            </A>
+            <A
               href="/4dm1n/revendedores"
               class={cx(
                 "rounded-lg px-3 py-2 text-sm font-medium transition",

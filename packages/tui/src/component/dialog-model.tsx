@@ -1,4 +1,4 @@
-import { createMemo, createSignal } from "solid-js"
+﻿import { createMemo, createSignal } from "solid-js"
 import { useLocal } from "../context/local"
 import { map, pipe, flatMap, entries, filter, sortBy, take } from "remeda"
 import { DialogSelect } from "../ui/dialog-select"
@@ -15,6 +15,16 @@ export function DialogModel(props: { providerID?: string }) {
   const dialog = useDialog()
   const [query, setQuery] = createSignal("")
 
+  // Lista efetiva: `/provider` já é a projeção do catálogo v2. Filtramos pelos
+  // conectados para manter o seletor igual ao de antes (o payload traz todos os
+  // providers do models.dev). Cai para o payload v1 só se o merged não chegou.
+  const providerList = createMemo(() => {
+    const next = sync.data.provider_next
+    const connected = new Set(next.connected)
+    const merged = next.all.filter((provider) => connected.has(provider.id))
+    return merged.length > 0 ? merged : sync.data.provider
+  })
+
   const connected = useConnected()
   const providers = createDialogProviderOptions()
 
@@ -29,7 +39,7 @@ export function DialogModel(props: { providerID?: string }) {
     function toOptions(items: typeof favorites, category: string) {
       if (!showSections) return []
       return items.flatMap((item) => {
-        const provider = sync.data.provider.find((provider) => provider.id === item.providerID)
+        const provider = providerList().find((provider) => provider.id === item.providerID)
         if (!provider) return []
         const model = provider.models[item.modelID]
         if (!model) return []
@@ -59,7 +69,7 @@ export function DialogModel(props: { providerID?: string }) {
     )
 
     const providerOptions = pipe(
-      sync.data.provider,
+      providerList(),
       sortBy(
         (provider) => provider.id !== "opencode",
         (provider) => provider.name,
@@ -130,7 +140,7 @@ export function DialogModel(props: { providerID?: string }) {
   })
 
   const provider = createMemo(() =>
-    props.providerID ? sync.data.provider.find((item) => item.id === props.providerID) : null,
+    props.providerID ? providerList().find((item) => item.id === props.providerID) : null,
   )
 
   const title = createMemo(() => {
@@ -195,3 +205,4 @@ export function sortModelOptions<T extends { footer?: string; releaseDate: strin
     (option) => option.title,
   )
 }
+

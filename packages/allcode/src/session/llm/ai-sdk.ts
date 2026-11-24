@@ -264,8 +264,23 @@ export function toLLMEvents(
         ]
       })
 
-    case "error":
-      return Effect.fail(event.error)
+    case "error": {
+      const error = event.error
+      // OpenAI-compatible providers (and gateways in front of them) surface SSE
+      // error chunks as bare objects ({ type, message, code }). Wrap them in an
+      // error envelope so the provider error parser can classify them instead
+      // of collapsing them into an unknown error. The envelope stays bare so
+      // only payloads that opt in (code/retryable) are treated as transient.
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        !(error instanceof Error) &&
+        !("error" in error) &&
+        typeof (error as { message?: unknown }).message === "string"
+      )
+        return Effect.fail({ error })
+      return Effect.fail(error)
+    }
 
     case "abort":
     case "source":

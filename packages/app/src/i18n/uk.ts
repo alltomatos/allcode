@@ -147,6 +147,16 @@ export const dict = {
   "command.language.set": "Використати мову: {{language}}",
 
   "command.session.new": "Нова сесія",
+  "provider.loading.title": "Loading providers and models...", // TODO: translate (auto-filled from en)
+  "provider.loading.detail": "{count} available", // TODO: translate (auto-filled from en)
+  "settings.agentui.model.unavailable": "Configured model is unavailable - the default will be used at runtime.", // TODO: translate (auto-filled from en)
+  "session.view.header.project": "Project", // TODO: translate (auto-filled from en)
+  "session.view.header.usage": "Session token usage", // TODO: translate (auto-filled from en)
+  "session.view.header.input": "Input", // TODO: translate (auto-filled from en)
+  "session.view.header.output": "Output", // TODO: translate (auto-filled from en)
+  "session.view.header.tps": "Tokens/s", // TODO: translate (auto-filled from en)
+  "session.view.header.total": "Total", // TODO: translate (auto-filled from en)
+  "session.view.header.noUsage": "No usage yet", // TODO: translate (auto-filled from en)
   "command.file.open": "Відкрити файл",
   "command.tab.close": "Закрити вкладку",
   "command.tab.reopenClosed": "Повторно відкрити закриту вкладку",
@@ -2078,4 +2088,9 @@ export const dict = {
   "sidebar.account.title": "Обліковий запис",
   "sidebar.account.manage": "Керування обліковим записом",
   "sidebar.account.signOut": "Вийти",
+  "settings.providers.health.banned": "Banned", // TODO: translate (auto-filled from en)
+  "settings.providers.health.bannedTooltip": "Account banned by the provider. Investigate the reason before re-enabling.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banReason": "Ban reason: {{reason}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banDetectedAt": "Detected at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banHint": "The account was disabled automatically. Check the account email for the provider's appeal instructions.", // TODO: translate (auto-filled from en)
 }

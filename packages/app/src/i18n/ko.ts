@@ -37,6 +37,16 @@ export const dict = {
   "command.language.cycle": "언어 순환",
   "command.language.set": "언어 사용: {{language}}",
   "command.session.new": "새 세션",
+  "provider.loading.title": "Loading providers and models...", // TODO: translate (auto-filled from en)
+  "provider.loading.detail": "{count} available", // TODO: translate (auto-filled from en)
+  "settings.agentui.model.unavailable": "Configured model is unavailable - the default will be used at runtime.", // TODO: translate (auto-filled from en)
+  "session.view.header.project": "Project", // TODO: translate (auto-filled from en)
+  "session.view.header.usage": "Session token usage", // TODO: translate (auto-filled from en)
+  "session.view.header.input": "Input", // TODO: translate (auto-filled from en)
+  "session.view.header.output": "Output", // TODO: translate (auto-filled from en)
+  "session.view.header.tps": "Tokens/s", // TODO: translate (auto-filled from en)
+  "session.view.header.total": "Total", // TODO: translate (auto-filled from en)
+  "session.view.header.noUsage": "No usage yet", // TODO: translate (auto-filled from en)
   "command.file.open": "파일 열기",
   "command.tab.close": "탭 닫기",
   "command.context.addSelection": "선택 영역을 컨텍스트에 추가",
@@ -1978,4 +1988,9 @@ export const dict = {
   "sidebar.account.title": "계정",
   "sidebar.account.manage": "계정 관리",
   "sidebar.account.signOut": "로그아웃",
+  "settings.providers.health.banned": "Banned", // TODO: translate (auto-filled from en)
+  "settings.providers.health.bannedTooltip": "Account banned by the provider. Investigate the reason before re-enabling.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banReason": "Ban reason: {{reason}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banDetectedAt": "Detected at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banHint": "The account was disabled automatically. Check the account email for the provider's appeal instructions.", // TODO: translate (auto-filled from en)
 }

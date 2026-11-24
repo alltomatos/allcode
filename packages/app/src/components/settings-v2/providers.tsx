@@ -13,6 +13,7 @@ import { showToast } from "@/utils/toast"
 import { DialogAccountQuotaV2, type AccountQuotaModalData } from "./dialog-account-quota-v2"
 import type { IntegrationInfo } from "@allcode/client/promise"
 import { popularProviders, useProviders } from "@/hooks/use-providers"
+import { useConnectableProviders } from "@/hooks/use-connectable-providers"
 import { createEffect, createMemo, createResource, createSignal, type Accessor, type Component, For, Show } from "solid-js"
 import { useLanguage } from "@/context/language"
 import { useServerProtocol, useServerSDK } from "@/context/server-sdk"
@@ -169,6 +170,10 @@ const ProviderAccountList: Component<{
           overallPercentage: Number(res.data.overallPercentage) || 0,
           healthStatus: (res.data as any).healthStatus,
           cooldownUntil: (res.data as any).cooldownUntil,
+          disabled: (res.data as any).disabled,
+          banned: (res.data as any).banned,
+          banReason: (res.data as any).banReason,
+          bannedAt: (res.data as any).bannedAt,
           providerID: props.integrationID,
           credentialID: account.id,
           buckets: (res.data.buckets || []).map((b) => ({
@@ -358,7 +363,15 @@ const ProviderAccountList: Component<{
                   <span class="settings-v2-provider-account-label font-mono text-12-regular text-v2-text-text-base truncate max-w-[240px]">
                     {account.label}
                   </span>
-                  <Show when={account.disabled}>
+                  <Show when={quotaData()?.banned}>
+                    <span
+                      class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-medium leading-none bg-v2-background-bg-layer-02 border border-v2-state-fg-danger/40 text-v2-state-fg-danger cursor-help"
+                      title={quotaData()?.banReason ?? language.t("settings.providers.health.bannedTooltip")}
+                    >
+                      {language.t("settings.providers.health.banned")}
+                    </span>
+                  </Show>
+                  <Show when={account.disabled && !quotaData()?.banned}>
                     <Tag variant="neutral">{language.t("settings.providers.health.disabled")}</Tag>
                   </Show>
                   <Show
@@ -481,6 +494,7 @@ export const SettingsProvidersV2: Component<{
   const protocol = useServerProtocol()
   const serverSync = useServerSync()
   const providers = useProviders(props.directory)
+  const connectable = useConnectableProviders(props.directory)
   const providerPolicy = useProviderPolicy()
   const providerConnect = useProviderConnectController({ onBack: props.onBack })
   const [view, setView] = createSignal<ProviderView>(loadProviderView())
@@ -548,7 +562,7 @@ export const SettingsProvidersV2: Component<{
 
   const popular = createMemo(() => {
     const connectedIDs = new Set(connected().map((p) => p.id))
-    const allProviders = providers.all()
+    const allProviders = connectable()
     const items = popularProviders
       .filter((id) => !connectedIDs.has(id))
       .map((id) => {
@@ -565,7 +579,7 @@ export const SettingsProvidersV2: Component<{
   const others = createMemo(() => {
     const q = query().trim().toLowerCase()
     const shownIDs = new Set([...connected().map((p) => p.id), ...popular().map((p) => p.id)])
-    return Array.from(providers.all().values())
+    return Array.from(connectable().values())
       .filter((p) => !shownIDs.has(p.id))
       .filter((p) => !q || `${p.id} ${p.name}`.toLowerCase().includes(q))
       .sort((a, b) => a.name.localeCompare(b.name))

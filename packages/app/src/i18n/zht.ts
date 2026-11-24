@@ -149,6 +149,16 @@ export const dict = {
   "command.language.set": "使用語言: {{language}}",
 
   "command.session.new": "新增工作階段",
+  "provider.loading.title": "Loading providers and models...", // TODO: translate (auto-filled from en)
+  "provider.loading.detail": "{count} available", // TODO: translate (auto-filled from en)
+  "settings.agentui.model.unavailable": "Configured model is unavailable - the default will be used at runtime.", // TODO: translate (auto-filled from en)
+  "session.view.header.project": "Project", // TODO: translate (auto-filled from en)
+  "session.view.header.usage": "Session token usage", // TODO: translate (auto-filled from en)
+  "session.view.header.input": "Input", // TODO: translate (auto-filled from en)
+  "session.view.header.output": "Output", // TODO: translate (auto-filled from en)
+  "session.view.header.tps": "Tokens/s", // TODO: translate (auto-filled from en)
+  "session.view.header.total": "Total", // TODO: translate (auto-filled from en)
+  "session.view.header.noUsage": "No usage yet", // TODO: translate (auto-filled from en)
   "command.file.open": "開啟檔案",
   "command.tab.close": "關閉分頁",
   "command.tab.reopenClosed": "重新開啟已關閉的分頁",
@@ -2034,4 +2044,9 @@ export const dict = {
   "sidebar.account.title": "帳戶",
   "sidebar.account.manage": "管理帳戶",
   "sidebar.account.signOut": "登出",
+  "settings.providers.health.banned": "Banned", // TODO: translate (auto-filled from en)
+  "settings.providers.health.bannedTooltip": "Account banned by the provider. Investigate the reason before re-enabling.", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banReason": "Ban reason: {{reason}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banDetectedAt": "Detected at {{time}}", // TODO: translate (auto-filled from en)
+  "settings.providers.quota.banHint": "The account was disabled automatically. Check the account email for the provider's appeal instructions.", // TODO: translate (auto-filled from en)
 } satisfies Partial<Record<Keys, string>>

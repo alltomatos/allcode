@@ -1,4 +1,4 @@
-import { Account } from "@/account/account"
+﻿import { Account } from "@/account/account"
 import { Agent } from "@/agent/agent"
 import { BackgroundJob } from "@/background/job"
 import { Config } from "@/config/config"
@@ -16,6 +16,7 @@ import { ToolRegistry } from "@/tool/registry"
 import { Worktree } from "@/worktree"
 import { Memory } from "@/memory"
 import { Provider } from "@/provider/provider"
+import { selectableFrom } from "@/provider/availability"
 import { ProviderTransform } from "@/provider/transform"
 import { SystemPrompt } from "@/session/system"
 import { Instruction } from "@/session/instruction"
@@ -252,7 +253,9 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
       let modelID = targetModelID
 
       if (providerID === "combo") {
-        const resolved = yield* combos.resolve(modelID).pipe(Effect.orElseSucceed(() => undefined))
+        const resolved = yield* combos
+          .resolve(modelID, selectableFrom(yield* provider.list()))
+          .pipe(Effect.orElseSucceed(() => undefined))
         if (!resolved) return undefined
         providerID = resolved.providerID
         modelID = resolved.modelID
@@ -535,3 +538,4 @@ export const experimentalHandlers = HttpApiBuilder.group(InstanceHttpApi, "exper
       .handle("enhancePrompt", enhancePrompt)
   }),
 )
+

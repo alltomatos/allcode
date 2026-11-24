@@ -47,6 +47,11 @@ const RETRYABLE_MESSAGE_PATTERNS = [
   /^timeout$|\b(?:request|response|connection|network|stream|read) (?:timeout|timed out|time out)\b/i,
   /try your request again|retry your request|resource exhausted|resource_exhausted/i,
   /\btry again (?:later|in\b)|\b(?:currently|temporarily) at capacity\b/i,
+  // A response stream that dies after the first byte: upstream cut, proxy reset
+  // or idle watchdog.
+  /upstream stream failed|stream (?:failed|interrupted|closed unexpectedly)|unexpected end of (?:the )?stream|premature close|other side closed|idle timeout exceeded/i,
+  // Gateway admission control that explicitly asks for a short retry.
+  /ttft_admission_refused|the cell is at capacity/i,
 ]
 
 function cap(ms: number) {
@@ -193,12 +198,16 @@ export function policy(opts: {
   provider: string
   parse: (error: unknown) => Err
   set: (input: { attempt: number; message: string; action?: Retryable["action"]; next: number }) => Effect.Effect<void>
+  // Optional veto for a retry that is retryable in theory but unsafe in the
+  // current turn, e.g. restarting after partial output or tool execution.
+  guard?: (error: Err) => boolean
 }) {
   return Schedule.fromStepWithMetadata(
     Effect.succeed((meta: Schedule.InputMetadata<unknown>) => {
       const error = opts.parse(meta.input)
       const retry = retryable(error, opts.provider)
       if (!retry) return Cause.done(meta.attempt)
+      if (opts.guard && !opts.guard(error)) return Cause.done(meta.attempt)
       if (meta.attempt > RETRY_MAX_RETRIES) return Cause.done(meta.attempt)
       const wait = delay(meta.attempt, SessionV1.APIError.isInstance(error) ? error : undefined)
       // Daily free-quota and subscription windows can ask for hours; do not

@@ -37,4 +37,34 @@ describe("detectServerProtocol", () => {
 
     expect(await detectServerProtocol(server, fetcher)).toBe("v1")
   })
+
+  test("prefers V2 when the server announces provider parity", async () => {
+    const fetcher = mockFetch((input) => {
+      const path = new URL(input instanceof Request ? input.url : input).pathname
+      if (path === "/global/health") return Promise.resolve(json({ healthy: true, version: "1.18.4" }))
+      return Promise.resolve(json({ healthy: true, version: "2.0.0", pid: 123, providerParity: true }))
+    })
+
+    expect(await detectServerProtocol(server, fetcher, () => undefined)).toBe("v2")
+  })
+
+  test("an explicit preference overrides the announcement", async () => {
+    const fetcher = mockFetch((input) => {
+      const path = new URL(input instanceof Request ? input.url : input).pathname
+      if (path === "/global/health") return Promise.resolve(json({ healthy: true }))
+      return Promise.resolve(json({ healthy: true, pid: 123, providerParity: true }))
+    })
+
+    expect(await detectServerProtocol(server, fetcher, () => "v1")).toBe("v1")
+  })
+
+  test("an explicit V2 preference wins without an announcement", async () => {
+    const fetcher = mockFetch((input) => {
+      const path = new URL(input instanceof Request ? input.url : input).pathname
+      if (path === "/global/health") return Promise.resolve(json({ healthy: true }))
+      return Promise.resolve(json({ healthy: true }))
+    })
+
+    expect(await detectServerProtocol(server, fetcher, () => "v2")).toBe("v2")
+  })
 })

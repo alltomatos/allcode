@@ -55,9 +55,14 @@ export async function hashPassword(password: string) {
   return `pbkdf2$sha256$${ITERATIONS}$${encodeBase64(salt)}$${encodeBase64(hash)}`
 }
 
-export async function verifyPassword(password: string, stored: string) {
+export function passwordHashIsSupported(stored: string) {
   const [scheme, digest, iterations, salt, hash] = stored.split("$")
-  if (scheme !== "pbkdf2" || digest !== "sha256" || Number(iterations) !== ITERATIONS) return false
+  return scheme === "pbkdf2" && digest === "sha256" && Number(iterations) === ITERATIONS && Boolean(salt) && Boolean(hash)
+}
+
+export async function verifyPassword(password: string, stored: string) {
+  if (!passwordHashIsSupported(stored)) return false
+  const [, , , salt, hash] = stored.split("$")
   if (!salt || !hash) return false
   const derived = await derive(await peppered(password), decodeBase64(salt))
   return equal(derived, decodeBase64(hash))

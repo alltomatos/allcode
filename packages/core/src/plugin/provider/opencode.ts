@@ -17,6 +17,8 @@ const defaultServer = "https://opencode.ai/console"
 const clientID = "opencode-cli"
 const methodID = Integration.MethodID.make("device")
 const RemoteResponse = Schema.Struct({ config: ConfigV1.Info })
+const RemoteModels = Schema.Struct({ data: Schema.Array(Schema.Struct({ id: Schema.String })) })
+const GO_MODELS_TTL_MS = 5 * 60_000
 const Device = Schema.Struct({
   device_code: Schema.String,
   user_code: Schema.String,
@@ -89,8 +91,14 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
     const events = yield* EventV2.Service
     const http = yield* HttpClient.HttpClient
     const loading = Semaphore.makeUnsafe(1)
+    const envGoKey = process.env.OPENCODE_API_KEY
     let connected = false
+    let goConnected = false
     let providers: typeof ConfigV1.Info.Type.provider | undefined
+    // Available model ids reported by the Go API. Kept across catalog reloads
+    // and only replaced after a successful fetch; missing cache means fail-open.
+    let goModels: { at: number; ids: Set<string> } | undefined
+    let loaded = false
 
     const load = Effect.fn("OpencodePlugin.load")(function* () {
       const connection = yield* ctx.integration.connection.active("opencode")
@@ -98,6 +106,20 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
         ? yield* ctx.integration.connection.resolve(connection).pipe(Effect.catch(() => Effect.succeed(undefined)))
         : undefined
       connected = connection !== undefined
+      // "licença ≈ conexão" (ADR 0009): o Go não tem verificação de assinatura,
+      // então usamos a existência de conexão/credencial no escopo atual. A env
+      // `OPENCODE_API_KEY` conta porque o models.dev a mapeia para este provider.
+      let goKey = envGoKey
+      const goConnection = yield* ctx.integration.connection.active(Integration.ID.make("opencode-go"))
+      if (!goKey && goConnection) {
+        const goCredential = yield* ctx.integration.connection.resolve(goConnection).pipe(Effect.catch(() => Effect.succeed(undefined)))
+        goKey = goCredential?.type === "oauth" ? goCredential.access : goCredential?.type === "key" ? goCredential.key : undefined
+      }
+      goConnected = Boolean(goKey) || goConnection !== undefined
+      if (goConnected && goKey && (!goModels || Date.now() - goModels.at > GO_MODELS_TTL_MS)) {
+        const ids = yield* fetchGoModelIDs(http, goKey).pipe(Effect.catch(() => Effect.succeed(undefined)))
+        if (ids && ids.size > 0) goModels = { at: Date.now(), ids }
+      }
       providers = credential
         ? yield* fetchProviders(http, credential).pipe(
             Effect.catch((cause) =>
@@ -105,6 +127,7 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
             ),
           )
         : undefined
+      loaded = true
     })
 
     yield* ctx.integration.transform((draft) => {
@@ -171,6 +194,51 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
         }
       }
 
+      // D003 — "pago sem conexão". Sem conexão/credencial para `opencode-go`,
+      // TODOS os modelos do provider ficam indisponíveis, inclusive os `-free`:
+      // um modelo gratuito sem credencial é selecionável e não executável.
+      // O provider continua visível como card de conexão. Heurística deliberada
+      // (licença ≈ conexão, ADR 0009) — não há checagem de assinatura.
+      const go = catalog.provider.get(ProviderV2.ID.make("opencode-go"))
+      if (go && loaded && !goConnected) {
+        for (const model of go.models.values()) {
+          catalog.model.update(go.provider.id, model.id, (draft) => {
+            draft.enabled = false
+          })
+        }
+      }
+
+      // The Go catalog also contains models this subscription cannot serve
+      // (unavailable or deprecated upstream). When the API answered at least
+      // once, keep only ids it currently reports. No cache or a failed fetch
+      // leaves the catalog untouched (fail-open).
+      if (goConnected && goModels && go) {
+        for (const model of go.models.values()) {
+          if (goModels.ids.has(model.id)) continue
+          catalog.model.update(go.provider.id, model.id, (draft) => {
+            draft.enabled = false
+          })
+        }
+      }
+
+      // D004 — OPENCODE_DISABLE_FREE_MODELS. Paridade com o upstream: esconde
+      // os modelos gratuitos de `opencode`/`opencode-*`. Lida a cada execução
+      // do transform (não no import) para refletir mudança sem reiniciar o
+      // processo. Um modelo é gratuito quando nenhuma faixa de custo cobra
+      // entrada — o mesmo critério do auto-disable de pagos.
+      if (disableFreeModels()) {
+        for (const record of catalog.provider.list()) {
+          const providerID = record.provider.id
+          if (providerID !== ProviderV2.ID.opencode && !providerID.startsWith("opencode-")) continue
+          for (const model of record.models.values()) {
+            if (model.cost.some((cost) => cost.input > 0)) continue
+            catalog.model.update(providerID, model.id, (draft) => {
+              draft.enabled = false
+            })
+          }
+        }
+      }
+
       const item = catalog.provider.get(ProviderV2.ID.opencode)
       if (!item) return
       const hasKey = Boolean(process.env.OPENCODE_API_KEY || connected || item.provider.request.body.apiKey)
@@ -188,13 +256,36 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
 
     const refresh = () => loading.withPermit(load().pipe(Effect.andThen(ctx.catalog.reload())))
     yield* events.subscribe(Integration.Event.ConnectionUpdated).pipe(
-      Stream.filter((event) => event.data.integrationID === Integration.ID.make("opencode")),
+      Stream.filter((event) =>
+        event.data.integrationID === Integration.ID.make("opencode") ||
+        event.data.integrationID === Integration.ID.make("opencode-go"),
+      ),
       Stream.runForEach(refresh),
       Effect.forkScoped({ startImmediately: true }),
     )
     yield* refresh().pipe(Effect.forkScoped)
   }),
 })
+
+function fetchGoModelIDs(http: HttpClient.HttpClient, apiKey: string) {
+  return http
+    .execute(
+      HttpClientRequest.get("https://opencode.ai/zen/go/v1/models").pipe(
+        HttpClientRequest.acceptJson,
+        HttpClientRequest.bearerToken(apiKey),
+      ),
+    )
+    .pipe(
+      Effect.flatMap(HttpClientResponse.filterStatusOk),
+      Effect.flatMap(HttpClientResponse.schemaBodyJson(RemoteModels)),
+      Effect.map((body) => new Set(body.data.map((model) => model.id))),
+    )
+}
+
+function disableFreeModels() {
+  const value = process.env.OPENCODE_DISABLE_FREE_MODELS?.trim().toLowerCase()
+  return value === "1" || value === "true"
+}
 
 function fetchProviders(http: HttpClient.HttpClient, value: CredentialValue) {
   const metadata = value.metadata

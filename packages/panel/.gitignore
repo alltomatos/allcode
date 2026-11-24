@@ -8,6 +8,11 @@ dist
 .env*.local
 .dev.vars
 
+# Local diagnostics and one-off data (never commit)
+*.log
+probe.json
+d1-clean.json
+
 # dependencies
 /node_modules
 

@@ -1,6 +1,7 @@
 import { useFilteredList } from "@allcode/ui/hooks"
 import { ProviderIcon } from "@allcode/ui/provider-icon"
 import { Switch } from "@allcode/ui/v2/switch-v2"
+import { Tag } from "@allcode/ui/v2/badge-v2"
 import { Icon as IconV2 } from "@allcode/ui/v2/icon"
 import { IconButtonV2 } from "@allcode/ui/v2/icon-button-v2"
 import { TextInputV2 } from "@allcode/ui/v2/text-input-v2"
@@ -10,6 +11,7 @@ import { useLanguage } from "@/context/language"
 import { useModels } from "@/context/models"
 import { useServerSDK } from "@/context/server-sdk"
 import { popularProviders } from "@/hooks/use-providers"
+import { isFreeModel } from "@/utils/model-free"
 import { Persist, persisted } from "@/utils/persist"
 import { SettingsListV2 } from "./parts/list"
 import { SettingsRowV2 } from "./parts/row"
@@ -185,7 +187,17 @@ export const SettingsModelsV2: Component = () => {
                           {(item) => {
                             const key = { providerID: item.provider.id, modelID: item.id }
                             return (
-                              <SettingsRowV2 title={item.name} description="">
+                              <SettingsRowV2
+                                title={
+                                  <span class="flex min-w-0 items-center gap-2">
+                                    <span class="truncate">{item.name}</span>
+                                    <Show when={isFreeModel(item.provider.id, item.cost)}>
+                                      <Tag>{language.t("model.tag.free")}</Tag>
+                                    </Show>
+                                  </span>
+                                }
+                                description=""
+                              >
                                 <div>
                                   <Switch
                                     checked={models.visible(key)}
