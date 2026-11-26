@@ -1,0 +1,41 @@
+name: provider-parity
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * *"
+
+jobs:
+  live-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.3.14
+      - name: Check parity secrets
+        id: check
+        env:
+          URL: ${{ secrets.OPENCODE_PARITY_URL }}
+        run: |
+          if [ -n "$URL" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::OPENCODE_PARITY_URL is not configured; skipping live provider parity."
+          fi
+      - name: Install
+        if: steps.check.outputs.enabled == 'true'
+        run: bun install --frozen-lockfile
+      - name: Live parity (v1 x v2)
+        if: steps.check.outputs.enabled == 'true'
+        working-directory: packages/allcode
+        env:
+          OPENCODE_PARITY_URL: ${{ secrets.OPENCODE_PARITY_URL }}
+          OPENCODE_PARITY_USERNAME: ${{ secrets.OPENCODE_PARITY_USERNAME }}
+          OPENCODE_PARITY_PASSWORD: ${{ secrets.OPENCODE_PARITY_PASSWORD }}
+          OPENCODE_PARITY_DIR: ${{ secrets.OPENCODE_PARITY_DIR }}
+          OPENCODE_PARITY_PROMPTS: ${{ secrets.OPENCODE_PARITY_PROMPTS }}
+        run: bun test test/provider/parity-live.test.ts --timeout 180000
