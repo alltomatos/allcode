@@ -1981,4 +1981,6 @@ export const dict = {
   "settings.providers.quota.banReason": "Ban reason: {{reason}}", // TODO: translate (auto-filled from en)
   "settings.providers.quota.banDetectedAt": "Detected at {{time}}", // TODO: translate (auto-filled from en)
   "settings.providers.quota.banHint": "The account was disabled automatically. Check the account email for the provider's appeal instructions.", // TODO: translate (auto-filled from en)
+  "settings.providers.parityWarning":
+    "Provider v2 is under evaluation. Custom providers and combos may not appear or may fail. Keep the default v1 trail unless you are validating parity.", // TODO: translate (auto-filled from en)
 }

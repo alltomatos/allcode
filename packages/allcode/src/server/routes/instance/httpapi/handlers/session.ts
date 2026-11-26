@@ -2,6 +2,7 @@ import { PermissionV1 } from "@allcode/core/v1/permission"
 import { checkTenantQuota } from "@allcode/core/quota-gate"
 import { QuotaExceededError } from "@allcode/protocol/errors"
 import { Agent } from "@/agent/agent"
+import { Provider } from "@/provider/provider"
 import { SessionV1 } from "@allcode/core/v1/session"
 import { EventV2Bridge } from "@/event-v2-bridge"
 import { Command } from "@/command"
@@ -324,7 +325,16 @@ export const sessionHandlers = HttpApiBuilder.group(InstanceHttpApi, "session", 
           ...ctx.payload,
           sessionID: ctx.params.sessionID,
         })
-        .pipe(Effect.mapError(() => new HttpApiError.BadRequest({})))
+        // Model resolution currently dies with ProviderModelNotFoundError; keep
+        // it a client error instead of leaking a 500 with an opaque ref.
+        .pipe(
+          Effect.catchDefect((defect) =>
+            Provider.ModelNotFoundError.isInstance(defect)
+              ? Effect.fail(new HttpApiError.BadRequest({}))
+              : Effect.die(defect),
+          ),
+          Effect.mapError(() => new HttpApiError.BadRequest({})),
+        )
       return HttpServerResponse.stream(Stream.make(JSON.stringify(message)).pipe(Stream.encodeText), {
         contentType: "application/json",
       })

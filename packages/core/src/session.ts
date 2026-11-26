@@ -135,7 +135,7 @@ export interface Interface {
   readonly events: (input: {
     sessionID: SessionSchema.ID
     after?: number
-  }) => Stream.Stream<SessionEvent.DurableEvent, NotFoundError>
+  }) => Stream.Stream<SessionEvent.Event, NotFoundError>
   readonly history: (input: {
     sessionID: SessionSchema.ID
     after?: number
@@ -415,9 +415,27 @@ const layer = Layer.effect(
           Effect.gen(function* () {
             const session = yield* result.get(input.sessionID)
             const workspace = yield* locate(session)
-            return workspace.events.durable({ aggregateID: input.sessionID, after: input.after })
+            const durable = workspace.events
+              .durable({ aggregateID: input.sessionID, after: input.after })
+              .pipe(Stream.filter((event): event is SessionEvent.DurableEvent => isDurableSessionEvent(event)))
+            // `text.delta`/`reasoning.delta` are live-only by design: they are
+            // never persisted, so `durable()` cannot replay them. Merge the live
+            // bus so the SSE endpoint still streams tokens incrementally.
+            const live = workspace.events.all().pipe(
+              Stream.filter(
+                (event) =>
+                  event.durable === undefined &&
+                  typeof event.data === "object" &&
+                  event.data !== null &&
+                  (event.data as { sessionID?: unknown }).sessionID === input.sessionID,
+              ),
+              // Live payloads already carry decoded values (DateTime, branded
+              // ids); decoding them again would expect the encoded shape.
+              Stream.map((event) => event as unknown as SessionEvent.Event),
+            )
+            return Stream.merge(live, durable)
           }),
-        ).pipe(Stream.filter((event): event is SessionEvent.DurableEvent => isDurableSessionEvent(event))),
+        ),
       history: Effect.fn("V2Session.history")(function* (input) {
         const session = yield* result.get(input.sessionID)
         const workspace = yield* resolver.get(session.location).pipe(Effect.catch(() => Effect.succeed(database)))

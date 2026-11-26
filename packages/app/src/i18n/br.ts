@@ -1,4 +1,4 @@
-﻿export const dict = {
+export const dict = {
   "desktop.menu.app": "AllCode",
   "desktop.menu.file": "Arquivo",
   "desktop.menu.edit": "Editar",
@@ -1463,6 +1463,8 @@
   "settings.providers.title": "Provedores",
   "settings.providers.description": "Configurações de provedores estarão disponíveis aqui.",
   "settings.providers.section.connected": "Provedores conectados",
+  "settings.providers.parityWarning":
+    "A trilha v2 de provedores está em avaliação. Provedores customizados e combos podem não aparecer ou falhar. Mantenha a trilha v1 padrão a menos que esteja validando a paridade.",
   "settings.providers.connected.empty": "Nenhum provedor conectado",
   "settings.providers.section.popular": "Provedores populares",
   "settings.providers.quota.dialogTitle": "Cota da conta: {{account}}",

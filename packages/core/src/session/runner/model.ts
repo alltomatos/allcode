@@ -5,13 +5,17 @@ import { type Model } from "@allcode/llm"
 import * as AnthropicMessages from "@allcode/llm/protocols/anthropic-messages"
 import * as OpenAICompatibleChat from "@allcode/llm/protocols/openai-compatible-chat"
 import * as OpenAIResponses from "@allcode/llm/protocols/openai-responses"
+import * as OpenRouter from "@allcode/llm/providers/openrouter"
 import { Auth, type AnyRoute } from "@allcode/llm/route"
 import { Context, Effect, Layer, Schema } from "effect"
 import { produce } from "immer"
+import fs from "node:fs/promises"
+import path from "node:path"
 import { Config } from "../../config"
 import { Catalog } from "../../catalog"
 import { ComboSelect } from "../../combo/select"
 import { Credential } from "../../credential"
+import { Global } from "../../global"
 import { Integration } from "../../integration"
 import { IntegrationRotation } from "../../integration/rotation"
 import { ModelV2 } from "../../model"
@@ -94,6 +98,61 @@ const apiKey = (model: ModelV2.Info, credential?: Credential.Value) => {
   if (typeof value === "string") return Auth.value(value)
 }
 
+type StoredAuth =
+  | { readonly type: "api"; readonly key: string; readonly metadata?: Record<string, string> }
+  | {
+      readonly type: "oauth"
+      readonly access: string
+      readonly refresh: string
+      readonly expires: number
+      readonly accountId?: string
+      readonly enterpriseUrl?: string
+    }
+
+/**
+ * Legacy `auth.json` bridge for the v2 runner. Providers connected before the
+ * Credential/Integration store (OpenRouter, AgentRouter, ...) only exist in
+ * the legacy file. The v1 path reads it directly; the v2 runner must do the
+ * same until every provider is migrated to the integration store.
+ */
+const legacyCredential = (providerID: ProviderV2.ID): Effect.Effect<Credential.Value | undefined> =>
+  Effect.tryPromise({
+    try: async () => {
+      const source =
+        process.env.OPENCODE_AUTH_CONTENT ?? (await fs.readFile(path.join(Global.Path.data, "auth.json"), "utf8"))
+      const data = JSON.parse(source) as Record<string, StoredAuth>
+      const entry = data[providerID]
+      if (!entry) return undefined
+      if (entry.type === "api" && typeof entry.key === "string") {
+        return Credential.Key.make({
+          type: "key",
+          key: entry.key,
+          metadata: entry.metadata,
+        })
+      }
+      if (
+        entry.type === "oauth" &&
+        typeof entry.access === "string" &&
+        typeof entry.refresh === "string" &&
+        typeof entry.expires === "number"
+      ) {
+        return Credential.OAuth.make({
+          type: "oauth",
+          methodID: Integration.MethodID.make("legacy"),
+          access: entry.access,
+          refresh: entry.refresh,
+          expires: entry.expires,
+          metadata: {
+            ...(entry.accountId === undefined ? {} : { accountId: entry.accountId }),
+            ...(entry.enterpriseUrl === undefined ? {} : { enterpriseUrl: entry.enterpriseUrl }),
+          },
+        })
+      }
+      return undefined
+    },
+    catch: () => undefined,
+  }).pipe(Effect.orElseSucceed(() => undefined))
+
 const withDefaults = (model: ModelV2.Info, route: AnyRoute) => {
   const body = model.request.body
   const httpBody = Object.hasOwn(body, "apiKey")
@@ -167,6 +226,13 @@ export const fromCatalogModel = (
         .model({ id: resolved.api.id }),
     )
   }
+  if (resolved.api.type === "aisdk" && resolved.api.package === "@openrouter/ai-sdk-provider" && resolved.api.url) {
+    return Effect.succeed(
+      withDefaults(resolved, OpenRouter.route)
+        .with({ auth: key === undefined ? Auth.none : Auth.bearer(key) })
+        .model({ id: resolved.api.id }),
+    )
+  }
   return Effect.fail(
     new UnsupportedApiError({
       providerID: resolved.providerID,
@@ -183,7 +249,8 @@ export const supported = (model: ModelV2.Info) =>
   model.api.type === "aisdk" &&
   (model.api.package === "@ai-sdk/openai" ||
     model.api.package === "@ai-sdk/anthropic" ||
-    (model.api.package === "@ai-sdk/openai-compatible" && model.api.url !== undefined))
+    ((model.api.package === "@ai-sdk/openai-compatible" || model.api.package === "@openrouter/ai-sdk-provider") &&
+      model.api.url !== undefined))
 
 /** Resolves models from the catalog belonging to the current Location runtime. */
 export const locationLayer = Layer.effect(
@@ -254,11 +321,16 @@ export const locationLayer = Layer.effect(
         const integrationID = provider?.integrationID ?? Integration.ID.make(selected.providerID)
         const connections = yield* integrations.connection.list(integrationID)
         const connection = IntegrationRotation.pick(integrationID, connections)
-        return yield* resolve(
-          session,
-          selected,
-          connection ? yield* integrations.connection.resolve(connection) : undefined,
-        )
+        const credential = connection
+          ? yield* integrations.connection.resolve(connection)
+          : yield* legacyCredential(selected.providerID)
+        // The hosted OpenCode gateway accepts the documented anonymous "public"
+        // key (v1's `opencode` loader uses it when no plan key is connected).
+        // Without it the v2 runner sends no auth and the gateway answers 403
+        // "Workspace selection is required" instead of serving free/public models.
+        const fallback =
+          credential ?? (selected.providerID === "opencode" ? Credential.Key.make({ type: "key", key: "public" }) : undefined)
+        return yield* resolve(session, selected, fallback)
       }),
       reportFailure: Effect.fn("SessionRunnerModel.reportFailure")(function* (session, error) {
         if (session.model?.providerID === "combo" && session.model?.id) {

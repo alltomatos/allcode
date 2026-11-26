@@ -1,4 +1,4 @@
-﻿import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
+import { DESKTOP_NATIVE_ENGLISH } from "./desktop-native"
 
 export const dict = {
   ...DESKTOP_NATIVE_ENGLISH,
@@ -1549,6 +1549,8 @@ export const dict = {
   "settings.providers.title": "Providers",
   "settings.providers.description": "Provider settings will be configurable here.",
   "settings.providers.section.connected": "Connected providers",
+  "settings.providers.parityWarning":
+    "Provider v2 is under evaluation. Custom providers and combos may not appear or may fail. Keep the default v1 trail unless you are validating parity.",
   "settings.providers.connected.empty": "No connected providers",
   "settings.providers.connected.environmentDescription": "Connected from your environment variables",
   "settings.providers.section.popular": "Popular providers",

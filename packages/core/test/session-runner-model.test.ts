@@ -317,6 +317,146 @@ describe("SessionRunnerModel", () => {
     }),
   )
 
+  it.effect("maps OpenRouter AI SDK models into the OpenRouter chat route", () =>
+    Effect.gen(function* () {
+      const resolved = yield* SessionRunnerModel.fromCatalogModel(
+        model({
+          type: "aisdk",
+          package: "@openrouter/ai-sdk-provider",
+          url: "https://openrouter.ai/api/v1",
+        }),
+      )
+
+      expect(resolved.route).toMatchObject({
+        id: "openrouter",
+        endpoint: { baseURL: "https://openrouter.ai/api/v1" },
+        defaults: { headers: { "x-test": "header" } },
+      })
+      expect(
+        SessionRunnerModel.supported(
+          model({
+            type: "aisdk",
+            package: "@openrouter/ai-sdk-provider",
+            url: "https://openrouter.ai/api/v1",
+          }),
+        ),
+      ).toBe(true)
+    }),
+  )
+
+  it.effect("resolves legacy auth.json keys for v2 providers without integration credentials", () => {
+    const previous = process.env.OPENCODE_AUTH_CONTENT
+    process.env.OPENCODE_AUTH_CONTENT = JSON.stringify({
+      "legacy-provider": { type: "api", key: "legacy-secret" },
+    })
+    return Effect.gen(function* () {
+      const providerID = ProviderV2.ID.make("legacy-provider")
+      const catModel = ModelV2.Info.make({
+        ...model({ type: "aisdk", package: "@ai-sdk/openai", url: "https://legacy.example/v1" }),
+        providerID,
+      })
+      const catalog = {
+        model: {
+          default: () => Effect.succeed(undefined),
+          available: () => Effect.succeed([catModel]),
+        },
+        provider: {
+          get: () => Effect.succeed({ id: providerID, name: "Legacy" }),
+        },
+      }
+      const integrations = {
+        connection: {
+          list: () => Effect.succeed([]),
+          resolve: () => Effect.die("unused"),
+        },
+      }
+      const layer = SessionRunnerModel.locationLayer.pipe(
+        Layer.provide(Layer.succeed(Catalog.Service, catalog as any)),
+        Layer.provide(Layer.succeed(Integration.Service, integrations as any)),
+        Layer.provide(Layer.succeed(Config.Service, { entries: () => Effect.succeed([]) } as any)),
+      )
+      const models = yield* Effect.provide(SessionRunnerModel.Service, layer)
+      const session = SessionV2.Info.make({
+        id: SessionV2.ID.make("ses_legacy_auth_test"),
+        projectID: ProjectV2.ID.global,
+        title: "test",
+        model: { id: catModel.id, providerID, variant: undefined },
+        cost: 0,
+        tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } },
+        time: { created: DateTime.makeUnsafe(0), updated: DateTime.makeUnsafe(0) },
+        location: { directory: projectAbsolute },
+      })
+      const resolved = yield* models.resolve(session)
+      const headers = yield* resolved.route.auth.apply({
+        request: LLM.request({ model: resolved, prompt: "Hello" }),
+        method: "POST",
+        url: "https://legacy.example/v1/responses",
+        body: "{}",
+        headers: Headers.empty,
+      })
+
+      expect(headers.authorization).toBe("Bearer legacy-secret")
+    }).pipe(
+      Effect.ensuring(
+        Effect.sync(() => {
+          if (previous === undefined) delete process.env.OPENCODE_AUTH_CONTENT
+          else process.env.OPENCODE_AUTH_CONTENT = previous
+        }),
+      ),
+    )
+  })
+
+  it.effect("falls back to the public OpenCode key when no credential is connected", () =>
+    Effect.gen(function* () {
+      const providerID = ProviderV2.ID.make("opencode")
+      const catModel = ModelV2.Info.make({
+        ...model({ type: "aisdk", package: "@ai-sdk/openai", url: "https://opencode.ai/inference/openai/v1" }),
+        providerID,
+      })
+      const catalog = {
+        model: {
+          default: () => Effect.succeed(undefined),
+          available: () => Effect.succeed([catModel]),
+        },
+        provider: {
+          get: () => Effect.succeed({ id: providerID, name: "OpenCode", integrationID: providerID }),
+        },
+      }
+      const integrations = {
+        connection: {
+          list: () => Effect.succeed([]),
+          resolve: () => Effect.die("unused"),
+        },
+      }
+      const layer = SessionRunnerModel.locationLayer.pipe(
+        Layer.provide(Layer.succeed(Catalog.Service, catalog as any)),
+        Layer.provide(Layer.succeed(Integration.Service, integrations as any)),
+        Layer.provide(Layer.succeed(Config.Service, { entries: () => Effect.succeed([]) } as any)),
+      )
+      const models = yield* Effect.provide(SessionRunnerModel.Service, layer)
+      const session = SessionV2.Info.make({
+        id: SessionV2.ID.make("ses_public_key_test"),
+        projectID: ProjectV2.ID.global,
+        title: "test",
+        model: { id: catModel.id, providerID, variant: undefined },
+        cost: 0,
+        tokens: { input: 0, output: 0, reasoning: 0, cache: { read: 0, write: 0 } },
+        time: { created: DateTime.makeUnsafe(0), updated: DateTime.makeUnsafe(0) },
+        location: { directory: projectAbsolute },
+      })
+      const resolved = yield* models.resolve(session)
+      const headers = yield* resolved.route.auth.apply({
+        request: LLM.request({ model: resolved, prompt: "Hello" }),
+        method: "POST",
+        url: "https://opencode.ai/inference/openai/v1/responses",
+        body: "{}",
+        headers: Headers.empty,
+      })
+
+      expect(headers.authorization).toBe("Bearer public")
+    }),
+  )
+
   it.effect("rejects catalog APIs without a native route", () =>
     Effect.gen(function* () {
       const failure = yield* SessionRunnerModel.fromCatalogModel(

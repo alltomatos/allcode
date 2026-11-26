@@ -170,6 +170,26 @@ const layer = Layer.effect(
         concurrency: "unbounded",
       }).pipe(Effect.map(SystemContext.combine))
 
+    // Model resolution happens before a provider turn exists, so it has no
+    // publisher to surface the failure. Without this projection the prompt is
+    // durably admitted and then silently ignored (the drain only logs). Emit a
+    // failed assistant step so the app shows an error and can retry/switch.
+    const failModelResolution = Effect.fnUntraced(function* (
+      session: SessionSchema.Info,
+      agent: AgentV2.Selection,
+      error: { readonly message: string },
+    ) {
+      const publisher = createLLMEventPublisher(events, {
+        sessionID: session.id,
+        agent: agent.id,
+        model: session.model ?? {
+          id: ModelV2.ID.make("unknown"),
+          providerID: ProviderV2.ID.make("unknown"),
+        },
+      })
+      yield* publisher.failAssistant(error.message)
+    })
+
     const runTurnAttempt = Effect.fn("SessionRunner.runTurn")(function* (
       sessionID: SessionSchema.ID,
       promotion: SessionInput.Delivery | undefined,
@@ -196,7 +216,11 @@ const layer = Layer.effect(
       }
       const system =
         initialized ?? (yield* SessionContextEpoch.prepare(db, events, loadSystemContext(agent), session.id))
-      const model = yield* models.resolve(session)
+      const model = yield* models.resolve(session).pipe(
+        Effect.catch((error: SessionRunnerModel.Error) =>
+          failModelResolution(session, agent, error).pipe(Effect.andThen(Effect.fail(error))),
+        ),
+      )
       const entries = yield* SessionHistory.entriesForRunner(db, session.id, system.baselineSeq)
       const context = entries.map((entry) => entry.message)
       const isLastStep = agent.info?.steps !== undefined && currentStep >= agent.info.steps
