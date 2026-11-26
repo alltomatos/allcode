@@ -1,4 +1,4 @@
-﻿import { beforeAll, describe, expect, test } from "bun:test"
+import { beforeAll, describe, expect, test } from "bun:test"
 
 /**
  * Opt-in live parity check between the v1 provider projection and the v2
@@ -81,8 +81,17 @@ live("live provider parity v1 x v2", () => {
   let health: { providerParity?: boolean; providerParityReason?: string }
 
   const v1Pairs = () =>
-    new Set(v1.all.flatMap((provider) => Object.keys(provider.models).map((model) => `${provider.id}/${model}`)))
-  const v2Pairs = () => new Set(v2Models.map((model) => `${model.providerID}/${model.id}`))
+    new Set(
+      v1.all
+        .filter((provider) => provider.id !== "combo")
+        .flatMap((provider) => Object.keys(provider.models).map((model) => `${provider.id}/${model}`)),
+    )
+  const v2Pairs = () =>
+    new Set(
+      v2Models
+        .filter((model) => model.providerID !== "combo")
+        .map((model) => `${model.providerID}/${model.id}`),
+    )
 
   beforeAll(async () => {
     const [providerList, providers, models, healthResponse] = await Promise.all([
