@@ -110,3 +110,12 @@ de execução idêntico e nenhum dado persistido alterado.
 
 Selo “Free” em TUI/CLI; branding “AllCode Go” vs “OpenCode Go”; unificação dos dois
 resolvedores de combo; detecção de free na telemetria de stats.
+
+## v2 provider parity gate
+
+- OPENCODE_PROVIDER_PARITY=1 alone does not announce parity; OPENCODE_PROVIDER_PARITY_ACK=1 is required while custom providers/combos are not fully ported.
+- v2 Config.Service reads branded llcode.json(c)/.allcode plus legacy opencode.json(c)/.opencode.
+- v2 SessionRunnerModel bridges legacy uth.json credentials; opencode falls back to the anonymous public key.
+- Provider/model HTTP responses redact piKey/ccessToken/efreshToken/etch.
+- gentrouter remains v1-only (Python relay); parity stays blocked for configs that use it.
+- Live gate: packages/allcode/test/provider/parity-live.test.ts (opt-in) and .github/workflows/provider-parity.yml.

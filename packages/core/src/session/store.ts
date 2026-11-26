@@ -39,11 +39,9 @@ const layer = Layer.effect(
 
     return Service.of({
       get: Effect.fn("SessionStore.get")(function* (sessionID) {
-        // 1. Tenta ler direto do banco local (caso a sessão esteja aqui)
-        const row = yield* db.select().from(SessionTable).where(eq(SessionTable.id, sessionID)).get().pipe(Effect.orDie)
-        if (row) return fromRow(row)
-
-        // 2. Se não encontrou, busca no índice global session_location para localizar o project.db da sessão
+        // The session_location index points at the current project.db, where
+        // mutable session state (model switch, context) is projected. Prefer
+        // it over the global copy, which is only written at creation.
         const loc = yield* db
           .select({
             directory: SessionLocationTable.directory,
@@ -54,9 +52,18 @@ const layer = Layer.effect(
           .get()
           .pipe(Effect.orDie)
 
-        if (!loc) return undefined
+        const readGlobal = Effect.fnUntraced(function* () {
+          const row = yield* db
+            .select()
+            .from(SessionTable)
+            .where(eq(SessionTable.id, sessionID))
+            .get()
+            .pipe(Effect.orDie)
+          return row ? fromRow(row) : undefined
+        })
+        if (!loc) return yield* readGlobal()
 
-        // 3. Lê a sessão do project.db da location pelo dono único das conexões
+        // Lê a sessão do project.db da location pelo dono único das conexões
         // (LocationsResolver), o mesmo Database.Interface que os serviços de
         // location usam para essa ref.
         const workspace = yield* resolver.get(
@@ -72,7 +79,8 @@ const layer = Layer.effect(
           .where(eq(SessionTable.id, sessionID))
           .get()
           .pipe(Effect.orDie)
-        return projectRow ? fromRow(projectRow) : undefined
+        if (projectRow) return fromRow(projectRow)
+        return yield* readGlobal()
       }),
       context: Effect.fn("SessionStore.context")(function* (sessionID) {
         return yield* SessionHistory.load(db, sessionID)

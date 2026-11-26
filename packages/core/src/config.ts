@@ -26,6 +26,7 @@ import { ConfigToolOutput } from "./config/tool-output"
 import { ConfigWatcher } from "./config/watcher"
 import { ConfigV1 } from "./v1/config/config"
 import { ConfigMigrateV1 } from "./v1/config/migrate"
+import { Branding } from "./platform/branding"
 
 export class Info extends Schema.Class<Info>("Config.Info")({
   $schema: Schema.optional(Schema.String).annotate({
@@ -143,7 +144,12 @@ const layer = Layer.effect(
     const global = yield* Global.Service
     const location = yield* Location.Service
     const policy = yield* Policy.Service
-    const names = ["opencode.json", "opencode.jsonc"]
+    const names = [
+      `${Branding.legacyConfigFileBase}.json`,
+      `${Branding.legacyConfigFileBase}.jsonc`,
+      `${Branding.configFileBase}.json`,
+      `${Branding.configFileBase}.jsonc`,
+    ]
     const decodeOptions = { errors: "all", onExcessProperty: "ignore", propertyOrder: "original" } as const
     const decodeInfo = Schema.decodeUnknownOption(Info, decodeOptions)
     const decodeV1Info = Schema.decodeUnknownOption(ConfigV1.Info, decodeOptions)
@@ -182,7 +188,7 @@ const layer = Layer.effect(
       ? []
       : yield* fs
           .up({
-            targets: [".opencode", ...names.toReversed()],
+            targets: [".opencode", ".allcode", ...names.toReversed()],
             start: location.directory,
             stop: location.project.directory,
           })
@@ -190,7 +196,7 @@ const layer = Layer.effect(
     const directories = [
       globalDirectory,
       ...discovered
-        .filter((item) => path.basename(item) === ".opencode")
+        .filter((item) => [".opencode", ".allcode"].includes(path.basename(item)))
         .toReversed()
         .map((directory) => AbsolutePath.make(directory)),
     ]

@@ -703,6 +703,11 @@ export const SettingsProvidersV2: Component<{
       </div>
 
       <div class="settings-v2-tab-body settings-v2-providers">
+        <Show when={protocol() === "v2"}>
+          <div class="settings-v2-provider-empty" role="status" data-component="provider-parity-warning">
+            {language.t("settings.providers.parityWarning")}
+          </div>
+        </Show>
         <div class="settings-v2-section" data-component="connected-providers-section">
           <h3 class="settings-v2-section-title">{language.t("settings.providers.section.connected")}</h3>
           <SettingsListV2>

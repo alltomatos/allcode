@@ -330,7 +330,7 @@ export const makeSessionGroup = <I extends HttpApiMiddleware.AnyId, S>(sessionLo
         query: {
           after: Schema.NumberFromString.pipe(Schema.decodeTo(NonNegativeInt), Schema.optional),
         },
-        success: HttpApiSchema.StreamSse({ data: SessionEvent.Durable }),
+        success: HttpApiSchema.StreamSse({ data: SessionEvent.All }),
         error: SessionNotFoundError,
       })
         .middleware(sessionLocationMiddleware)

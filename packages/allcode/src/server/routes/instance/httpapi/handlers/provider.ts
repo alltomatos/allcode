@@ -201,6 +201,11 @@ export const providerHandlers = HttpApiBuilder.group(InstanceHttpApi, "provider"
       }
     })
 
+    // Warm the full provider list at route setup, not only the location layer.
+    // The first `GET /provider` otherwise pays models.dev + catalog boot (~9s)
+    // while it runs, even though settings is usually opened later.
+    yield* list().pipe(Effect.ignore, Effect.forkScoped)
+
     const auth = Effect.fn("ProviderHttpApi.auth")(function* () {
       return yield* svc.methods()
     })

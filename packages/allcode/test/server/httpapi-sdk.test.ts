@@ -771,6 +771,25 @@ describe("HttpApi SDK", () => {
     ),
   )
 
+  it.live("returns 400 when a prompt references an unknown model", () =>
+    withStandardProject("raw", ({ sdk }) =>
+      Effect.gen(function* () {
+        const session = yield* capture(() => sdk.session.create({ title: "bad model" }))
+        const sessionID = String(record(session.data).id)
+        const prompt = yield* capture(() =>
+          sdk.session.prompt({
+            sessionID,
+            agent: "build",
+            model: { providerID: "missing-provider", modelID: "missing-model" },
+            parts: [{ type: "text", text: "hello" }],
+          }),
+        )
+
+        expect(prompt.status).toBe(400)
+      }),
+    ),
+  )
+
   serverPathParity("matches generated SDK prompt streaming through fake LLM", (serverPath) =>
     withFakeLlm(serverPath, ({ sdk, llm }) =>
       Effect.gen(function* () {

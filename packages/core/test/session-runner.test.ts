@@ -154,7 +154,7 @@ const echo = Layer.effectDiscard(
   ),
 )
 const echoNode = makeLocationNode({ name: "test/session-runner-tools", layer: echo, deps: [ToolRegistry.node] })
-let modelResolveHook = Effect.void
+let modelResolveHook: Effect.Effect<void, SessionRunnerModel.Error> = Effect.void
 let currentModel = model
 const models = SessionRunnerModel.layerWith((session) =>
   modelResolveHook.pipe(Effect.as(session.model?.id === "replacement" ? replacementModel : currentModel)),
@@ -631,6 +631,37 @@ describe("SessionRunnerLLM", () => {
       expect(yield* session.messages({ sessionID })).toMatchObject([
         { id: message.id, type: "user", text: "Run automatically" },
       ])
+    }),
+  )
+
+  it.effect("projects a model resolution failure as a failed assistant message", () =>
+    Effect.gen(function* () {
+      yield* setup
+      const session = yield* SessionV2.Service
+      const providerID = ProviderV2.ID.make("fake")
+      const modelID = ModelV2.ID.make("missing")
+      yield* session.switchModel({ sessionID, model: { id: modelID, providerID } })
+      yield* session.prompt({
+        sessionID,
+        prompt: Prompt.make({ text: "Use a missing model" }),
+        resume: false,
+      })
+      modelResolveHook = Effect.fail(
+        new SessionRunnerModel.ModelUnavailableError({ providerID, modelID }),
+      )
+
+      const exit = yield* session.resume(sessionID).pipe(Effect.exit)
+      modelResolveHook = Effect.void
+
+      expect(Exit.isFailure(exit)).toBeTrue()
+      const context = yield* session.context(sessionID)
+      expect(context.some((message) => message.type === "user" && message.text === "Use a missing model")).toBeTrue()
+      expect(context.findLast((message) => message.type === "assistant")).toMatchObject({
+        type: "assistant",
+        model: { id: modelID, providerID },
+        finish: "error",
+        error: { type: "unknown", message: "Model unavailable: fake/missing" },
+      })
     }),
   )
 
@@ -3408,6 +3439,39 @@ describe("SessionRunnerLLM", () => {
       verifyPartialFlushOnInterruption(kind),
     )
   }
+
+  it.effect("streams live text deltas through the session event stream", () =>
+    Effect.gen(function* () {
+      yield* setup
+      const session = yield* SessionV2.Service
+      const prompt = "Stream session SSE"
+      const chunks = ["a", "b", "c"]
+      const fixture = fragmentFixture("text", "text-sse", chunks)
+      yield* session.prompt({ sessionID, prompt: Prompt.make({ text: prompt }), resume: false })
+
+      const collected: SessionEvent.Event[] = []
+      const subscribed = yield* Deferred.make<void>()
+      const stream = yield* session
+        .events({ sessionID })
+        .pipe(
+          Stream.tap((event) =>
+            event.type === SessionEvent.PromptAdmitted.type ? Deferred.succeed(subscribed, undefined) : Effect.void,
+          ),
+          Stream.takeUntil((event) => event.type === SessionEvent.Step.Ended.type),
+          Stream.runForEach((event) => Effect.sync(() => collected.push(event))),
+          Effect.forkScoped,
+        )
+      yield* Deferred.await(subscribed)
+
+      response = fixture.completeEvents
+      yield* session.resume(sessionID)
+      yield* Fiber.join(stream)
+
+      const deltas = collected.filter((event): event is SessionEvent.Text.Delta => event.type === "session.next.text.delta")
+      expect(deltas.map((event) => event.data.delta).join("")).toBe(chunks.join(""))
+      expect(collected.some((event) => event.type === "session.next.text.ended")).toBeTrue()
+    }),
+  )
 
   it.effect("rejects duplicate streamed text starts", () =>
     Effect.gen(function* () {
